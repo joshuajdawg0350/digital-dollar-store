@@ -154,6 +154,14 @@
 .guarantee-strip a{color:var(--eb-bright,#6FC3FF);font-weight:700}
 
 .featured-card{border:2px solid var(--eb,#39C2FF);background:linear-gradient(165deg,var(--panel-2),var(--panel) 65%)}
+.wf-toggle{margin-top:.6rem;background:rgba(0,150,255,.10);border:1px solid var(--eb-bright,#6FC3FF);color:#fff;border-radius:10px;padding:.55rem .9rem;font-size:.88rem;font-weight:700;cursor:pointer;min-height:44px}
+.wf-toggle:active{background:rgba(0,150,255,.25)}
+.wf-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:.6rem;margin-top:.6rem}
+.wf-gallery[hidden]{display:none}
+.wf-gallery figure{margin:0;text-align:center}
+.wf-gallery img{width:100%;height:auto;border-radius:50%;display:block}
+.wf-gallery figcaption{font-size:.74rem;color:var(--muted);margin-top:.3rem;line-height:1.3}
+.wf-note{font-size:.78rem;color:var(--muted);margin:0;grid-column:1/-1}
 </style>
 <style>
 /* ===== fit pass 2026-11-17: first screen = store name, promises, start of the shelf ===== */
@@ -521,6 +529,20 @@
           <div class="app-main">
             <h3>Watch Faces Pack 1</h3>
             <p>Ten watch faces for your smartwatch — dragons, wolves, neon and more. Your watch shows the time over the art. Fits Apple Watch, Galaxy Watch and Wear OS.</p>
+            <button type="button" class="wf-toggle" aria-expanded="false" onclick="var g=document.getElementById('wf-gal-catalog');var open=g.hidden;g.hidden=!open;this.setAttribute('aria-expanded',String(open));this.textContent=open?'Hide the faces':'See all 10 faces before you buy';">See all 10 faces before you buy</button>
+            <div class="wf-gallery" id="wf-gal-catalog" hidden>
+              <figure><a href="assets/watch-pack-1/face-01-full.webp" aria-label="See the Chrome Dragon face big"><img src="assets/watch-pack-1/face-01-thumb.webp" alt="Chrome Dragon watch face — preview with a sample clock" width="360" height="360" loading="lazy"></a><figcaption>Chrome Dragon</figcaption></figure>
+              <figure><a href="assets/watch-pack-1/face-02-full.webp" aria-label="See the Midnight Wolf face big"><img src="assets/watch-pack-1/face-02-thumb.webp" alt="Midnight Wolf watch face — preview with a sample clock" width="360" height="360" loading="lazy"></a><figcaption>Midnight Wolf</figcaption></figure>
+              <figure><a href="assets/watch-pack-1/face-03-full.webp" aria-label="See the Neon City face big"><img src="assets/watch-pack-1/face-03-thumb.webp" alt="Neon City watch face — preview with a sample clock" width="360" height="360" loading="lazy"></a><figcaption>Neon City</figcaption></figure>
+              <figure><a href="assets/watch-pack-1/face-04-full.webp" aria-label="See the Purple Nebula face big"><img src="assets/watch-pack-1/face-04-thumb.webp" alt="Purple Nebula watch face — preview with a sample clock" width="360" height="360" loading="lazy"></a><figcaption>Purple Nebula</figcaption></figure>
+              <figure><a href="assets/watch-pack-1/face-05-full.webp" aria-label="See the Samurai Moon face big"><img src="assets/watch-pack-1/face-05-thumb.webp" alt="Samurai Moon watch face — preview with a sample clock" width="360" height="360" loading="lazy"></a><figcaption>Samurai Moon</figcaption></figure>
+              <figure><a href="assets/watch-pack-1/face-06-full.webp" aria-label="See the Electric Chrome face big"><img src="assets/watch-pack-1/face-06-thumb.webp" alt="Electric Chrome watch face — preview with a sample clock" width="360" height="360" loading="lazy"></a><figcaption>Electric Chrome</figcaption></figure>
+              <figure><a href="assets/watch-pack-1/face-07-full.webp" aria-label="See the Luxe Gold face big"><img src="assets/watch-pack-1/face-07-thumb.webp" alt="Luxe Gold watch face — preview with a sample clock" width="360" height="360" loading="lazy"></a><figcaption>Luxe Gold</figcaption></figure>
+              <figure><a href="assets/watch-pack-1/face-08-full.webp" aria-label="See the Deep Ocean face big"><img src="assets/watch-pack-1/face-08-thumb.webp" alt="Deep Ocean watch face — preview with a sample clock" width="360" height="360" loading="lazy"></a><figcaption>Deep Ocean</figcaption></figure>
+              <figure><a href="assets/watch-pack-1/face-09-full.webp" aria-label="See the Route 66 face big"><img src="assets/watch-pack-1/face-09-thumb.webp" alt="Route 66 watch face — preview with a sample clock" width="360" height="360" loading="lazy"></a><figcaption>Route 66</figcaption></figure>
+              <figure><a href="assets/watch-pack-1/face-10-full.webp" aria-label="See the Blue Circuit face big"><img src="assets/watch-pack-1/face-10-thumb.webp" alt="Blue Circuit watch face — preview with a sample clock" width="360" height="360" loading="lazy"></a><figcaption>Blue Circuit</figcaption></figure>
+              <p class="wf-note">Tap any face to see it big. The clock in each picture is a sample — your watch puts its own time over the art.</p>
+            </div>
             <div class="app-buy">
               <span class="a-price">$0.99<small>one-time</small></span>
               <a class="btn-buy badge-buy" href="https://buy.stripe.com/fZu5kD6Cdd6A1pH0uF3kt1d" aria-label="Buy Watch Faces Pack 1 — $0.99 — tap to pay"><img class="badge99" src="assets/badge-99.webp" alt="" width="1600" height="1600" loading="lazy"><span class="badge-cap">TAP TO PAY</span></a>
