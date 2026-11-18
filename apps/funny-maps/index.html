@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Funny Maps — Right directions. Funny voices.</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="vendor/leaflet.css">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0096FF">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
@@ -85,6 +85,17 @@
   .chipAv{width:26px; height:26px; border-radius:50%; object-fit:cover; vertical-align:-7px; margin-right:4px; border:1.5px solid var(--line);}
   .charCard .nm{font-size:18px; font-weight:800; margin-left:6px;}
   .charCard .tg{display:block; font-size:13px; color:var(--dim); margin-top:3px; line-height:1.3;}
+  .hearBtn{display:inline-block; margin-top:7px; min-height:40px; padding:5px 13px; border-radius:10px;
+    border:1.5px solid var(--blue); background:rgba(0,150,255,.13); color:#fff;
+    font-size:13.5px; font-weight:800; cursor:pointer;}
+  .hearBtn:active{background:rgba(0,150,255,.3);}
+  /* destination pin — house style, no external marker images */
+  .destPin{position:relative; width:34px; height:34px;}
+  .destPin .pinBody{position:absolute; left:50%; top:0; width:24px; height:24px; margin-left:-12px;
+    background:linear-gradient(180deg,#5db9ff,#0077d4); border:2.5px solid #fff; border-radius:50% 50% 50% 0;
+    transform:rotate(-45deg); box-shadow:0 3px 10px rgba(0,0,0,.55);}
+  .destPin .pinDot{position:absolute; left:50%; top:7px; width:8px; height:8px; margin-left:-4px;
+    background:#fff; border-radius:50%;}
   #toggleRow{display:flex; gap:9px; margin-top:12px;}
   .tog{flex:1; min-height:52px; border-radius:12px; border:1.5px solid var(--line); background:var(--panel2);
     color:var(--txt); font-size:15.5px; font-weight:700; cursor:pointer; padding:6px;}
@@ -141,13 +152,13 @@
       linear-gradient(180deg, rgba(101,67,33,.35) 0, rgba(101,67,33,0) 34px, rgba(101,67,33,0) calc(100% - 34px), rgba(101,67,33,.35) 100%);
     mix-blend-mode:multiply;}
   #map[data-style="steve"] #scrollFx{display:block;}
-  /* ---------- per-character tile treatments ---------- */
-  #map[data-style="bubba"] .leaflet-tile-pane{filter:sepia(.38) saturate(.82) brightness(.97) contrast(1.02);}
-  #map[data-style="dre"] .leaflet-tile-pane{filter:invert(.92) hue-rotate(185deg) saturate(.48) brightness(.88) contrast(1.12);}
-  #map[data-style="hurt"] .leaflet-tile-pane{filter:sepia(.5) hue-rotate(38deg) saturate(.55) contrast(1.07) brightness(.93);}
-  #map[data-style="doright"] .leaflet-tile-pane{filter:brightness(1.02) contrast(1.03) saturate(1.06);}
-  #map[data-style="steve"] .leaflet-tile-pane{filter:sepia(.58) saturate(.7) brightness(1.06) contrast(.94);}
-  #map[data-style="nora"] .leaflet-tile-pane{filter:brightness(1.05) saturate(1.18) contrast(1.04);}
+  /* ---------- per-character tile treatments (polished 2026-11-18: same
+     identities, professional grade — lighter washes, cleaner reads) ---------- */
+  #map[data-style="bubba"] .leaflet-tile-pane{filter:sepia(.22) saturate(.92) brightness(1.01) contrast(1.0);}
+  #map[data-style="dre"] .leaflet-tile-pane{filter:invert(.9) hue-rotate(188deg) saturate(.55) brightness(.9) contrast(1.1);}
+  #map[data-style="hurt"] .leaflet-tile-pane{filter:sepia(.38) hue-rotate(36deg) saturate(.5) contrast(1.05) brightness(.96);}
+  #map[data-style="steve"] .leaflet-tile-pane{filter:sepia(.5) saturate(.68) brightness(1.05) contrast(.95);}
+  #map[data-style="nora"] .leaflet-tile-pane{filter:brightness(1.03) saturate(1.1) contrast(1.02);}
   #qa-log{display:none;}
 </style>
 </head>
@@ -227,7 +238,7 @@
 
 <pre id="qa-log"></pre>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="vendor/leaflet.js"></script>
 <script>
 "use strict";
 /* ================================================================
@@ -496,14 +507,17 @@ const CacheTileLayer = L.GridLayer.extend({
    Each character restyles the whole stage: tile source, tile treatment,
    route line, and UI accent. Steve's scroll is a parchment SKIN over the
    real OpenStreetMap streets (real OSM geometry + names underneath). */
-const ATTR_OSM = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors — routing by OSRM, search by Nominatim';
-const ATTR_TOPO = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM — map style: <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA) — routing by OSRM, search by Nominatim';
-/* Tile sources (verified 2026-11-18): CARTO's free basemap CDN now answers
+const ATTR_OSM = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors — routing by OSRM, search by Nominatim + Photon';
+const ATTR_TOPO = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM — map style: <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA) — routing by OSRM, search by Nominatim + Photon';
+const ATTR_ESRI = 'Esri, HERE, Garmin, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors — routing by OSRM, search by Nominatim + Photon';
+/* Tile sources (re-verified 2026-11-18): CARTO's free basemap CDN answers
    unauthenticated tile requests with an "API KEY REQUIRED" placeholder tile
-   (byte-identical 2,513-byte image, any headers) — so Dre / Doright / Steve
-   ride on real OpenStreetMap standard tiles with per-character treatments,
-   which is exactly the honest fallback: real streets, character skin. */
+   (byte-identical 2,049-byte image across styles) — confirmed again today,
+   so CARTO stays out. The professional clean look rides on Esri World
+   Street Map tiles (free with attribution, real navigation-product
+   cartography); the character identities ride on top via treatments. */
 const OSM_TILES = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+const ESRI_TILES = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}';
 const STYLES = {
   dre:    { tiles:OSM_TILES, maxZoom:19, attrib:ATTR_OSM,
             route:'#22c8ff', casing:'#eaf7ff', accent:'#0096FF', accent2:'#4db2ff' },
@@ -511,14 +525,14 @@ const STYLES = {
             route:'#ff8c2e', casing:'#fff3df', accent:'#e07b24', accent2:'#ffb35c' },
   hurt:   { tiles:'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', maxZoom:17, attrib:ATTR_TOPO, grid:true,
             route:'#ffe14d', casing:'#232816', accent:'#9aa83c', accent2:'#c9d45c' },
-  doright:{ tiles:OSM_TILES, maxZoom:19, attrib:ATTR_OSM,
+  doright:{ tiles:ESRI_TILES, maxZoom:18, attrib:ATTR_ESRI, bg:'#e9e6dd',
             route:'#0057ff', casing:'#ffffff', accent:'#2f7bff', accent2:'#7db1ff' },
   steve:  { tiles:OSM_TILES, maxZoom:19, attrib:ATTR_OSM,
             route:'#6b3f14', casing:'#e8d5ae', accent:'#b5792e', accent2:'#d9a75a' },
-  /* Nagging Nora: crisp itinerary look — clean OSM streets kept bright
-     and organized, highlighter-yellow route line on a paper-white casing,
-     planner-amber accents. Real streets underneath, like everyone else. */
-  nora:   { tiles:OSM_TILES, maxZoom:19, attrib:ATTR_OSM,
+  /* Nagging Nora: crisp itinerary look — clean professional streets
+     (Esri World Street) kept bright and organized, highlighter-amber
+     route line on a paper-white casing, planner-amber accents. */
+  nora:   { tiles:ESRI_TILES, maxZoom:18, attrib:ATTR_ESRI, bg:'#e9e6dd',
             route:'#ffb300', casing:'#fffbe6', accent:'#e09e00', accent2:'#ffcf4d' },
   /* Regular Maps: the standard OpenStreetMap look, untouched — no tile
      filter is defined for [data-style="regular"], no overlay, plain blue
@@ -549,6 +563,7 @@ function applyStyle(k){
   if (gridLayer){ map.removeLayer(gridLayer); gridLayer = null; }
   if (st.grid){ gridLayer = new GridLayer({ opacity: 1, zIndex: 300 }); gridLayer.addTo(map); }
   map.getContainer().dataset.style = k;
+  map.getContainer().style.background = st.bg || '#070b12';
   document.documentElement.style.setProperty('--blue', st.accent);
   document.documentElement.style.setProperty('--blue2', st.accent2);
   if (routeLine && routeCasing){
@@ -557,6 +572,7 @@ function applyStyle(k){
   }
 }
 const posIcon = L.divIcon({ className:'', html:'<div class="posWrap" id="posWrap"><div class="posCone"></div><div class="posDot"></div></div>', iconSize:[38,38], iconAnchor:[19,19] });
+const destIcon = L.divIcon({ className:'', html:'<div class="destPin"><div class="pinBody"></div><div class="pinDot"></div></div>', iconSize:[34,34], iconAnchor:[17,30] });
 let posMarker = L.marker([origin.lat, origin.lng], { icon:posIcon }).addTo(map);
 let destMarker = null, routeLine = null, routeCasing = null;
 map.on('click', e => { setDestination({ lat:e.latlng.lat, lng:e.latlng.lng, label:'Dropped pin' }); });
@@ -641,6 +657,10 @@ function pickLine(charK, key){
   if (lines.length > 1 && lastLineIdx[lk] === i) i = (i + 1) % lines.length;
   lastLineIdx[lk] = i; return lines[i];
 }
+/* Voice picking: the character's named voice if this device has it, else
+   the device's first English voice, else NO voice set at all (the device
+   default) — with the character's pitch/rate applied in every case.
+   A missing named voice must never mean silence. */
 function pickVoice(ch){
   try {
     const vs = speechSynthesis.getVoices().filter(v => /^en/i.test(v.lang));
@@ -649,25 +669,51 @@ function pickVoice(ch){
     return vs[0];
   } catch(e){ return null; }
 }
-if ('speechSynthesis' in window) speechSynthesis.onvoiceschanged = () => {};
-function speak(text, kind, meta){
-  const entry = { char: charKey, kind: kind, text: text };
+/* Android Chrome loads the voice list asynchronously — getVoices() is
+   often empty until voiceschanged fires. The pump waits ONCE (below) for
+   that list instead of speaking voiceless-by-accident or not at all. */
+let voicesWaited = false;
+if ('speechSynthesis' in window) speechSynthesis.onvoiceschanged = () => { if (!speaking && speechQ.length) pumpSpeech(); };
+window.__speechErrors = [];
+/* Speech unlock: Android Chrome only speaks reliably inside a user-gesture
+   chain. Every tap anywhere keeps the synth resumed and warm, so a later
+   programmatic "speak" (Demo Drive start, reroute) is never swallowed. */
+window.addEventListener('pointerdown', () => { try { if ('speechSynthesis' in window) speechSynthesis.resume(); } catch(e){} }, { passive: true });
+function speak(text, kind, meta){ enqueueSpeech(text, kind, meta, charKey); }
+function speakAs(charK, text, kind){ enqueueSpeech(text, kind, null, charK); }
+function enqueueSpeech(text, kind, meta, charK){
+  const entry = { char: charK, kind: kind, text: text };
   if (meta) Object.assign(entry, meta);
   window.__spoken.push(entry);
   $('qa-log').textContent += '[' + kind + '] ' + text + '\n';
   if (!soundOn) return;
-  speechQ.push({ text: text, charK: charKey }); pumpSpeech();
+  speechQ.push({ text: text, charK: charK }); pumpSpeech();
 }
 function pumpSpeech(){
   if (speaking) return;
   const item = speechQ.shift(); if (!item) return;
+  /* one-time wait for the async voice list (see note above) */
+  if (!voicesWaited && 'speechSynthesis' in window){
+    let n = 0; try { n = speechSynthesis.getVoices().length; } catch(e){}
+    if (!n){ voicesWaited = true; speechQ.unshift(item); setTimeout(pumpSpeech, 650); return; }
+    voicesWaited = true;
+  }
   speaking = true; const tok = ++speechToken, ch = CHARS[item.charK];
   const done = () => { if (tok === speechToken){ speaking = false; pumpSpeech(); } };
   try {
+    speechSynthesis.resume();  /* Android Chrome parks the queue; wake it every time */
     const u = new SpeechSynthesisUtterance(item.text);
     u.pitch = ch.pitch; u.rate = ch.rate;
     const v = pickVoice(ch); if (v) u.voice = v;
-    u.onend = done; u.onerror = done;
+    u.onend = done;
+    u.onerror = e => {
+      const err = (e && e.error) || 'unknown';
+      if (err !== 'interrupted' && err !== 'canceled'){
+        window.__speechErrors.push({ error: err, text: item.text });
+        $('qa-log').textContent += '[speech-error] ' + err + ' :: ' + item.text + '\n';
+      }
+      done();
+    };
     speechSynthesis.speak(u);
     setTimeout(done, isQA ? 150 : Math.min(9000, 1500 + item.text.length * 95));
   } catch(e){ speaking = false; pumpSpeech(); }
@@ -701,29 +747,62 @@ function scoreRoute(rt){
   });
   return { toll: toll, inter: inter };
 }
+/* Routing runs on TWO independent OSRM servers: the public demo server
+   first, then FOSSGIS's production OSRM (routing.openstreetmap.de).
+   The demo server rate-limits shared/carrier IPs and stalls under load;
+   a dead first server must never read as "no route". Each attempt has a
+   hard timeout so a hung server can't hang the app. */
+const OSRM_SERVERS = [
+  'https://router.project-osrm.org/route/v1/driving/',
+  'https://routing.openstreetmap.de/routed-car/route/v1/driving/'
+];
+async function fetchJsonTimeout(url, ms){
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), ms);
+  try {
+    const r = await fetch(url, { signal: ctl.signal });
+    if (!r.ok) return null;
+    return await r.json();
+  } catch(e){ return null; }
+  finally { clearTimeout(t); }
+}
+/* Walk the servers; returns { j, anyAnswer } — anyAnswer=true when at
+   least one server answered definitively (even "no route"), which is a
+   different fact from every server being unreachable. */
 async function osrmRoute(exclude, alternatives){
-  let url = 'https://router.project-osrm.org/route/v1/driving/' +
-    origin.lng + ',' + origin.lat + ';' + destination.lng + ',' + destination.lat +
-    '?overview=full&geometries=geojson&steps=true';
-  if (alternatives) url += '&alternatives=' + alternatives;
-  if (exclude) url += '&exclude=' + exclude;
-  const r = await fetch(url); return r.json();
+  let anyAnswer = false;
+  for (const base of OSRM_SERVERS){
+    let url = base + origin.lng + ',' + origin.lat + ';' + destination.lng + ',' + destination.lat +
+      '?overview=full&geometries=geojson&steps=true';
+    if (alternatives) url += '&alternatives=' + alternatives;
+    if (exclude) url += '&exclude=' + exclude;
+    const j = await fetchJsonTimeout(url, 10000);
+    if (j){ anyAnswer = true; if (j.code === 'Ok' && j.routes && j.routes.length) return { j: j, anyAnswer: anyAnswer }; }
+  }
+  return { j: null, anyAnswer: anyAnswer };
 }
 async function fetchRoute(){
   if (!destination){ setStatus('Set a destination first — search above or tap the map.'); return null; }
+  if (window.__routeInFlight) return null;
+  window.__routeInFlight = true;
   setStatus('Asking the road…');
-  let j = null, usedExclude = false;
   try {
+    let j = null, usedExclude = false, anyAnswer = false;
     if (CHARS[charKey].scenic){
-      /* Stoner Steve asks the router for no tolls + no motorways first. */
-      j = await osrmRoute('toll,motorway', 0);
-      if (j.code === 'Ok'){ usedExclude = true; }
-      else { j = await osrmRoute(null, 3); }  /* demo router says no — take its alternatives */
+      /* Stoner Steve asks the routers for no tolls + no motorways first. */
+      const ex = await osrmRoute('toll,motorway', 0);
+      anyAnswer = ex.anyAnswer;
+      if (ex.j){ j = ex.j; usedExclude = true; }
+      else { const alt = await osrmRoute(null, 3); j = alt.j; anyAnswer = anyAnswer || alt.anyAnswer; }  /* routers say no — take alternatives */
     } else {
-      j = await osrmRoute(null, 0);
+      const r0 = await osrmRoute(null, 0);
+      j = r0.j; anyAnswer = r0.anyAnswer;
     }
-  } catch(e){ if (nav) setOffline(true); setStatus('The road is not answering (no connection?). Try again.'); return null; }
-  if (!j || j.code !== 'Ok' || !j.routes || !j.routes.length){ setStatus('No route found there. Try another spot.'); return null; }
+    if (!j){
+      if (anyAnswer){ setStatus('No route found there. Try another spot.'); }
+      else { if (nav) setOffline(true); setStatus('The road is not answering (no connection?). Try again.'); }
+      return null;
+    }
 
   let chosen = j.routes[0], steveNote = '';
   if (CHARS[charKey].scenic){
@@ -766,41 +845,92 @@ async function fetchRoute(){
   $('startBtn').style.display = 'block';
   preloadTrip();  /* offline trips: save the whole trip onto the phone */
   return route;
+  } finally { window.__routeInFlight = false; }
 }
 
 /* ---------- destination & search ---------- */
 function setDestination(d){
   destination = d;
   if (destMarker) map.removeLayer(destMarker);
-  destMarker = L.marker([d.lat, d.lng]).addTo(map);
+  destMarker = L.marker([d.lat, d.lng], { icon: destIcon }).addTo(map);
   const dl = $('destLine'); dl.style.display = 'block';
   dl.innerHTML = '🎯 <b>Destination:</b> ' + d.label;
   route = null; $('startBtn').style.display = 'none'; $('routeSummary').style.display = 'none';
   fetchRoute();
 }
-async function doSearch(){
-  const q = $('searchInput').value.trim(); if (!q) return;
-  setStatus('Searching…');
+/* Search runs on TWO independent geocoders. Nominatim goes first (it is
+   the reference OSM search), but it rate-limits shared IPs hard — HTTP
+   429 after a handful of searches from one address, and a phone on a
+   carrier network shares its address with thousands of people. When
+   Nominatim errors, rate-limits, or finds nothing, Photon (Komoot's OSM
+   geocoder, location-biased, no key, CORS-open) answers instead. A dead
+   search service must never read as "no such place". */
+async function nominatimSearch(q){
   try {
     /* Bias results toward where the driver actually is (a ~55 km box around
        the origin): without it, a chain's far-away store outranks the local
        one. bounded=0 keeps it a preference, not a wall. */
     const vb = [origin.lng - 0.55, origin.lat + 0.45, origin.lng + 0.55, origin.lat - 0.45].join(',');
-    const r = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=6&addressdetails=1&viewbox=' + vb + '&bounded=0&q=' + encodeURIComponent(q));
+    const r = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=6&addressdetails=1&viewbox=' + vb + '&bounded=0&q=' + encodeURIComponent(q),
+      { signal: AbortSignal.timeout ? AbortSignal.timeout(9000) : undefined });
+    if (!r.ok) return null;                       /* 429 / 5xx — not an answer */
     const j = await r.json();
-    window.__searchResults = j.map(it => it.display_name);
-    const box = $('results'); box.innerHTML = '';
-    if (!j.length){ box.style.display = 'block'; box.innerHTML = '<div class="result">No matches. Try a fuller address.</div>'; return; }
+    if (!Array.isArray(j)) return null;
+    return j.map(it => ({ name: it.name || it.display_name.split(',')[0], display: it.display_name,
+                          lat: parseFloat(it.lat), lon: parseFloat(it.lon) }));
+  } catch(e){ return null; }
+}
+async function photonSearch(q){
+  try {
+    const r = await fetch('https://photon.komoot.io/api/?limit=6&lat=' + origin.lat + '&lon=' + origin.lng + '&q=' + encodeURIComponent(q),
+      { signal: AbortSignal.timeout ? AbortSignal.timeout(9000) : undefined });
+    if (!r.ok) return null;
+    const j = await r.json();
+    if (!j || !Array.isArray(j.features)) return null;
+    return j.features.map(f => {
+      const p = f.properties || {}, c = f.geometry.coordinates;
+      const streetLine = ((p.housenumber || '') + ' ' + (p.street || '')).trim();
+      const parts = [p.name, streetLine, p.city, p.state].filter((v, i, a) => v && a.indexOf(v) === i);
+      return { name: p.name || parts[0] || q, display: parts.join(', '), lat: c[1], lon: c[0] };
+    }).filter(x => isFinite(x.lat) && isFinite(x.lon));
+  } catch(e){ return null; }
+}
+async function doSearch(){
+  const q = $('searchInput').value.trim(); if (!q) return;
+  if (window.__searchInFlight) return;
+  window.__searchInFlight = true;
+  setStatus('Searching…');
+  const box = $('results');
+  try {
+    let results = await nominatimSearch(q);
+    let answered = results !== null;
+    if (!results || !results.length){
+      const ph = await photonSearch(q);
+      if (ph !== null){ answered = true; if (ph.length) results = ph; }
+    }
+    window.__searchResults = (results || []).map(it => it.display);
+    box.innerHTML = '';
     box.style.display = 'block';
-    j.forEach(it => {
+    if (!results || !results.length){
+      if (!answered){
+        box.innerHTML = '<div class="result">Search couldn\'t get through — the search service is busy right now.<small>Tap here to try again. You can also tap the map to drop a pin.</small></div>';
+        box.firstChild.onclick = () => { window.__searchInFlight = false; doSearch(); };
+        setStatus('Search is not answering (no connection?). You can still tap the map.');
+      } else {
+        box.innerHTML = '<div class="result">No matches for &quot;' + q.replace(/</g, '&lt;') + '&quot;.<small>Try the full name, or add the city — like "Bass Pro Springfield".</small></div>';
+        setStatus('No matches. Try a fuller name or add the city.');
+      }
+      return;
+    }
+    results.forEach(it => {
       const div = document.createElement('div'); div.className = 'result';
-      div.innerHTML = (it.name || it.display_name.split(',')[0]) + '<small>' + it.display_name + '</small>';
+      div.innerHTML = it.name + '<small>' + it.display + '</small>';
       div.onclick = () => { box.style.display = 'none';
-        setDestination({ lat: parseFloat(it.lat), lng: parseFloat(it.lon), label: it.display_name.split(',').slice(0,2).join(',') }); };
+        setDestination({ lat: it.lat, lng: it.lon, label: it.display.split(',').slice(0,2).join(',') }); };
       box.appendChild(div);
     });
     setStatus('Pick the right one.');
-  } catch(e){ setStatus('Search is not answering (no connection?). You can still tap the map.'); }
+  } finally { window.__searchInFlight = false; }
 }
 
 /* ---------- navigation ---------- */
@@ -1164,7 +1294,7 @@ function restoreTrip(){
     route.geomTotal = route.cum[route.cum.length - 1] || 1;
     window.__routeSteps = t.steps.map(s => ({ type: s.maneuver.type, modifier: s.maneuver.modifier || '', exit: s.maneuver.exit || null, name: s.name, ref: s.ref || '', distance: Math.round(s.distance) }));
     if (destMarker) map.removeLayer(destMarker);
-    destMarker = L.marker([destination.lat, destination.lng]).addTo(map);
+    destMarker = L.marker([destination.lat, destination.lng], { icon: destIcon }).addTo(map);
     const dl = $('destLine'); dl.style.display = 'block';
     dl.innerHTML = '🎯 <b>Destination:</b> ' + destination.label + ' (saved trip, restored from this phone)';
     if (routeCasing) map.removeLayer(routeCasing);
@@ -1325,6 +1455,27 @@ const FACES = {
   nora: 'characters/thumbs/nagging-nora-20.webp'
 };
 function avatarHTML(k){ return '<img class="avatar" src="' + FACES[k] + '" alt="' + CHARS[k].name + '">'; }
+/* Speaker test: hear the character BEFORE you drive. Runs inside the tap's
+   gesture chain (the only place Android Chrome guarantees speech), clears
+   whatever was queued so the sample is immediate, and reports synth
+   errors on screen — a voice problem must never be a silent nothing. */
+function hearMe(k){
+  if (!('speechSynthesis' in window)){ setStatus('This browser has no voice built in — directions will still show on screen.'); return; }
+  if (!soundOn){ setStatus('Voice is OFF right now — tap the Voice toggle below, then try Hear me again.'); return; }
+  try { speechSynthesis.cancel(); speechSynthesis.resume(); } catch(e){}
+  speechQ.length = 0; speaking = false; speechToken++;
+  const c = CHARS[k];
+  const sample = pickLine(k, 'depart') || 'Follow my directions and we will get there.';
+  const errBase = window.__speechErrors.length;
+  setStatus('That\'s ' + c.name + ' talking. If you heard that, your sound works.');
+  speakAs(k, 'Hi, I\'m ' + c.name + '. ' + sample, 'sample');
+  setTimeout(() => {
+    if (window.__speechErrors.length > errBase){
+      const last = window.__speechErrors[window.__speechErrors.length - 1];
+      setStatus('The voice hit a snag (' + last.error + '). Check the volume — directions still show on screen either way.');
+    }
+  }, 1500);
+}
 function renderPicker(){
   const pk = $('picker'); pk.innerHTML = '';
   CHAR_ORDER.forEach(k => {
@@ -1332,6 +1483,10 @@ function renderPicker(){
     div.className = 'charCard' + (k === charKey ? ' on' : '');
     div.innerHTML = avatarHTML(k) + '<span class="nm">' + c.name + '</span><span class="tg">' + c.tag + '</span>';
     div.onclick = () => setChar(k);
+    const hb = document.createElement('button');
+    hb.className = 'hearBtn'; hb.textContent = '🔊 Hear me';
+    hb.onclick = e => { e.stopPropagation(); hearMe(k); };
+    div.appendChild(hb);
     pk.appendChild(div);
   });
   /* REGULAR MAPS tile — plain mode, no character. A map pin, not a face. */

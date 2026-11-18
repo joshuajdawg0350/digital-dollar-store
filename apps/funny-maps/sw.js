@@ -1,16 +1,19 @@
 /* Funny Maps — app-shell service worker.
    Scope: this folder only (/apps/funny-maps/).
    Job: cache the app shell (page, manifest, icons, character picker
-   faces) so Funny Maps opens offline like an installed app.
+   faces, and the VENDORED Leaflet library) so Funny Maps opens offline
+   like an installed app, with no third-party CDN on its critical path.
    NOT its job: map tiles, routing, search, and the emergency state
    maps — the app runs all of that itself (its own fm-tiles-v1 /
-   fm-emergency-v1 caches). This worker never touches those caches
-   and never intercepts those requests: every cross-origin request,
-   and every same-origin request that is not a shell file, passes
-   straight through.
-   Re-publish note: when a new build replaces index.html, bump
-   SHELL_CACHE (v1 -> v2) in this file so installed apps pick it up. */
-const SHELL_CACHE = 'funny-maps-shell-v1';
+   fm-emergency-v1 caches). This worker never touches those caches:
+   every cross-origin request, and every same-origin request that is
+   not a shell file, passes straight through.
+   v2 (2026-11-18 repair): navigations are NETWORK-FIRST (fresh page
+   when there's service, cached page only when there isn't) — a cached
+   shell can never serve a stale or stalled page again — and Leaflet
+   ships inside the shell instead of loading from unpkg, whose stall
+   on second loads left the app dead with no error anywhere. */
+const SHELL_CACHE = 'funny-maps-shell-v2';
 const SHELL = [
   './',
   './index.html',
@@ -19,6 +22,8 @@ const SHELL = [
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/icon-maskable-512.png',
+  './vendor/leaflet.js',
+  './vendor/leaflet.css',
   './characters/thumbs/bubba-04.webp',
   './characters/thumbs/dre-07.webp',
   './characters/thumbs/major-hurt-04.webp',
@@ -55,16 +60,23 @@ self.addEventListener('fetch', event => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return; /* tiles & APIs: not ours */
 
-  /* Navigations to this app: serve the cached page shell, so the app
-     opens with no service at all. Other documents are left alone. */
+  /* Navigations to this app: network first, cache as the offline
+     fallback — the page a customer sees is always the current build
+     when service exists. */
   if (req.mode === 'navigate') {
     const scope = self.registration.scope;
     if (url.href === scope || url.href === INDEX_ABS ||
         url.href.startsWith(scope + '?') || url.href.startsWith(INDEX_ABS + '?')) {
       event.respondWith(
-        caches.open(SHELL_CACHE)
-          .then(cache => cache.match(INDEX_ABS))
-          .then(hit => hit || fetch(req))
+        fetch(req)
+          .then(r => {
+            if (r && r.ok) {
+              const copy = r.clone();
+              caches.open(SHELL_CACHE).then(cache => cache.put(INDEX_ABS, copy));
+            }
+            return r;
+          })
+          .catch(() => caches.open(SHELL_CACHE).then(cache => cache.match(INDEX_ABS)))
       );
     }
     return;
