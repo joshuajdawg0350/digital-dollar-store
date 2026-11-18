@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Funny Maps — Right directions. Funny voices.</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0096FF">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Funny Maps">
+<style>
+  :root{
+    --bg:#04060a; --panel:rgba(8,13,20,.96); --panel2:rgba(13,20,30,.94);
+    --line:#22344a; --blue:#0096FF; --blue2:#4db2ff; --txt:#eef4fb; --dim:#9db4cc;
+    --good:#37d67a; --warn:#ffb340;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{height:100%; margin:0; background:var(--bg); color:var(--txt);
+    font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif; overflow:hidden;}
+  #map{position:absolute; inset:0; background:#070b12; z-index:1;}
+  .leaflet-control-attribution{background:rgba(4,6,10,.75)!important; color:#5f748c!important; font-size:9px!important;}
+  .leaflet-control-attribution a{color:#7d97b5!important;}
+  .leaflet-control-zoom a{background:#0b1017!important; color:var(--txt)!important; border-color:var(--line)!important;}
+
+  /* ---------- Guidance banner ---------- */
+  #banner{position:absolute; top:0; left:0; right:0; z-index:900; display:none;
+    background:linear-gradient(180deg, rgba(5,8,13,.98), rgba(8,14,22,.96));
+    border-bottom:2px solid var(--blue); padding:10px 12px 8px;
+    box-shadow:0 6px 24px rgba(0,0,0,.6);}
+  #banner.show{display:block;}
+  #bannerMain{display:flex; align-items:center; gap:14px;}
+  #arrowCircle{flex:0 0 auto; width:88px; height:88px; border-radius:50%;
+    border:3px solid var(--blue); background:radial-gradient(circle at 35% 30%, #1b2f47, #0a1220);
+    display:flex; align-items:center; justify-content:center;
+    font-size:52px; font-weight:800; color:#fff; text-shadow:0 0 14px var(--blue);}
+  #bannerText{flex:1 1 auto; min-width:0;}
+  #bannerDist{font-size:46px; font-weight:800; line-height:1; letter-spacing:.5px;
+    background:linear-gradient(180deg,#ffffff,#b9cfe4); -webkit-background-clip:text; background-clip:text; color:transparent;}
+  #bannerStreet{font-size:23px; font-weight:700; line-height:1.15; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  #bannerInstr{font-size:16px; color:var(--dim); margin-top:2px; line-height:1.25;}
+  #charBar{display:flex; gap:8px; margin-top:10px;}
+  .chip{flex:1; min-height:44px; border-radius:12px; border:1.5px solid var(--line); background:var(--panel2);
+    color:var(--dim); font-size:14px; font-weight:700; padding:6px 2px; cursor:pointer; text-align:center;}
+  .chip .em{display:block; font-size:19px; line-height:1.1;}
+  .chip.on{border-color:var(--blue); color:#fff; background:rgba(0,150,255,.16); box-shadow:0 0 10px rgba(0,150,255,.35) inset;}
+  #navMeta{display:flex; justify-content:space-between; align-items:center; margin-top:8px; font-size:15px; color:var(--dim);}
+  #endBtn{background:#3a1220; border:1.5px solid #a33; color:#ffb3b3; border-radius:10px; min-height:40px; padding:4px 16px; font-size:15px; font-weight:700; cursor:pointer;}
+
+  /* ---------- Bottom sheet ---------- */
+  #sheet{position:absolute; left:0; right:0; bottom:0; z-index:900; background:var(--panel);
+    border-top:2px solid var(--blue); border-radius:18px 18px 0 0; padding:12px 14px calc(12px + env(safe-area-inset-bottom));
+    max-height:72dvh; overflow-y:auto; box-shadow:0 -8px 30px rgba(0,0,0,.65);}
+  #sheet.hidden{display:none;}
+  h1{margin:0; font-size:30px; font-weight:900; letter-spacing:1px; text-align:center;
+    background:linear-gradient(180deg,#ffffff 20%,#9fc3e8 55%,#e8f3ff 80%); -webkit-background-clip:text; background-clip:text; color:transparent;}
+  #tagline{text-align:center; color:var(--blue2); font-size:14.5px; margin:2px 0 10px; font-weight:600;}
+  #searchRow{display:flex; gap:8px;}
+  #searchInput{flex:1; min-height:56px; border-radius:12px; border:1.5px solid var(--line); background:#0a111c;
+    color:var(--txt); font-size:17px; padding:0 14px; outline:none;}
+  #searchInput:focus{border-color:var(--blue);}
+  .bigBtn{min-height:56px; border-radius:12px; border:none; font-size:17px; font-weight:800; cursor:pointer; padding:0 18px;}
+  #searchBtn{background:linear-gradient(180deg,#2ea8ff,#0077d4); color:#fff;}
+  #results{display:none; margin-top:8px; border:1px solid var(--line); border-radius:12px; overflow:hidden;}
+  .result{padding:13px 14px; font-size:16px; border-bottom:1px solid var(--line); background:#0a111c; cursor:pointer;}
+  .result:last-child{border-bottom:none;}
+  .result small{display:block; color:var(--dim); font-size:12.5px; margin-top:2px;}
+  #destLine{display:none; margin-top:10px; font-size:15.5px; background:#0a111c; border:1px solid var(--line); border-radius:12px; padding:11px 13px; line-height:1.35;}
+  #destLine b{color:var(--blue2);}
+  #routeSummary{display:none; margin-top:8px; font-size:16px; color:var(--good); font-weight:700;}
+  .secLabel{font-size:13px; letter-spacing:1.6px; color:var(--dim); font-weight:800; margin:14px 0 8px;}
+  #picker{display:grid; grid-template-columns:1fr 1fr; gap:9px;}
+  .charCard{border:2px solid var(--line); border-radius:14px; background:var(--panel2); padding:11px 12px; cursor:pointer; min-height:76px;}
+  .charCard.on{border-color:var(--blue); background:rgba(0,150,255,.14); box-shadow:0 0 12px rgba(0,150,255,.3);}
+  .charCard .avatar{width:58px; height:58px; border-radius:50%; object-fit:cover; float:left; margin-right:10px; border:2px solid var(--line); background:#1a2432;}
+  .charCard.on .avatar{border-color:var(--blue);}
+  .charCard .avatar.pinAv{display:flex; align-items:center; justify-content:center; font-size:31px; background:#0d1622;}
+  .charCard.regularCard{grid-column:1 / -1; min-height:64px;}
+  .chipPin{font-size:16px; margin-right:4px; vertical-align:-2px;}
+  .chipAv{width:26px; height:26px; border-radius:50%; object-fit:cover; vertical-align:-7px; margin-right:4px; border:1.5px solid var(--line);}
+  .charCard .nm{font-size:18px; font-weight:800; margin-left:6px;}
+  .charCard .tg{display:block; font-size:13px; color:var(--dim); margin-top:3px; line-height:1.3;}
+  #toggleRow{display:flex; gap:9px; margin-top:12px;}
+  .tog{flex:1; min-height:52px; border-radius:12px; border:1.5px solid var(--line); background:var(--panel2);
+    color:var(--txt); font-size:15.5px; font-weight:700; cursor:pointer; padding:6px;}
+  .tog.on{border-color:var(--blue); background:rgba(0,150,255,.16);}
+  .tog small{display:block; font-size:12px; color:var(--dim); font-weight:600;}
+  #actionRow{display:flex; gap:9px; margin-top:12px;}
+  #goBtn{flex:1.2; background:linear-gradient(180deg,#2ea8ff,#0077d4); color:#fff;}
+  #demoBtn{flex:1; background:linear-gradient(180deg,#e8eef5,#9db4cc); color:#0a1220;}
+  #startBtn{flex:1; background:linear-gradient(180deg,#37d67a,#1d9e50); color:#fff; display:none;}
+  #statusLine{margin-top:10px; font-size:13.5px; color:var(--dim); text-align:center; line-height:1.4;}
+  .posDot{width:22px; height:22px; border-radius:50%; background:var(--blue); border:3.5px solid #fff; box-shadow:0 0 0 6px rgba(0,150,255,.35), 0 0 18px var(--blue);}
+  /* ---------- emergency maps ---------- */
+  #emergGrid{display:grid; grid-template-columns:repeat(3, 1fr); gap:7px; margin-top:10px;}
+  .stBtn{min-height:48px; border-radius:10px; border:1.5px solid var(--line); background:var(--panel2);
+    color:var(--txt); font-size:13.5px; font-weight:700; cursor:pointer; padding:5px 3px; line-height:1.25;}
+  .stBtn small{display:block; font-size:11px; color:var(--dim); font-weight:600;}
+  .stBtn.have{border-color:var(--good);}
+  .stBtn.have small{color:var(--good);}
+  #emergViewer{position:fixed; inset:0; z-index:1200; background:#0b0e13; display:none; flex-direction:column;}
+  #emergViewer.show{display:flex;}
+  #emergBar{display:flex; align-items:center; gap:8px; padding:10px; background:var(--panel); border-bottom:2px solid var(--blue);}
+  #emergBar button{min-height:48px; border-radius:10px; border:1.5px solid var(--line); background:var(--panel2);
+    color:var(--txt); font-size:16px; font-weight:800; cursor:pointer; padding:0 14px;}
+  #emergTitle{flex:1; text-align:center; font-size:19px; font-weight:800;}
+  #emergStage{flex:1; position:relative; overflow:hidden; touch-action:none; background:#111;}
+  #emergImg{position:absolute; left:0; top:0; transform-origin:0 0; user-select:none; -webkit-user-drag:none;}
+  #emergAttrib{padding:7px 12px; font-size:11.5px; color:var(--dim); background:var(--panel); line-height:1.4;}
+  /* ---------- live position marker ---------- */
+  .posWrap{position:relative; width:38px; height:38px;}
+  .posCone{position:absolute; left:50%; top:-2px; width:20px; height:16px; margin-left:-10px;
+    background:linear-gradient(180deg, rgba(0,150,255,.85), rgba(0,150,255,0));
+    clip-path:polygon(50% 0, 100% 100%, 0 100%);}
+  .posWrap .posDot{position:absolute; left:50%; top:50%; margin:-11px 0 0 -11px; animation:posPulse 2.2s infinite;}
+  @keyframes posPulse{0%{box-shadow:0 0 0 3px rgba(0,150,255,.45), 0 0 14px var(--blue);}70%{box-shadow:0 0 0 13px rgba(0,150,255,0), 0 0 14px var(--blue);}100%{box-shadow:0 0 0 3px rgba(0,150,255,0), 0 0 14px var(--blue);}}
+  .posWrap.stale .posDot{background:#93a1af; animation:none; box-shadow:0 0 0 5px rgba(255,179,64,.4);}
+  .posWrap.stale .posCone{display:none;}
+  /* ---------- location pill / denied card / scroll fx ---------- */
+  #locPill{position:absolute; top:10px; right:10px; z-index:950; background:var(--panel); border:1.5px solid var(--line);
+    color:var(--txt); border-radius:999px; padding:9px 13px; font-size:13.5px; font-weight:700; cursor:pointer; max-width:78vw;}
+  body.navigating #locPill{top:224px;}
+  #locPill .dot{display:inline-block; width:9px; height:9px; border-radius:50%; background:var(--good); margin-right:6px;}
+  #locPill.stale .dot{background:var(--warn);}
+  #locPill.off .dot{background:#e5484d;}
+  #deniedCard{position:absolute; left:12px; right:12px; bottom:14px; z-index:990; background:#151c28;
+    border:2px solid var(--warn); border-radius:14px; padding:14px 16px; display:none; font-size:15px; line-height:1.45;}
+  #deniedCard.show{display:block;}
+  #deniedCard b{color:var(--warn);}
+  #deniedCard button{margin-top:10px; min-height:46px; border-radius:10px; border:none; padding:0 16px;
+    background:linear-gradient(180deg,#2ea8ff,#0077d4); color:#fff; font-size:15px; font-weight:800; cursor:pointer;}
+  #scrollFx{position:absolute; inset:0; z-index:450; pointer-events:none; display:none;
+    background:
+      radial-gradient(ellipse at 50% 42%, rgba(0,0,0,0) 55%, rgba(101,67,33,.30) 100%),
+      repeating-linear-gradient(0deg, rgba(120,84,40,.028) 0 2px, rgba(0,0,0,0) 2px 5px),
+      linear-gradient(180deg, rgba(101,67,33,.35) 0, rgba(101,67,33,0) 34px, rgba(101,67,33,0) calc(100% - 34px), rgba(101,67,33,.35) 100%);
+    mix-blend-mode:multiply;}
+  #map[data-style="steve"] #scrollFx{display:block;}
+  /* ---------- per-character tile treatments ---------- */
+  #map[data-style="bubba"] .leaflet-tile-pane{filter:sepia(.38) saturate(.82) brightness(.97) contrast(1.02);}
+  #map[data-style="dre"] .leaflet-tile-pane{filter:invert(.92) hue-rotate(185deg) saturate(.48) brightness(.88) contrast(1.12);}
+  #map[data-style="hurt"] .leaflet-tile-pane{filter:sepia(.5) hue-rotate(38deg) saturate(.55) contrast(1.07) brightness(.93);}
+  #map[data-style="doright"] .leaflet-tile-pane{filter:brightness(1.02) contrast(1.03) saturate(1.06);}
+  #map[data-style="steve"] .leaflet-tile-pane{filter:sepia(.58) saturate(.7) brightness(1.06) contrast(.94);}
+  #map[data-style="nora"] .leaflet-tile-pane{filter:brightness(1.05) saturate(1.18) contrast(1.04);}
+  #qa-log{display:none;}
+</style>
+</head>
+<body>
+<div id="map"><div id="scrollFx"></div></div>
+<button id="locPill"><span class="dot"></span><span id="locPillTxt">Finding you…</span></button>
+<div id="deniedCard">
+  <b>Location is off, so I can't show your dot yet.</b><br>
+  To turn it on in Chrome on Android: tap the <b>lock icon</b> in the address bar → <b>Permissions</b> → <b>Location</b> → <b>Allow</b>. Then reload this page.<br>
+  The map still works without it — routes just start from 1639 N Main Ave, Springfield.
+  <br><button id="deniedOk">Got it — keep mapping</button>
+</div>
+
+<!-- Guidance banner (navigation mode) -->
+<div id="banner">
+  <div id="bannerMain">
+    <div id="arrowCircle">↑</div>
+    <div id="bannerText">
+      <div id="bannerDist">—</div>
+      <div id="bannerStreet">Ready when you are</div>
+      <div id="bannerInstr">Pick a destination below to get rolling.</div>
+    </div>
+  </div>
+  <div id="charBar"></div>
+  <div id="navMeta">
+    <span id="etaLine">—</span>
+    <button id="endBtn">✕ End</button>
+  </div>
+</div>
+
+<!-- Bottom sheet (planning mode) -->
+<div id="sheet">
+  <h1>FUNNY MAPS</h1>
+  <div id="tagline">Right directions. Funny voices. The turn always wins.</div>
+  <div id="searchRow">
+    <input id="searchInput" type="text" placeholder="Where to? Try &quot;Bass Pro Shops&quot;" autocomplete="off">
+    <button id="searchBtn" class="bigBtn">Search</button>
+  </div>
+  <div id="results"></div>
+  <div id="destLine"></div>
+  <div id="routeSummary"></div>
+
+  <div class="secLabel">WHO'S RIDING SHOTGUN?</div>
+  <div id="picker"></div>
+
+  <div id="toggleRow">
+    <button id="funnyTog" class="tog on">😂 Funny: ON<small>jokes ride along</small></button>
+    <button id="soundTog" class="tog on">🔊 Voice: ON<small>spoken directions</small></button>
+  </div>
+
+  <div id="actionRow">
+    <button id="goBtn" class="bigBtn">Get Directions</button>
+    <button id="demoBtn" class="bigBtn">▶ Demo Drive</button>
+    <button id="startBtn" class="bigBtn">Start ▶</button>
+  </div>
+  <div id="statusLine">Tap the map or search to set a destination. Your location is the start — or 1639 N Main Ave, Springfield if GPS is off.</div>
+
+  <div class="secLabel">NO SERVICE? NO PROBLEM.</div>
+  <button id="emergBtn" class="bigBtn" style="width:100%; background:linear-gradient(180deg,#e8eef5,#9db4cc); color:#0a1220;">🗺️ Emergency Maps — all 50 states</button>
+  <div id="emergPanel" style="display:none; margin-top:10px;">
+    <div style="font-size:13.5px; color:var(--dim); line-height:1.45;">Paper-map backups that live on this phone. No service, no GPS, no routing — open a state and read it like the glovebox map. The first tap on a state downloads it while you have service; after that it opens offline, forever. Missouri comes pre-loaded.</div>
+    <div id="emergGrid"></div>
+    <div id="emergStatus" style="font-size:13px; color:var(--dim); margin-top:8px;"></div>
+  </div>
+</div>
+
+<div id="emergViewer">
+  <div id="emergBar">
+    <button id="emergBack">← States</button>
+    <span id="emergTitle">Missouri</span>
+    <button id="emergMinus">−</button>
+    <button id="emergPlus">+</button>
+  </div>
+  <div id="emergStage"><img id="emergImg" alt="Emergency state road map"></div>
+  <div id="emergAttrib">Roads &amp; places from OpenStreetMap contributors (ODbL) — emergency reference map, not for navigation.</div>
+</div>
+
+<pre id="qa-log"></pre>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+"use strict";
+/* ================================================================
+   FUNNY MAPS v1 — real directions, funny voices.
+   PRODUCT RULE: the true instruction is always spoken FIRST and
+   plainly. The joke is a separate utterance AFTER it. If a joke
+   and a turn ever conflict, the turn wins.
+   ================================================================ */
+
+/* ---------------- Characters & script books ----------------
+   Garnish lines only — the instruction is built from the real
+   OSRM maneuver and spoken before any of these, every time.   */
+const CHARS = {
+  bubba: { name:"Bubba", emoji:"🤠", tag:"Laid-back country buddy",
+    pitch:0.80, rate:0.90, voiceNames:["David","Daniel","Google US English","en-US"],
+    lines:{
+      depart:["Alright, let's roll. I got shotgun and the directions — you just drive.",
+              "Easy peasy. Follow my lead and we'll be there 'fore the ice melts.",
+              "Let's go see what's over yonder."],
+      left:["Hang a left up here, smooth as butter.",
+            "Left turn, Clyde. Easy does it.",
+            "Swing 'er left like you're pullin' into the Dairy Queen."],
+      right:["Hang a right, slicker than a greased pig.",
+             "Right turn, partner. Nice and easy.",
+             "Right up here — don't go scarin' the chickens."],
+      slightLeft:["Just ease on over left a touch, no big fuss.",
+                  "Little nudge left, that's all she needs."],
+      slightRight:["Just ease on over right a touch, no big fuss.",
+                   "Little nudge right, that's all she needs."],
+      sharpLeft:["Now that's a real turn — crank 'er on around, slow and steady.",
+                 "Whoa nelly, that's a tight one. Take it slow."],
+      sharpRight:["Now that's a real turn — crank 'er on around, slow and steady.",
+                  "Whoa nelly, that's a tight one. Take it slow."],
+      uturn:["Well butter my biscuit, we gotta flip around.",
+             "Turn this buggy around — we'll get 'er right this time.",
+             "Loop-de-loop time. Ain't no shame in it."],
+      roundabout:["Round and round she goes — hop off where I told ya.",
+                  "It's like a merry-go-round for trucks. You'll be fine.",
+                  "Circle on around and slide out at your exit."],
+      merge:["Slide on in there like you own the place. 'Cause you do. Briefly.",
+             "Ease into traffic and wave at somebody. It's polite."],
+      straight:["Just keep her straight — we're cookin' now.",
+                "Straight on ahead. Good time for a sip of sweet tea. Eyes on the road, though."],
+      recalc:["Well shoot, we missed that'n. Hold on, let me re-figure.",
+              "Dang it. Okay, new plan — I got another way, don't you worry.",
+              "That turn snuck right past us. I'm recalculatin'. That's a word I know now."],
+      arrive:["And there she is! Told ya we'd make it.",
+              "We have arrived, and in fine style too.",
+              "Park 'er right there. Good drivin', partner."]
+    }},
+  dre: { name:"Dre", emoji:"🎧", tag:"Streetwise. Coolest head in the car.",
+    pitch:0.70, rate:0.96, voiceNames:["Google US English","David","Daniel","en-US"],
+    lines:{
+      depart:["Aight, I got you. Sit back — I know these streets like I drew 'em.",
+              "We locked in. I'll call it out early so you never gotta guess."],
+      left:["Left right here — smooth, like that.",
+            "Make that left. See? I told you I got you."],
+      right:["Right turn, easy money.",
+             "Bust that right. Clean."],
+      slightLeft:["Just lean it over left a touch. Subtle.",
+                  "Little slide left — finesse, not force."],
+      slightRight:["Just lean it over right a touch. Subtle.",
+                   "Little slide right — finesse, not force."],
+      sharpLeft:["Okay, this one's tight — take your time, bring it around.",
+                 "Sharp one. Respect it and it's yours."],
+      sharpRight:["Okay, this one's tight — take your time, bring it around.",
+                  "Sharp one. Respect it and it's yours."],
+      uturn:["Flip it around. Hey — even the best routes need a remix sometimes.",
+             "U-turn. No stress, we spin it and keep it moving."],
+      roundabout:["Roundabout — go 'round, pop out where I said. Don't overthink it.",
+                  "Circle up, slide out clean. You got this."],
+      merge:["Slide in like you belong there — 'cause you do.",
+             "Merge smooth. Confidence looks good on you."],
+      straight:["Straight shot from here. This is the easy part.",
+                "Hold it right here, we cruisin' now."],
+      recalc:["Hold up — that ain't the move. Gimme two seconds, I got another way.",
+              "Okay, plot twist. New route loading — and honestly? This one's better.",
+              "We missed that one, no big deal. I always got a backup plan. Watch this."],
+      arrive:["And we here. Told you — ridin' with me, you don't get lost.",
+              "Destination secured. That's how we do it."]
+    }},
+  hurt: { name:'Major "Hurt"', emoji:"🎖️", tag:"Drill sergeant. Zero patience for wrong turns.",
+    pitch:0.55, rate:1.08, voiceNames:["David","Daniel","Google US English","en-US"],
+    lines:{
+      depart:["MOVE OUT! I will call every turn. You WILL arrive on time. That is not a request.",
+              "Operation Get There has begun. Stay frosty, stay in your lane."],
+      left:["LEFT TURN! Execute! Execute!",
+            "Turn left like you MEAN it, soldier!"],
+      right:["RIGHT TURN! Snap to it!",
+             "Column right — MOVE!"],
+      slightLeft:["Adjust course slightly left. Precision, people, precision!",
+                  "Small correction left. Even legends adjust."],
+      slightRight:["Adjust course slightly right. Precision, people, precision!",
+                   "Small correction right. Even legends adjust."],
+      sharpLeft:["HARD LEFT! Both hands! Show me something!",
+                 "Sharp turn! Slow it down, THEN turn it. That's an order!"],
+      sharpRight:["HARD RIGHT! Both hands! Show me something!",
+                  "Sharp turn! Slow it down, THEN turn it. That's an order!"],
+      uturn:["ABOUT-FACE! We are reversing course, and we are doing it with PRIDE!",
+             "U-turn! That is not retreat — that is a tactical reposition!"],
+      roundabout:["Enter the circle! Take your exit! Do NOT get dizzy on my watch!",
+                  "Roundabout! It's a circle, not a suggestion!"],
+      merge:["MERGE! Blend like your life depends on it — because out here, it does!",
+             "Enter the highway flow! Confidence is your armor!"],
+      straight:["Hold this course! Steady! Beautiful! I could cry, but I won't!",
+                "Straight ahead! Easiest order you'll get all day!"],
+      recalc:["NEW ORDERS INBOUND! Stand by while I re-plan this operation!",
+              "Course deviation detected! Unacceptable — and ALREADY CORRECTED. New route, let's go!",
+              "We do NOT get lost. We take scenic detours at full speed. Recalculating!"],
+      arrive:["OBJECTIVE SECURED! Outstanding work, soldier. Dismissed!",
+              "You have ARRIVED. I am not saying I'm proud, but my voice just cracked a little."]
+    }},
+  doright: { name:"Officer Doright", emoji:"🚔", tag:"By-the-book traffic officer. Dead serious about safety.",
+    pitch:1.02, rate:0.94, voiceNames:["Daniel","David","Google US English","en-US"],
+    lines:{
+      depart:["Seatbelts fastened, mirrors adjusted, hands at nine and three. We may proceed.",
+              "This is a lawful journey at lawful speeds. As it should be.",
+              "Headlights on, distractions off. We roll by the book."],
+      left:["Left turn. Signal on — a full three seconds before the turn, per regulation.",
+            "Check the crosswalk twice. Pedestrians have the right of way, and my respect."],
+      right:["Right turn. Signal, brake gently, then turn. Textbook.",
+             "Right on red only after a complete stop, where permitted. I will be watching."],
+      slightLeft:["Slight adjustment left. Signal anyway. Signaling is free, and it is the law.",
+                  "Ease over left. Smooth inputs keep everyone insured and happy."],
+      slightRight:["Slight adjustment right. Signal anyway. Signaling is free, and it is the law.",
+                   "Ease over right. Smooth inputs keep everyone insured and happy."],
+      sharpLeft:["Sharp turn ahead. Reduce speed BEFORE the turn, never during. Physics is also the law.",
+                 "Slow for the sharp one. Gravity does not accept excuses."],
+      sharpRight:["Sharp turn ahead. Reduce speed BEFORE the turn, never during. Physics is also the law.",
+                  "Slow for the sharp one. Gravity does not accept excuses."],
+      uturn:["A legal U-turn, executed where permitted. I checked. Twice.",
+             "U-turn. Yield to everyone. EVERYONE. Then proceed with confidence."],
+      roundabout:["Roundabout. Yield on entry, signal on exit, and nobody gets a citation.",
+                  "Circulate counterclockwise. This is America, and this is a roundabout. Order prevails."],
+      merge:["Merge at highway speed. Match the flow, check the blind spot, be predictable.",
+             "Merging is a zipper when done correctly. Be the zipper."],
+      straight:["Continue straight. Maintain a three-second following distance. Four, if it's raining.",
+                "Steady as she goes. Cruise control is a tool, not a personality."],
+      recalc:["A deviation has occurred. Remain calm. A new lawful route is being computed.",
+              "We have departed from the approved route. This happens. The correction will be swift and legal.",
+              "Recalculating. No ticket for getting lost — yet. Follow the new instructions precisely."],
+      arrive:["Destination reached. Park legally, engage the parking brake, and accept my commendation.",
+              "We have arrived without a single violation. I am putting that in the report."]
+    }},
+  steve: { name:"Stoner Steve", emoji:"🌅", tag:"No tolls, scenic route, arrives when he arrives.",
+    pitch:0.90, rate:0.78, voiceNames:["David","Google US English","Daniel","en-US"], scenic:true,
+    lines:{
+      depart:["Alright, we're rollin'. No tolls, no highways, no hurry. The long way's the good way.",
+              "Let's take the chill route. Windows down, snacks up."],
+      left:["Left up here, man. Easy does it. Everything's easy.",
+            "Hang a left. No rush — the left will wait for you. It did for me."],
+      right:["Right turn, comin' up. Smooth like a sunset.",
+             "Take that right. Then maybe snacks. Definitely snacks."],
+      slightLeft:["Just kinda drift left a little. Like a cloud.",
+                  "Nudge it left, real gentle. Clouds don't jerk the wheel."],
+      slightRight:["Just kinda drift right a little. Like a cloud.",
+                   "Nudge it right, real gentle. Clouds don't jerk the wheel."],
+      sharpLeft:["Whoa, sharp one. Slow down, feel it out. We got all day. Well. Most of the day.",
+                 "Sharp turn, man. Treat it like a yawn — slow and wide."],
+      sharpRight:["Whoa, sharp one. Slow down, feel it out. We got all day. Well. Most of the day.",
+                  "Sharp turn, man. Treat it like a yawn — slow and wide."],
+      uturn:["We're gonna flip it around, man. Sometimes the road changes its mind. Respect.",
+             "U-turn. The universe is telling us something. Probably snacks."],
+      roundabout:["Roundabout, man. Just go with the flow, come out the other side a better person.",
+                  "Circle thing coming up. Ride it like a lazy river."],
+      merge:["Merge in slow and friendly. We're all just cars in the same river, man.",
+             "Ease on in. Nobody's racing. If they are, let 'em win."],
+      straight:["Just cruise straight, man. This is the best part. Nothing to do but vibe.",
+                "Straight ahead. If you see a sunset, you're welcome. I planned that. Not really. But maybe."],
+      recalc:["Whoa. We like, missed that. It's cool. The road provides another road.",
+              "New plan, man. Plans are just suggestions the road makes. Here's the next one."],
+      arrive:["We made it, man. And honestly? The drive WAS the destination. Also this is the destination.",
+              "And we're here. Whenever we got here was exactly the right time."]
+    }},
+  nora: { name:"Nagging Nora", emoji:"📋", tag:"Backseat planner. Yes, we're behind schedule.",
+    pitch:1.15, rate:1.06, voiceNames:["Zira","Samantha","Google US English","en-US"],
+    lines:{
+      depart:["Itinerary's printed and highlighted. We were supposed to leave at nine, but we're leaving together, and that's what counts.",
+              "Okay! Stops are numbered, snacks are scheduled, and I've got the map. Follow my calls and we'll stay right on plan.",
+              "Rolling! Leg one of the itinerary starts now. I made you a copy, but I'll just read it out loud. All of it."],
+      left:["Left here — and good news, this turn was already highlighted. I love when the plan works.",
+            "Turn left. That's exactly what the itinerary said, word for word. I checked twice."],
+      right:["Right turn, just like page one of the itinerary. See? Planning works.",
+             "Right here. I penciled in a backup right turn too, but we won't need it. Probably."],
+      slightLeft:["Ease left a touch. The plan allows for gentle adjustments. I wrote that in the margins.",
+                  "Little left. Still on schedule, still on itinerary. Beautiful."],
+      slightRight:["Ease right a touch. The plan allows for gentle adjustments. I wrote that in the margins.",
+                   "Little right. Still on schedule, still on itinerary. Beautiful."],
+      sharpLeft:["Sharp left — take it nice and easy. The itinerary budgets extra time for this one. It does now, anyway.",
+                 "Sharp left coming. Slow and smooth; arriving calm is also on the schedule."],
+      sharpRight:["Sharp right — take it nice and easy. The itinerary budgets extra time for this one. It does now, anyway.",
+                  "Sharp right coming. Slow and smooth; arriving calm is also on the schedule."],
+      uturn:["U-turn. Fine. I'm adding a line to the itinerary: 'surprise U-turn, handled beautifully.'",
+             "We're turning around, and I'm noting it in pen. The plan is flexible. I am learning to be flexible."],
+      roundabout:["Roundabout — take the exit I called. I drew this circle in the itinerary. It took me ten minutes.",
+                  "Around we go, out where I said. The plan survives another roundabout."],
+      merge:["Merge on in, calm and steady. Merging was scheduled for right about now, give or take a car or two.",
+             "Slide into traffic. There's a gap in the itinerary and a gap in traffic — take the traffic one."],
+      straight:["Straight ahead. This is the long leg — the itinerary just says 'enjoy the drive.' I wrote that. You're welcome.",
+                "Keep straight. We're enjoying ourselves right on schedule. That's in the plan too."],
+      recalc:["Hold on. Hold on. The itinerary is being revised. New route, same destination — nobody panic, I brought a spare plan.",
+              "That turn wasn't on my itinerary. Or it was and I highlighted the wrong page. Either way — new route, coming right up.",
+              "Recalculating. The plan has a plan B, and the plan B has a highlighter. Stand by."],
+      arrive:["Arrived! And the itinerary is complete — every stop, checked off. I could frame this page.",
+              "We're here! Slightly off the original schedule, entirely on the revised one. That counts. That absolutely counts."]
+    }},
+  /* REGULAR MAPS — plain mode. Not a character: no face, no lines.
+     The empty line book means no garnish can ever be picked for it,
+     and speakGuidance/speakRecalc additionally refuse garnish outright
+     while this key is active. Voice is the neutral default. */
+  regular: { name:"Regular Maps", emoji:"📍", tag:"Plain directions only. No jokes.",
+    pitch:1.0, rate:1.0, voiceNames:["Google US English","en-US"],
+    lines:{} }
+};
+const CHAR_ORDER = ["bubba","dre","hurt","doright","steve","nora"];
+const REGULAR_KEY = 'regular';
+function isRegular(){ return charKey === REGULAR_KEY; }
+</script>
+<script>
+/* ================= ENGINE ================= */
+const $ = id => document.getElementById(id);
+const QA = new URLSearchParams(location.search);
+const isQA = QA.get('qa') === '1';
+window.__spoken = []; window.__qaDone = false; window.__routeSteps = null; window.__steveNote = '';
+
+let storedChar = null;
+try { storedChar = localStorage.getItem('fm-char'); } catch(e) {}
+let charKey = CHARS[QA.get('char')] ? QA.get('char') : (CHARS[storedChar] ? storedChar : 'bubba');
+let funny = true, soundOn = true;
+let origin = { lat:37.2279530, lng:-93.2966431, label:'1639 N Main Ave, Springfield' };
+let destination = null, gpsPos = null;
+let route = null, nav = null, watchId = null;
+
+/* ---------- map ---------- */
+/* ---------- cache-aware tile layer (offline trips) ----------
+   Tiles render from the phone's Cache Storage first; the network is
+   only touched for tiles that were never preloaded. */
+const TILE_CACHE = 'fm-tiles-v1';
+const CacheTileLayer = L.GridLayer.extend({
+  createTile: function(coords, done){
+    const img = document.createElement('img'); img.alt = '';
+    const url = this._tileUrl(coords);
+    const ok = () => done(null, img), bad = () => done(new Error('tile'), img);
+    let retried = false;
+    const network = () => { img.onload = ok; img.onerror = () => {
+      if (!retried){ retried = true; setTimeout(() => { img.src = url; }, 800); }  /* one patient retry — a dropped tile shouldn't leave a hole in the map */
+      else bad();
+    }; img.src = url; };
+    if ('caches' in window){
+      caches.open(TILE_CACHE).then(c => c.match(url)).then(hit => {
+        if (hit) hit.blob().then(b => { img.onload = ok; img.src = URL.createObjectURL(b); });
+        else network();
+      }).catch(network);
+    } else network();
+    return img;
+  },
+  _tileUrl: function(coords){
+    const sub = this.options.subdomains[Math.abs(coords.x + coords.y) % this.options.subdomains.length];
+    return this.options.urlTemplate.replace('{s}', sub).replace('{z}', coords.z)
+      .replace('{x}', coords.x).replace('{y}', coords.y)
+      .replace('{r}', (this.options.retina && window.devicePixelRatio > 1) ? '@2x' : '');
+  }
+});
+
+/* ---------- per-character map styles ----------
+   Each character restyles the whole stage: tile source, tile treatment,
+   route line, and UI accent. Steve's scroll is a parchment SKIN over the
+   real OpenStreetMap streets (real OSM geometry + names underneath). */
+const ATTR_OSM = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors — routing by OSRM, search by Nominatim';
+const ATTR_TOPO = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM — map style: <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA) — routing by OSRM, search by Nominatim';
+/* Tile sources (verified 2026-11-18): CARTO's free basemap CDN now answers
+   unauthenticated tile requests with an "API KEY REQUIRED" placeholder tile
+   (byte-identical 2,513-byte image, any headers) — so Dre / Doright / Steve
+   ride on real OpenStreetMap standard tiles with per-character treatments,
+   which is exactly the honest fallback: real streets, character skin. */
+const OSM_TILES = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+const STYLES = {
+  dre:    { tiles:OSM_TILES, maxZoom:19, attrib:ATTR_OSM,
+            route:'#22c8ff', casing:'#eaf7ff', accent:'#0096FF', accent2:'#4db2ff' },
+  bubba:  { tiles:'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', maxZoom:17, attrib:ATTR_TOPO,
+            route:'#ff8c2e', casing:'#fff3df', accent:'#e07b24', accent2:'#ffb35c' },
+  hurt:   { tiles:'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', maxZoom:17, attrib:ATTR_TOPO, grid:true,
+            route:'#ffe14d', casing:'#232816', accent:'#9aa83c', accent2:'#c9d45c' },
+  doright:{ tiles:OSM_TILES, maxZoom:19, attrib:ATTR_OSM,
+            route:'#0057ff', casing:'#ffffff', accent:'#2f7bff', accent2:'#7db1ff' },
+  steve:  { tiles:OSM_TILES, maxZoom:19, attrib:ATTR_OSM,
+            route:'#6b3f14', casing:'#e8d5ae', accent:'#b5792e', accent2:'#d9a75a' },
+  /* Nagging Nora: crisp itinerary look — clean OSM streets kept bright
+     and organized, highlighter-yellow route line on a paper-white casing,
+     planner-amber accents. Real streets underneath, like everyone else. */
+  nora:   { tiles:OSM_TILES, maxZoom:19, attrib:ATTR_OSM,
+            route:'#ffb300', casing:'#fffbe6', accent:'#e09e00', accent2:'#ffcf4d' },
+  /* Regular Maps: the standard OpenStreetMap look, untouched — no tile
+     filter is defined for [data-style="regular"], no overlay, plain blue
+     route line. Just regular maps. */
+  regular:{ tiles:OSM_TILES, maxZoom:19, attrib:ATTR_OSM,
+            route:'#3388ff', casing:'#ffffff', accent:'#0096FF', accent2:'#4db2ff' }
+};
+/* Major "Hurt" grid-discipline overlay: fine graticule drawn per tile */
+const GridLayer = L.GridLayer.extend({
+  createTile: function(coords){
+    const tile = document.createElement('canvas'); tile.width = tile.height = 256;
+    const ctx = tile.getContext('2d');
+    ctx.strokeStyle = 'rgba(214,226,160,0.20)'; ctx.lineWidth = 1;
+    ctx.strokeRect(0.5, 0.5, 255, 255);
+    ctx.beginPath();
+    for (let i = 1; i < 4; i++){ ctx.moveTo(i*64 + .5, 0); ctx.lineTo(i*64 + .5, 256); ctx.moveTo(0, i*64 + .5); ctx.lineTo(256, i*64 + .5); }
+    ctx.strokeStyle = 'rgba(214,226,160,0.10)'; ctx.stroke();
+    return tile;
+  }
+});
+const map = L.map('map', { zoomControl:false }).setView([origin.lat, origin.lng], 13);
+let tileLayer = null, gridLayer = null;
+function applyStyle(k){
+  const st = STYLES[k]; if (!st) return;
+  if (tileLayer) map.removeLayer(tileLayer);
+  tileLayer = new CacheTileLayer({ urlTemplate: st.tiles, subdomains: 'abc', retina: !!st.retina,
+    maxZoom: st.maxZoom, attribution: st.attrib }).addTo(map);
+  if (gridLayer){ map.removeLayer(gridLayer); gridLayer = null; }
+  if (st.grid){ gridLayer = new GridLayer({ opacity: 1, zIndex: 300 }); gridLayer.addTo(map); }
+  map.getContainer().dataset.style = k;
+  document.documentElement.style.setProperty('--blue', st.accent);
+  document.documentElement.style.setProperty('--blue2', st.accent2);
+  if (routeLine && routeCasing){
+    routeLine.setStyle({ color: st.route });
+    routeCasing.setStyle({ color: st.casing });
+  }
+}
+const posIcon = L.divIcon({ className:'', html:'<div class="posWrap" id="posWrap"><div class="posCone"></div><div class="posDot"></div></div>', iconSize:[38,38], iconAnchor:[19,19] });
+let posMarker = L.marker([origin.lat, origin.lng], { icon:posIcon }).addTo(map);
+let destMarker = null, routeLine = null, routeCasing = null;
+map.on('click', e => { setDestination({ lat:e.latlng.lat, lng:e.latlng.lng, label:'Dropped pin' }); });
+
+/* ---------- helpers ---------- */
+const R = 6371000;
+function hav(a, b){ const dLa=(b[0]-a[0])*Math.PI/180, dLo=(b[1]-a[1])*Math.PI/180;
+  const s = Math.sin(dLa/2)**2 + Math.cos(a[0]*Math.PI/180)*Math.cos(b[0]*Math.PI/180)*Math.sin(dLo/2)**2;
+  return 2*R*Math.asin(Math.sqrt(s)); }
+function fmtDist(m){ if (m < 300) return Math.max(50, Math.round(m*3.28084/50)*50) + ' feet';
+  const mi = m/1609.34; return (mi < 10 ? mi.toFixed(1) : Math.round(mi)) + (mi < 1.05 && mi > 0.95 ? ' mile' : ' miles'); }
+function fmtDistShort(m){ if (m < 300) return Math.round(m*3.28084/10)*10 + ' ft'; return (m/1609.34).toFixed(1) + ' mi'; }
+function fmtDur(s){ const m = Math.round(s/60); return m >= 60 ? Math.floor(m/60) + ' hr ' + (m%60) + ' min' : m + ' min'; }
+function cap(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+function compass(deg){ const d=['north','northeast','east','southeast','south','southwest','west','northwest']; return d[Math.round(((deg%360)+360)%360/45)%8]; }
+const ORD = ['','first','second','third','fourth','fifth','sixth','seventh','eighth','ninth','tenth'];
+function setStatus(t){ $('statusLine').textContent = t; }
+
+/* ---------- instruction building (from REAL OSRM maneuvers) ---------- */
+function streetOf(step){ return step.name || step.ref || ''; }
+function actionPhrase(step){
+  const m = step.maneuver, mod = m.modifier || '', name = streetOf(step);
+  const onto = name ? ' onto ' + name : '';
+  if (mod === 'uturn') return 'make a U-turn';
+  switch (m.type){
+    case 'turn':
+      if (mod === 'sharp left') return 'turn sharp left' + onto;
+      if (mod === 'sharp right') return 'turn sharp right' + onto;
+      if (mod === 'slight left') return 'bear left' + onto;
+      if (mod === 'slight right') return 'bear right' + onto;
+      if (mod.includes('left')) return 'turn left' + onto;
+      if (mod.includes('right')) return 'turn right' + onto;
+      return 'turn' + onto;
+    case 'end of road': return 'at the end of the road, turn ' + (mod.includes('left') ? 'left' : 'right') + onto;
+    case 'new name': return name ? 'continue onto ' + name : 'continue straight';
+    case 'continue': return name ? 'continue on ' + name : 'continue straight';
+    case 'merge': return 'merge' + onto;
+    case 'roundabout': case 'rotary': return 'at the roundabout, take the ' + (ORD[m.exit] || 'first') + ' exit' + onto;
+    case 'fork': return 'keep ' + (mod.includes('left') ? 'left' : 'right') + onto;
+    case 'on ramp': case 'off ramp': return 'take the ramp' + onto;
+    default:
+      if (mod.includes('left')) return 'turn left' + onto;
+      if (mod.includes('right')) return 'turn right' + onto;
+      return 'continue' + onto;
+  }
+}
+function garnishKey(step){
+  const m = step.maneuver, mod = m.modifier || '';
+  if (mod === 'uturn') return 'uturn';
+  if (m.type === 'roundabout' || m.type === 'rotary') return 'roundabout';
+  if (m.type === 'merge') return 'merge';
+  if (mod === 'sharp left') return 'sharpLeft';
+  if (mod === 'sharp right') return 'sharpRight';
+  if (mod === 'slight left' || (m.type === 'fork' && mod.includes('left'))) return 'slightLeft';
+  if (mod === 'slight right' || (m.type === 'fork' && mod.includes('right'))) return 'slightRight';
+  if (mod.includes('left')) return 'left';
+  if (mod.includes('right')) return 'right';
+  return 'straight';
+}
+function arrowFor(step){
+  const m = step.maneuver, mod = m.modifier || '';
+  if (m.type === 'arrive') return '🏁';
+  if (mod === 'uturn') return '↩';
+  if (m.type === 'roundabout' || m.type === 'rotary') return '⟳';
+  if (mod === 'sharp left') return '↙'; if (mod === 'sharp right') return '↘';
+  if (mod === 'slight left') return '↖'; if (mod === 'slight right') return '↗';
+  if (mod.includes('left')) return '←'; if (mod.includes('right')) return '→';
+  return '↑';
+}
+function instrWithDist(ev, d){
+  if (ev.step.maneuver.type === 'arrive') return 'In ' + fmtDist(d) + ', you will arrive at your destination.';
+  return 'In ' + fmtDist(d) + ', ' + actionPhrase(ev.step) + '.';
+}
+
+/* ---------- speech: instruction first, garnish after ---------- */
+const speechQ = []; let speaking = false, speechToken = 0;
+const lastLineIdx = {};
+function pickLine(charK, key){
+  const lines = CHARS[charK].lines[key]; if (!lines || !lines.length) return null;
+  let i = Math.floor(Math.random() * lines.length);
+  const lk = charK + ':' + key;
+  if (lines.length > 1 && lastLineIdx[lk] === i) i = (i + 1) % lines.length;
+  lastLineIdx[lk] = i; return lines[i];
+}
+function pickVoice(ch){
+  try {
+    const vs = speechSynthesis.getVoices().filter(v => /^en/i.test(v.lang));
+    if (!vs.length) return null;
+    for (const hint of ch.voiceNames){ const v = vs.find(v => v.name.includes(hint)); if (v) return v; }
+    return vs[0];
+  } catch(e){ return null; }
+}
+if ('speechSynthesis' in window) speechSynthesis.onvoiceschanged = () => {};
+function speak(text, kind, meta){
+  const entry = { char: charKey, kind: kind, text: text };
+  if (meta) Object.assign(entry, meta);
+  window.__spoken.push(entry);
+  $('qa-log').textContent += '[' + kind + '] ' + text + '\n';
+  if (!soundOn) return;
+  speechQ.push({ text: text, charK: charKey }); pumpSpeech();
+}
+function pumpSpeech(){
+  if (speaking) return;
+  const item = speechQ.shift(); if (!item) return;
+  speaking = true; const tok = ++speechToken, ch = CHARS[item.charK];
+  const done = () => { if (tok === speechToken){ speaking = false; pumpSpeech(); } };
+  try {
+    const u = new SpeechSynthesisUtterance(item.text);
+    u.pitch = ch.pitch; u.rate = ch.rate;
+    const v = pickVoice(ch); if (v) u.voice = v;
+    u.onend = done; u.onerror = done;
+    speechSynthesis.speak(u);
+    setTimeout(done, isQA ? 150 : Math.min(9000, 1500 + item.text.length * 95));
+  } catch(e){ speaking = false; pumpSpeech(); }
+}
+/* The one and only way guidance is spoken. Instruction. Then joke.
+   REGULAR MAPS MODE: the instruction is spoken and that is ALL — the
+   garnish branch is refused outright while Regular is active, on top of
+   Regular's line book being empty. Plain in, plain out. */
+function speakGuidance(instrText, gKey, meta){
+  speak(instrText, 'instruction', meta);
+  if (funny && !isRegular() && gKey){ const g = pickLine(charKey, gKey); if (g) speak(g, 'garnish', meta ? { ev: meta.ev, stage: 'garnish' } : undefined); }
+}
+function speakRecalc(firstInstr){
+  speak('Recalculating. New route found.', 'instruction');
+  speak(firstInstr, 'instruction');
+  if (funny && !isRegular()){ const g = pickLine(charKey, 'recalc'); if (g) speak(g, 'garnish'); }
+}
+
+/* ---------- routing ---------- */
+function buildEvents(steps){
+  const evs = []; let acc = 0;
+  steps.forEach((s, i) => { if (i > 0) evs.push({ at: acc, step: s }); acc += s.distance; });
+  return { evs: evs, total: acc };
+}
+function scoreRoute(rt){
+  let toll = 0, inter = 0;
+  rt.legs[0].steps.forEach(s => {
+    const nm = s.name || '', ref = s.ref || '';
+    if (/turnpike/i.test(nm) || /toll/i.test(nm) || /toll/i.test(ref)) toll += s.distance;
+    if (/^I-\d/.test(ref) || /^I \d/.test(nm) || /interstate/i.test(nm)) inter += s.distance;
+  });
+  return { toll: toll, inter: inter };
+}
+async function osrmRoute(exclude, alternatives){
+  let url = 'https://router.project-osrm.org/route/v1/driving/' +
+    origin.lng + ',' + origin.lat + ';' + destination.lng + ',' + destination.lat +
+    '?overview=full&geometries=geojson&steps=true';
+  if (alternatives) url += '&alternatives=' + alternatives;
+  if (exclude) url += '&exclude=' + exclude;
+  const r = await fetch(url); return r.json();
+}
+async function fetchRoute(){
+  if (!destination){ setStatus('Set a destination first — search above or tap the map.'); return null; }
+  setStatus('Asking the road…');
+  let j = null, usedExclude = false;
+  try {
+    if (CHARS[charKey].scenic){
+      /* Stoner Steve asks the router for no tolls + no motorways first. */
+      j = await osrmRoute('toll,motorway', 0);
+      if (j.code === 'Ok'){ usedExclude = true; }
+      else { j = await osrmRoute(null, 3); }  /* demo router says no — take its alternatives */
+    } else {
+      j = await osrmRoute(null, 0);
+    }
+  } catch(e){ if (nav) setOffline(true); setStatus('The road is not answering (no connection?). Try again.'); return null; }
+  if (!j || j.code !== 'Ok' || !j.routes || !j.routes.length){ setStatus('No route found there. Try another spot.'); return null; }
+
+  let chosen = j.routes[0], steveNote = '';
+  if (CHARS[charKey].scenic){
+    if (usedExclude){
+      steveNote = 'Steve route: router honored no-tolls + no-motorways.';
+    } else {
+      let best = null;
+      j.routes.forEach(rt => { const sc = scoreRoute(rt); const bad = sc.toll + sc.inter;
+        if (!best || bad < best.bad || (bad === best.bad && rt.duration > best.rt.duration)) best = { rt: rt, sc: sc, bad: bad }; });
+      chosen = best.rt;
+      const sc = best.sc;
+      steveNote = 'Steve asked for no tolls and no highways. This free demo router cannot exclude them (we checked — it refuses), so Steve picked the least-highway route it offered' +
+        (sc.toll > 0 ? ' — and fair warning, this one still uses a toll road (' + fmtDist(sc.toll) + ' of it). No fake promises.' :
+                       ' — and this one genuinely has no toll roads and no Interstates on it.') +
+        ' "Scenic" here means slower, smaller roads where the router offers them — not a curated scenic byway.';
+    }
+  }
+  window.__steveNote = steveNote;
+  const rt = chosen, steps = rt.legs[0].steps;
+  const built = buildEvents(steps);
+  route = { coords: rt.geometry.coordinates.map(c => [c[1], c[0]]),
+            distance: rt.distance, duration: rt.duration,
+            events: built.evs, steps: steps };
+  route.cum = [0];
+  for (let i = 1; i < route.coords.length; i++) route.cum.push(route.cum[i-1] + hav(route.coords[i-1], route.coords[i]));
+  route.geomTotal = route.cum[route.cum.length - 1] || 1;
+  window.__routeSteps = steps.map(s => ({ type: s.maneuver.type, modifier: s.maneuver.modifier || '',
+    exit: s.maneuver.exit || null, name: s.name, ref: s.ref || '', distance: Math.round(s.distance) }));
+
+  if (routeCasing) map.removeLayer(routeCasing);
+  if (routeLine) map.removeLayer(routeLine);
+  routeCasing = L.polyline(route.coords, { color: STYLES[charKey].casing, weight: 10, opacity: .85 }).addTo(map);
+  routeLine = L.polyline(route.coords, { color: STYLES[charKey].route, weight: 6, opacity: 1 }).addTo(map);
+  map.fitBounds(routeLine.getBounds().pad(0.12));
+
+  const sum = $('routeSummary');
+  sum.style.display = 'block';
+  sum.textContent = fmtDist(rt.distance) + ' · ' + fmtDur(rt.duration) + ' — from ' + origin.label + ' to ' + destination.label + '.';
+  setStatus(steveNote || 'Route is real and ready. Start it live, or run the Demo Drive to hear your co-pilot work.');
+  $('startBtn').style.display = 'block';
+  preloadTrip();  /* offline trips: save the whole trip onto the phone */
+  return route;
+}
+
+/* ---------- destination & search ---------- */
+function setDestination(d){
+  destination = d;
+  if (destMarker) map.removeLayer(destMarker);
+  destMarker = L.marker([d.lat, d.lng]).addTo(map);
+  const dl = $('destLine'); dl.style.display = 'block';
+  dl.innerHTML = '🎯 <b>Destination:</b> ' + d.label;
+  route = null; $('startBtn').style.display = 'none'; $('routeSummary').style.display = 'none';
+  fetchRoute();
+}
+async function doSearch(){
+  const q = $('searchInput').value.trim(); if (!q) return;
+  setStatus('Searching…');
+  try {
+    /* Bias results toward where the driver actually is (a ~55 km box around
+       the origin): without it, a chain's far-away store outranks the local
+       one. bounded=0 keeps it a preference, not a wall. */
+    const vb = [origin.lng - 0.55, origin.lat + 0.45, origin.lng + 0.55, origin.lat - 0.45].join(',');
+    const r = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=6&addressdetails=1&viewbox=' + vb + '&bounded=0&q=' + encodeURIComponent(q));
+    const j = await r.json();
+    window.__searchResults = j.map(it => it.display_name);
+    const box = $('results'); box.innerHTML = '';
+    if (!j.length){ box.style.display = 'block'; box.innerHTML = '<div class="result">No matches. Try a fuller address.</div>'; return; }
+    box.style.display = 'block';
+    j.forEach(it => {
+      const div = document.createElement('div'); div.className = 'result';
+      div.innerHTML = (it.name || it.display_name.split(',')[0]) + '<small>' + it.display_name + '</small>';
+      div.onclick = () => { box.style.display = 'none';
+        setDestination({ lat: parseFloat(it.lat), lng: parseFloat(it.lon), label: it.display_name.split(',').slice(0,2).join(',') }); };
+      box.appendChild(div);
+    });
+    setStatus('Pick the right one.');
+  } catch(e){ setStatus('Search is not answering (no connection?). You can still tap the map.'); }
+}
+
+/* ---------- navigation ---------- */
+function departInstruction(){
+  const s0 = route.steps[0], name = streetOf(s0);
+  const dir = s0.maneuver.bearing_after != null ? compass(s0.maneuver.bearing_after) : '';
+  return 'Head ' + (dir ? dir + ' ' : '') + (name ? 'on ' + name : 'toward your route') + '.';
+}
+function beginNav(mode){
+  if (!route) return;
+  nav = { mode: mode, traveled: 0, announced: new Set(), raf: 0, offSince: 0, recalcing: false, demo: null };
+  window.__progress = () => (nav && route) ? nav.traveled / route.distance : 0;
+  $('sheet').classList.add('hidden'); $('banner').classList.add('show');
+  document.body.classList.add('navigating');
+  renderPos(route.coords[0], null, false);
+  map.setView(route.coords[0], 16);
+  speakGuidance(departInstruction(), 'depart', { stage: 'depart' });
+  if (offlineMode) speak("You're offline. This trip is saved on your phone — guidance keeps working.", 'notice');
+  updateBanner();
+}
+function endNav(){
+  if (nav && nav.raf) cancelAnimationFrame(nav.raf);
+  if (nav && nav.demoInt) clearInterval(nav.demoInt);
+  nav = null;
+  $('banner').classList.remove('show'); $('sheet').classList.remove('hidden');
+  document.body.classList.remove('navigating');
+}
+function pointAt(dRoute){
+  const target = (dRoute / route.distance) * route.geomTotal, cum = route.cum, cs = route.coords;
+  let i = 1; while (i < cum.length - 1 && cum[i] < target) i++;
+  const segLen = (cum[i] - cum[i-1]) || 1, f = Math.min(1, Math.max(0, (target - cum[i-1]) / segLen));
+  return [ cs[i-1][0] + (cs[i][0] - cs[i-1][0]) * f, cs[i-1][1] + (cs[i][1] - cs[i-1][1]) * f ];
+}
+function setPos(latlng, follow){
+  posMarker.setLatLng(latlng);
+  if (follow) map.panTo(latlng, { animate: true });
+}
+function nextEvent(){
+  if (!route || !nav) return null;
+  for (const ev of route.events){ if (ev.at - nav.traveled > -5) return ev; }
+  return null;
+}
+function updateBanner(){
+  const ev = nextEvent(); if (!ev) return;
+  const d = Math.max(0, ev.at - nav.traveled);
+  $('arrowCircle').textContent = arrowFor(ev.step);
+  $('bannerDist').textContent = fmtDistShort(d);
+  const isArr = ev.step.maneuver.type === 'arrive';
+  $('bannerStreet').textContent = isArr ? (destination ? destination.label : 'Destination') : (streetOf(ev.step) || 'Continue');
+  $('bannerInstr').textContent = isArr ? 'You will arrive at your destination.' : cap(actionPhrase(ev.step)) + '.';
+  const remain = Math.max(0, route.distance - nav.traveled);
+  const eta = route.duration * (remain / route.distance);
+  $('etaLine').textContent = fmtDistShort(remain) + ' left · about ' + fmtDur(eta);
+}
+function checkEvents(){
+  if (!nav || !route) return;
+  const t = nav.traveled;
+  route.events.forEach((ev, idx) => {
+    const d = ev.at - t, st = nav.announced, isArr = ev.step.maneuver.type === 'arrive';
+    /* Prompt timing, brand-style: the advance warning scales with the speed
+       of the road you're on (OSRM step duration) — ~0.42 mi on fast roads,
+       ~500 ft in town — plus a prepare call on fast approaches, and the
+       final call lands BEFORE the corner (<=25 m out), never after it. */
+    const approach = route.steps[idx];
+    const spd = (approach && approach.duration > 0) ? approach.distance / approach.duration : 8; /* m/s */
+    const adv = spd > 14 ? 680 : 165;
+    const prep = adv > 300 ? 330 : 0;
+    const meta = stage => ({ ev: idx, stage: stage, distTo: Math.max(0, Math.round(d)) });
+    if (d <= 25 && !st.has(idx + ':fin')){
+      st.add(idx + ':fin');
+      if (isArr){
+        speakGuidance('You have arrived at your destination.', 'arrive', meta('final'));
+        updateBanner();
+        setTimeout(() => { endNav(); if (isQA) qaRecalc(); else setStatus('Arrived. ' + (destination ? destination.label : '') + ' — nice driving.'); }, 600);
+      } else {
+        speakGuidance(cap(actionPhrase(ev.step)) + ' now.', garnishKey(ev.step), meta('final'));
+      }
+    } else if (prep && d <= prep && d > 25 && !st.has(idx + ':prep')){
+      st.add(idx + ':prep'); speak(instrWithDist(ev, d), 'instruction', meta('prepare'));
+    } else if (d <= adv && d > (prep || 25) && !st.has(idx + ':adv')){
+      st.add(idx + ':adv'); if (!isArr) speak(instrWithDist(ev, d), 'instruction', meta('advance'));
+    }
+  });
+  updateBanner();
+}
+function offsetPoint(base, ahead, offMeters){
+  const x = (ahead[1]-base[1]) * 111320 * Math.cos(base[0]*Math.PI/180), y = (ahead[0]-base[0]) * 110540;
+  const len = Math.hypot(x, y) || 1, px = (y/len) * offMeters, py = (-x/len) * offMeters;
+  return [ base[0] + py/110540, base[1] + px/(111320 * Math.cos(base[0]*Math.PI/180)) ];
+}
+function startDemo(){
+  if (!route){ setStatus('Get a route first — Demo Drive needs a destination.'); return; }
+  beginNav('demo');
+  const durTotal = isQA ? 26000 : 95000, now0 = performance.now();
+  /* Every demo drive takes ONE deliberate wrong turn at 42% (routes >= 1.5 km):
+     the position veers ~130 m off the line, the app must notice, recalculate,
+     speak the new route, and still arrive. */
+  nav.demo = { t0Orig: now0, durTotal: durTotal, t0: now0, dur: durTotal,
+               rerouted: route.distance < 1500, veerP: 0.42 };
+  const tick = now => {
+    if (!nav || nav.mode !== 'demo' || !nav.demo) return;
+    const d = nav.demo;
+    const p = Math.min(1, (now - d.t0) / d.dur);
+    let pos;
+    if (nav.rejoining || d.rejoinT0){
+      /* Offline wrong turn: the app guides the driver back to the line, and
+         the demo car does what a driver does — follows the rejoin guidance
+         back onto the route (~2.5 s), then guidance resumes and it arrives. */
+      if (!d.rejoinT0) d.rejoinT0 = now;
+      const k = Math.min(1, (now - d.rejoinT0) / 2500);
+      const base = pointAt(d.veerP * route.distance);
+      const ahead = pointAt(Math.min(route.distance, d.veerP * route.distance + 40));
+      const off = offsetPoint(base, ahead, 130);
+      pos = [off[0] + (base[0] - off[0]) * k, off[1] + (base[1] - off[1]) * k];
+      if (k >= 1){ d.rerouted = true; d.rejoinT0 = 0; d.t0 = now; d.dur = Math.max(9000, d.durTotal - (now - d.t0Orig)); }
+    } else if (!d.rerouted && p >= d.veerP){
+      const base = pointAt(d.veerP * route.distance);
+      const ahead = pointAt(Math.min(route.distance, d.veerP * route.distance + 40));
+      pos = offsetPoint(base, ahead, 130);
+    } else {
+      pos = pointAt(p * route.distance);
+    }
+    renderPos(pos, null, true);
+    processPosition({ lat: pos[0], lng: pos[1] });
+    if (nav && nav.mode === 'demo') nav.raf = requestAnimationFrame(tick);
+  };
+  nav.raf = requestAnimationFrame(tick);
+  nav.demoInt = setInterval(() => tick(performance.now()), 120); /* rAF backup — headless can stall rAF */
+}
+function startLive(){
+  if (!route){ setStatus('Get a route first.'); return; }
+  beginNav('live');
+  setStatus('');
+}
+/* ---------- shared recalc (live GPS and demo wrong-turn use the same road) ---------- */
+function projectOntoRoute(latlng){
+  let best = { dist: 1e12, traveled: 0, point: null };
+  const cs = route.coords, cum = route.cum;
+  for (let i = 1; i < cs.length; i++){
+    const a = cs[i-1], b = cs[i];
+    const abx = b[1]-a[1], aby = b[0]-a[0];
+    const t = Math.max(0, Math.min(1, ((latlng.lng-a[1])*abx + (latlng.lat-a[0])*aby) / ((abx*abx + aby*aby) || 1e-12)));
+    const p = [a[0] + aby*t, a[1] + abx*t];
+    const d = hav([latlng.lat, latlng.lng], p);
+    if (d < best.dist) best = { dist: d, traveled: ((cum[i-1] + (cum[i]-cum[i-1])*t) / route.geomTotal) * route.distance, point: p };
+  }
+  return best;
+}
+async function recalcFrom(latlng){
+  origin = { lat: latlng.lat, lng: latlng.lng, label: 'Your location' };
+  const ok = await fetchRoute();
+  if (ok && nav){
+    nav.traveled = 0; nav.announced = new Set();
+    const ev0 = route.events[0];
+    speakRecalc(ev0 ? instrWithDist(ev0, Math.max(80, ev0.at)) : 'Continue on the new route.');
+    window.__rerouted = true;
+    updateBanner();
+    return true;
+  }
+  return false;
+}
+async function doRecalc(latlng){
+  if (!nav || nav.recalcing) return;
+  if (offlineMode){ enterRejoinMode(latlng); return; }  /* offline: guide back to the line instead */
+  nav.recalcing = true; nav.offSince = 0;
+  const wasDemo = nav.mode === 'demo';
+  const ok = await recalcFrom(latlng);
+  if (nav){
+    nav.recalcing = false;
+    if (ok && wasDemo && nav.demo){ const d = nav.demo; d.rerouted = true; d.t0 = performance.now(); d.dur = Math.max(9000, d.durTotal - (d.t0 - d.t0Orig)); }
+  }
+}
+/* One position pipeline for the real GPS feed and the demo car alike. */
+function processPosition(latlng){
+  if (!nav || !route) return;
+  nav.lastPos = latlng;
+  const proj = projectOntoRoute(latlng);
+  nav.lastProj = proj;
+  if (proj.dist > 55){
+    if (nav.rejoining){ updateRejoinBanner(latlng, proj); return; }
+    if (!nav.offSince) nav.offSince = performance.now();
+    if (performance.now() - nav.offSince > 2500) doRecalc(latlng);
+    return;
+  }
+  if (nav.rejoining){ exitRejoinMode(); }
+  nav.offSince = 0;
+  nav.traveled = Math.max(nav.traveled, proj.traveled);
+  checkEvents();
+}
+
+/* ---------- LIVE LOCATION — requirement #1: always on, from first open ---------- */
+let follow = true, lastFixAt = 0, lastHeading = null, markerStale = false;
+const STALE_MS = Number(QA.get('staleMs')) || 10000;
+function renderPos(latlng, heading, forceFollow){
+  const ll = Array.isArray(latlng) ? latlng : [latlng.lat, latlng.lng];
+  posMarker.setLatLng(ll);
+  if (heading != null && !isNaN(heading)) lastHeading = heading;
+  const el = posMarker.getElement();
+  if (el){ const wrap = el.querySelector('.posWrap');
+    if (wrap){ wrap.style.transform = lastHeading != null ? 'rotate(' + lastHeading + 'deg)' : '';
+      wrap.classList.toggle('stale', markerStale); } }
+  if (follow || forceFollow) map.panTo(ll, { animate: true });
+}
+function setPill(state, txt){
+  const p = $('locPill'); p.classList.remove('stale', 'off'); if (state !== 'live') p.classList.add(state);
+  $('locPillTxt').textContent = txt;
+}
+function ingestPosition(pos){
+  const c = pos.coords || pos;
+  const ll = { lat: c.latitude, lng: c.longitude };
+  lastFixAt = Date.now();
+  if (markerStale){ markerStale = false; const el = posMarker.getElement(); if (el){ const w = el.querySelector('.posWrap'); if (w) w.classList.remove('stale'); } }
+  if (!destination && !nav) origin = { lat: ll.lat, lng: ll.lng, label: 'Your location' };
+  renderPos(ll, (c.heading != null && !isNaN(c.heading)) ? c.heading : null, false);
+  setPill('live', follow ? 'Live GPS — following you' : 'Live GPS — tap to re-center');
+  if (nav && nav.mode === 'live') processPosition(ll);
+}
+function handleGeoError(err){
+  if (err && err.code === 1){
+    setPill('off', 'Location off — tap for the fix');
+    $('deniedCard').classList.add('show');
+  } else if (!lastFixAt){
+    setPill('stale', 'GPS signal weak — still looking…');
+  }
+}
+setInterval(() => {  /* the dot never freezes silently: it shows its age */
+  if (!lastFixAt || markerStale && false) return;
+  const age = Date.now() - lastFixAt;
+  if (age > STALE_MS){
+    if (!markerStale){ markerStale = true; const el = posMarker.getElement(); if (el){ const w = el.querySelector('.posWrap'); if (w) w.classList.add('stale'); } }
+    setPill('stale', 'GPS signal weak — last fix ' + Math.round(age / 1000) + 's ago');
+  }
+}, 1000);
+$('deniedOk').onclick = () => $('deniedCard').classList.remove('show');
+$('locPill').onclick = () => {
+  if ($('locPill').classList.contains('off')){ $('deniedCard').classList.add('show'); return; }
+  follow = true; map.panTo(posMarker.getLatLng());
+  if (lastFixAt) setPill(markerStale ? 'stale' : 'live', markerStale ? 'GPS signal weak — last fix shown' : 'Live GPS — following you');
+};
+map.on('dragstart', () => { if (follow){ follow = false; if (lastFixAt && !markerStale) setPill('live', 'Live GPS — tap to re-center'); } });
+if (navigator.geolocation){
+  watchId = navigator.geolocation.watchPosition(p => ingestPosition(p), handleGeoError, { enableHighAccuracy: true, maximumAge: 2000 });
+} else {
+  setPill('off', 'This browser has no location');
+}
+if (window.DeviceOrientationEvent){
+  window.addEventListener('deviceorientationabsolute', e => {
+    if (e.alpha != null){ lastHeading = (360 - e.alpha) % 360;
+      const el = posMarker.getElement(); if (el){ const w = el.querySelector('.posWrap'); if (w) w.style.transform = 'rotate(' + lastHeading + 'deg)'; } }
+  }, true);
+}
+
+/* ---------- OFFLINE TRIPS ----------
+   When a route is created online, the whole trip is preloaded onto the
+   phone: geometry + maneuvers (localStorage) and the corridor tiles
+   (Cache Storage). Service drops -> guidance continues on GPS alone.
+   Off-route while offline -> guided back TOWARD the line (no new route
+   can be fetched offline — that limit is stated, never hidden). */
+let offlineMode = (QA.get('offline') === '1') || !navigator.onLine;
+function setOffline(on){
+  const was = offlineMode; offlineMode = on;
+  if (on && !was){
+    window.__offlineNotice = true;
+    if (nav){ speak("You're offline. This trip is saved on your phone — guidance keeps working.", 'notice'); }
+    setStatus("You're offline — this trip is saved on your phone. Guidance, voice, and ETA keep working on GPS alone.");
+  }
+  if (!on && was){
+    setStatus('Service is back. Full rerouting is live again.');
+    if (nav && nav.lastPos && nav.lastProj && nav.lastProj.dist > 55) doRecalc(nav.lastPos);
+  }
+}
+window.addEventListener('offline', () => setOffline(true));
+window.addEventListener('online', () => setOffline(false));
+function bearingTo(from, toPt){
+  const dLng = (toPt[1]-from.lng) * Math.PI/180, la1 = from.lat * Math.PI/180, la2 = toPt[0] * Math.PI/180;
+  const y = Math.sin(dLng) * Math.cos(la2), x = Math.cos(la1) * Math.sin(la2) - Math.sin(la1) * Math.cos(la2) * Math.cos(dLng);
+  return (Math.atan2(y, x) * 180/Math.PI + 360) % 360;
+}
+function enterRejoinMode(latlng){
+  if (!nav || nav.rejoining) return;
+  nav.rejoining = true;
+  const proj = projectOntoRoute(latlng);
+  speak("You're off the route, and we're offline. Head " + compass(bearingTo(latlng, proj.point)) +
+        " — the route is " + fmtDist(proj.dist) + " that way. I'll guide you back to it.", 'instruction');
+  updateRejoinBanner(latlng, proj);
+}
+function updateRejoinBanner(latlng, proj){
+  $('arrowCircle').textContent = '🧭';
+  $('bannerDist').textContent = fmtDistShort(proj.dist);
+  $('bannerStreet').textContent = 'Back to the route: ' + compass(bearingTo(latlng, proj.point));
+  $('bannerInstr').textContent = "Offline — head toward the route line and I'll pick you back up.";
+  $('etaLine').textContent = 'Offline mode — trip saved on this phone';
+}
+function exitRejoinMode(){
+  if (!nav) return;
+  nav.rejoining = false;
+  speak('Back on the route. Guidance resumed.', 'notice');
+  updateBanner();
+}
+function lon2x(lon, z){ return Math.floor((lon + 180) / 360 * Math.pow(2, z)); }
+function lat2y(lat, z){ const r = lat * Math.PI/180; return Math.floor((1 - Math.log(Math.tan(r) + 1/Math.cos(r)) / Math.PI) / 2 * Math.pow(2, z)); }
+function tileUrlsForRoute(st){
+  const urls = new Set();
+  let a = 90, b = -90, c = 180, d = -180;
+  route.coords.forEach(p => { a = Math.min(a, p[0]); b = Math.max(b, p[0]); c = Math.min(c, p[1]); d = Math.max(d, p[1]); });
+  const buf = 0.012; a -= buf; b += buf; c -= buf; d += buf;  /* ~1.2 km corridor buffer */
+  /* 16 first, then 15/14/13: if the preload is cut short (slow connection),
+     the tiles the driver is looking at RIGHT NOW are already on the phone. */
+  [16, 15, 14, 13].forEach(z => { if (z > st.maxZoom) return;
+    for (let x = lon2x(c, z); x <= lon2x(d, z); x++) for (let y = lat2y(b, z); y <= lat2y(a, z); y++){
+      const sub = 'abc'[Math.abs(x + y) % 3];
+      const base = st.tiles.replace('{s}', sub).replace('{z}', z).replace('{x}', x).replace('{y}', y);
+      urls.add(base.replace('{r}', ''));
+      if (st.retina) urls.add(base.replace('{r}', '@2x'));
+    } });
+  return [...urls];
+}
+async function preloadTrip(){
+  const info = { tiles: 0, tilesTotal: 0, done: false, phase: 'start', error: '' };
+  window.__preload = info;
+  try {
+    localStorage.setItem('fm-trip', JSON.stringify({ origin: origin, destination: destination,
+      distance: route.distance, duration: route.duration, coords: route.coords,
+      steps: route.steps.map(s => ({ name: s.name, ref: s.ref, distance: s.distance, duration: s.duration, maneuver: s.maneuver })) }));
+  } catch(e) { info.error = 'store: ' + e; }
+  if (!('caches' in window)){ info.done = true; info.phase = 'no-caches-api'; return; }
+  const urls = tileUrlsForRoute(STYLES[charKey]);
+  info.tilesTotal = urls.length; info.phase = 'urls';
+  try {
+    const cache = await caches.open(TILE_CACHE);
+    info.phase = 'cache-open';
+    for (let i = 0; i < urls.length; i += 5){
+      if (!route) break;
+      await Promise.all(urls.slice(i, i + 5).map(async u => {
+        for (let attempt = 0; attempt < 2; attempt++){
+          try {
+            if (await cache.match(u)){ info.tiles++; return; }
+            const r = await fetch(u);
+            if (r.ok){ await cache.put(u, r); info.tiles++; return; }
+            info.error = 'tile http ' + r.status;
+          } catch(e) { info.error = 'tile: ' + e; }
+          await new Promise(res => setTimeout(res, 450));  /* one patient retry */
+        }
+        info.failed = (info.failed || 0) + 1;
+      }));
+      info.phase = 'loop@' + i;
+    }
+  } catch(e) { info.error = 'outer: ' + e; }
+  info.done = true; info.phase = 'done';
+  if (!nav) setStatus('Trip saved on this phone for offline: the route plus ' + info.tiles + ' map tiles around it. If service drops mid-trip, guidance keeps working.');
+}
+function restoreTrip(){
+  try {
+    const raw = localStorage.getItem('fm-trip'); if (!raw) return false;
+    const t = JSON.parse(raw); if (!t || !t.coords || !t.steps || !t.destination) return false;
+    origin = t.origin; destination = t.destination;
+    const built = buildEvents(t.steps);
+    route = { coords: t.coords, distance: t.distance, duration: t.duration, events: built.evs, steps: t.steps };
+    route.cum = [0];
+    for (let i = 1; i < route.coords.length; i++) route.cum.push(route.cum[i-1] + hav(route.coords[i-1], route.coords[i]));
+    route.geomTotal = route.cum[route.cum.length - 1] || 1;
+    window.__routeSteps = t.steps.map(s => ({ type: s.maneuver.type, modifier: s.maneuver.modifier || '', exit: s.maneuver.exit || null, name: s.name, ref: s.ref || '', distance: Math.round(s.distance) }));
+    if (destMarker) map.removeLayer(destMarker);
+    destMarker = L.marker([destination.lat, destination.lng]).addTo(map);
+    const dl = $('destLine'); dl.style.display = 'block';
+    dl.innerHTML = '🎯 <b>Destination:</b> ' + destination.label + ' (saved trip, restored from this phone)';
+    if (routeCasing) map.removeLayer(routeCasing);
+    if (routeLine) map.removeLayer(routeLine);
+    routeCasing = L.polyline(route.coords, { color: STYLES[charKey].casing, weight: 10, opacity: .85 }).addTo(map);
+    routeLine = L.polyline(route.coords, { color: STYLES[charKey].route, weight: 6, opacity: 1 }).addTo(map);
+    map.fitBounds(routeLine.getBounds().pad(0.12));
+    const sum = $('routeSummary'); sum.style.display = 'block';
+    sum.textContent = fmtDist(route.distance) + ' · ' + fmtDur(route.duration) + ' — saved trip, works offline.';
+    $('startBtn').style.display = 'block';
+    window.__restoredTrip = true;
+    return true;
+  } catch(e){ return false; }
+}
+
+/* ---------- EMERGENCY MAPS ----------
+   Static, readable state road maps stored on the phone (Cache Storage).
+   The viewer makes ZERO network calls for a state that's been stored —
+   it is the emergency path. States not yet stored need service once. */
+const EMERG_CACHE = 'fm-emergency-v1';
+const STATES = ['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming'];
+const slugOf = n => n.toLowerCase().replace(/ /g, '-');
+function emergStored(){ try { return JSON.parse(localStorage.getItem('fm-emerg') || '[]'); } catch(e){ return []; } }
+function emergMark(slug){ const s = emergStored(); if (!s.includes(slug)){ s.push(slug); try { localStorage.setItem('fm-emerg', JSON.stringify(s)); } catch(e) {} } }
+async function emergGet(slug){
+  const url = 'emergency/' + slug + '.webp';
+  if ('caches' in window){
+    const c = await caches.open(EMERG_CACHE);
+    const hit = await c.match(url);
+    if (hit) return hit.blob();
+    const r = await fetch(url);               /* online once — then it's on the phone */
+    if (!r.ok) throw new Error('not found');
+    await c.put(url, r.clone());
+    return r.blob();
+  }
+  const r = await fetch(url); if (!r.ok) throw new Error('not found'); return r.blob();
+}
+let emergObjectUrl = null;
+async function openState(name){
+  const slug = slugOf(name);
+  $('emergStatus').textContent = 'Opening ' + name + '…';
+  try {
+    const blob = await emergGet(slug);
+    emergMark(slug); renderEmergGrid();
+    if (emergObjectUrl) URL.revokeObjectURL(emergObjectUrl);
+    emergObjectUrl = URL.createObjectURL(blob);
+    const img = $('emergImg');
+    img.onload = () => { fitEmerg(); window.__emergShown = name; };
+    img.src = emergObjectUrl;
+    $('emergTitle').textContent = name;
+    $('emergViewer').classList.add('show');
+    $('emergStatus').textContent = name + ' is on this phone now — it opens offline from here on.';
+  } catch(e) {
+    $('emergStatus').textContent = name + ' is not on this phone yet, and there is no service to fetch it. Connect once to download it.';
+    window.__emergError = name;
+  }
+}
+/* viewer: drag to pan, pinch / buttons / wheel to zoom — no libraries, no network */
+const ev = { scale: 1, tx: 0, ty: 0 };
+function applyEv(){ $('emergImg').style.transform = 'translate(' + ev.tx + 'px,' + ev.ty + 'px) scale(' + ev.scale + ')'; }
+function fitEmerg(){
+  const st = $('emergStage'), img = $('emergImg');
+  if (!img.naturalWidth) return;
+  ev.scale = Math.min(st.clientWidth / img.naturalWidth, st.clientHeight / img.naturalHeight);
+  ev.tx = (st.clientWidth - img.naturalWidth * ev.scale) / 2;
+  ev.ty = (st.clientHeight - img.naturalHeight * ev.scale) / 2;
+  applyEv();
+}
+function zoomEmerg(f, cx, cy){
+  const st = $('emergStage').getBoundingClientRect();
+  const px = (cx != null ? cx : st.width / 2), py = (cy != null ? cy : st.height / 2);
+  const ns = Math.min(14, Math.max(0.2, ev.scale * f));
+  ev.tx = px - (px - ev.tx) * (ns / ev.scale);
+  ev.ty = py - (py - ev.ty) * (ns / ev.scale);
+  ev.scale = ns; applyEv();
+}
+(function initEmergViewer(){
+  const stage = $('emergStage');
+  const pointers = new Map(); let lastPinch = 0;
+  stage.addEventListener('pointerdown', e => { pointers.set(e.pointerId, [e.clientX, e.clientY]); stage.setPointerCapture(e.pointerId); });
+  stage.addEventListener('pointermove', e => {
+    if (!pointers.has(e.pointerId)) return;
+    const prev = pointers.get(e.pointerId); pointers.set(e.pointerId, [e.clientX, e.clientY]);
+    if (pointers.size === 1){ ev.tx += e.clientX - prev[0]; ev.ty += e.clientY - prev[1]; applyEv(); }
+    else if (pointers.size === 2){
+      const [p1, p2] = [...pointers.values()];
+      const d = Math.hypot(p1[0]-p2[0], p1[1]-p2[1]);
+      if (lastPinch) zoomEmerg(d / lastPinch, (p1[0]+p2[0])/2 - stage.getBoundingClientRect().left, (p1[1]+p2[1])/2 - stage.getBoundingClientRect().top);
+      lastPinch = d;
+    }
+  });
+  const release = e => { pointers.delete(e.pointerId); if (pointers.size < 2) lastPinch = 0; };
+  stage.addEventListener('pointerup', release); stage.addEventListener('pointercancel', release);
+  stage.addEventListener('wheel', e => { e.preventDefault(); const r = stage.getBoundingClientRect(); zoomEmerg(e.deltaY < 0 ? 1.12 : 0.89, e.clientX - r.left, e.clientY - r.top); }, { passive: false });
+  $('emergPlus').onclick = () => zoomEmerg(1.35);
+  $('emergMinus').onclick = () => zoomEmerg(0.74);
+  $('emergBack').onclick = () => $('emergViewer').classList.remove('show');
+})();
+function renderEmergGrid(){
+  const g = $('emergGrid'); g.innerHTML = '';
+  const have = emergStored();
+  STATES.forEach(n => {
+    const b = document.createElement('button');
+    b.className = 'stBtn' + (have.includes(slugOf(n)) ? ' have' : '');
+    b.innerHTML = n + '<small>' + (have.includes(slugOf(n)) ? '✓ on this phone' : 'tap to download') + '</small>';
+    b.onclick = () => openState(n);
+    g.appendChild(b);
+  });
+}
+$('emergBtn').onclick = async () => {
+  const p = $('emergPanel');
+  const opening = p.style.display === 'none';
+  p.style.display = opening ? 'block' : 'none';
+  if (opening){
+    renderEmergGrid();
+    if (!emergStored().includes('missouri')){   /* Missouri comes pre-loaded */
+      try { await emergGet('missouri'); emergMark('missouri'); renderEmergGrid();
+        $('emergStatus').textContent = 'Missouri is pre-loaded on this phone. Tap any other state to add it.'; }
+      catch(e) { $('emergStatus').textContent = 'Missouri could not be pre-loaded (no service?). It will load the first time you open it with service.'; }
+    }
+  }
+};
+
+/* ---------- QA hooks ---------- */
+function qaRecalc(){
+  /* Exercises the recalc line-pair (instruction, instruction, garnish)
+     so the spoken-line log covers recalculating for this character.
+     Live off-route detection itself is UNCHECKED on a real road. */
+  if (route && route.events.length){
+    speakRecalc(instrWithDist(route.events[0], Math.max(120, route.events[0].at)));
+  }
+  setTimeout(() => { window.__qaDone = true; document.title = 'QA DONE'; }, 500);
+}
+
+/* Test hooks — used by the QA harness only (simulated live GPS feed,
+   permission-denied path, state snapshots). Not part of the product UI. */
+const TESTHOOKS = isQA || QA.has('feedtest') || QA.has('nogps');
+if (TESTHOOKS){
+  window.__feedPos = (lat, lng, heading) => ingestPosition({ coords: { latitude: lat, longitude: lng, heading: (heading == null ? null : heading), speed: null } });
+  window.__posState = () => { const m = posMarker.getLatLng(), c = map.getCenter();
+    return { marker: [m.lat, m.lng], center: [c.lat, c.lng], follow: follow, stale: markerStale,
+             pill: $('locPillTxt').textContent, deniedShown: $('deniedCard').classList.contains('show') }; };
+  window.__emerg = { open: openState, stored: emergStored };
+  if (QA.has('nogps')) setTimeout(() => handleGeoError({ code: 1 }), 600);
+}
+
+/* ---------- UI: picker, chips, toggles ---------- */
+/* Faces — Joshua's picks (2026-11-17): Bubba #4, Dre #7, Major "Hurt" #4,
+   Officer Doright #5, Stoner Steve #1; Nagging Nora #20 (2026-11-18).
+   Thumbnails ride in the picker; full portraits live in characters/
+   as the masters. */
+const FACES = {
+  bubba: 'characters/thumbs/bubba-04.webp',
+  dre: 'characters/thumbs/dre-07.webp',
+  hurt: 'characters/thumbs/major-hurt-04.webp',
+  doright: 'characters/thumbs/officer-doright-05.webp',
+  steve: 'characters/thumbs/stoner-steve-01.webp',
+  nora: 'characters/thumbs/nagging-nora-20.webp'
+};
+function avatarHTML(k){ return '<img class="avatar" src="' + FACES[k] + '" alt="' + CHARS[k].name + '">'; }
+function renderPicker(){
+  const pk = $('picker'); pk.innerHTML = '';
+  CHAR_ORDER.forEach(k => {
+    const c = CHARS[k], div = document.createElement('div');
+    div.className = 'charCard' + (k === charKey ? ' on' : '');
+    div.innerHTML = avatarHTML(k) + '<span class="nm">' + c.name + '</span><span class="tg">' + c.tag + '</span>';
+    div.onclick = () => setChar(k);
+    pk.appendChild(div);
+  });
+  /* REGULAR MAPS tile — plain mode, no character. A map pin, not a face. */
+  const rc = CHARS[REGULAR_KEY], rdiv = document.createElement('div');
+  rdiv.className = 'charCard regularCard' + (isRegular() ? ' on' : '');
+  rdiv.id = 'regularCard';
+  rdiv.innerHTML = '<span class="avatar pinAv">📍</span><span class="nm">' + rc.name + '</span><span class="tg">Just regular maps — clean map, plain directions, no funny business.</span>';
+  rdiv.onclick = () => setChar(REGULAR_KEY);
+  pk.appendChild(rdiv);
+  const bar = $('charBar'); bar.innerHTML = '';
+  CHAR_ORDER.forEach(k => {
+    const c = CHARS[k], b = document.createElement('button');
+    b.className = 'chip' + (k === charKey ? ' on' : '');
+    b.innerHTML = '<img class="chipAv" src="' + FACES[k] + '" alt="">' + c.name;
+    b.onclick = () => setChar(k);
+    bar.appendChild(b);
+  });
+  const rb = document.createElement('button');
+  rb.className = 'chip' + (isRegular() ? ' on' : '');
+  rb.id = 'regularChip';
+  rb.innerHTML = '<span class="chipPin">📍</span>Regular';
+  rb.onclick = () => setChar(REGULAR_KEY);
+  bar.appendChild(rb);
+  syncFunnyTog();
+}
+/* In Regular mode the Funny toggle has nothing to toggle — jokes are off
+   by mode, not by preference. The driver's funny preference is left
+   untouched underneath, so picking a character again restores it as-is. */
+function syncFunnyTog(){
+  const t = $('funnyTog'); if (!t) return;
+  if (isRegular()){
+    t.classList.remove('on'); t.style.opacity = '.55';
+    t.firstChild.textContent = '📍 Regular Maps mode';
+    t.querySelector('small').textContent = 'plain directions only — pick a character for jokes';
+  } else {
+    t.style.opacity = '';
+    t.classList.toggle('on', funny);
+    t.firstChild.textContent = funny ? '😂 Funny: ON' : '😐 Straight talk: ON';
+    t.querySelector('small').textContent = 'jokes ride along';
+  }
+}
+async function setChar(k){
+  if (!CHARS[k]) return;
+  charKey = k; renderPicker(); applyStyle(k);
+  try { localStorage.setItem('fm-char', k); } catch(e) {}
+  if ('speechSynthesis' in window){ speechSynthesis.cancel(); speechQ.length = 0; speaking = false; speechToken++; }
+  if (route && !nav){ await fetchRoute(); }  /* Steve changes the route itself */
+}
+$('funnyTog').onclick = () => { if (isRegular()) return;  /* nothing to toggle in plain mode */
+  funny = !funny; $('funnyTog').classList.toggle('on', funny);
+  $('funnyTog').firstChild.textContent = funny ? '😂 Funny: ON' : '😐 Straight talk: ON'; };
+$('soundTog').onclick = () => { soundOn = !soundOn; $('soundTog').classList.toggle('on', soundOn);
+  $('soundTog').firstChild.textContent = soundOn ? '🔊 Voice: ON' : '🔇 Voice: OFF';
+  if (!soundOn && 'speechSynthesis' in window){ speechSynthesis.cancel(); speechQ.length = 0; speaking = false; speechToken++; } };
+$('searchBtn').onclick = doSearch;
+$('searchInput').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+$('goBtn').onclick = () => fetchRoute();
+$('demoBtn').onclick = () => { if (route) startDemo(); else if (destination) fetchRoute().then(() => startDemo()); else setStatus('Set a destination first — then the Demo Drive can roll.'); };
+$('startBtn').onclick = () => startLive();
+$('endBtn').onclick = () => endNav();
+applyStyle(charKey);
+renderPicker();
+
+/* ---------- QA bootstrap ---------- */
+if (QA.get('qa') === 'search'){
+  $('searchInput').value = QA.get('q') || 'Bass Pro Shops';
+  doSearch().then(() => { window.__qaDone = true; });
+}
+if (isQA){
+  funny = true; soundOn = true;
+  if (QA.get('offline') === '1' && restoreTrip()){
+    /* Offline run: the trip comes off the phone, never the network. */
+    setTimeout(() => startDemo(), 700);
+  } else {
+    const f = (QA.get('from') || '37.2279530,-93.2966431').split(',').map(Number);
+    const t = (QA.get('to') || '37.1796576,-93.2951949').split(',').map(Number);
+    origin = { lat: f[0], lng: f[1], label: '1639 N Main Ave, Springfield' };
+    posMarker.setLatLng([origin.lat, origin.lng]);
+    setDestination({ lat: t[0], lng: t[1], label: QA.get('destname') || 'Bass Pro Shops, 1935 S Campbell Ave' });
+    const iv = setInterval(() => { if (route){ clearInterval(iv); startDemo(); } }, 400);
+  }
+  setTimeout(() => { if (!window.__qaDone){ window.__qaDone = true; window.__qaTimeout = true; document.title = 'QA TIMEOUT'; } }, 150000);
+}
+</script>
+<script>
+/* PWA: register the app-shell service worker (this folder only). The app
+   works fully without it — this just lets Funny Maps install like a real
+   app and reopen offline. */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js').catch(function () { /* no worker, no problem */ });
+  });
+}
+</script>
+</body>
+</html>
