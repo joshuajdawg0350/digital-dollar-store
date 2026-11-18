@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Little Bot — Pick His Voice — Digital Dollar Store</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #07090d; color: #e8edf4; font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; padding: 18px 14px 40px; }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  h1 { font-size: 26px; letter-spacing: .5px; background: linear-gradient(180deg,#ffffff 0%,#c9d4e2 45%,#7f8ea3 55%,#dfe8f2 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .sub { color: #9fb4cc; font-size: 15px; line-height: 1.45; margin: 8px 0 6px; }
+  .line { color: #e8edf4; font-size: 15px; line-height: 1.45; margin: 6px 0 22px; padding: 12px 14px; background: #0d1118; border: 1px solid #1d2a3a; border-radius: 10px; }
+  .line b { color: #0096FF; }
+  button.voice { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; background: linear-gradient(180deg,#141a23,#0d1118); border: 1px solid #263449; border-radius: 12px; padding: 16px; margin: 0 0 10px; min-height: 84px; cursor: pointer; color: #e8edf4; font-family: inherit; }
+  button.voice:active { border-color: #0096FF; }
+  button.voice.playing { border-color: #0096FF; box-shadow: 0 0 12px rgba(0,150,255,.35); }
+  .num { font-size: 36px; font-weight: 800; color: #0096FF; min-width: 52px; text-align: center; }
+  .meta { flex: 1; }
+  .name { font-size: 19px; font-weight: 700; color: #f2f6fb; }
+  .desc { color: #93a7c0; font-size: 14px; margin-top: 3px; line-height: 1.4; }
+  .play { color: #0096FF; font-size: 14px; font-weight: 700; letter-spacing: 1px; white-space: nowrap; }
+  .foot { color: #9fb4cc; font-size: 14px; line-height: 1.5; margin-top: 20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🤖 LITTLE BOT — PICK HIS VOICE</h1>
+  <p class="sub">Ten voices for Little Bot, the chat robot. Tap a number to hear it. They all say the same line:</p>
+  <p class="line"><b>The line:</b> “Hey! I'm Little Bot. Welcome to the Digital Dollar Store — everything's a dollar, and I can show you around!”</p>
+
+  <button class="voice" data-src="voice-01.mp3"><span class="num">1</span><span class="meta"><span class="name">Classic Robot</span><div class="desc">The metal robot voice — buzzes like a machine</div></span><span class="play">▶ PLAY</span></button>
+  <button class="voice" data-src="voice-02.mp3"><span class="num">2</span><span class="meta"><span class="name">Friendly Kid-Bot</span><div class="desc">Young, bright, cheerful little robot</div></span><span class="play">▶ PLAY</span></button>
+  <button class="voice" data-src="voice-03.mp3"><span class="num">3</span><span class="meta"><span class="name">Deep Bot</span><div class="desc">Low and big, like a robot movie narrator</div></span><span class="play">▶ PLAY</span></button>
+  <button class="voice" data-src="voice-04.mp3"><span class="num">4</span><span class="meta"><span class="name">Bright &amp; Cheerful</span><div class="desc">Sunny and upbeat, talks a little faster</div></span><span class="play">▶ PLAY</span></button>
+  <button class="voice" data-src="voice-05.mp3"><span class="num">5</span><span class="meta"><span class="name">Calm Guide</span><div class="desc">Soft and slow, easy listening</div></span><span class="play">▶ PLAY</span></button>
+  <button class="voice" data-src="voice-06.mp3"><span class="num">6</span><span class="meta"><span class="name">Chipmunk</span><div class="desc">Tiny and squeaky — the silly one</div></span><span class="play">▶ PLAY</span></button>
+  <button class="voice" data-src="voice-07.mp3"><span class="num">7</span><span class="meta"><span class="name">Slow-and-Heavy</span><div class="desc">Deep, slow, heavy boots</div></span><span class="play">▶ PLAY</span></button>
+  <button class="voice" data-src="voice-08.mp3"><span class="num">8</span><span class="meta"><span class="name">Warm Buddy</span><div class="desc">Friendly guy-next-door robot</div></span><span class="play">▶ PLAY</span></button>
+  <button class="voice" data-src="voice-09.mp3"><span class="num">9</span><span class="meta"><span class="name">Tinny Retro-Bot</span><div class="desc">Old-timey robot through a tin can</div></span><span class="play">▶ PLAY</span></button>
+  <button class="voice" data-src="voice-10.mp3"><span class="num">10</span><span class="meta"><span class="name">Near-Natural</span><div class="desc">Almost a regular person talking</div></span><span class="play">▶ PLAY</span></button>
+
+  <p class="foot">Found the one? Just tell Midas the number — “Little Bot voice 4” — and that's the voice he gets on both sites.</p>
+</div>
+<script>
+  var player = new Audio();
+  var current = null;
+  function stopAll() {
+    player.pause();
+    if (current) { current.classList.remove('playing'); current.querySelector('.play').textContent = '▶ PLAY'; current = null; }
+  }
+  player.addEventListener('ended', stopAll);
+  document.querySelectorAll('button.voice').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      if (current === btn) { stopAll(); return; }
+      stopAll();
+      player.src = btn.getAttribute('data-src');
+      player.play();
+      btn.classList.add('playing');
+      btn.querySelector('.play').textContent = '⏸ PLAYING';
+      current = btn;
+    });
+  });
+</script>
+</body>
+</html>
