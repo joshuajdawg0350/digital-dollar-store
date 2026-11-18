@@ -285,6 +285,46 @@
 /* game cards compacted to app-card size (2026-11-17) */
 @media (min-width:1024px){#games .wrap{display:block}}
 </style>
+<style>
+/* ===== hero logo + fit fix (Joshua, 2026-11-17 23:21) =====
+   1) The logo goes BIG in the blank space right of the headline —
+      it is the store's front door, not a badge. Two-column hero on
+      desktop: copy left, logo right and dominant. On phone the logo
+      stacks on top, still large.
+   2) Header fit: the full nav row needs ~955px + brand, but the
+      hamburger only appeared at 900px — in the 901–975px band the
+      last nav item ran off the right edge (worse in Edge, whose
+      classic scrollbar narrows the page further). The hamburger now
+      covers up to 1020px, and the full row is tightened above that
+      so it always fits with room to spare. */
+.hero-top{display:grid;grid-template-columns:1fr;gap:.4rem 2.6rem}
+.hero-logo-cell{display:flex;justify-content:center;align-items:center}
+.arcade-hero .dds-logo{width:min(400px,88%);max-width:100%;margin:0 auto .9rem}
+@media (min-width:1024px){
+  .hero-top{grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr);align-items:center}
+  .hero-copy{grid-column:1;grid-row:1;min-width:0}
+  .hero-logo-cell{grid-column:2;grid-row:1}
+  .arcade-hero .dds-logo{width:min(600px,100%);margin:0}
+  .arcade-hero .lead{max-width:56ch}
+}
+@media (max-width:1020px){
+  .nav-toggle{display:block}
+  .site-nav{display:none;position:absolute;left:0;right:0;
+    background:#05080E;border-bottom:1px solid var(--line);padding:.5rem 1.25rem 1.1rem}
+  .site-header:has(.site-nav.open){background:rgba(5,8,14,.94);
+    -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom-color:var(--line)}
+  .site-nav.open{display:block}
+  .site-nav ul{flex-direction:column;gap:0}
+  .site-nav a{display:block;padding:.7rem 0;font-size:.9rem}
+}
+@media (min-width:641px) and (max-width:1020px){
+  .site-nav{top:72px}
+}
+@media (min-width:1021px) and (max-width:1280px){
+  .site-nav ul{gap:1.05rem}
+  .site-nav a{font-size:.86rem;letter-spacing:.1em}
+}
+</style>
 </head>
 <body>
 
@@ -311,13 +351,18 @@
 
 <section class="arcade-hero">
   <div class="wrap">
-    
-    <img class="dds-logo" src="assets/digital-dollar-store-logo.webp" alt="Digital Dollar Store logo — a chrome price tag with a dollar sign" width="320" height="213">
+    <div class="hero-top">
+      <div class="hero-logo-cell">
+        <img class="dds-logo" src="assets/digital-dollar-store-logo.webp" alt="Digital Dollar Store logo — a chrome price tag with a dollar sign" width="1920" height="1280">
+      </div>
+      <div class="hero-copy">
     <h1 class="chrome-text">Digital Dollar Store</h1>
     <p class="promise-line"><span class="eb">Everything in this store: 99¢.</span><span>One-time. Yours forever.</span></p>
     <p class="promise-line"><span class="eb">No ads. Ever.</span><span>We never sell your information.</span></p>
     <p class="promise-line"><span><strong>Refunds:</strong> If it doesn't work and we can't fix it, you get your money back — and 14 days to change your mind on anything digital. Full policy: <a href="https://jdawgsindustries.com/refunds.html">https://jdawgsindustries.com/refunds.html</a></span></p>
     <p class="lead">Our games and apps, sold by us, at our own door — no middleman store, no ad SDKs, no trackers. One payment each, yours forever — real apps with their own icons, installed straight from here. No accounts, no extra steps.</p>
+      </div>
+    </div>
     <div class="hero-games">
       <div class="hg-row">
         <img src="assets/hc1-cover.webp" alt="" width="1920" height="1120">
