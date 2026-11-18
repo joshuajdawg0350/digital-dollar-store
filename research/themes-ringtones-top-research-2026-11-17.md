@@ -1,4 +1,4 @@
-# Top Phone Themes/Skins & Ringtones — Research for the J-Dawgs Digital Dollar Store
+# Top Phone Themes/Skins & Ringtones — Research for the Digital Dollar Store
 
 **Date:** 2026-11-17 · **Purpose:** Ranked, visual build concepts for a $0.99 themes/skins/ringtones line, modeled on proven top performers. Every concept includes a thumbnail description precise enough to generate a picture from.
 **Method:** Web research across Zedge, Google Play/AppBrain charts, Samsung Galaxy Themes coverage, Etsy marketplace listings, and Apple tone pricing. Numbers are cited per claim. Anything not verified is marked **UNCHECKED**.
