@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Streaks &amp; Habits</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#070a10;--surf:#161e2c;--surf2:#1f2a3d;--line:#33435c;--txt:#eef3fa;--mut:#9db1c9;--acc:#0096FF;--acc2:#57bdff}
+body{background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100dvh;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:linear-gradient(180deg,#232f44,#141c2b);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+header h1{font-size:19px;flex:1}
+.hbtn{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surf2);color:var(--txt);font-size:20px;cursor:pointer}
+main{flex:1;width:100%;max-width:760px;margin:0 auto;padding:14px}
+.panel{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+input[type=text]{width:100%;min-height:48px;border-radius:10px;border:1px solid var(--line);background:#0d1420;color:var(--txt);padding:8px 12px;font-size:16px;margin-bottom:10px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{min-height:48px;padding:8px 16px;border-radius:10px;border:1px solid var(--line);background:var(--surf2);color:var(--txt);font-size:15px;cursor:pointer}
+.btn.primary{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:800}
+.day{min-width:44px;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surf2);color:var(--mut);cursor:pointer;font-size:14px}
+.day.sel{border-color:var(--acc);background:#0b2c4d;color:#cfeaff;font-weight:700}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.card h2{font-size:18px}
+.meta{color:var(--mut);font-size:13px;margin:4px 0 8px}
+.streaks{display:flex;gap:14px;font-size:15px;margin:8px 0}
+.streaks b{color:var(--acc2);font-size:20px}
+.check{min-width:170px;min-height:52px;border-radius:12px;border:1px solid var(--line);background:var(--surf2);color:var(--txt);font-size:16px;font-weight:700;cursor:pointer}
+.check.done{background:var(--acc);border-color:var(--acc);color:#fff}
+.heat{display:grid;grid-template-columns:repeat(28,1fr);gap:3px;margin:10px 0}
+.dot{aspect-ratio:1;border-radius:3px;background:#232f44;border:1px solid #2b3a52}
+.dot.on{background:var(--acc);border-color:var(--acc2)}
+.dot.today{outline:2px solid #ffd34d}
+.dot.na{opacity:.25}
+.small{font-size:12px;color:var(--mut)}
+#empty{color:var(--mut);text-align:center;padding:26px 10px;line-height:1.6}
+footer{text-align:center;color:var(--mut);font-size:12px;padding:14px}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;z-index:20;padding:16px;overflow:auto}
+.overlay.open{display:block}
+.sheet{background:var(--surf);border:1px solid var(--line);border-radius:16px;max-width:560px;margin:24px auto;padding:20px}
+.sheet h2{margin-bottom:10px}.sheet ol{margin:0 0 14px 20px;line-height:1.7;font-size:15px}.sheet p{color:var(--mut);line-height:1.6;font-size:14px;margin-bottom:10px}
+.close{width:100%;min-height:48px;border-radius:10px;border:0;background:var(--acc);color:#fff;font-size:16px;font-weight:700;cursor:pointer}
+@media(max-width:480px){.heat{grid-template-columns:repeat(21,1fr)}}
+</style></head><body>
+<header><h1>Streaks &amp; Habits</h1><button class="hbtn" id="helpBtn" aria-label="Help">?</button></header>
+<main>
+<section class="panel"><h2 style="font-size:16px;margin-bottom:10px">Add a habit</h2>
+<input type="text" id="newName" placeholder="Habit name, like Walk 20 minutes" maxlength="60" aria-label="Habit name">
+<div class="row" id="dayRow"><span class="small">On these days:</span></div>
+<div class="row" style="margin-top:10px"><button class="btn primary" id="addBtn">Add Habit</button><span class="small" id="addMsg"></span></div></section>
+<div id="list"></div>
+<div id="empty">No habits yet.<br>Add your first one above — something small you can do most days. Tap its check button each day you do it, and watch the streak grow.</div>
+</main>
+<footer>Digital Dollar Store</footer>
+<div class="overlay" id="help"><div class="sheet"><h2>How to use Streaks &amp; Habits</h2>
+<ol><li>Type a habit name and tap the days it applies to. All days starts selected, which means daily.</li><li>Tap Add Habit.</li><li>Each day you do the habit, tap its big check button.</li><li>Your current streak counts the scheduled days in a row you have done, counting back from today. Days the habit is not scheduled do not break a streak.</li><li>The dots show the last 12 weeks: blue means done, dark means missed, dim means not scheduled.</li><li>Use Edit to change a habit or Delete to remove it. Everything is saved only on this device.</li></ol>
+<button class="close" id="helpClose">Close</button></div></div>
+<script>
+"use strict";
+var KEY='dds-habits-v1', DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+function keyOf(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function parseKey(k){ var p=k.split('-'); return new Date(+p[0],+p[1]-1,+p[2]); }
+function load(){ try{ return JSON.parse(localStorage.getItem(KEY))||[] }catch(e){ return [] } }
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(habits)) }catch(e){} }
+var habits=load();
+function scheduled(h,d){ return h.days.indexOf(d.getDay())>=0; }
+/* Current streak: walk back from today. If today is scheduled but not yet checked, it does not break the streak yet — start from yesterday in that case. */
+function currentStreak(h){ var checks={}; (h.checks||[]).forEach(function(k){checks[k]=1}); var d=new Date(); d.setHours(0,0,0,0); var streak=0, guard=0;
+ if(scheduled(h,d)&&!checks[keyOf(d)]){ d.setDate(d.getDate()-1); }
+ while(guard++<3650){ if(scheduled(h,d)){ if(checks[keyOf(d)]){ streak++; } else { break; } } d.setDate(d.getDate()-1); }
+ return streak; }
+function bestStreak(h){ var checks={}; (h.checks||[]).forEach(function(k){checks[k]=1}); var keys=(h.checks||[]).slice().sort(); if(!keys.length)return 0;
+ var start=parseKey(keys[0]), end=new Date(); end.setHours(0,0,0,0); var run=0,best=0,d=new Date(start);
+ while(d<=end){ if(scheduled(h,d)){ if(checks[keyOf(d)]){ run++; if(run>best)best=run; } else run=0; } d.setDate(d.getDate()+1); }
+ return best; }
+var picked=[0,1,2,3,4,5,6];
+var dayRow=document.getElementById('dayRow');
+DAYS.forEach(function(n,i){ var b=document.createElement('button'); b.className='day sel'; b.textContent=n; b.dataset.d=i; dayRow.appendChild(b); });
+dayRow.addEventListener('click',function(e){ var b=e.target.closest('.day'); if(!b)return; var d=+b.dataset.d; var i=picked.indexOf(d);
+ if(i>=0){ if(picked.length===1)return; picked.splice(i,1); b.classList.remove('sel'); } else { picked.push(d); b.classList.add('sel'); } });
+document.getElementById('addBtn').addEventListener('click',function(){ var name=document.getElementById('newName').value.trim(); var msg=document.getElementById('addMsg');
+ if(!name){ msg.textContent='Type a name first.'; return; }
+ habits.push({id:'h'+Date.now(),name:name,days:picked.slice().sort(),checks:[]}); save(); document.getElementById('newName').value=''; msg.textContent=''; render(); });
+function render(){ var list=document.getElementById('list'); list.innerHTML=''; document.getElementById('empty').style.display=habits.length?'none':'block';
+ var today=new Date(); today.setHours(0,0,0,0); var tk=keyOf(today);
+ habits.forEach(function(h){ var done=h.checks.indexOf(tk)>=0; var isToday=scheduled(h,today);
+  var card=document.createElement('div'); card.className='card';
+  var heat=''; for(var back=83;back>=0;back--){ var d=new Date(today); d.setDate(d.getDate()-back); var k=keyOf(d);
+   var cls='dot'+(h.checks.indexOf(k)>=0?' on':'')+(back===0?' today':'')+(!scheduled(h,d)?' na':''); heat+='<span class="'+cls+'" title="'+k+'"></span>'; }
+  card.innerHTML='<h2></h2><div class="meta"></div><div class="streaks"><span>Current streak <b>'+currentStreak(h)+'</b></span><span>Best streak <b>'+bestStreak(h)+'</b></span></div><div class="heat">'+heat+'</div><div class="row"><button class="check'+(done?' done':'')+'" data-act="check">'+(done?'Done today ✓'.replace(' ✓',''):'Check off today')+'</button><button class="btn" data-act="edit">Edit</button><button class="btn" data-act="del">Delete</button></div>'+(isToday?'':'<div class="small" style="margin-top:6px">Not scheduled for today — checking off still counts for today.</div>');
+  card.querySelector('h2').textContent=h.name;
+  card.querySelector('.meta').textContent= h.days.length===7?'Every day':('On: '+h.days.map(function(d){return DAYS[d]}).join(', '));
+  if(done)card.querySelector('.check').textContent='Done today';
+  card.addEventListener('click',function(e){ var b=e.target.closest('[data-act]'); if(!b)return; var act=b.dataset.act;
+   if(act==='check'){ var i=h.checks.indexOf(tk); if(i>=0)h.checks.splice(i,1); else h.checks.push(tk); save(); render(); }
+   if(act==='del'){ if(confirm('Delete "'+h.name+'" and its history?')){ habits=habits.filter(function(x){return x.id!==h.id}); save(); render(); } }
+   if(act==='edit'){ var nn=prompt('Habit name:',h.name); if(nn&&nn.trim()){ h.name=nn.trim(); save(); render(); } } });
+  list.appendChild(card); }); }
+document.getElementById('helpBtn').addEventListener('click',function(){document.getElementById('help').classList.add('open')});
+document.getElementById('helpClose').addEventListener('click',function(){document.getElementById('help').classList.remove('open')});
+render();
+window.__habits={get habits(){return habits},currentStreak:currentStreak,bestStreak:bestStreak,keyOf:keyOf,
+ seed:function(h){ habits.push(h); save(); render(); }, reload:function(){ habits=load(); render(); }};
+</script></body></html>

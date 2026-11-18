@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sleep Sounds</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#070a10;--surf:#161e2c;--surf2:#1f2a3d;--line:#33435c;--txt:#eef3fa;--mut:#9db1c9;--acc:#0096FF;--acc2:#57bdff}
+body{background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100dvh;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:linear-gradient(180deg,#232f44,#141c2b);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+header h1{font-size:19px;letter-spacing:.3px;flex:1}
+.hbtn{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surf2);color:var(--txt);font-size:20px;cursor:pointer;flex:none}
+main{flex:1;width:100%;max-width:760px;margin:0 auto;padding:14px}
+.note{background:var(--surf);border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:10px;padding:10px 12px;font-size:14px;color:var(--mut);margin-bottom:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.card{background:linear-gradient(180deg,var(--surf2),var(--surf));border:1px solid var(--line);border-radius:14px;padding:12px}
+.card h2{font-size:16px;margin:6px 0 8px}
+.card svg{color:var(--acc2)}
+.play{width:100%;min-height:48px;border-radius:10px;border:1px solid var(--acc);background:#0b2c4d;color:#cfeaff;font-size:16px;font-weight:700;cursor:pointer}
+.card.on{border-color:var(--acc);box-shadow:0 0 0 2px rgba(0,150,255,.35)}
+.card.on .play{background:var(--acc);color:#fff}
+.card input[type=range]{width:100%;margin-top:10px;accent-color:var(--acc);height:32px}
+.panel{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:14px}
+.panel h2{font-size:16px;margin-bottom:10px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tbtn{min-height:44px;padding:8px 14px;border-radius:10px;border:1px solid var(--line);background:var(--surf2);color:var(--txt);font-size:15px;cursor:pointer}
+.tbtn.sel{border-color:var(--acc);background:#0b2c4d;color:#cfeaff;font-weight:700}
+input[type=range]{accent-color:var(--acc)}
+input[type=number]{width:80px;min-height:44px;border-radius:8px;border:1px solid var(--line);background:#0d1420;color:var(--txt);padding:6px;font-size:16px}
+#timerStatus{color:var(--acc2);font-size:14px;margin-top:8px;min-height:20px}
+#mixStatus{color:var(--mut);font-size:14px;margin-top:6px}
+footer{text-align:center;color:var(--mut);font-size:12px;padding:14px}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;z-index:20;padding:16px;overflow:auto}
+.overlay.open{display:block}
+.sheet{background:var(--surf);border:1px solid var(--line);border-radius:16px;max-width:560px;margin:24px auto;padding:20px}
+.sheet h2{margin-bottom:10px}.sheet ol{margin:0 0 14px 20px;line-height:1.7;font-size:15px}
+.sheet p{color:var(--mut);line-height:1.6;font-size:14px;margin-bottom:10px}
+.close{width:100%;min-height:48px;border-radius:10px;border:0;background:var(--acc);color:#fff;font-size:16px;font-weight:700;cursor:pointer}
+</style></head><body>
+<header><h1>Sleep Sounds</h1><button class="hbtn" id="helpBtn" aria-label="Help">?</button></header>
+<main>
+<p class="note">Every sound here is made live by your phone using its own sound engine. Nothing downloads, nothing streams, and it keeps working with no signal.</p>
+<div class="grid" id="grid"></div>
+<div class="panel"><h2>Master volume</h2>
+<input type="range" id="master" min="0" max="100" value="80" style="width:100%;height:36px" aria-label="Master volume">
+<div id="mixStatus">No sounds playing. Tap Play on up to 3 sounds to mix them.</div></div>
+<div class="panel"><h2>Sleep timer — sounds fade out and stop</h2>
+<div class="row" id="timerRow">
+<button class="tbtn" data-min="15">15 min</button><button class="tbtn" data-min="30">30 min</button>
+<button class="tbtn" data-min="60">60 min</button><button class="tbtn" data-min="90">90 min</button>
+<input type="number" id="customMin" min="1" max="600" placeholder="Custom" aria-label="Custom minutes">
+<button class="tbtn" id="customBtn">Set</button><button class="tbtn" id="timerOff">Off</button></div>
+<div id="timerStatus"></div></div>
+</main>
+<footer>Digital Dollar Store</footer>
+<div class="overlay" id="help"><div class="sheet"><h2>How to use Sleep Sounds</h2>
+<ol><li>Tap Play on a sound to start it.</li><li>Add a second or third sound to mix them together.</li><li>Use each card's slider to set how loud that sound is.</li><li>Use Master volume for the overall loudness.</li><li>Pick a sleep timer if you want the sounds to fade out and stop on their own.</li><li>Tap Stop on a sound to turn just that one off.</li></ol>
+<p>All sounds are created live on this device. There are no recordings and no downloads. You can mix up to 3 sounds at once.</p>
+<button class="close" id="helpClose">Close</button></div></div>
+<script>
+"use strict";
+var SOUNDS=[
+ {id:'white',name:'White Noise',icon:'<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h3l2-7 3 14 3-10 2 3h5"/></svg>'},
+ {id:'pink',name:'Pink Noise',icon:'<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 15c3-6 6-6 9 0s6 6 9 0"/></svg>'},
+ {id:'brown',name:'Brown Noise',icon:'<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18c4-3 6-9 9-9s5 4 9 2"/></svg>'},
+ {id:'rain',name:'Rain',icon:'<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 13a5 5 0 1 1 2-9 6 6 0 0 1 11 2 4 4 0 0 1-1 7"/><path d="M7 17l-1 3M12 17l-1 3M17 17l-1 3"/></svg>'},
+ {id:'fan',name:'Fan',icon:'<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M12 10c0-4 2-6 5-6 1 3-1 6-5 6zM14 12c4 0 6 2 6 5-3 1-6-1-6-5zM12 14c0 4-2 6-5 6-1-3 1-6 5-6zM10 12c-4 0-6-2-6-5 3-1 6 1 6 5z"/></svg>'},
+ {id:'ocean',name:'Ocean Waves',icon:'<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 10c3-3 6-3 9 0s6 3 9 0M2 16c3-3 6-3 9 0s6 3 9 0"/></svg>'}
+];
+var ctx=null,masterGain=null,active={},timerEnd=0,timerInt=null,fading=false;
+function ensureCtx(){ if(!ctx){ ctx=new (window.AudioContext||window.webkitAudioContext)(); masterGain=ctx.createGain(); masterGain.gain.value=document.getElementById('master').value/100; masterGain.connect(ctx.destination);} if(ctx.state==='suspended')ctx.resume(); }
+function noiseBuffer(kind){ var len=ctx.sampleRate*2, buf=ctx.createBuffer(1,len,ctx.sampleRate), d=buf.getChannelData(0), last=0,b0=0,b1=0,b2=0;
+ for(var i=0;i<len;i++){ var w=Math.random()*2-1;
+  if(kind==='white'){d[i]=w*0.6;}
+  else if(kind==='pink'){ b0=0.997*b0+w*0.029; b1=0.985*b1+w*0.032; b2=0.95*b2+w*0.048; d[i]=(b0+b1+b2+w*0.05)*2.2; }
+  else { last=(last+0.02*w)/1.02; d[i]=last*3.2; } }
+ return buf; }
+function makeChain(id){ var g=ctx.createGain(); g.gain.value=0; g.connect(masterGain); var nodes=[g], src=null;
+ function loopSrc(kind){ var s=ctx.createBufferSource(); s.buffer=noiseBuffer(kind); s.loop=true; s.start(); nodes.push(s); return s; }
+ if(id==='white'||id==='pink'||id==='brown'){ src=loopSrc(id); src.connect(g); }
+ else if(id==='rain'){ src=loopSrc('pink'); var f=ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=1400; src.connect(f); f.connect(g); nodes.push(f);
+   var pat=ctx.createBufferSource(); var pb=ctx.createBuffer(1,ctx.sampleRate,ctx.sampleRate), pd=pb.getChannelData(0);
+   for(var i=0;i<pd.length;i++){ pd[i]=(Math.random()<0.012)?(Math.random()*0.9):0; } pat.buffer=pb; pat.loop=true;
+   var pf=ctx.createBiquadFilter(); pf.type='highpass'; pf.frequency.value=3000; var pg=ctx.createGain(); pg.gain.value=0.35;
+   pat.connect(pf); pf.connect(pg); pg.connect(g); pat.start(); nodes.push(pat,pf,pg); }
+ else if(id==='fan'){ src=loopSrc('brown'); var f2=ctx.createBiquadFilter(); f2.type='lowpass'; f2.frequency.value=500; src.connect(f2); f2.connect(g); nodes.push(f2);
+   var lfo=ctx.createOscillator(); lfo.frequency.value=0.4; var lg=ctx.createGain(); lg.gain.value=0.06; lfo.connect(lg); lg.connect(g.gain); lfo.start(); nodes.push(lfo,lg); }
+ else if(id==='ocean'){ src=loopSrc('pink'); var f3=ctx.createBiquadFilter(); f3.type='lowpass'; f3.frequency.value=600; src.connect(f3); f3.connect(g); nodes.push(f3);
+   var sw=ctx.createGain(); sw.gain.value=0.5; /* swell applied via LFO on gain node between filter and g */
+   var lfo2=ctx.createOscillator(); lfo2.frequency.value=0.09; var lg2=ctx.createGain(); lg2.gain.value=0.35; lfo2.connect(lg2); lg2.connect(g.gain); lfo2.start(); nodes.push(lfo2,lg2); }
+ return {gain:g,nodes:nodes}; }
+var grid=document.getElementById('grid');
+SOUNDS.forEach(function(s){ var div=document.createElement('div'); div.className='card'; div.id='card-'+s.id;
+ div.innerHTML=s.icon+'<h2>'+s.name+'</h2><button class="play" data-id="'+s.id+'">Play</button><input type="range" min="0" max="100" value="70" data-vol="'+s.id+'" aria-label="'+s.name+' volume">';
+ grid.appendChild(div); });
+function updateMix(){ var n=Object.keys(active).length; document.getElementById('mixStatus').textContent= n===0?'No sounds playing. Tap Play on up to 3 sounds to mix them.': n+' sound'+(n>1?'s':'')+' playing.'; }
+grid.addEventListener('click',function(e){ var b=e.target.closest('.play'); if(!b)return; var id=b.dataset.id;
+ if(active[id]){ stopSound(id); } else { if(Object.keys(active).length>=3){ document.getElementById('mixStatus').textContent='You can mix up to 3 sounds. Stop one first.'; return; } startSound(id); } });
+grid.addEventListener('input',function(e){ var id=e.target.dataset.vol; if(id&&active[id]){ active[id].gain.gain.setTargetAtTime(e.target.value/100*0.9,ctx.currentTime,0.05);} if(id&&active[id])active[id].vol=e.target.value/100; });
+function startSound(id){ if(active[id])return; if(Object.keys(active).length>=3){ document.getElementById('mixStatus').textContent='You can mix up to 3 sounds. Stop one first.'; return; } ensureCtx(); var chain=makeChain(id); var slider=document.querySelector('[data-vol="'+id+'"]'); chain.vol=slider.value/100; chain.gain.gain.setTargetAtTime(chain.vol*0.9,ctx.currentTime,0.3); active[id]=chain;
+ document.getElementById('card-'+id).classList.add('on'); document.querySelector('[data-id="'+id+'"]').textContent='Stop'; updateMix(); }
+function stopSound(id){ var c=active[id]; if(!c)return; delete active[id]; c.gain.gain.setTargetAtTime(0,ctx.currentTime,0.1);
+ setTimeout(function(){ c.nodes.forEach(function(n){ try{n.stop&&n.stop()}catch(e){} try{n.disconnect()}catch(e){} }); },400);
+ document.getElementById('card-'+id).classList.remove('on'); document.querySelector('[data-id="'+id+'"]').textContent='Play'; updateMix(); }
+function stopAll(){ Object.keys(active).slice().forEach(stopSound); }
+document.getElementById('master').addEventListener('input',function(e){ if(masterGain)masterGain.gain.setTargetAtTime(e.target.value/100,ctx.currentTime,0.05); });
+function setTimer(min){ clearInterval(timerInt); fading=false; if(masterGain)masterGain.gain.cancelScheduledValues(ctx?ctx.currentTime:0);
+ timerEnd=Date.now()+min*60000; document.querySelectorAll('#timerRow .tbtn').forEach(function(b){b.classList.toggle('sel',+b.dataset.min===min)});
+ timerInt=setInterval(tickTimer,500); tickTimer(); }
+function tickTimer(){ var left=timerEnd-Date.now(); var st=document.getElementById('timerStatus');
+ if(left<=0){ clearInterval(timerInt); st.textContent='Sleep timer finished. Sounds stopped.'; stopAll(); document.querySelectorAll('#timerRow .tbtn').forEach(function(b){b.classList.remove('sel')}); return; }
+ var s=Math.ceil(left/1000); st.textContent='Sounds stop in '+Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+ if(left<30000&&!fading&&masterGain&&ctx){ fading=true; masterGain.gain.cancelScheduledValues(ctx.currentTime); masterGain.gain.setValueAtTime(masterGain.gain.value,ctx.currentTime); masterGain.gain.linearRampToValueAtTime(0.02,ctx.currentTime+left/1000); } }
+document.getElementById('timerRow').addEventListener('click',function(e){ var b=e.target.closest('[data-min]'); if(b){ ensureCtx(); setTimer(+b.dataset.min); } });
+document.getElementById('customBtn').addEventListener('click',function(){ var v=+document.getElementById('customMin').value; if(v>0){ ensureCtx(); setTimer(v);} });
+document.getElementById('timerOff').addEventListener('click',function(){ clearInterval(timerInt); timerEnd=0; document.getElementById('timerStatus').textContent='Sleep timer off.'; document.querySelectorAll('#timerRow .tbtn').forEach(function(b){b.classList.remove('sel')}); if(masterGain&&ctx){masterGain.gain.cancelScheduledValues(ctx.currentTime); masterGain.gain.setTargetAtTime(document.getElementById('master').value/100,ctx.currentTime,0.1);} });
+document.getElementById('helpBtn').addEventListener('click',function(){document.getElementById('help').classList.add('open')});
+document.getElementById('helpClose').addEventListener('click',function(){document.getElementById('help').classList.remove('open')});
+window.__sleep={get ctx(){return ctx},active:active,startSound:startSound,stopSound:stopSound,setTimer:setTimer};
+</script></body></html>

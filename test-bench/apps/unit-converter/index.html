@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Convert All — Digital Dollar Store</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:#0a0a0f;color:#e8ecf1;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100dvh}
+button,input,select{font:inherit}button{cursor:pointer}
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:10px 14px;background:linear-gradient(180deg,#2a2e35,#14161a);border-bottom:1px solid #3a3f47}
+.topbar h1{font-size:18px;margin:0;flex:1;letter-spacing:.02em}.topbar h1 span{color:#0096FF}
+.iconbtn{width:44px;height:44px;border-radius:10px;border:1px solid #555c66;background:linear-gradient(180deg,#e8ecf1,#9aa3ad);color:#111;display:grid;place-items:center;flex:0 0 auto}
+.iconbtn svg{width:22px;height:22px}
+.wrap{max-width:720px;margin:0 auto;padding:14px 14px 28px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.tab{min-height:44px;padding:8px 12px;border-radius:999px;border:1px solid #3a3f47;background:#1a1d22;color:#cfd6de;font-size:14px}
+.tab.active{background:#0096FF;color:#fff;border-color:#0096FF;font-weight:700}
+.card{background:linear-gradient(180deg,#1e2126,#14161a);border:1px solid #3a3f47;border-radius:16px;padding:16px}
+label{font-size:13px;color:#9fb0c3;display:block;margin:10px 0 6px}
+input[type=number],input[type=text],select{width:100%;min-height:48px;border-radius:10px;border:1px solid #4a5058;background:#0f1114;color:#fff;padding:10px 12px;font-size:18px}
+.row{display:flex;gap:8px;align-items:end}.row>*{flex:1}.row .swap{flex:0 0 52px}
+.swapbtn{width:52px;height:48px;border-radius:10px;border:1px solid #555c66;background:linear-gradient(180deg,#e8ecf1,#9aa3ad);color:#111;display:grid;place-items:center}
+.result{margin-top:16px;background:#08131f;border:1px solid #0096FF;border-radius:12px;padding:16px;text-align:center}
+.result .big{font-size:32px;font-weight:800;word-break:break-all}.result .sub{color:#9fcfff;font-size:14px;margin-top:4px;word-break:break-all}
+.favs{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}.favchip{min-height:44px;padding:8px 12px;border-radius:999px;background:#1a2a3a;border:1px solid #0096FF;color:#cfeaff;font-size:13px}
+.small{font-size:12px;color:#8a97a6;line-height:1.5}.ratebox{margin-top:14px;border-top:1px solid #2c3138;padding-top:12px}
+.rategrid{display:grid;grid-template-columns:1fr 110px;gap:8px;align-items:center;margin-top:8px}
+.rategrid input{min-height:44px;font-size:15px}
+.btn{min-height:48px;padding:10px 16px;border-radius:10px;border:1px solid #0096FF;background:#0096FF;color:#fff;font-weight:700}
+.btn.ghost{background:transparent;color:#7ec3ff}
+footer{text-align:center;color:#6b7885;font-size:12px;padding:18px}
+dialog{border:1px solid #3a3f47;background:#17191d;color:#e8ecf1;border-radius:16px;max-width:520px;width:calc(100% - 28px);padding:20px}
+dialog::backdrop{background:rgba(0,0,0,.7)}dialog ol{padding-left:20px;line-height:1.7}
+</style></head><body>
+<header class="topbar"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0096FF" stroke-width="2"><path d="M7 4L3 8l4 4M3 8h14M17 12l4 4-4 4M21 16H7"/></svg><h1>Convert <span>All</span></h1><button class="iconbtn" id="helpBtn" aria-label="Help"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.5 9a2.5 2.5 0 1 1 3.4 2.3c-.6.2-.9.6-.9 1.2"/><circle cx="12" cy="17" r=".5" fill="currentColor"/></svg></button></header>
+<main class="wrap">
+<div class="tabs" id="tabs" role="tablist"></div>
+<div class="card">
+<label for="amount">Amount</label>
+<input type="number" id="amount" inputmode="decimal" placeholder="Enter a number" value="1">
+<div class="row">
+<div><label for="fromUnit">From</label><select id="fromUnit"></select></div>
+<div class="swap"><button class="swapbtn" id="swapBtn" aria-label="Swap units"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 7h13M18 3l3 4-3 4M16 17H3M6 13l-3 4 3 4"/></svg></button></div>
+<div><label for="toUnit">To</label><select id="toUnit"></select></div>
+</div>
+<div class="result" aria-live="polite"><div class="big" id="resultBig">—</div><div class="sub" id="resultSub">Pick units to convert</div></div>
+<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="btn ghost" id="favBtn">★ Save as favorite</button><button class="btn ghost" id="copyBtn">Copy result</button></div>
+<div class="favs" id="favs"></div>
+<div class="ratebox" id="rateBox" hidden><p class="small"><strong style="color:#fff">Currency rates — as of November 18, 2026.</strong> Rates are 1 US Dollar = the amount shown. They are built-in estimates, not live bank rates. You can edit any rate below and the conversion updates right away.</p><div class="rategrid" id="rateGrid"></div></div>
+<p class="small" style="margin-top:14px">Tip: conversions update as you type. Empty or invalid numbers show a dash instead of a wrong answer.</p>
+</div>
+</main>
+<footer>Digital Dollar Store</footer>
+<dialog id="helpDlg"><h2 style="margin-top:0">How to use Convert All</h2><ol><li>Tap a category at the top — Length, Weight, Temperature, Volume, Area, Speed, Time, or Currency.</li><li>Type the amount in the Amount box.</li><li>Pick the unit you have in “From” and the unit you want in “To.”</li><li>Read the big result. It updates as you type.</li><li>Tap the swap button in the middle to flip From and To.</li><li>Tap “Save as favorite” to pin a pair you use often. Tap a favorite to use it again.</li><li>For Currency: scroll down to see or edit the built-in rates. Rates are dated November 18, 2026 and are estimates only.</li></ol><button class="btn" id="helpClose" style="width:100%">Close</button></dialog>
+<script>
+const CATS={
+ length:{label:"Length",base:"Meter",units:{Millimeter:0.001,Centimeter:0.01,Meter:1,Kilometer:1000,Inch:0.0254,Foot:0.3048,Yard:0.9144,Mile:1609.34}},
+ weight:{label:"Weight",base:"Kilogram",units:{Milligram:0.000001,Gram:0.001,Kilogram:1,"Metric Ton":1000,Ounce:0.028349523125,Pound:0.45359237,Stone:6.35029318}},
+ volume:{label:"Volume",base:"Liter",units:{Milliliter:0.001,Liter:1,"Cubic Meter":1000,"US Gallon":3.78541,"US Quart":0.946353,"US Pint":0.473176,"US Cup":0.236588,"Fluid Ounce":0.0295735}},
+ area:{label:"Area",base:"Sq Meter",units:{"Sq Centimeter":0.0001,"Sq Meter":1,Hectare:10000,"Sq Kilometer":1000000,"Sq Inch":0.00064516,"Sq Foot":0.092903,Acre:4046.86,"Sq Mile":2589988.11}},
+ speed:{label:"Speed",base:"m/s",units:{"Meters / sec":1,"Km / hour":0.2777777778,"Miles / hour":0.44704,Knot:0.514444,"Feet / sec":0.3048}},
+ time:{label:"Time",base:"Second",units:{Millisecond:0.001,Second:1,Minute:60,Hour:3600,Day:86400,Week:604800}},
+ temperature:{label:"Temperature",special:"temp",units:{Celsius:1,Fahrenheit:1,Kelvin:1}},
+ currency:{label:"Currency",special:"currency",units:{USD:1,EUR:0.92,GBP:0.79,JPY:149.5,CAD:1.36,AUD:1.52,CHF:0.88,CNY:7.24,INR:83.12,MXN:17.15}}
+};
+let rates={USD:1,EUR:0.92,GBP:0.79,JPY:149.5,CAD:1.36,AUD:1.52,CHF:0.88,CNY:7.24,INR:83.12,MXN:17.15};
+try{const s=localStorage.getItem("ca-rates");if(s)rates=JSON.parse(s)}catch(e){}
+let cat="length";
+const tabs=document.getElementById("tabs"),fromSel=document.getElementById("fromUnit"),toSel=document.getElementById("toUnit"),amt=document.getElementById("amount"),big=document.getElementById("resultBig"),sub=document.getElementById("resultSub"),rateBox=document.getElementById("rateBox"),rateGrid=document.getElementById("rateGrid");
+Object.keys(CATS).forEach(k=>{const b=document.createElement("button");b.className="tab"+(k===cat?" active":"");b.textContent=CATS[k].label;b.dataset.cat=k;b.onclick=()=>{cat=k;document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.cat===k));fillUnits();convert()};tabs.appendChild(b)});
+function fillUnits(){const names=Object.keys(CATS[cat].units);fromSel.innerHTML="";toSel.innerHTML="";names.forEach(n=>{fromSel.add(new Option(n,n));toSel.add(new Option(n,n))});
+ if(cat==="length"){fromSel.value="Mile";toSel.value="Kilometer"}
+ else if(cat==="temperature"){fromSel.value="Fahrenheit";toSel.value="Celsius"}
+ else if(cat==="currency"){fromSel.value="USD";toSel.value="EUR"}
+ else{fromSel.selectedIndex=0;toSel.selectedIndex=Math.min(1,names.length-1)}
+ rateBox.hidden=cat!=="currency";if(cat==="currency")renderRates();renderFavs();}
+function fmt(n){if(!isFinite(n))return"—";if(Math.abs(n)>=1e12||(Math.abs(n)<0.0001&&n!==0))return n.toExponential(6);return parseFloat(n.toPrecision(10)).toLocaleString("en-US",{maximumFractionDigits:6})}
+function toC(v,u){if(u==="Celsius")return v;if(u==="Fahrenheit")return(v-32)*5/9;return v-273.15}
+function fromC(v,u){if(u==="Celsius")return v;if(u==="Fahrenheit")return v*9/5+32;return v+273.15}
+function convert(){const v=parseFloat(amt.value);if(amt.value===""||isNaN(v)){big.textContent="—";sub.textContent="Enter a number to convert";return}
+ let out;const f=fromSel.value,t=toSel.value;
+ if(cat==="temperature")out=fromC(toC(v,f),t);
+ else if(cat==="currency")out=v/rates[f]*rates[t];
+ else out=v*CATS[cat].units[f]/CATS[cat].units[t];
+ big.textContent=fmt(out)+" "+t;sub.textContent=fmt(v)+" "+f+" = "+fmt(out)+" "+t;}
+function renderRates(){rateGrid.innerHTML="";Object.keys(rates).forEach(c=>{if(c==="USD")return;const l=document.createElement("label");l.textContent="1 USD = "+c;l.style.margin="0";const inp=document.createElement("input");inp.type="number";inp.step="any";inp.value=rates[c];inp.dataset.code=c;inp.setAttribute("aria-label","Rate for "+c);inp.oninput=()=>{const n=parseFloat(inp.value);if(n>0){rates[c]=n;try{localStorage.setItem("ca-rates",JSON.stringify(rates))}catch(e){}convert()}};rateGrid.appendChild(l);rateGrid.appendChild(inp)})}
+function favsList(){try{return JSON.parse(localStorage.getItem("ca-favs")||"[]")}catch(e){return[]}}
+function renderFavs(){const box=document.getElementById("favs");box.innerHTML="";favsList().forEach((fv,i)=>{const b=document.createElement("button");b.className="favchip";b.textContent=fv.cat+": "+fv.from+" → "+fv.to;b.onclick=()=>{cat=fv.catKey;document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.cat===cat));fillUnits();fromSel.value=fv.from;toSel.value=fv.to;convert()};box.appendChild(b)})}
+document.getElementById("favBtn").onclick=()=>{const list=favsList();const item={catKey:cat,cat:CATS[cat].label,from:fromSel.value,to:toSel.value};if(!list.some(x=>x.catKey===item.catKey&&x.from===item.from&&x.to===item.to)){list.push(item);try{localStorage.setItem("ca-favs",JSON.stringify(list))}catch(e){}}renderFavs()};
+document.getElementById("copyBtn").onclick=async()=>{try{await navigator.clipboard.writeText(sub.textContent)}catch(e){}};
+document.getElementById("swapBtn").onclick=()=>{const a=fromSel.value;fromSel.value=toSel.value;toSel.value=a;convert()};
+[amt,fromSel,toSel].forEach(el=>{el.addEventListener("input",convert);el.addEventListener("change",convert)});
+const dlg=document.getElementById("helpDlg");document.getElementById("helpBtn").onclick=()=>dlg.showModal();document.getElementById("helpClose").onclick=()=>dlg.close();
+fillUnits();convert();
+</script></body></html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Collage Maker</title><style>
+*{box-sizing:border-box}body{margin:0;background:#0a0a0c;color:#e8e8ea;font-family:system-ui,sans-serif}
+.top{position:sticky;top:0;z-index:20;display:flex;gap:10px;align-items:center;padding:10px 12px;background:linear-gradient(180deg,#3a3a40,#17171a);border-bottom:2px solid #0096FF}.top h1{font-size:17px;flex:1;margin:0}.iconbtn{width:44px;height:44px;border-radius:10px;border:1px solid #888;background:linear-gradient(180deg,#d9d9de,#8a8a92);font-weight:800;cursor:pointer}
+main{max-width:900px;margin:0 auto;padding:12px}.card{background:#16161a;border:1px solid #2c2c33;border-radius:14px;padding:12px;margin-bottom:12px}
+.btn{min-height:44px;padding:10px 14px;border-radius:10px;border:1px solid #555;background:linear-gradient(180deg,#e6e6ea,#9a9aa2);color:#111;font-weight:700;cursor:pointer}.btn.primary{background:#0096FF;color:#fff;border-color:#0096FF}.btn.sel{outline:3px solid #0096FF}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}input[type=range]{accent-color:#0096FF;min-height:44px;width:140px}input[type=color]{width:52px;height:44px}
+#grid{display:grid;gap:8px;background:#222222;padding:8px;border-radius:12px;min-height:200px}
+.tile{position:relative;background:#222;border-radius:8px;overflow:hidden;min-height:110px;cursor:pointer}.tile img{width:100%;height:100%;object-fit:cover;display:block;min-height:110px}.tile .num{position:absolute;top:6px;left:6px;background:#0096FF;color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px}.tile.picked{outline:4px solid #ffcc33}
+.help{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:50;padding:16px;overflow:auto}.help .box{background:#1a1a1f;border:1px solid #0096FF;border-radius:14px;max-width:560px;margin:20px auto;padding:18px}.help li{margin:8px 0;line-height:1.45}
+footer{text-align:center;color:#777;font-size:12px;padding:16px}.msg{color:#7ec8ff;font-size:13px}
+</style></head><body>
+<header class="top"><h1>Collage Maker</h1><button class="iconbtn" id="helpBtn" aria-label="Help">?</button></header>
+<main>
+<div class="card"><div class="row"><label class="btn primary" for="files" style="display:inline-flex;align-items:center">Add Photos (2–9)</label><input id="files" type="file" accept="image/*" multiple style="display:none"><button class="btn" id="samples">Use Sample Photos</button><button class="btn" id="clear">Clear All</button><span class="msg" id="msg">No photos yet.</span></div></div>
+<div class="card"><strong>Layout</strong><div class="row" style="margin-top:8px" id="layouts"></div></div>
+<div class="card"><div id="grid"><p style="color:#aaa;text-align:center;padding:30px" id="emptyMsg">Add at least 2 photos to build your collage.</p></div><p style="color:#999;font-size:13px">Tap one photo, then tap another, to swap their places.</p></div>
+<div class="card"><strong>Border &amp; Corners</strong><div class="row" style="margin-top:8px"><label>Border width <span id="bwVal">8</span>px</label><input type="range" id="bw" min="0" max="40" value="8"><label>Color</label><input type="color" id="bc" value="#222222"><label>Corner roundness <span id="crVal">12</span>px</label><input type="range" id="cr" min="0" max="60" value="12"></div></div>
+<div class="card"><strong>Save</strong><div class="row" style="margin-top:8px"><button class="btn primary" id="dlPng">Download PNG</button><button class="btn primary" id="dlJpg">Download JPEG</button><span class="msg" id="outMsg"></span></div></div>
+</main><footer>Digital Dollar Store</footer>
+<div class="help" id="help"><div class="box"><h2>How to use Collage Maker</h2><ol><li>Tap Add Photos and pick 2 to 9 pictures.</li><li>Pick a layout, such as 2 across or 3 by 3.</li><li>Tap one photo, then tap a second photo, to swap them.</li><li>Slide the border width, pick a border color, and set corner roundness.</li><li>Tap Download PNG or JPEG to save one finished picture.</li><li>Everything stays on your device. Nothing is uploaded.</li></ol><button class="btn primary" id="closeHelp" style="width:100%">Close Help</button></div></div>
+<script>
+const $=id=>document.getElementById(id);let photos=[],cols=2,picked=-1;
+const LAYOUTS=[['2 across',2],['3 across',3],['1 big + row',0],['Stacked',1]];
+LAYOUTS.forEach(([n,c],i)=>{let b=document.createElement('button');b.className='btn'+(i===0?' sel':'');b.textContent=n;b.onclick=()=>{cols=c;document.querySelectorAll('#layouts .btn').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');draw()};$('layouts').appendChild(b)});
+function draw(){let g=$('grid');g.innerHTML='';if(!photos.length){g.innerHTML='<p style="color:#aaa;text-align:center;padding:30px">Add at least 2 photos to build your collage.</p>';return}
+let bw=+$('bw').value;g.style.gap=bw+'px';g.style.padding=bw+'px';g.style.background=$('bc').value;g.style.borderRadius=+$('cr').value+'px';
+let effCols=cols===0?2:(cols||2);g.style.gridTemplateColumns='repeat('+effCols+',1fr)';
+photos.forEach((p,i)=>{let d=document.createElement('div');d.className='tile'+(i===picked?' picked':'');d.style.borderRadius=$('cr').value+'px';if(cols===0&&i===0)d.style.gridColumn='span 2';let im=document.createElement('img');im.src=p.src;im.alt='Photo '+(i+1);d.appendChild(im);let n=document.createElement('span');n.className='num';n.textContent=i+1;d.appendChild(n);d.onclick=()=>{if(picked===-1){picked=i}else{if(picked!==i){[photos[picked],photos[i]]=[photos[i],photos[picked]]}picked=-1}draw()};g.appendChild(d)});
+$('msg').textContent=photos.length+' photo(s) added.';$('bwVal').textContent=$('bw').value;$('crVal').textContent=$('cr').value}
+$('files').addEventListener('change',e=>{let fs=[...e.target.files].slice(0,9-photos.length);fs.forEach(f=>{let r=new FileReader();r.onload=()=>{let i=new Image();i.onload=()=>{photos.push(i);draw()};i.src=r.result};r.readAsDataURL(f)})});
+$('samples').onclick=()=>{photos=[];['#0096FF','#ff5533','#33cc66','#ffcc33','#aa66ff','#ff66aa'].forEach(col=>{let c=document.createElement('canvas');c.width=400;c.height=300;let x=c.getContext('2d');x.fillStyle=col;x.fillRect(0,0,400,300);x.fillStyle='#fff';x.font='bold 60px sans-serif';x.fillText(col,30,160);let i=new Image();i.onload=()=>{photos.push(i);draw()};i.src=c.toDataURL()})};
+$('clear').onclick=()=>{photos=[];picked=-1;draw();$('msg').textContent='Cleared.'};
+['bw','bc','cr'].forEach(id=>$(id).addEventListener('input',draw));
+function roundRect(x,px,py,w,h,r){x.beginPath();x.moveTo(px+r,py);x.arcTo(px+w,py,px+w,py+h,r);x.arcTo(px+w,py+h,px,py+h,r);x.arcTo(px,py+h,px,py,r);x.arcTo(px,py,px+w,py,r);x.closePath()}
+function buildCanvas(){let W=1200,bw=+$('bw').value*2,cr=+$('cr').value*2;let effCols=cols===0?2:(cols||2);let rows=Math.ceil(photos.length/effCols);let cell=(W-bw*(effCols+1))/effCols;let H=bw+(cell+bw)*rows;let c=document.createElement('canvas');c.width=W;c.height=H;let x=c.getContext('2d');x.fillStyle=$('bc').value;x.fillRect(0,0,W,H);photos.forEach((im,i)=>{let col=i%effCols,row=Math.floor(i/effCols);let w=cell;if(cols===0&&i===0){w=cell*2+bw}let px=bw+col*(cell+bw),py=bw+row*(cell+bw);x.save();roundRect(x,px,py,w,cell,cr);x.clip();let s=Math.max(w/im.width,cell/im.height);let dw=im.width*s,dh=im.height*s;x.drawImage(im,px+(w-dw)/2,py+(cell-dh)/2,dw,dh);x.restore()});return c}
+function dl(type){if(photos.length<2){$('outMsg').textContent='Add at least 2 photos first.';return}let c=buildCanvas();c.toBlob(b=>{let a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='collage.'+(type==='image/jpeg'?'jpg':'png');a.click();$('outMsg').textContent='Saved '+c.width+' x '+c.height+', '+(b.size/1024).toFixed(1)+' KB'},type,.92)}
+$('dlPng').onclick=()=>dl('image/png');$('dlJpg').onclick=()=>dl('image/jpeg');
+$('helpBtn').onclick=()=>$('help').style.display='block';$('closeHelp').onclick=()=>$('help').style.display='none';
+window.__test={get photos(){return photos},buildCanvas};
+</script></body></html>

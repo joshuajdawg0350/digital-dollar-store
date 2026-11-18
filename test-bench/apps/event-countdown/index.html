@@ -1,0 +1,26 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Days To Go</title><style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,sans-serif;background:#0a0a0f;color:#e8e8ec}header{position:sticky;top:0;background:#16161e;border-bottom:2px solid #0096FF;display:flex;align-items:center;gap:10px;padding:10px 14px}header h1{font-size:19px;margin:0;flex:1}.hbtn{background:#2a2a35;color:#fff;border:1px solid #555;border-radius:10px;min-width:44px;min-height:44px;font-size:18px;cursor:pointer}main{max-width:900px;margin:0 auto;padding:14px}input{width:100%;background:#1c1c26;color:#fff;border:1px solid #444;border-radius:10px;padding:12px;font-size:16px;margin:6px 0}.btn{background:#0096FF;color:#fff;border:0;border-radius:10px;min-height:44px;padding:10px 16px;cursor:pointer}.btn2{background:#2a2a35;color:#fff;border:1px solid #555;border-radius:10px;min-height:44px;padding:8px 12px;cursor:pointer}.card{background:linear-gradient(180deg,#26262f,#1a1a22);border:1px solid #444;border-radius:14px;padding:14px;margin:10px 0;word-break:break-word}.hero{border:2px solid #0096FF;text-align:center}.big{font-size:56px;font-weight:800;color:#0096FF}.row{display:flex;gap:8px;flex-wrap:wrap}dialog{background:#1c1c26;color:#fff;border:1px solid #0096FF;border-radius:14px;max-width:520px;width:92%}footer{text-align:center;color:#888;padding:20px;font-size:12px}
+</style></head><body>
+<header><h1>Days To Go</h1><button class="hbtn" id="helpBtn">?</button></header>
+<main>
+<div id="hero"></div>
+<div class="card"><h3>Add an event</h3><input id="name" placeholder="Event name, e.g. Birthday"><input id="date" type="date"><input id="note" placeholder="Note (optional)"><button class="btn" id="addBtn">Add event</button></div>
+<div id="list"></div><div id="empty" class="card">No events yet. Add your first event above — give it a name and a date, and tap Add event.</div>
+</main><footer>Digital Dollar Store</footer>
+<dialog id="help"><h2>How to use Days To Go</h2><ol><li>Type an event name and pick its date.</li><li>Tap Add event.</li><li>The next event appears big at the top.</li><li>Future events show days to go. Past events show days since.</li><li>Use Edit to change an event, or Delete to remove it.</li></ol><button class="btn" onclick="document.getElementById('help').close()">Close</button></dialog>
+<script>
+const KEY='days-to-go-v1';let events=[];try{events=JSON.parse(localStorage.getItem(KEY))||[]}catch(e){events=[]}
+const $=id=>document.getElementById(id);let editId=null;
+function save(){localStorage.setItem(KEY,JSON.stringify(events))}
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function dayDiff(dateStr){let [y,m,d]=dateStr.split('-').map(Number);let target=Date.UTC(y,m-1,d);let n=new Date();let today=Date.UTC(n.getFullYear(),n.getMonth(),n.getDate());return Math.round((target-today)/86400000)}
+function label(diff){if(diff===0)return 'Today!';if(diff===1)return '1 day to go';if(diff>1)return diff+' days to go';if(diff===-1)return '1 day since';return Math.abs(diff)+' days since'}
+function render(){let sorted=[...events].sort((a,b)=>a.date.localeCompare(b.date));let upcoming=sorted.filter(e=>dayDiff(e.date)>=0);let next=upcoming[0];$('hero').innerHTML=next?`<div class="card hero"><div>Next up: ${esc(next.name)}</div><div class="big" id="heroCount">${dayDiff(next.date)}</div><div>${label(dayDiff(next.date))} — ${esc(next.date)}</div><div>${esc(next.note||'')}</div></div>`:'';
+$('empty').style.display=events.length?'none':'block';
+$('list').innerHTML=sorted.map(e=>{let diff=dayDiff(e.date);return `<div class="card"><b>${esc(e.name)}</b> — ${esc(e.date)}<br><span class="big" style="font-size:32px">${Math.abs(diff)}</span> ${label(diff)}<br>${esc(e.note||'')}<div class="row"><button class="btn2" data-edit="${e.id}">Edit</button><button class="btn2" data-del="${e.id}">Delete</button></div></div>`}).join('')}
+$('addBtn').onclick=()=>{if(!$('name').value.trim()||!$('date').value){alert('Add a name and a date.');return}let data={name:$('name').value.trim(),date:$('date').value,note:$('note').value};if(editId){Object.assign(events.find(e=>e.id===editId),data);editId=null;$('addBtn').textContent='Add event'}else events.push({id:Date.now(),...data});save();$('name').value='';$('note').value='';render()};
+$('list').addEventListener('click',e=>{if(e.target.dataset.del){events=events.filter(x=>x.id!==+e.target.dataset.del);save();render()}if(e.target.dataset.edit){let ev=events.find(x=>x.id===+e.target.dataset.edit);editId=ev.id;$('name').value=ev.name;$('date').value=ev.date;$('note').value=ev.note;$('addBtn').textContent='Save changes';window.scrollTo(0,0)}});
+$('helpBtn').onclick=()=>$('help').showModal();render();
+// expose for QA verification
+window.__dayDiff=dayDiff;
+</script></body></html>

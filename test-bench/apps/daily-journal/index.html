@@ -1,0 +1,35 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Daily Journal</title><style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,sans-serif;background:#0a0a0f;color:#e8e8ec}header{position:sticky;top:0;background:#16161e;border-bottom:2px solid #0096FF;display:flex;align-items:center;gap:10px;padding:10px 14px}header h1{font-size:19px;margin:0;flex:1}.hbtn{background:#2a2a35;color:#fff;border:1px solid #555;border-radius:10px;min-width:44px;min-height:44px;font-size:18px;cursor:pointer}main{max-width:900px;margin:0 auto;padding:14px}input,textarea{width:100%;background:#1c1c26;color:#fff;border:1px solid #444;border-radius:10px;padding:12px;font-size:16px;margin:6px 0}.btn{background:#0096FF;color:#fff;border:0;border-radius:10px;min-height:44px;padding:10px 16px;cursor:pointer}.btn2{background:#2a2a35;color:#fff;border:1px solid #555;border-radius:10px;min-height:44px;padding:10px 14px;cursor:pointer}.card{background:linear-gradient(180deg,#26262f,#1a1a22);border:1px solid #444;border-radius:14px;padding:14px;margin:10px 0;word-break:break-word}.row{display:flex;gap:8px;flex-wrap:wrap}.mood{width:62px;height:72px;border-radius:14px;border:2px solid #555;background:#222;cursor:pointer;color:#ddd;font-size:11px}.mood.sel{border-color:#0096FF;background:#003a66}dialog{background:#1c1c26;color:#fff;border:1px solid #0096FF;border-radius:14px;max-width:520px;width:92%}footer{text-align:center;color:#888;padding:20px;font-size:12px}
+</style></head><body>
+<header><h1>Daily Journal</h1><button class="hbtn" id="helpBtn">?</button></header>
+<main>
+<div class="card"><label>Date <input type="date" id="date"></label><p id="prompt" style="font-style:italic"></p><button class="btn2" id="newPrompt">Another prompt</button>
+<h3>How was today?</h3><div class="row" id="moods"></div><p id="moodLabel"></p>
+<textarea id="entry" rows="8" placeholder="Write today's entry..."></textarea><div id="wc">0 words</div>
+<input id="grat" placeholder="One thing I am grateful for today...">
+<div class="row"><button class="btn" id="saveBtn">Save entry</button><button class="btn2" id="exportBtn">Export all as .txt</button></div><span id="savedMsg"></span></div>
+<div class="card"><h3>Past entries</h3><div id="past"></div></div>
+</main><footer>Digital Dollar Store — a private notebook on this device.</footer>
+<dialog id="help"><h2>How to use Daily Journal</h2><ol><li>Today opens automatically. Read the prompt for an idea.</li><li>Tap a face to pick today's mood.</li><li>Write your entry and a gratitude line.</li><li>Tap Save entry. It saves on this device only.</li><li>Change the date at the top to read or edit a past day.</li><li>Tap Export all to download every entry as a text file.</li></ol><button class="btn" onclick="document.getElementById('help').close()">Close</button></dialog>
+<script>
+const PROMPTS=["What went well today?","What did you learn today?","What are you looking forward to?","Describe a small moment you enjoyed.","What would you do differently today?","Who helped you recently?","What is one goal for tomorrow?","What made you smile today?","What challenge did you face?","What are you proud of?","Describe your perfect morning.","What song fits today?","What did you eat that you enjoyed?","What is something new you noticed?","Write about a place you like.","What kindness did you see today?","What do you want to remember?","What is taking up your thoughts?","What would make tomorrow great?","Describe today in three words.","What skill do you want to build?","Who do you want to thank?","What book or show is on your mind?","What is a simple pleasure of yours?","What did the weather make you feel?","Write a note to future you.","What finished today?","What started today?","What do you need more of?","What do you need less of?"];
+const KEY='daily-journal-v1';let entries={};try{entries=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){entries={}}
+const $=id=>document.getElementById(id);let mood='';
+const MOODS=[['Rough',1],['Low',2],['Okay',3],['Good',4],['Great',5]];
+function face(v){let mouth=v<=2?'M14 26 Q20 20 26 26':v===3?'M14 24 L26 24':'M14 22 Q20 28 26 22';let col=['#ff6b6b','#ff9f43','#ffd32a','#7dff8a','#0096FF'][v-1];return `<svg width="36" height="36" viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="none" stroke="${col}" stroke-width="2.5"/><circle cx="14" cy="16" r="2" fill="${col}"/><circle cx="26" cy="16" r="2" fill="${col}"/><path d="${mouth}" stroke="${col}" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>`}
+$('moods').innerHTML=MOODS.map(m=>`<button class="mood" data-mood="${m[0]}" aria-label="${m[0]}">${face(m[1])}<br><small>${m[0]}</small></button>`).join('');
+function todayStr(){let n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')}
+$('date').value=todayStr();
+function promptFor(ds){let idx=Math.floor(new Date(ds+'T12:00:00').getTime()/86400000)%PROMPTS.length;return PROMPTS[idx]}
+function load(){let ds=$('date').value;let e=entries[ds]||{text:'',grat:'',mood:''};$('entry').value=e.text;$('grat').value=e.grat;mood=e.mood;$('prompt').textContent='Prompt: '+promptFor(ds);document.querySelectorAll('.mood').forEach(b=>b.classList.toggle('sel',b.dataset.mood===mood));$('moodLabel').textContent=mood?('Mood: '+mood):'';updateWC();renderPast()}
+function updateWC(){let t=$('entry').value.trim();$('wc').textContent=(t?t.split(/\s+/).length:0)+' words'}
+function renderPast(){let dates=Object.keys(entries).sort().reverse();$('past').innerHTML=dates.length?dates.map(d=>`<p><button class="btn2" data-open="${d}">${d}</button> ${entries[d].mood?'· '+entries[d].mood:''} · ${(entries[d].text.trim()?entries[d].text.trim().split(/\s+/).length:0)} words</p>`).join(''):'<p>No entries yet. Write today\'s entry above and tap Save entry.</p>'}
+$('moods').addEventListener('click',e=>{let b=e.target.closest('[data-mood]');if(b){mood=b.dataset.mood;document.querySelectorAll('.mood').forEach(x=>x.classList.toggle('sel',x.dataset.mood===mood));$('moodLabel').textContent='Mood: '+mood}});
+$('entry').addEventListener('input',updateWC);
+$('date').addEventListener('change',load);
+$('newPrompt').onclick=()=>{let cur=$('prompt').textContent;let nxt=PROMPTS[Math.floor(Math.random()*PROMPTS.length)];$('prompt').textContent='Prompt: '+nxt};
+$('saveBtn').onclick=()=>{entries[$('date').value]={text:$('entry').value,grat:$('grat').value,mood:mood};localStorage.setItem(KEY,JSON.stringify(entries));$('savedMsg').textContent='Saved.';renderPast()};
+$('past').addEventListener('click',e=>{if(e.target.dataset.open){$('date').value=e.target.dataset.open;load()}});
+$('exportBtn').onclick=()=>{let txt=Object.keys(entries).sort().map(d=>d+'\nMood: '+(entries[d].mood||'')+'\nGrateful for: '+(entries[d].grat||'')+'\n\n'+entries[d].text+'\n\n---\n').join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));a.download='journal-export.txt';a.click()};
+$('helpBtn').onclick=()=>$('help').showModal();load();
+</script></body></html>

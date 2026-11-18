@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Focus Timer</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#070a10;--surf:#161e2c;--surf2:#1f2a3d;--line:#33435c;--txt:#eef3fa;--mut:#9db1c9;--acc:#0096FF;--acc2:#57bdff}
+body{background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100dvh;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:linear-gradient(180deg,#232f44,#141c2b);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+header h1{font-size:19px;flex:1}
+.hbtn{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surf2);color:var(--txt);font-size:20px;cursor:pointer}
+main{flex:1;width:100%;max-width:760px;margin:0 auto;padding:14px}
+.panel{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+#phase{text-align:center;color:var(--acc2);font-weight:800;letter-spacing:2px;font-size:15px}
+#clock{text-align:center;font-size:min(96px,22vw);font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
+#taskName{width:100%;min-height:48px;border-radius:10px;border:1px solid var(--line);background:#0d1420;color:var(--txt);padding:8px 12px;font-size:16px;margin:8px 0}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center}
+.btn{min-height:48px;padding:8px 18px;border-radius:10px;border:1px solid var(--line);background:var(--surf2);color:var(--txt);font-size:16px;cursor:pointer}
+.btn.primary{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:800;min-width:150px}
+.btn.sel{border-color:var(--acc);background:#0b2c4d;color:#cfeaff;font-weight:700}
+label{font-size:14px;color:var(--mut)}
+input[type=number]{width:72px;min-height:44px;border-radius:8px;border:1px solid var(--line);background:#0d1420;color:var(--txt);padding:6px;font-size:16px}
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;text-align:center}
+.stat{background:var(--surf2);border:1px solid var(--line);border-radius:12px;padding:12px 6px}
+.stat b{display:block;font-size:26px}.stat span{color:var(--mut);font-size:12px}
+#logList{list-style:none;font-size:14px;line-height:1.9;color:var(--mut)}
+footer{text-align:center;color:var(--mut);font-size:12px;padding:14px}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;z-index:20;padding:16px;overflow:auto}
+.overlay.open{display:block}
+.sheet{background:var(--surf);border:1px solid var(--line);border-radius:16px;max-width:560px;margin:24px auto;padding:20px}
+.sheet h2{margin-bottom:10px}.sheet ol{margin:0 0 14px 20px;line-height:1.7;font-size:15px}.sheet p{color:var(--mut);line-height:1.6;font-size:14px;margin-bottom:10px}
+.close{width:100%;min-height:48px;border-radius:10px;border:0;background:var(--acc);color:#fff;font-size:16px;font-weight:700;cursor:pointer}
+</style></head><body>
+<header><h1>Focus Timer</h1><button class="hbtn" id="helpBtn" aria-label="Help">?</button></header>
+<main>
+<section class="panel">
+<div id="phase">WORK</div><div id="clock">25:00</div>
+<input id="taskName" type="text" placeholder="What are you working on? (optional)" maxlength="80" aria-label="Task name">
+<div class="row"><button class="btn primary" id="startBtn">Start</button><button class="btn" id="resetBtn">Reset</button><button class="btn" id="skipBtn">Skip to Next</button></div>
+<div class="row" style="margin-top:12px"><button class="btn sel" data-mode="work">Work</button><button class="btn" data-mode="short">Short Break</button><button class="btn" data-mode="long">Long Break</button></div>
+</section>
+<section class="panel"><h2 style="font-size:16px;margin-bottom:10px">Today</h2>
+<div class="stats"><div class="stat"><b id="stSessions">0</b><span>sessions done</span></div><div class="stat"><b id="stMinutes">0</b><span>focus minutes</span></div><div class="stat"><b id="stCycle">0</b><span>this set</span></div></div>
+<ul id="logList" style="margin-top:10px"></ul></section>
+<section class="panel"><h2 style="font-size:16px;margin-bottom:10px">Lengths (minutes)</h2>
+<div class="row" style="justify-content:flex-start">
+<label>Work <input type="number" id="lenWork" min="1" max="180" value="25"></label>
+<label>Short <input type="number" id="lenShort" min="1" max="60" value="5"></label>
+<label>Long <input type="number" id="lenLong" min="1" max="90" value="15"></label>
+<button class="btn" id="saveLen">Save lengths</button></div>
+<p style="color:var(--mut);font-size:13px;margin-top:8px">After 4 work sessions, the long break comes up. Your log is saved only on this device.</p></section>
+</main>
+<footer>Digital Dollar Store</footer>
+<div class="overlay" id="help"><div class="sheet"><h2>How to use Focus Timer</h2>
+<ol><li>Type what you are working on, if you want it in your log.</li><li>Tap Start. The big clock counts down your work time.</li><li>Tap Pause any time; tap Start again to keep going.</li><li>When time runs out, a soft chime plays and your session is added to today's log.</li><li>Take the break, then start the next work session.</li><li>Change the lengths at the bottom and tap Save lengths if the standard times do not fit you.</li></ol>
+<button class="close" id="helpClose">Close</button></div></div>
+<script>
+"use strict";
+var KEY='dds-focus-v1';
+function todayKey(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function load(){ try{ return JSON.parse(localStorage.getItem(KEY))||{} }catch(e){ return {} } }
+function save(s){ try{ localStorage.setItem(KEY,JSON.stringify(s)) }catch(e){} }
+var store=load(); if(!store.settings)store.settings={work:25,short:5,long:15}; if(!store.days)store.days={};
+var mode='work', running=false, endAt=0, remainMs=store.settings.work*60000, cycle=0, int=null;
+var ctx=null; function ensureCtx(){ if(!ctx)ctx=new (window.AudioContext||window.webkitAudioContext)(); if(ctx.state==='suspended')ctx.resume(); }
+function chime(){ ensureCtx(); if(!ctx)return; var t=ctx.currentTime; [523.25,659.25,783.99].forEach(function(f,i){ var o=ctx.createOscillator(),g=ctx.createGain(); o.type='sine'; o.frequency.value=f; o.connect(g); g.connect(ctx.destination); g.gain.setValueAtTime(0.0001,t+i*0.18); g.gain.exponentialRampToValueAtTime(0.3,t+i*0.18+0.03); g.gain.exponentialRampToValueAtTime(0.0001,t+i*0.18+0.9); o.start(t+i*0.18); o.stop(t+i*0.18+1); }); window.__chimed=(window.__chimed||0)+1; }
+function dur(m){ return store.settings[m]*60000; }
+function fmt(ms){ var s=Math.max(0,Math.ceil(ms/1000)); return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
+function render(){ document.getElementById('clock').textContent=fmt(remainMs);
+ document.getElementById('phase').textContent=mode==='work'?'WORK':(mode==='short'?'SHORT BREAK':'LONG BREAK');
+ document.querySelectorAll('[data-mode]').forEach(function(b){b.classList.toggle('sel',b.dataset.mode===mode)});
+ var day=store.days[todayKey()]||{sessions:0,minutes:0,log:[]};
+ document.getElementById('stSessions').textContent=day.sessions; document.getElementById('stMinutes').textContent=day.minutes; document.getElementById('stCycle').textContent=cycle;
+ var ul=document.getElementById('logList'); ul.innerHTML= day.log.length? day.log.slice().reverse().map(function(x){return '<li>'+x+'</li>'}).join('') : '<li>No sessions yet today. Your first one will show up here.</li>'; }
+function tick(){ remainMs=endAt-Date.now(); if(remainMs<=0){ complete(); return; } render(); }
+function complete(){ clearInterval(int); int=null; running=false; document.getElementById('startBtn').textContent='Start'; remainMs=0; render(); chime();
+ if(mode==='work'){ var k=todayKey(); if(!store.days[k])store.days[k]={sessions:0,minutes:0,log:[]}; var mins=store.settings.work; store.days[k].sessions++; store.days[k].minutes+=mins;
+  var task=document.getElementById('taskName').value.trim()||'Focus session'; var now=new Date(); store.days[k].log.push(task+' — '+mins+' min, finished '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')); save(store);
+  cycle++; mode=(cycle%4===0)?'long':'short'; }
+ else { mode='work'; }
+ remainMs=dur(mode); render(); }
+function setMode(m){ mode=m; running=false; clearInterval(int); int=null; document.getElementById('startBtn').textContent='Start'; remainMs=dur(m); render(); }
+document.getElementById('startBtn').addEventListener('click',function(){ ensureCtx();
+ if(running){ running=false; clearInterval(int); int=null; remainMs=Math.max(0,endAt-Date.now()); this.textContent='Start'; }
+ else { running=true; endAt=Date.now()+remainMs; int=setInterval(tick,200); this.textContent='Pause'; } render(); });
+document.getElementById('resetBtn').addEventListener('click',function(){ setMode(mode); });
+document.getElementById('skipBtn').addEventListener('click',function(){ if(running||remainMs<dur(mode)){ complete(); } else { setMode(mode==='work'?'short':'work'); } });
+document.querySelectorAll('[data-mode]').forEach(function(b){ b.addEventListener('click',function(){ setMode(b.dataset.mode); }); });
+['lenWork','lenShort','lenLong'].forEach(function(id,i){ document.getElementById(id).value=store.settings[['work','short','long'][i]]; });
+document.getElementById('saveLen').addEventListener('click',function(){ var w=Math.min(180,Math.max(1,+document.getElementById('lenWork').value||25)), s=Math.min(60,Math.max(1,+document.getElementById('lenShort').value||5)), l=Math.min(90,Math.max(1,+document.getElementById('lenLong').value||15));
+ store.settings={work:w,short:s,long:l}; save(store); if(!running)setMode(mode); });
+document.getElementById('helpBtn').addEventListener('click',function(){document.getElementById('help').classList.add('open')});
+document.getElementById('helpClose').addEventListener('click',function(){document.getElementById('help').classList.remove('open')});
+render();
+window.__focus={setLengths:function(w,s,l){ store.settings={work:w,short:s,long:l}; save(store); setMode('work'); }, get store(){return store}, get mode(){return mode}, todayKey:todayKey, complete:complete};
+</script></body></html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>True Level &amp; Measure — Digital Dollar Store</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:#0a0a0f;color:#e8ecf1;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100dvh}
+button,input{font:inherit}button{cursor:pointer}
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:10px 14px;background:linear-gradient(180deg,#2a2e35,#14161a);border-bottom:1px solid #3a3f47}
+.topbar h1{font-size:18px;margin:0;flex:1}.topbar h1 span{color:#0096FF}
+.iconbtn{width:44px;height:44px;border-radius:10px;border:1px solid #555c66;background:linear-gradient(180deg,#e8ecf1,#9aa3ad);color:#111;display:grid;place-items:center}
+.wrap{max-width:680px;margin:0 auto;padding:14px 14px 28px}
+.card{background:linear-gradient(180deg,#1e2126,#14161a);border:1px solid #3a3f47;border-radius:16px;padding:16px;margin-bottom:14px}
+.btn{min-height:48px;padding:10px 16px;border-radius:10px;border:1px solid #0096FF;background:#0096FF;color:#fff;font-weight:700}
+.btn.ghost{background:transparent;color:#7ec3ff}
+.circleWrap{display:flex;justify-content:center;padding:8px 0}
+.circle{position:relative;width:220px;height:220px;border-radius:50%;border:3px solid #8a939e;background:radial-gradient(circle,#1c2a38 0%,#10151b 70%);overflow:hidden;flex:0 0 auto}
+.circle:before,.circle:after{content:"";position:absolute;background:#3a4a5a}.circle:before{left:50%;top:0;width:1px;height:100%}.circle:after{top:50%;left:0;height:1px;width:100%}
+.cross{position:absolute;left:50%;top:50%;width:56px;height:56px;margin:-28px 0 0 -28px;border:2px solid #0096FF;border-radius:50%}
+.bubble{position:absolute;width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#bfe6ff,#0096FF);left:50%;top:50%;margin:-22px 0 0 -22px;box-shadow:0 2px 10px rgba(0,0,0,.6)}
+.bar{position:relative;height:44px;border-radius:22px;border:2px solid #8a939e;background:#10151b;overflow:hidden;margin:10px 0}
+.barBubble{position:absolute;top:4px;width:60px;height:32px;border-radius:16px;background:linear-gradient(180deg,#bfe6ff,#0096FF);left:50%;margin-left:-30px}
+.readout{display:flex;gap:8px;flex-wrap:wrap}.cell{flex:1;min-width:100px;background:#0f1114;border:1px solid #2c3138;border-radius:10px;padding:10px;text-align:center}.cell b{display:block;font-size:22px}.cell span{font-size:11px;color:#8a97a6;text-transform:uppercase}
+.ruler{position:relative;height:90px;background:linear-gradient(180deg,#e8ecf1,#b9c0c9);color:#111;border-radius:8px;overflow:hidden;margin-top:10px}
+.tick{position:absolute;top:0;width:1px;background:#333}.ticklab{position:absolute;top:34px;font-size:11px;transform:translateX(-50%)}
+input[type=range]{width:100%;min-height:44px;accent-color:#0096FF}
+label{font-size:13px;color:#9fb0c3;display:block;margin:10px 0 4px}
+.note{font-size:13px;color:#c9d4df;line-height:1.6;background:#0f1c2a;border:1px solid #23405c;border-radius:10px;padding:12px}
+footer{text-align:center;color:#6b7885;font-size:12px;padding:18px}
+dialog{border:1px solid #3a3f47;background:#17191d;color:#e8ecf1;border-radius:16px;max-width:520px;width:calc(100% - 28px);padding:20px}dialog::backdrop{background:rgba(0,0,0,.7)}dialog ol{padding-left:20px;line-height:1.7}
+.level-ok{color:#4ade80!important}
+</style></head><body>
+<header class="topbar"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0096FF" stroke-width="2"><rect x="2" y="9" width="20" height="6" rx="3"/><circle cx="12" cy="12" r="1.5" fill="#0096FF"/></svg><h1>True Level <span>&amp; Measure</span></h1><button class="iconbtn" id="helpBtn" aria-label="Help"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.5 9a2.5 2.5 0 1 1 3.4 2.3c-.6.2-.9.6-.9 1.2"/><circle cx="12" cy="17" r=".5" fill="currentColor"/></svg></button></header>
+<main class="wrap">
+<div class="card"><h2 style="margin:0 0 6px;font-size:17px">Bubble level</h2>
+<p class="note" id="sensorNote">Lay the phone flat for the round level, or hold it on edge for the bar levels. If your phone asks, tap “Enable motion sensor” and allow access. No sensor? Use Demo mode below — drag the sliders to see how the bubbles move.</p>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn" id="permBtn">Enable motion sensor</button><button class="btn ghost" id="demoBtn">Demo mode: ON</button><button class="btn ghost" id="zeroBtn">Set zero here</button></div>
+<div class="circleWrap"><div class="circle" aria-label="Circular bubble level"><div class="cross"></div><div class="bubble" id="bubble"></div></div></div>
+<div class="readout"><div class="cell"><span>Tilt X</span><b id="tiltX">0.0°</b></div><div class="cell"><span>Tilt Y</span><b id="tiltY">0.0°</b></div><div class="cell"><span>Angle</span><b id="angleOut">0.0°</b></div><div class="cell"><span>Status</span><b id="statusOut" class="level-ok">LEVEL</b></div></div>
+<label>Bar level — left / right</label><div class="bar"><div class="barBubble" id="barX"></div></div>
+<label>Bar level — front / back</label><div class="bar"><div class="barBubble" id="barY"></div></div>
+<div id="demoControls"><label for="demoX">Demo tilt X: <span id="demoXVal">0°</span></label><input type="range" id="demoX" min="-45" max="45" value="0" step="0.5"><label for="demoY">Demo tilt Y: <span id="demoYVal">0°</span></label><input type="range" id="demoY" min="-45" max="45" value="0" step="0.5"></div>
+<p style="font-size:12px;color:#8a97a6">Protractor: the Angle readout is the total tilt from flat. Flat and still reads 0.0°. Phone sensors are handy guides, not certified instruments.</p>
+</div>
+<div class="card"><h2 style="margin:0 0 6px;font-size:17px">On-screen ruler</h2>
+<p style="font-size:13px;color:#9fb0c3;margin:0">Hold an object against the ruler. Screens differ, so calibrate once: hold a real coin or card against the line and move the slider until it matches.</p>
+<div style="display:flex;gap:6px;margin-top:10px"><button class="btn" id="unitCm">Centimeters</button><button class="btn ghost" id="unitIn">Inches</button></div>
+<div class="ruler" id="ruler"></div>
+<label for="calib">Calibration — pixels per centimeter: <span id="calibVal">37.8</span></label><input type="range" id="calib" min="20" max="80" value="37.8" step="0.2">
+<p style="font-size:12px;color:#8a97a6">Default assumes about 96 dots per inch. Your setting is saved on this device only.</p>
+</div>
+</main>
+<footer>Digital Dollar Store</footer>
+<dialog id="helpDlg"><h2 style="margin-top:0">How to use True Level &amp; Measure</h2><ol><li>Tap “Enable motion sensor.” If your phone asks for permission, tap Allow. On some iPhones this tap is required before the level can move.</li><li>Lay the phone flat on the surface. Watch the round bubble — when it sits inside the blue ring, the surface is level.</li><li>Read Tilt X, Tilt Y, and Angle under the circle. 0.0° means flat.</li><li>Use the two bar levels when you hold the phone on its edge against a shelf or picture frame.</li><li>Tap “Set zero here” to zero the level on a slanted surface you want to match.</li><li>No sensor? Demo mode is on — drag the Demo tilt sliders and watch the bubbles move.</li><li>Ruler: tap Centimeters or Inches, hold your object to the screen ruler, and use the Calibration slider once so the screen matches a real ruler.</li></ol><button class="btn" id="helpClose" style="width:100%">Close</button></dialog>
+<script>
+let demo=true,zeroX=0,zeroY=0,curX=0,curY=0;
+const bubble=document.getElementById("bubble"),barX=document.getElementById("barX"),barY=document.getElementById("barY");
+function render(){const x=curX-zeroX,y=curY-zeroY;const cx=Math.max(-80,Math.min(80,x*2.2)),cy=Math.max(-80,Math.min(80,y*2.2));bubble.style.transform="translate("+cx+"px,"+cy+"px)";barX.style.transform="translateX("+Math.max(-110,Math.min(110,x*3))+"px)";barY.style.transform="translateX("+Math.max(-110,Math.min(110,y*3))+"px)";
+ document.getElementById("tiltX").textContent=x.toFixed(1)+"°";document.getElementById("tiltY").textContent=y.toFixed(1)+"°";const ang=Math.sqrt(x*x+y*y);document.getElementById("angleOut").textContent=ang.toFixed(1)+"°";const st=document.getElementById("statusOut");const level=ang<0.6;st.textContent=level?"LEVEL":"TILTED";st.className=level?"level-ok":"";st.style.color=level?"":"#fbbf24"}
+function setDemoFromSliders(){curX=parseFloat(document.getElementById("demoX").value);curY=parseFloat(document.getElementById("demoY").value);document.getElementById("demoXVal").textContent=curX+"°";document.getElementById("demoYVal").textContent=curY+"°";render()}
+document.getElementById("demoX").addEventListener("input",setDemoFromSliders);document.getElementById("demoY").addEventListener("input",setDemoFromSliders);
+const demoBtn=document.getElementById("demoBtn");demoBtn.onclick=()=>{demo=!demo;demoBtn.textContent="Demo mode: "+(demo?"ON":"OFF");document.getElementById("demoControls").style.display=demo?"block":"none";if(demo)setDemoFromSliders()};
+document.getElementById("zeroBtn").onclick=()=>{zeroX=curX;zeroY=curY;render()};
+function onOrient(e){if(demo)return;if(e.gamma===null||e.beta===null)return;curX=e.gamma;curY=e.beta-0; /* beta ~90 when flat in portrait handling simplified: use gamma/beta deltas */ curY=e.beta>90?e.beta-90:e.beta;render();document.getElementById("sensorNote").textContent="Sensor is live. Lay the phone flat — flat reads about 0.0°. Tap “Set zero here” anytime to zero on the current surface."}
+document.getElementById("permBtn").onclick=async()=>{try{
+ if(typeof DeviceOrientationEvent!=="undefined"&&typeof DeviceOrientationEvent.requestPermission==="function"){const r=await DeviceOrientationEvent.requestPermission();if(r!=="granted"){document.getElementById("sensorNote").textContent="Permission was not allowed, so the sensor level cannot run. Demo mode still works — drag the sliders below.";return}}
+ window.addEventListener("deviceorientation",onOrient);demo=false;demoBtn.textContent="Demo mode: OFF";document.getElementById("demoControls").style.display="none";curX=0;curY=0;render();document.getElementById("sensorNote").textContent="Sensor enabled. If the bubbles do not move when you tilt, your device may not share motion data with web pages — Demo mode still works."}catch(err){document.getElementById("sensorNote").textContent="This device or browser could not start the motion sensor. Demo mode still works — drag the sliders below."}};
+/* Ruler */
+let rulerUnit="cm",ppcm=parseFloat(localStorage.getItem("lm-ppcm")||"37.8");
+const calib=document.getElementById("calib");calib.value=ppcm;document.getElementById("calibVal").textContent=ppcm.toFixed(1);
+function drawRuler(){const r=document.getElementById("ruler");r.innerHTML="";const w=r.clientWidth||340;const stepPx=rulerUnit==="cm"?ppcm:ppcm*2.54;const minor=stepPx/10;for(let x=0,i=0;x<w;x+=minor,i++){const major=i%10===0;const t=document.createElement("div");t.className="tick";t.style.left=x+"px";t.style.height=(major?30:(i%5===0?20:12))+"px";r.appendChild(t);if(major){const lab=document.createElement("div");lab.className="ticklab";lab.style.left=x+"px";lab.textContent=rulerUnit==="cm"?i/10:i/10;r.appendChild(lab)}}const u=document.createElement("div");u.style.cssText="position:absolute;bottom:6px;right:10px;font-size:12px;font-weight:700";u.textContent=rulerUnit==="cm"?"centimeters":"inches";r.appendChild(u)}
+calib.addEventListener("input",()=>{ppcm=parseFloat(calib.value);document.getElementById("calibVal").textContent=ppcm.toFixed(1);try{localStorage.setItem("lm-ppcm",ppcm)}catch(e){}drawRuler()});
+document.getElementById("unitCm").onclick=()=>{rulerUnit="cm";drawRuler()};document.getElementById("unitIn").onclick=()=>{rulerUnit="in";drawRuler()};
+window.addEventListener("resize",drawRuler);
+const dlg=document.getElementById("helpDlg");document.getElementById("helpBtn").onclick=()=>dlg.showModal();document.getElementById("helpClose").onclick=()=>dlg.close();
+render();setTimeout(drawRuler,50);
+</script></body></html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>My Vault</title><style>*{box-sizing:border-box;margin:0;padding:0}
+:root{--blue:#0096FF;--bg:#0a0a0c;--panel:#17181c;--panel2:#212228;--line:#3a3d46;--txt:#f2f3f5;--mut:#a7abb5;--silver:linear-gradient(180deg,#3a3d45,#23242a)}
+html,body{background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:16px;line-height:1.45}
+body{max-width:860px;margin:0 auto;padding:0 12px 28px;overflow-x:hidden}
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#26272e,#141519);border-bottom:2px solid var(--blue);padding:10px 4px;margin:0 -12px;padding-left:12px;padding-right:12px}
+.topbar .logo{width:34px;height:34px;flex:0 0 auto}
+.topbar h1{font-size:19px;font-weight:700;letter-spacing:.2px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+button,.btn{min-height:44px;min-width:44px;padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--silver);color:var(--txt);font-size:15px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;text-decoration:none}
+button:active,.btn:active{filter:brightness(1.25)}
+button.primary,.btn.primary{background:linear-gradient(180deg,#2aa5ff,#0077d4);border-color:#54b6ff;color:#fff}
+button.danger{background:linear-gradient(180deg,#5a2326,#3a1517);border-color:#8a3a3e}
+button:disabled{opacity:.45;cursor:not-allowed}
+.helpbtn{border-radius:50%;width:44px;height:44px;padding:0;font-size:18px;flex:0 0 auto}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:14px}
+.card h2{font-size:16px;margin-bottom:8px;color:#fff}
+.card p.hint{color:var(--mut);font-size:14px;margin-bottom:10px}
+label{display:block;font-size:14px;color:var(--mut);margin:10px 0 4px}
+input[type=text],input[type=number],input[type=password],input[type=date],input[type=url],textarea,select{width:100%;min-height:44px;padding:10px;border-radius:10px;border:1px solid var(--line);background:#0e0f12;color:var(--txt);font-size:16px}
+textarea{min-height:70px;resize:vertical}
+input[type=range]{width:100%;min-height:44px;accent-color:var(--blue)}
+input[type=file]{width:100%;padding:10px 0;color:var(--mut)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row>*{flex:1}
+.row>.fixed{flex:0 0 auto}
+.mut{color:var(--mut);font-size:14px}
+.big{font-size:18px;font-weight:700}
+footer{text-align:center;color:#6d7078;font-size:12px;margin-top:26px;padding-top:12px;border-top:1px solid #23242a}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:50;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:16px}
+.overlay.open{display:flex}
+.sheet{background:var(--panel);border:1px solid var(--line);border-radius:14px;max-width:560px;width:100%;padding:18px;margin-top:4vh}
+.sheet h2{margin-bottom:10px}
+.sheet ol{margin:0 0 12px 20px}
+.sheet ol li{margin-bottom:7px}
+.sheet p{margin-bottom:10px;color:var(--mut)}
+.msg{margin-top:10px;padding:10px 12px;border-radius:10px;background:#0e2233;border:1px solid #155a8a;color:#cfeaff;font-size:14px;display:none;word-break:break-word}
+.msg.show{display:block}
+.msg.err{background:#33131a;border-color:#8a2536;color:#ffd7de}
+canvas{max-width:100%}
+img{max-width:100%}
+</style></head>
+<body>
+<header class="topbar">
+<svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><rect x="9" y="20" width="30" height="22" rx="4" fill="#23242a" stroke="#0096FF" stroke-width="2.5"/><path d="M16 20v-6a8 8 0 0 1 16 0v6" fill="none" stroke="#c9ccd4" stroke-width="3"/><circle cx="24" cy="31" r="4" fill="#0096FF"/></svg>
+<h1>My Vault</h1>
+<button class="helpbtn" id="helpBtn" aria-label="Help">?</button>
+</header>
+
+<div class="card" id="setupCard" style="display:none">
+<h2>Create your vault</h2>
+<p class="hint">Pick one master password. You will type it every time you open the vault. There is no way to recover it — if you forget it, the vault cannot be opened and the saved logins are lost. Write it down somewhere safe.</p>
+<label for="newPass">Master password (8+ characters)</label>
+<input type="password" id="newPass" autocomplete="new-password">
+<label for="newPass2">Type it again</label>
+<input type="password" id="newPass2" autocomplete="new-password">
+<button id="createBtn" class="primary" style="width:100%;margin-top:12px">Create Vault</button>
+<div class="msg" id="msgSetup"></div>
+</div>
+
+<div class="card" id="unlockCard" style="display:none">
+<h2>Open your vault</h2>
+<p class="hint">Type your master password to see your saved logins.</p>
+<label for="unlockPass">Master password</label>
+<input type="password" id="unlockPass" autocomplete="current-password">
+<button id="unlockBtn" class="primary" style="width:100%;margin-top:12px">Open Vault</button>
+<div class="msg" id="msgUnlock"></div>
+</div>
+
+<div id="vaultMain" style="display:none">
+<div class="card">
+<h2>Your logins</h2>
+<div id="entryList"></div>
+<div id="noEntries" class="mut">No logins saved yet. Add your first one below.</div>
+<button id="lockBtn" class="danger" style="width:100%;margin-top:12px">Lock Vault</button>
+</div>
+
+<div class="card">
+<h2 id="formTitle">Add a login</h2>
+<input type="hidden" id="editId">
+<label for="fSite">Site or app name</label>
+<input type="text" id="fSite" placeholder="e.g. My Bank">
+<label for="fUser">Username or email</label>
+<input type="text" id="fUser" autocomplete="off">
+<label for="fPass">Password</label>
+<div class="row">
+<input type="password" id="fPass" autocomplete="off" style="flex:1">
+<button id="showPassBtn" type="button" class="fixed">Show</button>
+</div>
+<label for="fNotes">Notes (optional)</label>
+<textarea id="fNotes"></textarea>
+<div class="row" style="margin-top:10px">
+<button id="saveEntryBtn" class="primary" type="button">Save Login</button>
+<button id="cancelEditBtn" type="button" style="display:none">Cancel Edit</button>
+</div>
+<div class="msg" id="msgEntry"></div>
+</div>
+
+<div class="card">
+<h2>Password maker</h2>
+<p class="hint">Make a strong new password. It fills the password box above so you can save it with a login.</p>
+<label for="genLen">Length: <span id="genLenVal">16</span></label>
+<input type="range" id="genLen" min="8" max="40" value="16">
+<label style="display:flex;align-items:center;gap:8px;min-height:44px;color:var(--txt)"><input type="checkbox" id="genSym" checked style="width:22px;height:22px"> Include symbols (! @ # $ …)</label>
+<label style="display:flex;align-items:center;gap:8px;min-height:44px;color:var(--txt)"><input type="checkbox" id="genNum" checked style="width:22px;height:22px"> Include numbers</label>
+<button id="genBtn" type="button" style="width:100%">Make a New Password</button>
+<input type="text" id="genOut" readonly style="margin-top:8px" placeholder="Your new password appears here">
+</div>
+</div>
+
+<footer>Digital Dollar Store</footer>
+
+<div class="overlay" id="helpOverlay"><div class="sheet">
+<h2>How to use My Vault</h2>
+<ol>
+<li>The first time, create a master password and tap <b>Create Vault</b>. Remember it — there is no reset and no recovery.</li>
+<li>Type a site name, username, and password, then tap <b>Save Login</b>.</li>
+<li>Tap <b>Copy</b> next to any login to copy its password, then paste it where you sign in.</li>
+<li>Tap <b>Edit</b> to change a login, or <b>Delete</b> to remove it.</li>
+<li>Use the Password Maker to create a strong password. It fills the password box for you.</li>
+<li>Tap <b>Lock Vault</b> when you are done. Your logins disappear from the screen until you open the vault again.</li>
+</ol>
+<p><b>Where your data lives:</b> only on this device, locked with strong encryption (AES-GCM) using your master password. Nothing is sent anywhere, and there is no account. If you forget your master password, the vault cannot be opened — nobody can recover it, including us. Clearing your browser data deletes the vault.</p>
+<button id="helpClose" class="primary" style="width:100%">Close</button>
+</div></div>
+
+<script>
+"use strict";
+function $(id){return document.getElementById(id)}
+function showMsg(el,t,err){el.textContent=t;el.className="msg show"+(err?" err":"")}
+var STORE="myvault_data_v1";
+var key=null, entries=[], saltB64=null;
+function b64enc(buf){var b=new Uint8Array(buf),s="";for(var i=0;i<b.length;i++)s+=String.fromCharCode(b[i]);return btoa(s)}
+function b64dec(s){var bin=atob(s),b=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)b[i]=bin.charCodeAt(i);return b}
+async function deriveKey(password,salt){
+  var base=await crypto.subtle.importKey("raw",new TextEncoder().encode(password),"PBKDF2",false,["deriveKey"]);
+  return crypto.subtle.deriveKey({name:"PBKDF2",salt:salt,iterations:150000,hash:"SHA-256"},base,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
+}
+async function persist(){
+  var iv=crypto.getRandomValues(new Uint8Array(12));
+  var data=new TextEncoder().encode(JSON.stringify(entries));
+  var ct=await crypto.subtle.encrypt({name:"AES-GCM",iv:iv},key,data);
+  localStorage.setItem(STORE,JSON.stringify({salt:saltB64,iv:b64enc(iv),ct:b64enc(ct)}));
+}
+async function tryUnlock(password){
+  var raw=JSON.parse(localStorage.getItem(STORE));
+  var salt=b64dec(raw.salt);
+  var k=await deriveKey(password,salt);
+  var pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64dec(raw.iv)},k,b64dec(raw.ct));
+  entries=JSON.parse(new TextDecoder().decode(pt));
+  key=k; saltB64=raw.salt;
+  return true;
+}
+function showState(){
+  var has=!!localStorage.getItem(STORE);
+  $("setupCard").style.display=(!has&&!key)?"block":"none";
+  $("unlockCard").style.display=(has&&!key)?"block":"none";
+  $("vaultMain").style.display=key?"block":"none";
+}
+function renderEntries(){
+  var el=$("entryList"); el.innerHTML="";
+  $("noEntries").style.display=entries.length?"none":"block";
+  entries.forEach(function(en){
+    var row=document.createElement("div");
+    row.style.cssText="background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:8px";
+    var head=document.createElement("div"); head.innerHTML="<b></b><br><span class='mut'></span>";
+    head.querySelector("b").textContent=en.site; head.querySelector(".mut").textContent=en.user;
+    var btns=document.createElement("div"); btns.className="row"; btns.style.marginTop="8px";
+    var cp=document.createElement("button"); cp.type="button"; cp.textContent="Copy Password"; cp.className="primary";
+    cp.addEventListener("click",function(){
+      function ok(){showMsg($("msgEntry"),"Password for "+en.site+" copied.");}
+      if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(en.pass).then(ok,function(){fallback()});
+      else fallback();
+      function fallback(){var ta=document.createElement("textarea");ta.value=en.pass;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");ok();}catch(e){showMsg($("msgEntry"),"Copy failed on this device.",true);}ta.remove();}
+    });
+    var ed=document.createElement("button"); ed.type="button"; ed.textContent="Edit";
+    ed.addEventListener("click",function(){
+      $("editId").value=en.id; $("fSite").value=en.site; $("fUser").value=en.user; $("fPass").value=en.pass; $("fNotes").value=en.notes||"";
+      $("formTitle").textContent="Edit login"; $("cancelEditBtn").style.display="inline-flex"; window.scrollTo(0,document.body.scrollHeight);
+    });
+    var del=document.createElement("button"); del.type="button"; del.textContent="Delete"; del.className="danger";
+    del.addEventListener("click",async function(){ entries=entries.filter(function(x){return x.id!==en.id}); await persist(); renderEntries(); showMsg($("msgEntry"),"Deleted "+en.site+"."); });
+    btns.appendChild(cp); btns.appendChild(ed); btns.appendChild(del);
+    row.appendChild(head); row.appendChild(btns); el.appendChild(row);
+  });
+}
+$("createBtn").addEventListener("click",async function(){
+  var p1=$("newPass").value,p2=$("newPass2").value;
+  if(p1.length<8){showMsg($("msgSetup"),"Use at least 8 characters for the master password.",true);return;}
+  if(p1!==p2){showMsg($("msgSetup"),"The two passwords do not match. Type them again.",true);return;}
+  var salt=crypto.getRandomValues(new Uint8Array(16)); saltB64=b64enc(salt);
+  key=await deriveKey(p1,salt); entries=[];
+  await persist(); $("newPass").value=""; $("newPass2").value="";
+  showState(); renderEntries(); showMsg($("msgEntry"),"Vault created. Add your first login below.");
+});
+$("unlockBtn").addEventListener("click",async function(){
+  var p=$("unlockPass").value; if(!p){showMsg($("msgUnlock"),"Type your master password.",true);return;}
+  try{ await tryUnlock(p); $("unlockPass").value=""; showState(); renderEntries(); }
+  catch(e){ showMsg($("msgUnlock"),"That password did not open the vault. Check it and try again.",true); }
+});
+$("unlockPass").addEventListener("keydown",function(e){if(e.key==="Enter")$("unlockBtn").click();});
+$("lockBtn").addEventListener("click",function(){
+  key=null; entries=[]; $("entryList").innerHTML=""; $("fPass").value=""; $("genOut").value="";
+  showState(); window.scrollTo(0,0);
+});
+$("showPassBtn").addEventListener("click",function(){
+  var f=$("fPass"); var show=f.type==="password"; f.type=show?"text":"password"; this.textContent=show?"Hide":"Show";
+});
+$("saveEntryBtn").addEventListener("click",async function(){
+  var site=$("fSite").value.trim(), user=$("fUser").value.trim(), pass=$("fPass").value;
+  if(!site){showMsg($("msgEntry"),"Type the site or app name first.",true);return;}
+  if(!pass){showMsg($("msgEntry"),"Type a password (or make one below) first.",true);return;}
+  var id=$("editId").value;
+  if(id){ var en=entries.find(function(x){return x.id===id}); if(en){en.site=site;en.user=user;en.pass=pass;en.notes=$("fNotes").value;} }
+  else entries.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),site:site,user:user,pass:pass,notes:$("fNotes").value});
+  await persist(); renderEntries();
+  $("editId").value=""; $("fSite").value=""; $("fUser").value=""; $("fPass").value=""; $("fNotes").value="";
+  $("formTitle").textContent="Add a login"; $("cancelEditBtn").style.display="none";
+  showMsg($("msgEntry"),"Saved. It is encrypted and stored only on this device.");
+});
+$("cancelEditBtn").addEventListener("click",function(){
+  $("editId").value=""; $("fSite").value=""; $("fUser").value=""; $("fPass").value=""; $("fNotes").value="";
+  $("formTitle").textContent="Add a login"; this.style.display="none";
+});
+$("genLen").addEventListener("input",function(){$("genLenVal").textContent=this.value});
+$("genBtn").addEventListener("click",function(){
+  var len=+$("genLen").value;
+  var chars="abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+  if($("genNum").checked)chars+="23456789";
+  if($("genSym").checked)chars+="!@#$%^&*()-_=+";
+  var arr=new Uint32Array(len); crypto.getRandomValues(arr);
+  var out=""; for(var i=0;i<len;i++)out+=chars[arr[i]%chars.length];
+  $("genOut").value=out; $("fPass").value=out; $("fPass").type="text"; $("showPassBtn").textContent="Hide";
+});
+$("helpBtn").addEventListener("click",function(){$("helpOverlay").classList.add("open")});
+$("helpClose").addEventListener("click",function(){$("helpOverlay").classList.remove("open")});
+$("helpOverlay").addEventListener("click",function(e){if(e.target===this)this.classList.remove("open")});
+showState();
+window.__vaultState=function(){return {locked:!key,count:entries.length}};
+</script>
+</body></html>

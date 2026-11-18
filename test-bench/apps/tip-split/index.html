@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tip &amp; Split — Digital Dollar Store</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:#0a0a0f;color:#e8ecf1;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100dvh}
+button,input{font:inherit}button{cursor:pointer}
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:10px 14px;background:linear-gradient(180deg,#2a2e35,#14161a);border-bottom:1px solid #3a3f47}
+.topbar h1{font-size:18px;margin:0;flex:1}.topbar h1 span{color:#0096FF}
+.iconbtn{width:44px;height:44px;border-radius:10px;border:1px solid #555c66;background:linear-gradient(180deg,#e8ecf1,#9aa3ad);color:#111;display:grid;place-items:center}
+.wrap{max-width:640px;margin:0 auto;padding:14px 14px 28px}
+.card{background:linear-gradient(180deg,#1e2126,#14161a);border:1px solid #3a3f47;border-radius:16px;padding:16px}
+label{font-size:13px;color:#9fb0c3;display:block;margin:12px 0 6px}
+input[type=number]{width:100%;min-height:52px;border-radius:10px;border:1px solid #4a5058;background:#0f1114;color:#fff;padding:10px 12px;font-size:20px}
+.presets{display:flex;gap:6px;flex-wrap:wrap}.preset{min-height:48px;padding:10px 16px;border-radius:10px;border:1px solid #3a3f47;background:#1a1d22;color:#fff;font-weight:700}
+.preset.active{background:#0096FF;border-color:#0096FF}
+.stepper{display:flex;gap:8px;align-items:center}.stepper button{width:52px;height:52px;border-radius:10px;border:1px solid #555c66;background:linear-gradient(180deg,#e8ecf1,#9aa3ad);color:#111;font-size:22px;font-weight:800}
+.stepper .n{flex:1;text-align:center;font-size:28px;font-weight:800}
+.toggle{display:flex;align-items:center;gap:10px;min-height:48px}.toggle input{width:26px;height:26px;accent-color:#0096FF}
+.result{margin-top:16px;background:#08131f;border:1px solid #0096FF;border-radius:14px;padding:18px;text-align:center}
+.result .per{font-size:44px;font-weight:900;color:#fff;line-height:1.1}.result .lab{color:#7ec3ff;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.cell{background:#14161a;border:1px solid #2c3138;border-radius:10px;padding:12px;text-align:center}.cell b{display:block;font-size:20px}.cell span{font-size:12px;color:#8a97a6}
+.btn{min-height:48px;padding:10px 16px;border-radius:10px;border:1px solid #0096FF;background:#0096FF;color:#fff;font-weight:700;width:100%}
+footer{text-align:center;color:#6b7885;font-size:12px;padding:18px}
+dialog{border:1px solid #3a3f47;background:#17191d;color:#e8ecf1;border-radius:16px;max-width:520px;width:calc(100% - 28px);padding:20px}dialog::backdrop{background:rgba(0,0,0,.7)}dialog ol{padding-left:20px;line-height:1.7}
+</style></head><body>
+<header class="topbar"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0096FF" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/></svg><h1>Tip <span>&amp; Split</span></h1><button class="iconbtn" id="helpBtn" aria-label="Help"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.5 9a2.5 2.5 0 1 1 3.4 2.3c-.6.2-.9.6-.9 1.2"/><circle cx="12" cy="17" r=".5" fill="currentColor"/></svg></button></header>
+<main class="wrap"><div class="card">
+<label for="bill">Bill amount ($)</label><input type="number" id="bill" inputmode="decimal" min="0" step="0.01" placeholder="0.00" value="86.40">
+<label>Tip percent</label><div class="presets" id="presets"></div>
+<label for="customTip">Custom tip %</label><input type="number" id="customTip" inputmode="decimal" min="0" placeholder="Or type your own %">
+<label for="tax">Tax amount ($) — optional</label><input type="number" id="tax" inputmode="decimal" min="0" step="0.01" placeholder="0.00" value="0">
+<label>Split between</label><div class="stepper"><button id="minus" aria-label="Fewer people">−</button><div class="n"><span id="peopleN">3</span> <span style="font-size:15px;color:#9fb0c3">people</span></div><button id="plus" aria-label="More people">+</button></div>
+<div class="toggle" style="margin-top:10px"><input type="checkbox" id="roundUp"><label for="roundUp" style="margin:0;color:#e8ecf1;font-size:15px">Round each person’s share up to the next whole dollar</label></div>
+<div class="result" aria-live="polite"><div class="lab">EACH PERSON PAYS</div><div class="per" id="perPerson">$33.89</div><div class="lab" id="perDetail">Includes tip &amp; tax, split evenly</div></div>
+<div class="grid"><div class="cell"><span>Tip total</span><b id="tipTotal">$0.00</b></div><div class="cell"><span>Grand total</span><b id="grandTotal">$0.00</b></div><div class="cell"><span>Bill + tax each</span><b id="baseEach">$0.00</b></div><div class="cell"><span>Tip each</span><b id="tipEach">$0.00</b></div></div>
+<p style="font-size:12px;color:#8a97a6;line-height:1.5">Empty bill counts as $0. Splitting between 1 person shows the full total. Numbers update as you type — no button to press.</p>
+</div></main>
+<footer>Digital Dollar Store</footer>
+<dialog id="helpDlg"><h2 style="margin-top:0">How to use Tip &amp; Split</h2><ol><li>Type the bill amount at the top.</li><li>Tap a tip percent — 10%, 15%, 18%, 20%, or 25% — or type your own in Custom tip %.</li><li>If there was tax, type the tax amount. Leave it at 0 if tax is already in the bill.</li><li>Use the − and + buttons to set how many people are splitting.</li><li>Turn on “Round up” if you want each share rounded up to a whole dollar.</li><li>Read the big number — that is what each person pays. The boxes below show the tip and totals.</li></ol><button class="btn" id="helpClose">Close</button></dialog>
+<script>
+let tipPct=18,people=3;
+const billEl=document.getElementById("bill"),taxEl=document.getElementById("tax"),customEl=document.getElementById("customTip"),roundEl=document.getElementById("roundUp");
+const presets=document.getElementById("presets");
+[10,15,18,20,25].forEach(p=>{const b=document.createElement("button");b.className="preset"+(p===18?" active":"");b.textContent=p+"%";b.dataset.p=p;b.onclick=()=>{tipPct=p;customEl.value="";document.querySelectorAll(".preset").forEach(x=>x.classList.toggle("active",+x.dataset.p===p));calc()};presets.appendChild(b)});
+function money(n){return "$"+n.toFixed(2)}
+function calc(){const bill=Math.max(0,parseFloat(billEl.value)||0);const tax=Math.max(0,parseFloat(taxEl.value)||0);const tip=bill*tipPct/100;const grand=bill+tax+tip;let per=people>0?grand/people:grand;let tipEach=people>0?tip/people:tip;let baseEach=people>0?(bill+tax)/people:(bill+tax);
+ if(roundEl.checked&&per>0){per=Math.ceil(per)}
+ document.getElementById("perPerson").textContent=money(per);
+ document.getElementById("tipTotal").textContent=money(tip);
+ document.getElementById("grandTotal").textContent=money(grand);
+ document.getElementById("baseEach").textContent=money(baseEach);
+ document.getElementById("tipEach").textContent=money(tipEach);
+ document.getElementById("peopleN").textContent=people;}
+customEl.addEventListener("input",()=>{const v=parseFloat(customEl.value);if(!isNaN(v)&&v>=0){tipPct=v;document.querySelectorAll(".preset").forEach(x=>x.classList.remove("active"))}calc()});
+[billEl,taxEl,roundEl].forEach(el=>{el.addEventListener("input",calc);el.addEventListener("change",calc)});
+document.getElementById("minus").onclick=()=>{people=Math.max(1,people-1);calc()};
+document.getElementById("plus").onclick=()=>{people=Math.min(50,people+1);calc()};
+const dlg=document.getElementById("helpDlg");document.getElementById("helpBtn").onclick=()=>dlg.showModal();document.getElementById("helpClose").onclick=()=>dlg.close();
+calc();
+</script></body></html>

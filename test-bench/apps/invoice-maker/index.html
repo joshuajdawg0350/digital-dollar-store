@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Quick Invoice</title><style>*{box-sizing:border-box;margin:0;padding:0}
+:root{--blue:#0096FF;--bg:#0a0a0c;--panel:#17181c;--panel2:#212228;--line:#3a3d46;--txt:#f2f3f5;--mut:#a7abb5;--silver:linear-gradient(180deg,#3a3d45,#23242a)}
+html,body{background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:16px;line-height:1.45}
+body{max-width:860px;margin:0 auto;padding:0 12px 28px;overflow-x:hidden}
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#26272e,#141519);border-bottom:2px solid var(--blue);padding:10px 4px;margin:0 -12px;padding-left:12px;padding-right:12px}
+.topbar .logo{width:34px;height:34px;flex:0 0 auto}
+.topbar h1{font-size:19px;font-weight:700;letter-spacing:.2px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+button,.btn{min-height:44px;min-width:44px;padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--silver);color:var(--txt);font-size:15px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;text-decoration:none}
+button:active,.btn:active{filter:brightness(1.25)}
+button.primary,.btn.primary{background:linear-gradient(180deg,#2aa5ff,#0077d4);border-color:#54b6ff;color:#fff}
+button.danger{background:linear-gradient(180deg,#5a2326,#3a1517);border-color:#8a3a3e}
+button:disabled{opacity:.45;cursor:not-allowed}
+.helpbtn{border-radius:50%;width:44px;height:44px;padding:0;font-size:18px;flex:0 0 auto}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:14px}
+.card h2{font-size:16px;margin-bottom:8px;color:#fff}
+.card p.hint{color:var(--mut);font-size:14px;margin-bottom:10px}
+label{display:block;font-size:14px;color:var(--mut);margin:10px 0 4px}
+input[type=text],input[type=number],input[type=password],input[type=date],input[type=url],textarea,select{width:100%;min-height:44px;padding:10px;border-radius:10px;border:1px solid var(--line);background:#0e0f12;color:var(--txt);font-size:16px}
+textarea{min-height:70px;resize:vertical}
+input[type=range]{width:100%;min-height:44px;accent-color:var(--blue)}
+input[type=file]{width:100%;padding:10px 0;color:var(--mut)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row>*{flex:1}
+.row>.fixed{flex:0 0 auto}
+.mut{color:var(--mut);font-size:14px}
+.big{font-size:18px;font-weight:700}
+footer{text-align:center;color:#6d7078;font-size:12px;margin-top:26px;padding-top:12px;border-top:1px solid #23242a}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:50;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:16px}
+.overlay.open{display:flex}
+.sheet{background:var(--panel);border:1px solid var(--line);border-radius:14px;max-width:560px;width:100%;padding:18px;margin-top:4vh}
+.sheet h2{margin-bottom:10px}
+.sheet ol{margin:0 0 12px 20px}
+.sheet ol li{margin-bottom:7px}
+.sheet p{margin-bottom:10px;color:var(--mut)}
+.msg{margin-top:10px;padding:10px 12px;border-radius:10px;background:#0e2233;border:1px solid #155a8a;color:#cfeaff;font-size:14px;display:none;word-break:break-word}
+.msg.show{display:block}
+.msg.err{background:#33131a;border-color:#8a2536;color:#ffd7de}
+canvas{max-width:100%}
+img{max-width:100%}
+
+@media print{ body{max-width:none;background:#fff;color:#000} .topbar,.no-print,footer{display:none!important} .card{border:none;background:#fff;color:#000;page-break-inside:avoid} .card h2,.card p,.card label,.card div{color:#000!important} input,textarea{background:#fff!important;color:#000!important;border:none!important;border-bottom:1px solid #999!important} #printArea{display:block!important} }
+#printArea{display:none;background:#fff;color:#000;border-radius:12px;padding:18px;margin-top:14px}
+#printArea table{width:100%;border-collapse:collapse}
+#printArea th,#printArea td{border-bottom:1px solid #bbb;padding:6px 4px;text-align:left;font-size:14px}
+#printArea .r{text-align:right}
+</style></head>
+<body>
+<header class="topbar">
+<svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><rect x="7" y="4" width="34" height="40" rx="5" fill="#23242a" stroke="#0096FF" stroke-width="2.5"/><path d="M14 14h20M14 22h20M14 30h11" stroke="#c9ccd4" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="33" r="6" fill="#0096FF"/><path d="M29.5 33h5M32 30.5v5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+<h1>Quick Invoice</h1>
+<button class="helpbtn" id="helpBtn" aria-label="Help">?</button>
+</header>
+
+<div class="card no-print">
+<h2>Invoice details</h2>
+<div class="row">
+<div><label for="invNum">Invoice number</label><input type="text" id="invNum" value="INV-001"></div>
+<div><label for="invDate">Date</label><input type="date" id="invDate"></div>
+<div><label for="dueDate">Due date</label><input type="date" id="dueDate"></div>
+</div>
+<label for="biz">Your business (name, address, phone)</label>
+<textarea id="biz" placeholder="Your Business Name&#10;Street, City&#10;Phone"></textarea>
+<label for="client">Bill to (client name and address)</label>
+<textarea id="client" placeholder="Client Name&#10;Street, City"></textarea>
+</div>
+
+<div class="card no-print">
+<h2>Work and charges</h2>
+<div id="items"></div>
+<button id="addItem" type="button" style="width:100%;margin-top:8px">+ Add Line</button>
+<div class="row">
+<div><label for="taxPct">Tax %</label><input type="number" id="taxPct" min="0" step="0.01" value="0"></div>
+<div><label for="discount">Discount $</label><input type="number" id="discount" min="0" step="0.01" value="0"></div>
+</div>
+<div style="margin-top:12px;font-size:16px;line-height:1.9">
+<div>Subtotal: <b id="subTotal">$0.00</b></div>
+<div>Discount: <b id="discShow">−$0.00</b></div>
+<div>Tax: <b id="taxShow">$0.00</b></div>
+<div class="big" style="color:var(--blue)">Total due: <span id="grandTotal">$0.00</span></div>
+</div>
+<label for="notes">Notes (payment terms, thank-you, etc.)</label>
+<textarea id="notes" placeholder="Payment due within 14 days. Thank you!"></textarea>
+<div class="msg" id="msgMain"></div>
+</div>
+
+<div class="card no-print">
+<h2>Save &amp; print</h2>
+<div class="row">
+<button id="saveBtn" class="primary" type="button">Save Invoice</button>
+<button id="printBtn" type="button">Print / Save as PDF</button>
+<button id="newBtn" type="button">New Invoice</button>
+</div>
+<h2 style="margin-top:16px">Saved on this device</h2>
+<div id="savedList"><span class="mut">No saved invoices yet.</span></div>
+</div>
+
+<div id="printArea"></div>
+
+<footer>Digital Dollar Store</footer>
+
+<div class="overlay" id="helpOverlay"><div class="sheet">
+<h2>How to use Quick Invoice</h2>
+<ol>
+<li>Check the invoice number and dates at the top.</li>
+<li>Type your business details and your client's details.</li>
+<li>For each charge, type what it was, how many, and the price each. The line total figures itself out.</li>
+<li>Tap <b>+ Add Line</b> for more charges. Tap the X on a line to remove it.</li>
+<li>Add a tax percent or a dollar discount if you need them. The total updates as you type.</li>
+<li>Tap <b>Save Invoice</b> to keep it on this device. Saved invoices are listed at the bottom — tap Load to work on one again, or Delete to remove it.</li>
+<li>Tap <b>Print / Save as PDF</b> for a clean copy to hand to your client. On most phones, pick "Save as PDF" in the print screen.</li>
+</ol>
+<p>Invoices are stored only on this device. Clearing your browser data removes them.</p>
+<button id="helpClose" class="primary" style="width:100%">Close</button>
+</div></div>
+
+<script>
+"use strict";
+function $(id){return document.getElementById(id)}
+function money(n){return "$"+(Math.round(n*100)/100).toFixed(2)}
+function showMsg(t,err){var m=$("msgMain");m.textContent=t;m.className="msg show"+(err?" err":"")}
+var KEY="quickinvoice_invoices_v1";
+function todayStr(d){return d.toISOString().slice(0,10)}
+$("invDate").value=todayStr(new Date());
+var due=new Date(); due.setDate(due.getDate()+14); $("dueDate").value=todayStr(due);
+
+function addItemRow(desc,qty,price){
+  var wrap=document.createElement("div");
+  wrap.className="itemRow";
+  wrap.style.cssText="display:flex;gap:6px;flex-wrap:wrap;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px;margin-top:8px;align-items:flex-end";
+  wrap.innerHTML="<div style='flex:2 1 140px'><label style='margin-top:0'>What it was</label><input type='text' class='it-desc' placeholder='e.g. Labor'></div>"+
+  "<div style='flex:0 1 70px'><label style='margin-top:0'>Qty</label><input type='number' class='it-qty' min='0' step='any' value='1'></div>"+
+  "<div style='flex:0 1 95px'><label style='margin-top:0'>Price $</label><input type='number' class='it-price' min='0' step='0.01' value='0'></div>"+
+  "<div style='flex:0 1 95px'><label style='margin-top:0'>Line total</label><div class='it-total big' style='min-height:44px;display:flex;align-items:center'>$0.00</div></div>"+
+  "<button type='button' class='danger it-del' aria-label='Remove line' style='flex:0 0 auto'>✕</button>";
+  if(desc!==undefined)wrap.querySelector(".it-desc").value=desc;
+  if(qty!==undefined)wrap.querySelector(".it-qty").value=qty;
+  if(price!==undefined)wrap.querySelector(".it-price").value=price;
+  wrap.querySelector(".it-del").addEventListener("click",function(){wrap.remove();if(!document.querySelectorAll(".itemRow").length)addItemRow();calc();});
+  wrap.querySelectorAll("input").forEach(function(inp){inp.addEventListener("input",calc);});
+  $("items").appendChild(wrap);
+}
+function getItems(){
+  var out=[];
+  document.querySelectorAll(".itemRow").forEach(function(r){
+    out.push({desc:r.querySelector(".it-desc").value,qty:parseFloat(r.querySelector(".it-qty").value)||0,price:parseFloat(r.querySelector(".it-price").value)||0});
+  });
+  return out;
+}
+function calc(){
+  var items=getItems(), sub=0;
+  document.querySelectorAll(".itemRow").forEach(function(r,i){
+    var lt=items[i].qty*items[i].price; sub+=lt; r.querySelector(".it-total").textContent=money(lt);
+  });
+  var disc=Math.min(Math.max(0,parseFloat($("discount").value)||0),sub);
+  var taxPct=Math.max(0,parseFloat($("taxPct").value)||0);
+  var tax=(sub-disc)*taxPct/100;
+  var total=sub-disc+tax;
+  $("subTotal").textContent=money(sub); $("discShow").textContent="−"+money(disc);
+  $("taxShow").textContent=money(tax); $("grandTotal").textContent=money(total);
+  return {sub:sub,disc:disc,tax:tax,total:total,items:items};
+}
+["taxPct","discount"].forEach(function(id){$(id).addEventListener("input",calc);});
+$("addItem").addEventListener("click",function(){addItemRow();calc();});
+
+function collect(){
+  var t=calc();
+  return {num:$("invNum").value,date:$("invDate").value,due:$("dueDate").value,biz:$("biz").value,client:$("client").value,items:t.items,taxPct:$("taxPct").value,discount:$("discount").value,notes:$("notes").value,total:t.total,savedAt:Date.now()};
+}
+function loadInv(inv){
+  $("invNum").value=inv.num||""; $("invDate").value=inv.date||""; $("dueDate").value=inv.due||"";
+  $("biz").value=inv.biz||""; $("client").value=inv.client||""; $("notes").value=inv.notes||"";
+  $("taxPct").value=inv.taxPct||0; $("discount").value=inv.discount||0;
+  $("items").innerHTML="";
+  (inv.items&&inv.items.length?inv.items:[{}]).forEach(function(it){addItemRow(it.desc,it.qty,it.price);});
+  calc();
+}
+function readSaved(){ try{return JSON.parse(localStorage.getItem(KEY))||[]}catch(e){return[]} }
+function writeSaved(a){ localStorage.setItem(KEY,JSON.stringify(a)); }
+function renderSaved(){
+  var a=readSaved(), el=$("savedList");
+  if(!a.length){el.innerHTML="<span class='mut'>No saved invoices yet.</span>";return;}
+  el.innerHTML="";
+  a.forEach(function(inv,i){
+    var row=document.createElement("div");
+    row.style.cssText="display:flex;gap:8px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px;margin-top:8px;flex-wrap:wrap";
+    var info=document.createElement("div"); info.style.flex="1"; info.style.minWidth="130px";
+    info.innerHTML="<b></b><br><span class='mut'></span>";
+    info.querySelector("b").textContent=inv.num||"Invoice";
+    info.querySelector(".mut").textContent=(inv.client||"").split("\n")[0]+" · "+money(inv.total||0);
+    var lb=document.createElement("button"); lb.textContent="Load"; lb.type="button";
+    lb.addEventListener("click",function(){loadInv(inv);showMsg("Loaded "+(inv.num||"invoice")+".");window.scrollTo(0,0);});
+    var db=document.createElement("button"); db.textContent="Delete"; db.type="button"; db.className="danger";
+    db.addEventListener("click",function(){var a2=readSaved();a2.splice(i,1);writeSaved(a2);renderSaved();showMsg("Deleted.");});
+    row.appendChild(info); row.appendChild(lb); row.appendChild(db); el.appendChild(row);
+  });
+}
+$("saveBtn").addEventListener("click",function(){
+  var inv=collect(); if(!inv.num.trim()){showMsg("Give the invoice a number first.",true);return;}
+  var a=readSaved(); var ex=a.findIndex(function(x){return x.num===inv.num});
+  if(ex>=0)a[ex]=inv; else a.push(inv);
+  writeSaved(a); renderSaved(); showMsg("Saved "+inv.num+" on this device. Total "+money(inv.total)+".");
+});
+$("newBtn").addEventListener("click",function(){
+  var a=readSaved(); var next="INV-"+String(a.length+1).padStart(3,"0");
+  loadInv({num:next,date:todayStr(new Date()),due:todayStr(due),items:[{desc:"",qty:1,price:0}],taxPct:0,discount:0});
+  showMsg("Started a fresh invoice.");
+});
+function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/\n/g,"<br>")}
+$("printBtn").addEventListener("click",function(){
+  var inv=collect();
+  var rows=inv.items.map(function(it){return "<tr><td>"+esc(it.desc)+"</td><td class='r'>"+it.qty+"</td><td class='r'>"+money(it.price)+"</td><td class='r'>"+money(it.qty*it.price)+"</td></tr>"}).join("");
+  $("printArea").innerHTML="<h1 style='font-size:24px'>INVOICE</h1>"+
+  "<p><b>Invoice #:</b> "+esc(inv.num)+" &nbsp; <b>Date:</b> "+esc(inv.date)+" &nbsp; <b>Due:</b> "+esc(inv.due)+"</p>"+
+  "<table><tr><td style='border:none'><b>From</b><br>"+esc(inv.biz)+"</td><td style='border:none'><b>Bill to</b><br>"+esc(inv.client)+"</td></tr></table>"+
+  "<table><tr><th>Item</th><th class='r'>Qty</th><th class='r'>Price</th><th class='r'>Total</th></tr>"+rows+"</table>"+
+  "<p class='r'>Subtotal: "+money(inv.total!==undefined? (inv.items.reduce(function(s,i){return s+i.qty*i.price},0)) :0)+"<br>Discount: −"+money(parseFloat(inv.discount)||0)+"<br>Tax ("+(inv.taxPct||0)+"%): "+money(calc().tax)+"<br><b style='font-size:18px'>Total due: "+money(calc().total)+"</b></p>"+
+  (inv.notes?"<p>"+esc(inv.notes)+"</p>":"");
+  window.print();
+});
+$("helpBtn").addEventListener("click",function(){$("helpOverlay").classList.add("open")});
+$("helpClose").addEventListener("click",function(){$("helpOverlay").classList.remove("open")});
+$("helpOverlay").addEventListener("click",function(e){if(e.target===this)this.classList.remove("open")});
+addItemRow(); calc(); renderSaved();
+window.__calc=calc;
+</script>
+</body></html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Text Toolbox — Digital Dollar Store</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:#0a0a0f;color:#e8ecf1;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100dvh}
+button,input,textarea{font:inherit}button{cursor:pointer}
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:10px 14px;background:linear-gradient(180deg,#2a2e35,#14161a);border-bottom:1px solid #3a3f47}
+.topbar h1{font-size:18px;margin:0;flex:1}.topbar h1 span{color:#0096FF}
+.iconbtn{width:44px;height:44px;border-radius:10px;border:1px solid #555c66;background:linear-gradient(180deg,#e8ecf1,#9aa3ad);color:#111;display:grid;place-items:center}
+.wrap{max-width:760px;margin:0 auto;padding:14px 14px 28px}
+.card{background:linear-gradient(180deg,#1e2126,#14161a);border:1px solid #3a3f47;border-radius:16px;padding:16px}
+textarea{width:100%;min-height:180px;border-radius:10px;border:1px solid #4a5058;background:#0f1114;color:#fff;padding:12px;font-size:16px;line-height:1.5;resize:vertical}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}@media(max-width:520px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:#0f1114;border:1px solid #2c3138;border-radius:10px;padding:10px;text-align:center}.stat b{display:block;font-size:22px;color:#fff}.stat span{font-size:11px;color:#8a97a6;text-transform:uppercase;letter-spacing:.04em}
+.btns{display:flex;gap:6px;flex-wrap:wrap}.btn{min-height:48px;padding:10px 14px;border-radius:10px;border:1px solid #3a3f47;background:#1a1d22;color:#fff;font-weight:600;font-size:14px}
+.btn.primary{background:#0096FF;border-color:#0096FF}.btn:active{opacity:.85}
+label{font-size:13px;color:#9fb0c3;display:block;margin:12px 0 6px}
+input[type=text]{width:100%;min-height:48px;border-radius:10px;border:1px solid #4a5058;background:#0f1114;color:#fff;padding:10px 12px}
+.row{display:flex;gap:8px}.row>*{flex:1}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:22px;background:#0096FF;color:#fff;padding:10px 18px;border-radius:999px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50}
+footer{text-align:center;color:#6b7885;font-size:12px;padding:18px}
+dialog{border:1px solid #3a3f47;background:#17191d;color:#e8ecf1;border-radius:16px;max-width:520px;width:calc(100% - 28px);padding:20px}dialog::backdrop{background:rgba(0,0,0,.7)}dialog ol{padding-left:20px;line-height:1.7}
+</style></head><body>
+<header class="topbar"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0096FF" stroke-width="2"><path d="M4 7V5h16v2M12 5v14M9 19h6"/></svg><h1>Text <span>Toolbox</span></h1><button class="iconbtn" id="helpBtn" aria-label="Help"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.5 9a2.5 2.5 0 1 1 3.4 2.3c-.6.2-.9.6-.9 1.2"/><circle cx="12" cy="17" r=".5" fill="currentColor"/></svg></button></header>
+<main class="wrap"><div class="card">
+<label for="text">Your text — paste or type below. Counts update as you type.</label>
+<textarea id="text" placeholder="Paste your text here…">The quick brown fox jumps over the lazy dog. The dog was not amused.</textarea>
+<div class="stats" aria-live="polite"><div class="stat"><b id="stWords">0</b><span>Words</span></div><div class="stat"><b id="stChars">0</b><span>Characters</span></div><div class="stat"><b id="stNoSpace">0</b><span>No spaces</span></div><div class="stat"><b id="stSent">0</b><span>Sentences</span></div><div class="stat"><b id="stLines">0</b><span>Lines</span></div><div class="stat"><b id="stParas">0</b><span>Paragraphs</span></div><div class="stat"><b id="stRead">0 min</b><span>Reading time</span></div><div class="stat"><b id="stLongest">0</b><span>Longest word</span></div></div>
+<label>Change case</label><div class="btns"><button class="btn" data-act="upper">UPPERCASE</button><button class="btn" data-act="lower">lowercase</button><button class="btn" data-act="title">Title Case</button><button class="btn" data-act="sentence">Sentence case</button></div>
+<label>Clean up lines</label><div class="btns"><button class="btn" data-act="dedupe">Remove duplicate lines</button><button class="btn" data-act="sort">Sort lines A–Z</button><button class="btn" data-act="sortDesc">Sort lines Z–A</button><button class="btn" data-act="spaces">Remove extra spaces</button><button class="btn" data-act="trimLines">Trim each line</button></div>
+<label>Find &amp; replace</label><div class="row"><div><input type="text" id="find" placeholder="Find"></div><div><input type="text" id="repl" placeholder="Replace with"></div></div>
+<div class="btns" style="margin-top:8px"><button class="btn" id="replaceBtn">Replace all</button><button class="btn primary" id="copyBtn">Copy result</button><button class="btn" id="clearBtn">Clear</button><button class="btn" id="undoBtn">Undo</button></div>
+<p id="msg" style="font-size:13px;color:#7ec3ff;min-height:20px"></p>
+</div></main>
+<footer>Digital Dollar Store</footer><div id="toast">Copied</div>
+<dialog id="helpDlg"><h2 style="margin-top:0">How to use Text Toolbox</h2><ol><li>Paste or type your text in the big box. Word, character, sentence, and line counts update as you type.</li><li>Tap UPPERCASE, lowercase, Title Case, or Sentence case to change the whole text.</li><li>Use “Remove duplicate lines” to delete repeated lines, keeping the first copy.</li><li>Use “Sort lines A–Z” to put lines in alphabetical order.</li><li>Use “Remove extra spaces” to collapse double spaces and tidy the text.</li><li>For Find &amp; Replace: type what to find, type the replacement, then tap “Replace all.”</li><li>Tap “Copy result” to copy the finished text. Tap Undo if you need the previous version back.</li></ol><button class="btn primary" id="helpClose" style="width:100%">Close</button></dialog>
+<script>
+const ta=document.getElementById("text");let last="";
+function counts(){const t=ta.value;const words=t.trim()===""?[]:t.trim().split(/\s+/);const sentences=t.trim()===""?0:(t.match(/[^.!?]+[.!?]+/g)||[]).length||(t.trim()?1:0);const lines=t===""?0:t.split(/\n/).length;const paras=t.trim()===""?0:t.split(/\n\s*\n/).filter(x=>x.trim()).length;const longest=words.reduce((a,w)=>Math.max(a,w.length),0);
+ document.getElementById("stWords").textContent=words.length;document.getElementById("stChars").textContent=t.length;document.getElementById("stNoSpace").textContent=t.replace(/\s/g,"").length;document.getElementById("stSent").textContent=sentences;document.getElementById("stLines").textContent=lines;document.getElementById("stParas").textContent=paras;document.getElementById("stRead").textContent=Math.max(0,Math.round(words.length/200*10)/10)+" min";document.getElementById("stLongest").textContent=longest;}
+function titleCase(s){return s.toLowerCase().replace(/(^|\s|[("])\S/g,c=>c.toUpperCase())}
+function apply(fn,msg){last=ta.value;ta.value=fn(ta.value);counts();document.getElementById("msg").textContent=msg||""}
+document.querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>{const a=b.dataset.act;
+ if(a==="upper")apply(s=>s.toUpperCase(),"Changed to UPPERCASE.");
+ if(a==="lower")apply(s=>s.toLowerCase(),"Changed to lowercase.");
+ if(a==="title")apply(s=>titleCase(s),"Changed to Title Case.");
+ if(a==="sentence")apply(s=>s.toLowerCase().replace(/(^\s*[a-z])|([.!?]\s*[a-z])/g,c=>c.toUpperCase()),"Changed to Sentence case.");
+ if(a==="dedupe")apply(s=>{const seen=new Set();return s.split(/\n/).filter(l=>{if(seen.has(l))return false;seen.add(l);return true}).join("\n")},"Duplicate lines removed.");
+ if(a==="sort")apply(s=>s.split(/\n/).sort((x,y)=>x.localeCompare(y)).join("\n"),"Lines sorted A–Z.");
+ if(a==="sortDesc")apply(s=>s.split(/\n/).sort((x,y)=>y.localeCompare(x)).join("\n"),"Lines sorted Z–A.");
+ if(a==="spaces")apply(s=>s.replace(/[ \t]+/g," ").replace(/ +\n/g,"\n").trim(),"Extra spaces removed.");
+ if(a==="trimLines")apply(s=>s.split(/\n/).map(l=>l.trim()).join("\n"),"Each line trimmed.");});
+document.getElementById("replaceBtn").onclick=()=>{const f=document.getElementById("find").value;if(!f){document.getElementById("msg").textContent="Type something in Find first.";return}const r=document.getElementById("repl").value;const n=ta.value.split(f).length-1;apply(s=>s.split(f).join(r),"Replaced "+n+" match"+(n===1?"":"es")+".")};
+document.getElementById("copyBtn").onclick=async()=>{try{await navigator.clipboard.writeText(ta.value);const t=document.getElementById("toast");t.style.opacity="1";setTimeout(()=>t.style.opacity="0",1400)}catch(e){ta.select();document.execCommand&&document.execCommand("copy")}};
+document.getElementById("clearBtn").onclick=()=>apply(()=>"","Cleared.");
+document.getElementById("undoBtn").onclick=()=>{const cur=ta.value;ta.value=last;last=cur;counts();document.getElementById("msg").textContent="Undone."};
+ta.addEventListener("input",counts);counts();
+const dlg=document.getElementById("helpDlg");document.getElementById("helpBtn").onclick=()=>dlg.showModal();document.getElementById("helpClose").onclick=()=>dlg.close();
+</script></body></html>

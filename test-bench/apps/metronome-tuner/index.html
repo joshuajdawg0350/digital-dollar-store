@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tempo &amp; Tune</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#070a10;--surf:#161e2c;--surf2:#1f2a3d;--line:#33435c;--txt:#eef3fa;--mut:#9db1c9;--acc:#0096FF;--acc2:#57bdff}
+body{background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100dvh;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:linear-gradient(180deg,#232f44,#141c2b);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+header h1{font-size:19px;flex:1}
+.hbtn{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surf2);color:var(--txt);font-size:20px;cursor:pointer}
+main{flex:1;width:100%;max-width:760px;margin:0 auto;padding:14px}
+.tabs{display:flex;gap:8px;margin-bottom:14px}
+.tab{flex:1;min-height:48px;border-radius:10px;border:1px solid var(--line);background:var(--surf2);color:var(--txt);font-size:16px;font-weight:700;cursor:pointer}
+.tab.sel{border-color:var(--acc);background:#0b2c4d;color:#cfeaff}
+.panel{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:16px}
+#pulse{width:110px;height:110px;border-radius:50%;margin:8px auto;background:radial-gradient(circle at 35% 30%,#3a4c68,#141c2b);border:2px solid var(--line);transition:transform .05s}
+#pulse.hit{transform:scale(1.13);border-color:var(--acc);box-shadow:0 0 24px rgba(0,150,255,.7)}
+#pulse.acc{border-color:#ffd34d;box-shadow:0 0 24px rgba(255,211,77,.7)}
+#bpmBig{text-align:center;font-size:56px;font-weight:800}
+#bpmLab{text-align:center;color:var(--mut);margin-bottom:10px}
+input[type=range]{width:100%;accent-color:var(--acc);height:36px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin:8px 0}
+.btn{min-height:48px;padding:8px 18px;border-radius:10px;border:1px solid var(--line);background:var(--surf2);color:var(--txt);font-size:16px;cursor:pointer}
+.btn.primary{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:800}
+.btn.sel{border-color:var(--acc);background:#0b2c4d;color:#cfeaff;font-weight:700}
+#dots{text-align:center;font-size:26px;letter-spacing:8px;color:var(--acc2);min-height:34px}
+#noteBig{text-align:center;font-size:64px;font-weight:800;min-height:80px}
+#cents{text-align:center;font-size:20px;min-height:28px}
+#centsBar{height:16px;background:#0d1420;border:1px solid var(--line);border-radius:8px;position:relative;margin:12px 0;overflow:hidden}
+#centsNeedle{position:absolute;top:0;bottom:0;width:4px;background:var(--acc2);left:50%}
+#centsMid{position:absolute;top:0;bottom:0;width:2px;background:#3ddc84;left:50%}
+#tunerMsg{color:var(--mut);text-align:center;font-size:14px;line-height:1.5;min-height:42px}
+footer{text-align:center;color:var(--mut);font-size:12px;padding:14px}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;z-index:20;padding:16px;overflow:auto}
+.overlay.open{display:block}
+.sheet{background:var(--surf);border:1px solid var(--line);border-radius:16px;max-width:560px;margin:24px auto;padding:20px}
+.sheet h2{margin-bottom:10px}.sheet ol{margin:0 0 14px 20px;line-height:1.7;font-size:15px}.sheet p{color:var(--mut);line-height:1.6;font-size:14px;margin-bottom:10px}
+.close{width:100%;min-height:48px;border-radius:10px;border:0;background:var(--acc);color:#fff;font-size:16px;font-weight:700;cursor:pointer}
+.hidden{display:none}
+</style></head><body>
+<header><h1>Tempo &amp; Tune</h1><button class="hbtn" id="helpBtn" aria-label="Help">?</button></header>
+<main>
+<div class="tabs"><button class="tab sel" id="tabM">Metronome</button><button class="tab" id="tabT">Tuner</button></div>
+<section class="panel" id="metroPanel">
+<div id="pulse"></div><div id="dots"></div>
+<div id="bpmBig">90</div><div id="bpmLab">beats per minute</div>
+<input type="range" id="bpm" min="30" max="240" value="90" aria-label="Tempo in beats per minute">
+<div class="row"><button class="btn" id="bpmMinus">− 1</button><button class="btn" id="tapBtn">Tap Tempo</button><button class="btn" id="bpmPlus">+ 1</button></div>
+<div class="row" id="bpbRow"><span style="color:var(--mut)">Beats per bar:</span>
+<button class="btn" data-bpb="2">2</button><button class="btn" data-bpb="3">3</button><button class="btn sel" data-bpb="4">4</button><button class="btn" data-bpb="6">6</button></div>
+<div class="row"><button class="btn primary" id="metroBtn" style="min-width:180px">Start</button></div>
+</section>
+<section class="panel hidden" id="tunerPanel">
+<div id="noteBig">—</div><div id="cents">Play a note near the phone</div>
+<div id="centsBar"><div id="centsMid"></div><div id="centsNeedle"></div></div>
+<div id="tunerMsg">Tap Start Tuner and allow microphone access. Your sound is read on this device only — nothing is recorded or sent anywhere.</div>
+<div class="row"><button class="btn primary" id="tunerBtn">Start Tuner</button></div>
+<h3 style="margin:14px 0 8px;font-size:15px">Reference tones (no microphone needed)</h3>
+<div class="row" id="refRow"></div>
+</section>
+</main>
+<footer>Digital Dollar Store</footer>
+<div class="overlay" id="help"><div class="sheet"><h2>How to use Tempo &amp; Tune</h2>
+<ol><li>For the metronome, slide to your speed or tap Tap Tempo along with the beat.</li><li>Pick how many beats are in each bar. The first beat of each bar clicks louder.</li><li>Tap Start and follow the clicks and the flashing circle.</li><li>For the tuner, tap Tuner, then Start Tuner, and allow the microphone.</li><li>Play one note at a time. The big letter is the nearest note. The bar shows sharp (right) or flat (left). Center means in tune.</li><li>Or tap a reference tone to hear the correct pitch and tune by ear.</li></ol>
+<button class="close" id="helpClose">Close</button></div></div>
+<script>
+"use strict";
+var ctx=null; function ensureCtx(){ if(!ctx)ctx=new (window.AudioContext||window.webkitAudioContext)(); if(ctx.state==='suspended')ctx.resume(); }
+/* Metronome: lookahead scheduler */
+var bpm=90,bpb=4,playing=false,nextTime=0,beat=0,timerID=null,clickTimes=[];
+function click(time,accent){ var o=ctx.createOscillator(),g=ctx.createGain(); o.frequency.value=accent?1568:1046; o.connect(g); g.connect(ctx.destination);
+ g.gain.setValueAtTime(accent?0.9:0.6,time); g.gain.exponentialRampToValueAtTime(0.001,time+0.07); o.start(time); o.stop(time+0.08); clickTimes.push({time:time,accent:accent}); if(clickTimes.length>64)clickTimes.shift(); }
+function scheduler(){ while(nextTime<ctx.currentTime+0.12){ var accent=(beat%bpb===0); click(nextTime,accent); var b=beat; var delay=Math.max(0,(nextTime-ctx.currentTime)*1000);
+ setTimeout((function(bb,ac){return function(){flash(bb,ac)};})(b,accent),delay); nextTime+=60/bpm; beat++; } }
+function flash(b,ac){ var p=document.getElementById('pulse'); p.classList.remove('hit','acc'); void p.offsetWidth; p.classList.add(ac?'acc':'hit');
+ var d=''; for(var i=0;i<bpb;i++)d+=(i===(b%bpb))?'●':'○'; document.getElementById('dots').textContent=d; setTimeout(function(){p.classList.remove('hit','acc')},90); }
+var bpmEl=document.getElementById('bpm');
+function setBpm(v){ bpm=Math.min(240,Math.max(30,Math.round(v))); bpmEl.value=bpm; document.getElementById('bpmBig').textContent=bpm; }
+bpmEl.addEventListener('input',function(){setBpm(+bpmEl.value)});
+document.getElementById('bpmMinus').addEventListener('click',function(){setBpm(bpm-1)});
+document.getElementById('bpmPlus').addEventListener('click',function(){setBpm(bpm+1)});
+var taps=[]; document.getElementById('tapBtn').addEventListener('click',function(){ var now=performance.now(); taps=taps.filter(function(t){return now-t<2500}); taps.push(now);
+ if(taps.length>1){ var iv=(taps[taps.length-1]-taps[0])/(taps.length-1); setBpm(60000/iv); } });
+document.getElementById('bpbRow').addEventListener('click',function(e){ var b=e.target.closest('[data-bpb]'); if(!b)return; bpb=+b.dataset.bpb; beat=0;
+ document.querySelectorAll('#bpbRow .btn').forEach(function(x){x.classList.toggle('sel',x===b)}); });
+document.getElementById('metroBtn').addEventListener('click',function(){ ensureCtx();
+ if(playing){ playing=false; clearInterval(timerID); this.textContent='Start'; }
+ else { playing=true; beat=0; nextTime=ctx.currentTime+0.06; timerID=setInterval(scheduler,25); scheduler(); this.textContent='Stop'; } });
+/* Tuner */
+var NOTES=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+function freqToNote(f){ var n=Math.round(12*Math.log2(f/440))+69; var name=NOTES[((n%12)+12)%12]+(Math.floor(n/12)-1); var exact=440*Math.pow(2,(n-69)/12); var cents=Math.round(1200*Math.log2(f/exact)); return {name:name,cents:cents}; }
+function autoCorrelate(buf,sr){ var SIZE=buf.length, rms=0; for(var i=0;i<SIZE;i++)rms+=buf[i]*buf[i]; rms=Math.sqrt(rms/SIZE); if(rms<0.01)return -1;
+ var r1=0,r2=SIZE-1,th=0.2; for(var i2=0;i2<SIZE/2;i2++){ if(Math.abs(buf[i2])<th){r1=i2;break;} } for(var j=SIZE-1;j>=SIZE/2;j--){ if(Math.abs(buf[j])<th){r2=j;break;} }
+ var b=buf.slice(r1,r2), N=b.length, cor=new Array(N).fill(0);
+ for(var lag=0;lag<N;lag++){ for(var k=0;k<N-lag;k++)cor[lag]+=b[k]*b[k+lag]; }
+ var d=0; while(d<N-1&&cor[d]>cor[d+1])d++; var maxv=-1,maxp=-1; for(var m=d;m<N;m++){ if(cor[m]>maxv){maxv=cor[m];maxp=m;} }
+ if(maxp<=0)return -1; var T0=maxp; if(T0>0&&T0<N-1){ var x1=cor[T0-1],x2=cor[T0],x3=cor[T0+1]; var a=(x1+x3-2*x2)/2, bb=(x3-x1)/2; if(a)T0=T0-bb/(2*a); } return sr/T0; }
+var tunerOn=false,stream=null,analyser=null,raf=null;
+var buf=new Float32Array(2048);
+function tuneLoop(){ if(!tunerOn)return; analyser.getFloatTimeDomainData(buf); var f=autoCorrelate(buf,ctx.sampleRate);
+ if(f>30&&f<5000){ var r=freqToNote(f); document.getElementById('noteBig').textContent=r.name;
+  document.getElementById('cents').textContent=Math.abs(r.cents)<=5?'In tune':(r.cents>0?r.cents+' cents sharp':Math.abs(r.cents)+' cents flat');
+  document.getElementById('centsNeedle').style.left=(50+Math.max(-50,Math.min(50,r.cents)))+'%'; window.__lastPitch={freq:f,note:r.name,cents:r.cents}; }
+ raf=requestAnimationFrame(tuneLoop); }
+document.getElementById('tunerBtn').addEventListener('click',function(){ var btn=this;
+ if(tunerOn){ tunerOn=false; cancelAnimationFrame(raf); if(stream)stream.getTracks().forEach(function(t){t.stop()}); btn.textContent='Start Tuner'; document.getElementById('tunerMsg').textContent='Tuner stopped.'; return; }
+ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ document.getElementById('tunerMsg').textContent='This browser cannot open the microphone. You can still use the reference tones below.'; return; }
+ navigator.mediaDevices.getUserMedia({audio:true}).then(function(s){ ensureCtx(); stream=s; var src=ctx.createMediaStreamSource(s); analyser=ctx.createAnalyser(); analyser.fftSize=2048; src.connect(analyser);
+  tunerOn=true; btn.textContent='Stop Tuner'; document.getElementById('tunerMsg').textContent='Listening. Play one note at a time, close to the phone.'; tuneLoop();
+ }).catch(function(){ document.getElementById('tunerMsg').textContent='Microphone was not allowed, so the tuner cannot listen. You can still tap a reference tone below and tune by ear. To use the tuner, allow microphone access in your browser settings and try again.'; }); });
+/* Reference tones */
+var REFS=[['E2',82.41],['A2',110],['D3',146.83],['G3',196],['B3',246.94],['E4',329.63],['A4 (440)',440],['C5',523.25]];
+var refOsc=null,refGain=null;
+var refRow=document.getElementById('refRow');
+REFS.forEach(function(r){ var b=document.createElement('button'); b.className='btn'; b.textContent=r[0]; b.dataset.freq=r[1]; refRow.appendChild(b); });
+refRow.addEventListener('click',function(e){ var b=e.target.closest('[data-freq]'); if(!b)return; ensureCtx(); stopRef();
+ refOsc=ctx.createOscillator(); refGain=ctx.createGain(); refOsc.type='sine'; refOsc.frequency.value=+b.dataset.freq; refGain.gain.value=0.35;
+ refOsc.connect(refGain); refGain.connect(ctx.destination); refOsc.start(); window.__refFreq=+b.dataset.freq;
+ document.querySelectorAll('#refRow .btn').forEach(function(x){x.classList.toggle('sel',x===b)});
+ setTimeout(stopRef,2500); });
+function stopRef(){ if(refOsc){ try{refOsc.stop()}catch(e){} refOsc=null; } document.querySelectorAll('#refRow .btn').forEach(function(x){x.classList.remove('sel')}); }
+/* Tabs + help */
+function showTab(t){ document.getElementById('tabM').classList.toggle('sel',t==='m'); document.getElementById('tabT').classList.toggle('sel',t==='t');
+ document.getElementById('metroPanel').classList.toggle('hidden',t!=='m'); document.getElementById('tunerPanel').classList.toggle('hidden',t!=='t'); }
+document.getElementById('tabM').addEventListener('click',function(){showTab('m')});
+document.getElementById('tabT').addEventListener('click',function(){showTab('t')});
+document.getElementById('helpBtn').addEventListener('click',function(){document.getElementById('help').classList.add('open')});
+document.getElementById('helpClose').addEventListener('click',function(){document.getElementById('help').classList.remove('open')});
+window.__metro={clickTimes:clickTimes,get bpm(){return bpm},setBpm:setBpm,freqToNote:freqToNote,autoCorrelate:autoCorrelate,get playing(){return playing}};
+</script></body></html>
