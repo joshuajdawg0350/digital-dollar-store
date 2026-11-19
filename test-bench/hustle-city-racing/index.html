@@ -48,6 +48,30 @@
   .title-stats{margin-top:14px;font-size:13px;color:#9FB8D2;letter-spacing:.06em}
   .title-stats b{color:#fff}
   .legal{margin-top:10px;font-size:10.5px;color:#5F748C;letter-spacing:.05em}
+  /* v0.3: HUD christmas tree — big, unmissable, readable from the seat */
+  #hudtree{position:absolute;top:70px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:5px;align-items:center;background:rgba(5,8,13,.78);border:1px solid #22344a;border-radius:14px;padding:9px 12px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:6}
+  #hudtree.show{opacity:1}
+  .ht-bulb{width:29px;height:29px;border-radius:50%;background:#12181f;border:2px solid #2a3644}
+  .ht-bulb.stage.lit{background:#fff2b0;border-color:#fff2b0;box-shadow:0 0 20px #fff2b0}
+  .ht-bulb.amber.lit{background:#FFB300;border-color:#FFB300;box-shadow:0 0 20px #FFB300}
+  .ht-bulb.green.lit{background:#2BFF6A;border-color:#2BFF6A;box-shadow:0 0 24px #2BFF6A}
+  .ht-bulb.red.lit{background:#FF3355;border-color:#FF3355;box-shadow:0 0 24px #FF3355}
+  /* v0.3: redline danger cue */
+  #danger{position:absolute;top:38%;left:50%;transform:translateX(-50%);font-size:21px;font-weight:900;letter-spacing:.14em;color:#FF3355;text-shadow:0 0 18px rgba(255,51,85,.8);opacity:0;pointer-events:none;z-index:7;white-space:nowrap}
+  #danger.show{opacity:1;animation:dng .5s steps(2) infinite}
+  #danger.show.hot{font-size:24px;animation-duration:.22s}
+  @keyframes dng{50%{opacity:.25}}
+  /* v0.3: blown-motor video overlay */
+  #blownwrap{position:fixed;inset:0;background:#000;z-index:60;display:none}
+  #blownwrap.show{display:block}
+  #blownvid{width:100%;height:100%;object-fit:cover}
+  #blownwrap .blownstamp{position:absolute;top:12%;left:50%;transform:translateX(-50%) rotate(-4deg);font-size:34px;font-weight:900;letter-spacing:.18em;color:#FF3355;border:4px solid #FF3355;border-radius:8px;padding:6px 18px;text-shadow:0 0 22px rgba(255,51,85,.7);background:rgba(0,0,0,.35)}
+  #blownwrap .blownskip{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:700;letter-spacing:.3em;color:#9FB8D4}
+  /* v0.3: ladder garage rows */
+  .lvlhdr{margin:14px 2px 6px;font-size:12px;font-weight:900;letter-spacing:.28em;color:#66BAFF}
+  .rival .rline{font-size:12px;color:#B9CFE8;font-style:italic;margin-top:2px}
+  .rival.locked{opacity:.52}
+  .rival:disabled{cursor:default}
   /* ---------- GARAGE ---------- */
   #scr-garage{background:linear-gradient(180deg,rgba(3,6,10,.60),rgba(3,6,10,.95) 62%);
     padding:18px 16px calc(16px + var(--safe-b));overflow-y:auto}
@@ -169,6 +193,11 @@
 <div id="stage3d"></div>
 <div id="speedfx"></div>
 <div id="fade"></div>
+<div id="blownwrap" aria-hidden="true">
+  <video id="blownvid" src="assets/blown-motor.mp4" muted playsinline preload="metadata"></video>
+  <div class="blownstamp">BLOWN MOTOR</div>
+  <div class="blownskip">TAP TO SKIP</div>
+</div>
 
 <!-- TITLE -->
 <section id="scr-title" class="screen on">
@@ -184,7 +213,7 @@
       <button id="btn-reset" class="smallbtn">Reset game</button>
     </div>
     <div class="title-stats" id="title-stats"></div>
-    <div class="legal">© 2026 Joshua Dawson / J-Dawgs Industries · Hustle City Drag Racing™ · v0.2 — Realism Pack</div>
+    <div class="legal">© 2026 Joshua Dawson / J-Dawgs Industries · Hustle City Drag Racing™ · v0.3 — The Ladder</div>
   </div>
 </section>
 
@@ -208,7 +237,7 @@
     <button id="btn-back-garage" class="smallbtn">← Title</button>
     <button id="btn-how-garage" class="smallbtn">How to race</button>
   </div>
-  <div class="foot">Win races to earn street points. Spend them on parts — every part makes the car faster, and you can watch it grow on the car behind this panel. Beat all three rivals and you run this town.</div>
+  <div class="foot">Win races to earn street points. Spend them on parts — every part makes the car measurably faster, and you can watch it grow on the car behind this panel. Twelve racers on the ladder, four levels deep — beat one to unlock the next. BIG BODY SCOTTY sits on top, and he only falls to a perfect run in a fully built car.</div>
 </section>
 
 <!-- RACE -->
@@ -228,6 +257,15 @@
     </div>
     <div id="banner"></div>
     <div id="splitflash"></div>
+    <div id="hudtree" aria-hidden="true">
+      <div class="ht-bulb stage" id="ht-stage"></div>
+      <div class="ht-bulb amber" id="ht-amber1"></div>
+      <div class="ht-bulb amber" id="ht-amber2"></div>
+      <div class="ht-bulb amber" id="ht-amber3"></div>
+      <div class="ht-bulb green" id="ht-green"></div>
+      <div class="ht-bulb red" id="ht-red"></div>
+    </div>
+    <div id="danger" aria-hidden="true"></div>
     <div class="hud-mid">
       <div id="tachwrap">
         <canvas id="tach" width="600" height="172"></canvas>
@@ -255,6 +293,7 @@
     <div class="res-row"><span class="k">Trap speed</span><span class="v" id="res-trap">—</span></div>
     <div class="res-row"><span class="k" id="res-opp-k">Rival time</span><span class="v" id="res-opp">—</span></div>
     <div class="res-row"><span class="k">Street points</span><span class="v" id="res-cash">—</span></div>
+    <div class="res-row" id="res-gain-row" style="display:none"><span class="k">New parts</span><span class="v" id="res-gain">—</span></div>
   </div>
   <div id="res-note"></div>
   <button id="btn-rematch" class="bigbtn blue">Rematch</button>
@@ -270,12 +309,12 @@
   <img class="pov" src="assets/pov-art.webp" alt="The driver's view: over the blower, tree ahead, rival alongside">
   <div class="cap">YOUR VIEW AT THE LINE — over the blower, tree ahead, rival in the next lane.</div>
   <p><span class="num">1.</span> Pick a rival in the Garage. First to the finish line — a quarter mile — wins the points.</p>
-  <p><span class="num">2.</span> You stage in the <b>outside view</b> so you can see your car. Watch the starting lights (the “tree”). Amber lights count down… then <b>GREEN</b> — and the view cuts to the <b>driver's seat</b> for the run.</p>
+  <p><span class="num">2.</span> First, the <b>burnout</b>: both cars smoke their tires on the line — that's your actual car, mods and all. Tap GAS to skip it. Then you stage in the <b>outside view</b> and the big tree on screen counts down: stage bulb, three ambers… then <b>GREEN</b> — and the view cuts to the <b>driver's seat</b> for the run.</p>
   <p><span class="num">3.</span> The instant it turns green, <b>press and HOLD the GAS pedal</b>. Your reaction time is how fast you stomp it. <b>Stomp too early and you red-light — you lose on the spot.</b></p>
-  <p><span class="num">4.</span> Keep GAS held down the whole run. Watch the tach needle. When it sweeps into the <b>green zone</b> up top, tap <b>SHIFT</b>. Shift in the green for a perfect shift — too early bogs the motor, too late bounces the rev limiter and wastes time. <b>A perfect start and perfect shifts win every race the car is built for.</b></p>
+  <p><span class="num">4.</span> Keep GAS held down the whole run. Watch the tach needle. When it sweeps into the <b>green zone</b> up top, tap <b>SHIFT</b>. Shift in the green for a perfect shift — too early bogs the motor. <b>Hold it past the redline too long and you will BLOW THE MOTOR</b> — the tach flashes and the motor starts screaming; keep holding and it lets go: DNF, no payout. <b>A perfect start and perfect shifts win every race the car is built for.</b></p>
   <p><span class="num">5.</span> The blue bar at the top shows both cars — <b>blue is you, red is the rival</b> — so you always know who's ahead from the seat. Split times flash as you pass each marker.</p>
   <p><span class="num">6.</span> Tap <b>NITRO</b> once for a huge shove of speed — that's the 180 mph button. One bottle per race; it hits hardest in the top half of the track.</p>
-  <p><span class="num">7.</span> Win to earn <b>street points</b>, then spend them in the Garage parts shop — blower, slicks, gears, nitro, lightweight panels. Every part makes the car measurably faster, and the top rival is tuned for a built car: stock and sloppy won't take his crown.</p>
+  <p><span class="num">7.</span> Win to earn <b>street points</b>, then spend them in the Garage parts shop — eight parts, three tiers each: blower, slicks, gears, nitro, lightweight panels, headers &amp; exhaust, suspension, and a race-fuel tune. Maxing the whole car costs $14,050 — a full ladder chase, not a few wins. Every part shows its promised gain in seconds before you buy, and your first slip on new parts shows the gain you actually got. Climb the ladder rung by rung — the top of it is BIG BODY SCOTTY, and stock and sloppy won't take his crown.</p>
   <p>Keyboard (on a computer): hold <b>Space</b> for gas, <b>↑</b> to shift, <b>N</b> for nitro.</p>
   <button id="btn-how-back" class="bigbtn" style="align-self:flex-start">Got it</button>
   <div class="foot">Hustle City Drag Racing™ · Play chips only. Nobody’s real money rides on this.</div>
@@ -286,7 +325,7 @@
 import * as THREE from 'three';
 
 /* =====================================================================
-   HUSTLE City Drag Racing™ v0.2 — REALISM PACK. Vault build, unreleased.
+   HUSTLE City Drag Racing™ v0.3 — THE LADDER. Vault build, unreleased.
    © 2026 Joshua Dawson / J-Dawgs Industries.
    Benchmark: CSR Racing 2 / Nitro Nation drag presentation — PBR-look
    car paint, dynamic headlight beams, particle tire smoke, FOV speed
@@ -303,50 +342,105 @@ const QUARTER_M = 402.336;
 
 /* ---------------- SAVE + PROGRESSION ---------------- */
 const SAVE_KEY='hcr_save_v1';
+/* THE LADDER (v0.3) — 12 racers, 4 levels + the boss. Beat a racer to
+   unlock the next. Balance law (Joshua, 2026-11-18): every rung below
+   Scotty is beatable by a GOOD run (RT .25, shifts at 6300) in the
+   stage-appropriate build, with the rival's total sitting ~0.2-0.4s
+   behind that good run; margins tighten up the ladder. Scotty is the
+   exception: he falls only to a PERFECT run in a FULLY built car.
+   Numbers proven in qa-v0.3 (replica of this exact math). */
 const RIVALS=[
-  {id:'rick', name:'Slick Rick',  car:'’72 Rustbucket GT', color:0x8a3324, face:'#8a3324', etBase:10.3, rtBase:0.36, rtVar:0.20, power:0.84, shiftRpm:6700, blower:1, pay:250, diff:'EASY',   dcls:'d1'},
-  {id:'vee',  name:'Vandal Vee',  car:'’85 Neon Fox',      color:0x7a1fa2, face:'#7a1fa2', etBase:9.8,  rtBase:0.30, rtVar:0.16, power:0.90, shiftRpm:6950, blower:2, pay:450, diff:'REAL RACE', dcls:'d2'},
-  {id:'cole', name:'Kingpin Cole',car:'’70 Black Crown',   color:0x15161c, face:'#2b2f3a', etBase:8.9,  rtBase:0.22, rtVar:0.14, power:1.13, shiftRpm:7300, blower:3, pay:850, diff:'KINGPIN', dcls:'d3'},
+  {id:'rick', name:'Slick Rick',  car:'’72 Rustbucket GT', color:0x8a3324, face:'#8a3324', etBase:10.3, rtBase:0.36, rtVar:0.20, power:0.84, shiftRpm:6700, blower:1, pay:250, diff:'EASY',   dcls:'d1', shape:'even', lvl:'LEVEL 1 — STREET', line:'Talks big. Launches bigger.'},
+  {id:'vee',  name:'Vandal Vee',  car:'’85 Neon Fox',      color:0x7a1fa2, face:'#7a1fa2', etBase:9.8,  rtBase:0.30, rtVar:0.16, power:0.875, shiftRpm:6950, blower:2, pay:450, diff:'REAL RACE', dcls:'d2', shape:'launch', lvl:'LEVEL 1 — STREET', line:'The whole strip is her canvas — including your pride.'},
+  {id:'cole', name:'Kingpin Cole',car:'’70 Black Crown',   color:0x15161c, face:'#2b2f3a', etBase:8.9,  rtBase:0.22, rtVar:0.14, power:1.161, shiftRpm:7300, blower:3, pay:850, diff:'KINGPIN', dcls:'d3', shape:'charge', lvl:'LEVEL 1 — STREET', line:'Runs the money end of the strip. Beating him was never supposed to happen.'},
+  {id:'wanda', name:'Wanda “Wrench” Kowalski', car:'’69 Ironback', color:0xc0a062, face:'#c0a062', etBase:8.8, rtBase:0.26, rtVar:0.12, power:1.205, shiftRpm:7350, blower:2, pay:1100, diff:'PRO STREET', dcls:'d2', shape:'even', lvl:'LEVEL 2 — PRO STREET', line:'Built her car with her own hands. Built half the cars that beat you, too.'},
+  {id:'marcus', name:'Marcus “Nine Lives” Reed', car:'’71 Alley Cat', color:0x2e7d6b, face:'#2e7d6b', etBase:8.6, rtBase:0.28, rtVar:0.12, power:1.228, shiftRpm:7400, blower:2, pay:1350, diff:'PRO STREET', dcls:'d2', shape:'launch', lvl:'LEVEL 2 — PRO STREET', line:'Walked away from nine wrecks. Drives like the tenth is already paid for.'},
+  {id:'delia', name:'Delia “Duchess” Vane', car:'’67 Velvet Hammer', color:0x8e244d, face:'#8e244d', etBase:8.6, rtBase:0.26, rtVar:0.11, power:1.319, shiftRpm:7425, blower:3, pay:1600, diff:'PRO STREET', dcls:'d2', shape:'charge', lvl:'LEVEL 2 — PRO STREET', line:'Never raises her voice. Never lifts. Never loses twice to the same driver.'},
+  {id:'tommy', name:'Tommy “Torque” Tran', car:'’70 Sidewinder', color:0xd97b16, face:'#d97b16', etBase:8.2, rtBase:0.26, rtVar:0.11, power:1.4229, shiftRpm:7425, blower:3, pay:1950, diff:'OUTLAW', dcls:'d3', shape:'launch', lvl:'LEVEL 3 — OUTLAW', line:'Counts his money in eighth-miles.'},
+  {id:'rosa', name:'Rosa “Redline” Delgado', car:'’73 Redline Special', color:0xc01828, face:'#c01828', etBase:8.2, rtBase:0.26, rtVar:0.10, power:1.5131, shiftRpm:7450, blower:3, pay:2300, diff:'OUTLAW', dcls:'d3', shape:'charge', lvl:'LEVEL 3 — OUTLAW', line:'Her tach has no red zone. She took it out.'},
+  {id:'hank', name:'Hank “Hammer” Oduya', car:'’68 Sledge', color:0x4a5568, face:'#4a5568', etBase:8.2, rtBase:0.24, rtVar:0.10, power:1.4516, shiftRpm:7450, blower:3, pay:2700, diff:'OUTLAW', dcls:'d3', shape:'even', lvl:'LEVEL 3 — OUTLAW', line:'Subtle is a word he can’t spell. Fast is a word he can prove.'},
+  {id:'vivian', name:'Vivian “Viper” Cross', car:'’72 Night Viper', color:0x1f6f43, face:'#1f6f43', etBase:8.3, rtBase:0.22, rtVar:0.09, power:1.421, shiftRpm:7450, blower:3, pay:3200, diff:'KINGS ROW', dcls:'d3', shape:'launch', lvl:'LEVEL 4 — KINGS ROW', line:'By the time you hear her blower whine, the race is already over.'},
+  {id:'eddie', name:'Eddie “Eight-Ball” Ferro', car:'’69 Eight-Ball', color:0x191b20, face:'#3a3f4a', etBase:8.2, rtBase:0.20, rtVar:0.08, power:1.495, shiftRpm:7450, blower:3, pay:3800, diff:'KINGS ROW', dcls:'d3', shape:'charge', lvl:'LEVEL 4 — KINGS ROW', line:'Luck is just preparation wearing better paint.'},
+  {id:'scotty', name:'BIG BODY SCOTTY', car:'’70 Heavy Crown', color:0x0d0d10, face:'#101216', etBase:7.4, rtBase:0.18, rtVar:0.06, power:1.9632, shiftRpm:7450, blower:3, pay:5000, diff:'FINAL BOSS', dcls:'d3', shape:'even', lvl:'THE BOSS', line:'The boss of Hustle City. Beat him and the whole city says your name.', wheelie:true},
 ];
-/* Parts shop — 5 parts x 3 tiers. Every tier has a real, measurable
-   effect in the physics (see upParams) and a visible change on the car
-   where one honestly exists. Prices in street points. */
+/* Parts shop — 8 parts x 3 tiers (v0.3 deepened garage: Joshua's
+   live-play note was that 5x3 maxed out too fast). Every tier has a
+   real, measurable effect in the physics (see upParams) and a visible
+   change on the car where one honestly exists. Prices in street
+   points; the three pro parts cost more per tier — a full build is
+   $14,050, a whole-ladder chase instead of a few wins. */
 const PARTS=[
   {id:'engine', name:'Blower — engine build', prices:[200,400,650],
-   eff:['Roots blower, mild cam — +3% power','Bigger blower, forged internals — +6% power','Full race build, max boost — +8% power'],
-   vis:'The blower on the hood grows with every tier.'},
+   eff:['Roots blower, mild cam. On its own: ≈8.84s perfect pass (stock 9.01s)','Bigger blower, forged internals. On its own: ≈8.82s (stock 9.01s)','Full race build, max boost — the big scoop costs a little top-end drag, worth it. On its own: ≈8.80s (stock 9.01s)'],
+   vis:'The blower on the hood grows with every tier — and it whines louder, too.'},
   {id:'tires', name:'Slicks — rear tires', prices:[200,400,650],
-   eff:['Wider rear slicks — launch slip 1.15s → 0.92s','Full wrinkle-walls — slip 0.68s, harder bite','Steamroller slicks — slip 0.45s, near-full grip'],
+   eff:['Wider rear slicks — launch slip 1.15s → 0.82s, and they hold more power off the line. On its own: ≈8.80s','Full wrinkle-walls — slip 0.56s, harder bite. On its own: ≈8.68s','Steamrollers so wide they hold a long, violent launch at near-full grip. On its own: ≈8.68s'],
    vis:'The rear tires get visibly wider; fronts go skinny at tier 2.'},
-  {id:'gears', name:'Gears — quick-shift rear end', prices:[200,400,650],
-   eff:['Shift cut 0.14s → 0.12s (0.07s → 0.06s perfect)','Shift cut 0.10s (0.05s perfect)','Shift cut 0.08s (0.04s perfect) — bang-shift fast'],
-   vis:'Under the car — you feel this one, you don’t see it.'},
+  {id:'gears', name:'Gears — rear end & shift kit', prices:[200,400,650],
+   eff:['Steep launch gear + shift kit — shifts keep 55% power, cuts shrink. On its own: ≈8.80s','Closer kit + built driveline (less power lost on the way). On its own: ≈8.73s','Full flat-shift setup — 85% power carried through every shift. On its own: ≈8.68s'],
+   vis:'Under the car — you feel this one in the seat, not the mirror.'},
   {id:'nitro', name:'Nitro — bigger shot', prices:[200,400,650],
-   eff:['Shot ×2.20 for 3.35s','Shot ×2.26 for 3.50s','Shot ×2.33 for 3.65s — the full send'],
-   vis:'The exhaust flame gets bigger and burns longer.'},
+   eff:['Shot ×3.05 for 3.8s. On its own: ≈8.84s','Shot ×3.15 for 4.0s. On its own: ≈8.83s','Shot ×3.28 for 4.6s — the full send. On its own: ≈8.80s'],
+   vis:'The exhaust flame gets bigger and burns longer. Even the stock shot alone is worth 0.43s and +36 mph — this is the 180 button, and a built car on the big shot traps past 200.'},
   {id:'weight', name:'Lightweight — panels & glass', prices:[200,400,650],
-   eff:['Carbon hood — +1.7% shove, −2% drag','Carbon roof & deck — +3.4% shove, −4% drag','Full carbon & lexan — +5% shove, −6% drag'],
+   eff:['Carbon hood — more shove, less drag. On its own: ≈8.84s','Carbon roof & deck too. On its own: ≈8.80s','Full carbon & lexan glass — the slippery shape pays off big at 200 mph. On its own: ≈8.73s'],
    vis:'Hood, roof and deck turn carbon black, tier by tier.'},
+  {id:'exhaust', name:'Headers & Exhaust — free-flow system', prices:[400,800,1400],
+   eff:['Tuned headers — the motor breathes out. On its own: ≈8.84s (stock 9.01s)','Full free-flow system, scavenging primaries. On its own: ≈8.81s','Open race exhaust — max flow at the top end. On its own: ≈8.71s'],
+   vis:'The exhaust tips grow with every tier, and chrome headers show through the front wheel wells.'},
+  {id:'susp', name:'Suspension — traction bars & shocks', prices:[400,800,1400],
+   eff:['Traction bars — the rear plants instead of hopping. On its own: ≈8.82s (stock 9.01s)','Bars + drag shocks. On its own: ≈8.76s','Full launch setup — bars, shocks and wheelie bars; the car leaves like it was shot. On its own: ≈8.73s'],
+   vis:'Traction bars under the rear from tier 1, the stance drops a little each tier, and wheelie bars bolt on at tier 2.'},
+  {id:'fuel', name:'Race Fuel & Tune — Moon tank setup', prices:[400,800,1400],
+   eff:['Race fuel + a real tune — shifts carry 55% power instead of dying between gears. On its own: ≈8.84s (stock 9.01s)','Bigger Moon tank, hotter tune — shifts carry 65%. On its own: ≈8.80s','Full race tune — shifts carry 72% and the whole combo wakes up. On its own: ≈8.76s'],
+   vis:'The polished Moon fuel tank on the nose grows with every tier.'},
 ];
 function upParams(up){
-  /* tier-indexed (0 = stock) physics derived from installed parts */
+  /* v0.3 tune — every tier proven ≥0.15s solo in the replica table
+     (qa-v0.3). Index 0 is stock and is byte-for-byte the v0.2 tune:
+     the stock car did not change, the parts finally did. */
   return {
-    powerMult:[1,1.03,1.06,1.08][up.engine],
-    slipT:[1.15,0.92,0.68,0.45][up.tires],
-    slipGrip:[0.76,0.83,0.90,0.96][up.tires],
-    cutP:[0.07,0.058,0.047,0.037][up.gears],
-    cutN:[0.14,0.118,0.097,0.078][up.gears],
-    nitroMult:[2.15,2.20,2.26,2.33][up.nitro],
-    nitroDur:[3.2,3.35,3.5,3.65][up.nitro],
-    forceMult:[1,1.017,1.034,1.05][up.weight],
-    dragMult:[1,0.98,0.96,0.94][up.weight],
+    powerMult:[1,1.055,1.065,1.08][up.engine],
+    blowerDrag:[1,1,1.02,1.13][up.engine], /* the bigger scoop catches air — costs top-end drag, honestly */
+    slipT:[1.15,0.82,0.56,1.15][up.tires],
+    slipGrip:[0.76,0.865,0.935,0.96][up.tires],
+    biteMult:[1,1.07,1.13,1.13][up.tires],
+    cutP:[0.07,0.040,0.030,0.020][up.gears],
+    cutN:[0.14,0.088,0.062,0.042][up.gears],
+    cutKeep:[0,0.55,0.70,0.85][up.gears],
+    launchMult:[1,1.06,1.10,1.14][up.gears],
+    driveMult:[1,1.02,1.04,1.045][up.gears],
+    topMult:[1,1,0.96,0.96][up.gears],
+    nitroMult:[2.30,3.05,3.15,3.28][up.nitro],
+    nitroDur:[3.8,3.8,4.0,4.6][up.nitro],
+    forceMult:[1,1.05,1.06,1.075][up.weight],
+    dragMult:[1,0.94,0.885,0.82][up.weight],
+    /* the deepened garage (v0.3): three pro parts. The FULL 8-part
+       build lands 7.38s @ 204 — deeper in the sevens than the old
+       5-part sketch (~7.7-7.9) because eight honest parts out-pull
+       five; no tier was faked down to hit the sketch number. Every
+       tier of every part proves >=0.15s solo and every part is
+       strictly stronger tier over tier in the replica table. */
+    exhMult:[1,1.055,1.065,1.10][up.exhaust||0],
+    suspMult:[1,1.13,1.17,1.18][up.susp||0],
+    suspGrip:[0,0.035,0.055,0.075][up.susp||0],
+    tuneKeep:[0,0.55,0.65,0.72][up.fuel||0],
+    tuneDur:[1,1.08,1.12,1.0][up.fuel||0],
+    tuneMult:[1,1.03,1.04,1.05][up.fuel||0],
+    /* combo heat: past 10 total tiers the whole combo runs hotter and
+       bleeds a little force — 0.4% per extra tier, capped at 8%. It is
+       deliberately GENTLE: the ladder table proves every stage build
+       is still strictly faster than the one below it (B3 > B2.5 > B2),
+       so no purchase ever makes the car slower. It exists so a full
+       24-piece build lands deep in the sevens instead of the sixes. */
+    stackMult:1-Math.min(0.08,0.004*Math.max(0,((up.engine||0)+(up.tires||0)+(up.gears||0)+(up.nitro||0)+(up.weight||0)+(up.exhaust||0)+(up.susp||0)+(up.fuel||0))-10)),
   };
 }
 let save;
 function loadSave(){
   try{ save=JSON.parse(localStorage.getItem(SAVE_KEY))||null; }catch(e){ save=null; }
   if(!save||typeof save!=='object') save=null;
-  if(!save) save={cash:250,bestET:null,bestTrap:null,wins:0,losses:0,beaten:{},races:0,up:{engine:0,tires:0,gears:0,nitro:0,weight:0}};
+  if(!save) save={cash:250,bestET:null,bestTrap:null,wins:0,losses:0,beaten:{},races:0,champion:false,gainPending:false,up:{engine:0,tires:0,gears:0,nitro:0,weight:0}};
   if(!save.up) save.up={engine:0,tires:0,gears:0,nitro:0,weight:0};
   PARTS.forEach(p=>{ if(typeof save.up[p.id]!=='number') save.up[p.id]=0; });
   return save;
@@ -375,17 +469,39 @@ const AudioX={
     sub.connect(gs); gs.connect(this.engFilter);
     this.engFilter.connect(this.engGain); this.engGain.connect(ctx.destination);
     this.engOsc.start(); this.engOsc2.start(); sub.start();
+    /* blower whine layer (v0.3) — a roots blower sings over the V8;
+       gain is driven by the installed blower tier in engine() */
+    this.whineOsc=ctx.createOscillator(); this.whineOsc.type='triangle';
+    this.whineGain=ctx.createGain(); this.whineGain.gain.value=0;
+    this.whineOsc.connect(this.whineGain); this.whineGain.connect(ctx.destination);
+    this.whineOsc.start();
   },
-  engine(rpm, throttle, running){
-    if(!this.ctx||this.muted) { if(this.engGain) this.engGain.gain.value=0; return; }
+  engine(rpm, throttle, running, blowerTier, nitroOn){
+    if(!this.ctx||this.muted) { if(this.engGain) this.engGain.gain.value=0; if(this.whineGain) this.whineGain.gain.value=0; return; }
     const t=this.ctx.currentTime;
-    const f=38+rpm/7500*165;
+    /* v0.3 MEAN V8: deeper fundamental, heavier sub, throatier filter.
+       Lopey idle: below ~1500 rpm the gain chops at ~9 Hz like a big
+       cam. Blower tiers add whine; nitro surges the whole note. */
+    let f=29+rpm/7500*138;
+    if(blowerTier===undefined) blowerTier=0;
+    const strain=(arguments.length>5&&arguments[5])||0;
+    if(strain>0.03) f*= (1+0.012*Math.sin(t*47)*strain); /* valve-float wobble as it strains */
     this.engOsc.frequency.setTargetAtTime(f,t,0.03);
     this.engOsc2.frequency.setTargetAtTime(f*0.5+2,t,0.03);
     this.engSub.frequency.setTargetAtTime(f*0.5,t,0.03);
-    this.engFilter.frequency.setTargetAtTime(500+throttle*2400+rpm/7500*900,t,0.05);
-    const target=running? 0.05+throttle*0.13 : 0.0;
-    this.engGain.gain.setTargetAtTime(target,t,0.06);
+    const surge=nitroOn?1.45:1;
+    this.engFilter.frequency.setTargetAtTime((420+throttle*2500+rpm/7500*950)*surge,t,0.05);
+    let target=running? 0.055+throttle*0.145 : 0.0;
+    if(nitroOn) target*=1.25;
+    if(strain>0.03) target*= (1-0.22*strain*Math.abs(Math.sin(t*23))); /* sputtering under the strain */
+    if(running&&rpm<1500) target*= (0.68+0.32*Math.sin(t*56)); /* the lope */
+    this.engGain.gain.setTargetAtTime(target,t,0.05);
+    if(this.whineOsc){
+      const wt=blowerTier||0;
+      this.whineOsc.frequency.setTargetAtTime(180+rpm*0.34,t,0.04);
+      const wg=running&&wt>0? (0.006+0.030*(wt/3))*(0.35+throttle*0.65)*(rpm/7500) : 0;
+      this.whineGain.gain.setTargetAtTime(wg,t,0.07);
+    }
   },
   blip(freq,dur,type,vol,slideTo){
     if(!this.ctx||this.muted) return;
@@ -403,7 +519,12 @@ const AudioX={
     s.connect(f); f.connect(g); g.connect(ctx.destination); s.start(t); s.stop(t+dur+0.02);
   },
   beep(final){ this.blip(final?880:440, final?0.34:0.16,'square',0.12); },
-  shift(){ this.noise(0.09,0.20,1400); this.blip(160,0.1,'triangle',0.22,60); },
+  shift(){ this.noise(0.09,0.20,1400); this.blip(160,0.1,'triangle',0.22,60); this.blip(72,0.13,'sawtooth',0.16,48); },
+  blow(){ if(!this.ctx||this.muted) return; const t=this.ctx.currentTime;
+    this.noise(0.5,0.55,750); this.blip(46,0.7,'sawtooth',0.5,24);
+    setTimeout(()=>this.pop(),130); setTimeout(()=>this.pop(),290);
+    if(this.engGain) this.engGain.gain.setTargetAtTime(0,t,0.05);
+    if(this.whineGain) this.whineGain.gain.setTargetAtTime(0,t,0.05); },
   pop(){ this.noise(0.14,0.16,900); this.blip(90,0.12,'triangle',0.18,45); },
   nitro(){ this.noise(1.4,0.10,3200); },
   chirp(){ this.noise(0.16,0.12,2400); },
@@ -460,6 +581,9 @@ const glowTex=canvasTex(64,64,(g,w,h)=>{ const gr=g.createRadialGradient(32,32,2
   gr.addColorStop(0,'rgba(255,255,255,0.85)'); gr.addColorStop(1,'rgba(255,255,255,0)');
   g.fillStyle=gr; g.fillRect(0,0,w,h); });
 
+/* --- atmosphere (v0.3): exponential haze so the four depth planes
+   (near trackside / mid buildings / far towers / sky) separate --- */
+scene.fog=new THREE.FogExp2(0x060a12,0.0011);
 /* --- night sky dome + moon + distant skyline (v0.2 HD depth) --- */
 (function makeSky(){
   const skyTex=canvasTex(1024,512,(g,w,h)=>{
@@ -542,24 +666,57 @@ const winTex=canvasTex(256,512,(g,w,h)=>{
     if(Math.random()<0.42){ g.fillStyle=Math.random()<0.75?'rgba(140,200,255,0.85)':'rgba(255,190,90,0.85)';
       g.fillRect(x,y,11,14); } }
 });
+const winTexB=canvasTex(256,512,(g,w,h)=>{ /* dense tower grid, warmer mix */
+  g.fillStyle='#080a10'; g.fillRect(0,0,w,h);
+  for(let y=8;y<h-8;y+=16) for(let x=8;x<w-8;x+=16){
+    if(Math.random()<0.5){ g.fillStyle=Math.random()<0.6?'rgba(150,205,255,0.9)':'rgba(255,196,105,0.9)';
+      g.fillRect(x,y,9,10); } }
+});
+const winTexC=canvasTex(256,512,(g,w,h)=>{ /* vertical strip towers, sparse floors */
+  g.fillStyle='#05070c'; g.fillRect(0,0,w,h);
+  for(let x=14;x<w-14;x+=36){ let y=12;
+    while(y<h-20){ const len=18+Math.random()*46;
+      if(Math.random()<0.62){ g.fillStyle=Math.random()<0.7?'rgba(130,195,255,0.8)':'rgba(255,190,95,0.8)';
+        g.fillRect(x,y,15,len); }
+      y+=len+14; } }
+});
+const neonMats=[];
 const NEON=['HUSTLE CITY','NITRO','24H TIRES','BLUE ROOM','CASH PAWN','DRAG BAR','MOTEL','CHROME & CO'];
 const neonCols=[0x0096ff,0x66d9ff,0xff2fb3,0x2bff6a,0xffb300];
 const lampGlowMat=new THREE.SpriteMaterial({map:glowTex,color:0xa8d4ff,
   transparent:true,opacity:0.30,depthWrite:false,blending:THREE.AdditiveBlending});
+const facadeTints=[0x8a97a5,0x7d8ea3,0x97a3ad,0x6f8296,0x8698a8];
+const facadeTexs=[winTex,winTexB,winTexC];
+const capMat=new THREE.MeshStandardMaterial({color:0x39434e,roughness:0.6,metalness:0.6});
+const acGeo=new THREE.BoxGeometry(1.8,0.9,1.4);
+const twGeo=new THREE.CylinderGeometry(0.85,0.85,2.0,10);
+const twTopGeo=new THREE.ConeGeometry(1.05,0.8,10);
+const twMat=new THREE.MeshStandardMaterial({color:0x2e2a26,roughness:0.85});
+const antGeo=new THREE.CylinderGeometry(0.05,0.07,3.4,5);
 for(let side=-1;side<=1;side+=2){
   for(let i=0;i<24;i++){
-    const z=6+i*30+Math.random()*8, hgt=14+Math.random()*22;
-    const b=new THREE.Mesh(new THREE.BoxGeometry(10,hgt,12),
-      new THREE.MeshStandardMaterial({map:winTex,roughness:0.85,color:0x8a97a5}));
-    b.position.set(side*(16+Math.random()*5),hgt/2,z); scene.add(b);
+    const z=6+i*30+Math.random()*8, hgt=12+Math.random()*26;
+    const wid=9+Math.random()*5, dep=10+Math.random()*5, bx=side*(16+Math.random()*5);
+    const b=new THREE.Mesh(new THREE.BoxGeometry(wid,hgt,dep),
+      new THREE.MeshStandardMaterial({map:facadeTexs[i%3],roughness:0.85,
+        color:facadeTints[(i*7+(side>0?3:0))%5]}));
+    b.position.set(bx,hgt/2,z); scene.add(b);
+    if(i%3===0){ const cap=new THREE.Mesh(new THREE.BoxGeometry(wid*0.55,2.2,dep*0.55),capMat);
+      cap.position.set(bx,hgt+1.1,z); scene.add(cap); } /* stepped silhouette */
+    if(i%2===0){ const kind=(i/2)%3; /* rooftop life: AC units, water towers, antennas */
+      if(kind===0){ const ac=new THREE.Mesh(acGeo,capMat); ac.position.set(bx+(Math.random()*3-1.5),hgt+0.45,z+(Math.random()*3-1.5)); scene.add(ac); }
+      else if(kind===1){ const tw=new THREE.Mesh(twGeo,twMat); tw.position.set(bx,hgt+1.3,z);
+        const tt=new THREE.Mesh(twTopGeo,twMat); tt.position.set(bx,hgt+2.7,z); scene.add(tw); scene.add(tt); }
+      else { const an=new THREE.Mesh(antGeo,capMat); an.position.set(bx,hgt+1.7,z); scene.add(an); } }
     if(i%2===0){
       const txt=NEON[(Math.random()*NEON.length)|0], col=neonCols[(Math.random()*neonCols.length)|0];
       const st=canvasTex(256,64,(g,w,h)=>{ g.clearRect(0,0,w,h);
         g.font='900 40px Arial'; g.textAlign='center'; g.textBaseline='middle';
         g.shadowColor='#'+col.toString(16).padStart(6,'0'); g.shadowBlur=18;
         g.fillStyle='#eaf6ff'; g.fillText(txt,w/2,h/2); });
-      const sign=new THREE.Mesh(new THREE.PlaneGeometry(9,2.25),
-        new THREE.MeshBasicMaterial({map:st,transparent:true,side:THREE.DoubleSide}));
+      const signMat=new THREE.MeshBasicMaterial({map:st,transparent:true,side:THREE.DoubleSide});
+      neonMats.push(signMat);
+      const sign=new THREE.Mesh(new THREE.PlaneGeometry(9,2.25),signMat);
       sign.position.set(side*10.6,6+Math.random()*7,z); sign.rotation.y=side>0?-Math.PI/2:Math.PI/2;
       scene.add(sign);
       const glow=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:col,
@@ -572,6 +729,12 @@ for(let side=-1;side<=1;side+=2){
       streak.rotation.x=-Math.PI/2; streak.rotation.z=Math.PI/2;
       streak.position.set(side*9.4,0.015,z); scene.add(streak);
     }
+  }
+  for(let i=0;i<16;i++){ /* FAR ROW — dark towers, lit windows dimmed by distance */
+    const z=-12+i*44+Math.random()*10, hgt=24+Math.random()*30;
+    const fb=new THREE.Mesh(new THREE.BoxGeometry(13+Math.random()*6,hgt,13),
+      new THREE.MeshStandardMaterial({map:winTexC,roughness:0.95,color:0x333f4d}));
+    fb.position.set(side*(31+Math.random()*7),hgt/2,z); scene.add(fb);
   }
   for(let i=0;i<26;i++){ /* street light poles + glow */
     const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.11,6.4,6),
@@ -652,9 +815,68 @@ function gantry(z,label,colHex){
 gantry(-3,'HUSTLE CITY DRAGWAY','#0096ff');
 gantry(QUARTER_M,'FINISH — 1/4 MILE','#2bff6a');
 
+/* city glow hugging the horizon under the skyline (v0.3) */
+{ const cg=new THREE.Mesh(new THREE.PlaneGeometry(900,30),
+    new THREE.MeshBasicMaterial({map:glowTex,color:0x1c4d80,transparent:true,opacity:0.16,
+      blending:THREE.AdditiveBlending,depthWrite:false,fog:false}));
+  cg.position.set(0,10,632); cg.rotation.y=Math.PI; scene.add(cg); }
+
+/* NEAR TRACKSIDE LAYER (v0.3) — real 3D between the camera and the
+   buildings: delineator posts, tire stacks, a grandstand, parked cars.
+   This is the layer that whips past in the driver's seat at 180+. */
+{ const postGeo=new THREE.CylinderGeometry(0.045,0.045,1.05,6);
+  const postMat=new THREE.MeshStandardMaterial({color:0x39434e,roughness:0.5,metalness:0.7});
+  const tipGeo=new THREE.BoxGeometry(0.1,0.13,0.1);
+  const tipMat=new THREE.MeshBasicMaterial({color:0x2ea8ff});
+  const N=46, posts=new THREE.InstancedMesh(postGeo,postMat,N*2), tips=new THREE.InstancedMesh(tipGeo,tipMat,N*2);
+  const m4=new THREE.Matrix4(); let k=0;
+  for(let sI=0;sI<2;sI++){ const sx=sI?7.35:-7.35;
+    for(let i=0;i<N;i++){ const z=-6+i*10;
+      m4.makeTranslation(sx,0.52,z); posts.setMatrixAt(k,m4);
+      m4.makeTranslation(sx,1.04,z); tips.setMatrixAt(k,m4); k++; } }
+  scene.add(posts); scene.add(tips); }
+{ const tg2=new THREE.TorusGeometry(0.42,0.17,8,14);
+  const tm2=new THREE.MeshStandardMaterial({color:0x0c0d10,roughness:0.92});
+  for(let i=0;i<9;i++){ const sx=i%2?7.15:-7.15, z=26+i*46;
+    for(let k=0;k<3;k++){ const t=new THREE.Mesh(tg2,tm2);
+      t.rotation.x=Math.PI/2; t.position.set(sx,0.18+k*0.34,z); scene.add(t); } } }
+{ const gmat=new THREE.MeshStandardMaterial({color:0x232d38,roughness:0.6,metalness:0.6});
+  const stand=new THREE.Group();
+  for(let rI=0;rI<3;rI++){ const row=new THREE.Mesh(new THREE.BoxGeometry(3.2,0.5,14),gmat);
+    row.position.set(rI*1.15,0.5+rI*0.85,0); stand.add(row); }
+  const roof=new THREE.Mesh(new THREE.BoxGeometry(4.6,0.12,15),gmat); roof.position.set(1.2,3.7,0); stand.add(roof);
+  [-6.8,6.8].forEach(zz=>{ [-0.5,2.9].forEach(xx=>{ const p=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.06,3.7,6),gmat);
+    p.position.set(xx,1.85,zz); stand.add(p); }); });
+  stand.position.set(13.8,0,30); scene.add(stand); }
+function parkedCar(color,x,z,rotY){
+  const g=new THREE.Group();
+  const paint=new THREE.MeshStandardMaterial({color,roughness:0.35,metalness:0.4});
+  const dark=new THREE.MeshStandardMaterial({color:0x0b0d11,roughness:0.7});
+  const body=new THREE.Mesh(new THREE.BoxGeometry(1.78,0.55,4.3),paint); body.position.y=0.55; g.add(body);
+  const cab=new THREE.Mesh(new THREE.BoxGeometry(1.6,0.5,2.1),dark); cab.position.set(0,1.05,-0.2); g.add(cab);
+  const wg=new THREE.CylinderGeometry(0.34,0.34,0.24,12);
+  [[-0.85,1.35],[0.85,1.35],[-0.85,-1.35],[0.85,-1.35]].forEach(([wx,wz])=>{
+    const w=new THREE.Mesh(wg,dark); w.rotation.z=Math.PI/2; w.position.set(wx,0.34,wz); g.add(w); });
+  g.position.set(x,0,z); g.rotation.y=rotY; scene.add(g);
+}
+parkedCar(0x5a1f1f,-11.8,16,0.35); parkedCar(0x1f3a5a,12.2,-4,-0.3);
+/* the lit pad under YOUR car at the line — garage and staging both read it */
+{ const pad=new THREE.Mesh(new THREE.CircleGeometry(3.3,28),
+    new THREE.MeshBasicMaterial({color:0x0d2138,transparent:true,opacity:0.85}));
+  pad.rotation.x=-Math.PI/2; pad.position.set(-2.05,0.015,0); scene.add(pad);
+  const ring=new THREE.Mesh(new THREE.RingGeometry(3.3,3.55,28),
+    new THREE.MeshBasicMaterial({color:0x0096ff,transparent:true,opacity:0.55,
+      blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide}));
+  ring.rotation.x=-Math.PI/2; ring.position.set(-2.05,0.016,0); scene.add(ring);
+  const cone=new THREE.Mesh(new THREE.CylinderGeometry(0.4,3.1,4.4,20,1,true),
+    new THREE.MeshBasicMaterial({color:0x2e7fd9,transparent:true,opacity:0.05,
+      blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide}));
+  cone.position.set(-2.05,2.2,0); scene.add(cone); }
+
 /* christmas tree */
 const treeGrp=new THREE.Group();
 const treeBulbs={};
+const treeGlows={};
 (function buildTree(){
   const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.09,3.4,8),
     new THREE.MeshStandardMaterial({color:0x39434e,metalness:0.85,roughness:0.35}));
@@ -665,14 +887,19 @@ const treeBulbs={};
   const defs=[['stage',2.05,0xfff2b0],['amber1',1.62,0xffb300],['amber2',1.24,0xffb300],
               ['amber3',0.86,0xffb300],['green',0.48,0x2bff6a],['red',0.10,0xff3355]];
   defs.forEach(([name,dy,col])=>{ [-0.16,0.16].forEach(x=>{
-    const b=new THREE.Mesh(new THREE.SphereGeometry(0.085,12,10),
+    const b=new THREE.Mesh(new THREE.SphereGeometry(0.115,12,10),
       new THREE.MeshStandardMaterial({color:0x1a2027,emissive:col,emissiveIntensity:0.06,roughness:0.3}));
     b.position.set(x,1.55+dy,0.17); treeGrp.add(b);
-    (treeBulbs[name]=treeBulbs[name]||[]).push(b); }); });
+    (treeBulbs[name]=treeBulbs[name]||[]).push(b); });
+    const sm=new THREE.SpriteMaterial({map:glowTex,color:col,transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending});
+    const sp=new THREE.Sprite(sm); sp.scale.set(1.7,1.7,1); sp.position.set(0,1.55+dy,0.3); treeGrp.add(sp);
+    (treeGlows[name]=treeGlows[name]||[]).push(sm); });
   treeGrp.position.set(0,0,-1.2); scene.add(treeGrp);
 })();
 function setTree(name,on){
   (treeBulbs[name]||[]).forEach(b=>{ b.material.emissiveIntensity=on?3.2:0.06; });
+  (treeGlows[name]||[]).forEach(m=>{ m.opacity=on?0.8:0; });
+  const h=document.getElementById('ht-'+name); if(h) h.classList.toggle('lit',on); /* the big HUD tree mirrors the real one */
 }
 function treeAllOff(){ Object.keys(treeBulbs).forEach(k=>setTree(k,false)); }
 
@@ -688,7 +915,9 @@ function buildCar(paintColor,opts){
   const darkM=new THREE.MeshStandardMaterial({color:0x0a0c10,roughness:0.6,metalness:0.4});
   const glass=new THREE.MeshStandardMaterial({color:0x0d1622,roughness:0.08,metalness:0.9,envMapIntensity:1.6});
   const wt=opts.carbon||0; // lightweight tier drives which panels are carbon
+  const suspTier=opts.susp||0, exhTier=opts.exhaust||0, fuelTier=opts.fuel||0;
   const bodyG=new THREE.Group(); bodyG.rotation.x=0.022; car.add(bodyG); // raked stance
+  if(suspTier) bodyG.position.y=-0.025*suspTier; // suspension tiers drop the stance
   const add=(mesh,x,y,z,parent)=>{ mesh.position.set(x,y,z); (parent||bodyG).add(mesh); return mesh; };
   const box=(w,h,d,mat)=>{ const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat); m.castShadow=true; return m; };
   add(box(1.88,0.5,4.55,paint),0,0.56,0);
@@ -721,13 +950,32 @@ function buildCar(paintColor,opts){
   }
   if(blowerTier===0){ blowerGrp.visible=false; }
   else { scoop.visible=false; const s=[0,0.8,1.0,1.24][blowerTier]; blowerGrp.scale.set(s,s*0.8,s); }
-  /* side pipes + exhaust tips */
+  /* side pipes + exhaust tips — tips grow with the exhaust tier, and
+     headers show through the front wheel wells from tier 1 */
+  const tipR=[0.05,0.062,0.075,0.09][exhTier];
   [-1,1].forEach(s=>{
     const pipe=new THREE.Mesh(new THREE.CylinderGeometry(0.055,0.055,2.4,10),chrome);
     pipe.rotation.x=Math.PI/2; add(pipe,s*1.0,0.3,-0.3);
-    const tip=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.055,0.3,10),darkM);
+    const tip=new THREE.Mesh(new THREE.CylinderGeometry(tipR,tipR+0.006,0.3,10),darkM);
     tip.rotation.x=Math.PI/2; add(tip,s*0.55,0.3,-2.5);
+    if(exhTier>=1){
+      const hdr=new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,0.72,8),chrome);
+      hdr.rotation.x=1.05; hdr.rotation.z=s*0.35; add(hdr,s*0.99,0.4,1.12);
+      const col=add(box(0.1,0.12,0.3,chrome),s*0.97,0.26,0.82);
+      col.rotation.x=0.3;
+    }
   });
+  /* Moon fuel tank on the nose — the race-fuel part, grows per tier */
+  if(fuelTier>=1){
+    const tankR=[0,0.11,0.145,0.175][fuelTier];
+    const tank=new THREE.Mesh(new THREE.CylinderGeometry(tankR,tankR,0.78,18),chrome);
+    tank.rotation.x=Math.PI/2; tank.castShadow=true; add(tank,0,0.52,2.68);
+    const cap=new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,0.07,10),darkM);
+    cap.position.set(0,0.52+tankR,2.68); bodyG.add(cap);
+    if(fuelTier>=2) [-0.22,0.22].forEach(x=>{ add(box(0.06,0.05,0.5,darkM),x,0.52,2.68); });
+  }
+  /* traction bars — suspension tier 1+ */
+  if(suspTier>=1) [-0.55,0.55].forEach(x=>{ add(box(0.055,0.055,1.15,chrome),x,0.2,-1.62); });
   /* halo headlights — the hero art's signature */
   const haloCol=opts.halo||0x66c8ff;
   car.userData.heads=[]; car.userData.flames=[]; car.userData.povHide=[glassM,roofP];
@@ -786,15 +1034,16 @@ function buildCar(paintColor,opts){
     rm.rotation.z=Math.PI/2; wg.add(rm);
     wg.position.set(x,r,z); car.add(wg); car.userData.wheels.push(wg);
   });
-  /* wheelie bars + chute pack — only the meanest car runs them */
-  if(opts.wheelie){
+  /* wheelie bars — the boss runs them, and so does a tier-2+ suspension
+     build; the chute pack stays the boss's signature */
+  if(opts.wheelie||suspTier>=2){
     [-0.5,0.5].forEach(x=>{
       const bar=new THREE.Mesh(new THREE.BoxGeometry(0.06,0.06,1.35),chrome);
       add(bar,x,0.24,-2.95);
       const ww=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.09,0.05,10),tireM);
       ww.rotation.z=Math.PI/2; add(ww,x,0.09,-3.62);
     });
-    add(box(0.52,0.4,0.18,darkM),0,0.82,-2.52);
+    if(opts.wheelie) add(box(0.52,0.4,0.18,darkM),0,0.82,-2.52); // chute: Scotty only
   }
   const shadow=new THREE.Mesh(new THREE.PlaneGeometry(2.5,5.2),
     new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:0.42,depthWrite:false}));
@@ -805,7 +1054,8 @@ let playerCar=null, rivalCar=null;
 function buildPlayerCar(){
   if(playerCar) scene.remove(playerCar);
   playerCar=buildCar(0x0b0d12,{halo:0x66c8ff,realBeams:true,
-    blower:save.up.engine,tireTier:save.up.tires,carbon:save.up.weight});
+    blower:save.up.engine,tireTier:save.up.tires,carbon:save.up.weight,
+    exhaust:save.up.exhaust||0,susp:save.up.susp||0,fuel:save.up.fuel||0});
   playerCar.position.set(-2.05,0,0); scene.add(playerCar);
 }
 buildPlayerCar();
@@ -872,17 +1122,33 @@ const REDLINE=7500, LIMITER=7680, PERFECT_LO=6850, PERFECT_HI=7500;
 const FORCE_K=5.4, DRAG_C=0.0005, ROLL_R=0.25;
 const STOCK_UP=upParams({engine:0,tires:0,gears:0,nitro:0,weight:0});
 function rpmFor(v,gear){ return v/WHEEL_C*RATIOS[gear]*FINAL_D*60; }
+/* per-car effective rpm: gears parts steepen the launch gear and, at
+   tier 2+, swap in a taller overdrive top so a built car is never
+   strangled by the limiter at the stripe */
+function rpmForC(c,gear){ return rpmFor(c.v,gear)*(gear===0?c.launchMult:(gear===4?c.topMult:1)); }
 function torqueFactor(rpm){ return clamp(1.22-Math.abs(rpm-5600)/12000, 0.78, 1.14); }
 function newCarState(power,up){
   up=up||STOCK_UP;
   return {v:0,dist:0,gear:0,throttle:0,power:power,nitroT:0,nitroLeft:1,shiftCut:0,
           launched:false,launchT:0,finishTotal:null,trapV:0,slip:0,shifts:[],splits:{},
           splitIdx:0,rpmDisp:900,
-          powerMult:up.powerMult,forceMult:up.forceMult,dragMult:up.dragMult,
+          powerMult:up.powerMult,forceMult:up.forceMult,dragMult:up.dragMult*(up.blowerDrag||1),
           slipT:up.slipT,slipGrip:up.slipGrip,cutP:up.cutP,cutN:up.cutN,
-          nitroMult:up.nitroMult,nitroDur:up.nitroDur};
+          nitroMult:up.nitroMult,nitroDur:up.nitroDur*(up.tuneDur||1),cutKeep:up.cutKeep||0,
+          launchMult:up.launchMult||1,driveMult:up.driveMult||1,topMult:up.topMult||1,
+          biteMult:up.biteMult||1,exhMult:up.exhMult||1,suspMult:up.suspMult||1,
+          suspGrip:up.suspGrip||0,tuneKeep:up.tuneKeep||0,tuneMult:up.tuneMult||1,
+          stackMult:up.stackMult||1};
 }
 const SPLIT_MARKS=[[18.288,'60ft'],[100.584,'330ft'],[201.168,'1/8mi'],[304.8,'1000ft'],[QUARTER_M,'1/4mi']];
+/* rival pace shapes (v0.3): some launch hard and fade, some sleep off
+   the line and charge the top end — the lead swaps during the run
+   while the total stays on the tuned number */
+function rivalShapeAt(shape,dist){
+  if(shape==='launch'){ if(dist<100) return 1.06-0.06*(dist/100); if(dist<250) return 1; return 1-0.055*((dist-250)/152); }
+  if(shape==='charge'){ if(dist<100) return 0.945+0.055*(dist/100); if(dist<200) return 1; return 1+0.06*((dist-200)/202); }
+  return 1;
+}
 function stepCar(c,dt,now){
   if(!c.launched) return;
   if(c.finishTotal!==null){
@@ -894,27 +1160,31 @@ function stepCar(c,dt,now){
     const a=-DRAG_C*c.dragMult*c.v*c.v-(c.v>0.01?ROLL_R:0)-3.4;
     c.v=Math.max(0,c.v+a*dt);
     c.dist+=c.v*dt;
-    let rpm=rpmFor(c.v,c.gear);
+    let rpm=rpmForC(c,c.gear);
     if(c.v<0.5) rpm=900;
     c.rpmDisp+=(rpm-c.rpmDisp)*Math.min(1,dt*10);
     return;
   }
-  const gear=c.gear, rpmC=rpmFor(c.v,gear);
+  const gear=c.gear, rpmC=rpmForC(c,gear);
   let force=0;
-  if(c.throttle>0 && c.shiftCut<=0){
+  if(c.throttle>0){
     if(rpmC<LIMITER){
-      force=c.throttle*c.power*c.powerMult*c.forceMult*FORCE_K*RATIOS[gear]*torqueFactor(Math.max(rpmC,c.slip>0?4300:0));
+      force=c.throttle*c.power*c.powerMult*c.forceMult*FORCE_K*RATIOS[gear]*(gear===0?c.launchMult:(gear===4?c.topMult:1))*c.driveMult*torqueFactor(Math.max(rpmC,c.slip>0?4300:0))*c.exhMult*c.tuneMult*c.stackMult;
       if(c.nitroT>0) force*=c.nitroMult;
+      if(c.shiftCut>0) force*=Math.max(c.cutKeep,c.tuneKeep||0);   /* flat-shift / tune: power carried through the shift */
+      if(gear===0) force*=c.biteMult;      /* slicks: grip is what lets the launch use power */
+      if(gear===0) force*=c.suspMult;      /* suspension: weight transfer plants the rear */
+      else if(gear===1) force*=1+((c.suspMult||1)-1)*0.5;
     }
   }
   if(c.shiftCut>0) c.shiftCut-=dt;
   if(c.nitroT>0) c.nitroT-=dt;
   let a=force-DRAG_C*c.dragMult*c.v*c.v-(c.v>0.01?ROLL_R:0);
-  if(c.slip>0){ a*=c.slipGrip; c.slip-=dt; }
+  if(c.slip>0){ a*=Math.min(0.995,c.slipGrip+(c.suspGrip||0)); c.slip-=dt; }
   c.v=Math.max(0,c.v+a*dt);
   c.dist+=c.v*dt;
   /* display rpm: coupled to speed, with launch slip flare */
-  let rpm=rpmFor(c.v,gear);
+  let rpm=rpmForC(c,gear);
   if(c.slip>0&&c.throttle>0) rpm=Math.max(rpm,4300+Math.sin(now*40)*120);
   if(c.throttle===0) rpm=Math.max(rpm,900);
   c.rpmDisp+=(rpm-c.rpmDisp)*Math.min(1,dt*18);
@@ -926,7 +1196,7 @@ function stepCar(c,dt,now){
 }
 function doShiftCar(c,now){
   if(!c.launched||c.finishTotal!==null||c.gear>=4||c.shiftCut>0) return null;
-  const rpm=rpmFor(c.v,c.gear);
+  const rpm=rpmForC(c,c.gear);
   let q='good';
   if(rpm>=PERFECT_LO&&rpm<=PERFECT_HI) q='perfect';
   else if(rpm<5200) q='early';
@@ -963,24 +1233,26 @@ function setPovHide(hidden){
   if(!playerCar) return;
   playerCar.userData.povHide.forEach(m=>{ m.visible=!hidden; });
 }
+function startRollin(){ if(S.phase!=='burnout') return; S.phase='rollin'; S.rollT=0; }
 function startRace(rival){
   S.raceSeq=(S.raceSeq||0)+1;
-  S.rival=rival; S.phase='staging'; S.simTime=0; S.treeT=0; S.greenTime=null; S.rt=null;
+  S.rival=rival; S.phase='burnout'; S.burnT=0; S.rollT=0; S.carBack=7; S.simTime=0; S.treeT=0; S.greenTime=null; S.rt=null;
   S.gasHeld=false; S.gasPressT=null; S.resultShown=false; treeFired={};
-  S.camMode='stage'; S.playerFinishAt=null; S.aiFinishAt=null; S.lastSplitIdx=0; S.accounted=false;
-  camera.position.set(-6.2,3.8,-8.2); /* composed from the first staging frame */
+  S.blown=false; S.overRev=0; S.nitroKick=0; S.crowdEx=0; S._finFaded=false; S.prevBest=save.bestET;
+  S.camMode='burnout'; S.playerFinishAt=null; S.aiFinishAt=null; S.lastSplitIdx=0; S.accounted=false;
+  camera.position.set(-5.0,1.5,-12.6); /* composed on the burnout box from frame one */
   S.player=newCarState(1.0, upParams(save.up));
   S.ai=newCarState(rival.power*(0.988+Math.random()*0.024));
   S.aiRT=rival.rtBase+Math.random()*rival.rtVar; S.aiLaunchAt=null;
   /* rival car in its colors, with its own street mods */
   scene.remove(rivalCar); rivalCar=buildCar(rival.color,{halo:0xffd9a0,
-    blower:rival.blower, tireTier:rival.blower, wheelie:rival.id==='cole'});
-  rivalCar.position.set(2.05,0,0); scene.add(rivalCar);
-  playerCar.position.set(-2.05,0,0); playerCar.rotation.set(0,0,0);
+    blower:rival.blower, tireTier:rival.blower, wheelie:!!rival.wheelie||rival.id==='cole'});
+  rivalCar.position.set(2.05,0,-7); scene.add(rivalCar);
+  playerCar.position.set(-2.05,0,-7); playerCar.rotation.set(0,0,0);
   setPovHide(false);
   treeAllOff(); $('btn-nitro').classList.remove('used');
   $('hud-rt').textContent='—.——'; $('hud-et').innerHTML='0.00<small>s</small>';
-  $('gr-num').textContent='1'; banner('STAGE UP…','',0);
+  $('gr-num').textContent='1'; banner('BURNOUT — TAP GAS TO SKIP','',0);
   $('prog-me').style.left='0%'; $('prog-opp').style.left='0%';
   AudioX.init(); showScreen('race');
 }
@@ -997,6 +1269,8 @@ function gasDown(){
   AudioX.init();
   if(S.screen!=='race') return;
   S.lastGas={phase:S.phase,simTime:S.simTime,greenTime:S.greenTime,held:S.gasHeld};
+  if(S.phase==='burnout'){ startRollin(); return; }
+  if(S.phase==='rollin') return;
   if(S.phase==='staging'){
     /* stomped before green = red light */
     S.phase='foul'; setTree('red',true); banner('RED LIGHT — FOUL!','foul',0);
@@ -1022,9 +1296,11 @@ function gasUp(){
   if(S.player&&S.phase==='run') S.player.throttle=0;
 }
 function shiftPress(){
-  if(S.screen!=='race'||S.phase!=='run'||!S.player) return;
+  if(S.screen!=='race') return;
+  if(S.phase==='burnout'){ startRollin(); return; }
+  if(S.phase!=='run'||!S.player) return;
   const q=doShiftCar(S.player,S.simTime);
-  if(q){ S.lastShiftQ=q; S.shiftFlashT=0.9; AudioX.shift();
+  if(q){ S.lastShiftQ=q; S.shiftFlashT=0.9; S.overRev=0; AudioX.shift();
     if(q==='perfect'){ playerCar.userData.flameT=0.38; AudioX.pop(); }
     $('shiftflash').textContent=q==='perfect'?'★ PERFECT SHIFT':(q==='early'?'EARLY — BOGGED':'SHIFT');
     $('shiftflash').style.color=q==='perfect'?'#2BFF6A':(q==='early'?'#FFB300':'#DCE9F6');
@@ -1035,6 +1311,9 @@ function nitroPress(){
   const p=S.player;
   if(p.launched&&p.nitroLeft>0&&p.finishTotal===null){
     p.nitroLeft--; p.nitroT=p.nitroDur; $('btn-nitro').classList.add('used'); AudioX.nitro();
+    /* THE BLAST (v0.3): FOV punch + shake via nitroKick, exhaust flame
+       burst, a bark from the motor, and the car squats on its rear tires */
+    S.nitroKick=1; playerCar.userData.flameT=Math.max(playerCar.userData.flameT,0.9); AudioX.pop();
     banner('NITRO!','',600);
   }
 }
@@ -1044,7 +1323,9 @@ function finalizeResult(win,foul){
   S.accounted=true;
   const p=S.player;
   if(foul){ /* already counted in gasDown */ return; }
-  if(win){ save.cash+=S.rival.pay; save.wins++; save.beaten[S.rival.id]=true; }
+  if(S.blown){ save.losses++; save.races++; storeSave(); return; } /* DNF: a loss, NO payout, no show-up points */
+  if(win){ save.cash+=S.rival.pay; save.wins++; save.beaten[S.rival.id]=true;
+    if(S.rival.id==='scotty') save.champion=true; }
   else { save.losses++; save.cash+=25; } /* show-up points for a clean loss */
   save.races++;
   if(p&&p.finishTotal!==null){
@@ -1060,53 +1341,74 @@ function fadeToResult(win,foul){
 function showResult(win,foul){
   const p=S.player,a=S.ai,r=S.rival;
   finalizeResult(win,foul);
-  $('res-verdict').textContent=foul?'FOULED OUT':(win?'WINNER':'YOU LOST');
-  $('res-verdict').style.color=foul?'#FF3355':'';
-  $('res-et').textContent=foul?'— red light':p.finishTotal!==null?p.finishTotal.toFixed(3)+'s':'DNF';
+  $('res-verdict').textContent=S.blown?'BLOWN MOTOR':(foul?'FOULED OUT':(win?'WINNER':'YOU LOST'));
+  $('res-verdict').style.color=(foul||S.blown)?'#FF3355':'';
+  $('res-et').textContent=S.blown?'DNF — motor let go':(foul?'— red light':p.finishTotal!==null?p.finishTotal.toFixed(3)+'s':'DNF');
   $('res-rt').textContent=foul?'jumped the light':S.rt!==null?S.rt.toFixed(3)+'s':'—';
   $('res-half').textContent=p.splits['1/8mi']?p.splits['1/8mi'].toFixed(3)+'s':'—';
   $('res-trap').textContent=p.trapV?(p.trapV*2.23694).toFixed(1)+' MPH':'—';
   $('res-opp-k').textContent=r.name+' time';
-  $('res-opp').textContent=foul?'—':(a.finishTotal!==null?(S.aiRT+a.finishTotal).toFixed(3)+'s (total)':'DNF');
-  $('res-cash').innerHTML=foul?('$'+save.cash):
+  $('res-opp').textContent=(foul||S.blown)?'—':(a.finishTotal!==null?(S.aiRT+a.finishTotal).toFixed(3)+'s (total)':'DNF');
+  $('res-cash').innerHTML=(foul||S.blown)?('$'+save.cash):
     win?('<span style="color:#2BFF6A">+$'+r.pay+'</span> · $'+save.cash):
         ('<span style="color:#2BFF6A">+$25</span> show-up · $'+save.cash);
-  $('res-note').textContent=foul?'You stomped the gas before green. The tree does not forgive.':
-    win?(r.id==='cole'?'You beat the Kingpin. You run this town now.':'Clean win. The points are yours — the parts shop is open.'):
+  $('res-note').textContent=S.blown?'You held it past the redline and the motor let go. DNF — no payout. Shift in the green and the motor lives.':
+    foul?'You stomped the gas before green. The tree does not forgive.':
+    win?(r.id==='scotty'?'You beat BIG BODY SCOTTY. LADDER CHAMPION — the whole city says your name now.':(r.id==='cole'?'You beat the Kingpin. You run this town now.':'Clean win. The points are yours — the parts shop is open.')):
         'He got you by '+Math.abs((S.rt+p.finishTotal)-(S.aiRT+a.finishTotal)).toFixed(3)+'s. +25 show-up points. Beef the car up and run it back.';
+  /* shop honesty, second half: the slip proves (or honestly denies)
+     the gain the shop promised — measured against your previous best */
+  const gr=$('res-gain-row');
+  if(save.gainPending&&!foul&&!S.blown&&p.finishTotal!==null){
+    const pb=S.prevBest;
+    $('res-gain').textContent=pb?
+      (p.finishTotal<pb? 'The new parts WORK — '+(pb-p.finishTotal).toFixed(2)+'s quicker than your best ('+pb.toFixed(3)+'s) ✓'
+                       : 'No gain on this run — your best is still '+pb.toFixed(3)+'s. The parts are on; run it again.'):
+      'First timed run on the new parts: '+p.finishTotal.toFixed(3)+'s';
+    gr.style.display='';
+    save.gainPending=false; storeSave();
+  } else gr.style.display='none';
   const idx=RIVALS.indexOf(r), nxt=RIVALS[idx+1];
   $('btn-next').style.display=(!foul&&win&&nxt)?'':'none';
   if(nxt) $('btn-next').textContent='Next: '+nxt.name+' →';
   showScreen('result');
-  if(foul) AudioX.foul(); else if(win) AudioX.win(); else AudioX.lose();
+  if(foul) AudioX.foul(); else if(S.blown){ /* silence — the motor is dead */ } else if(win) AudioX.win(); else AudioX.lose();
   S.phase='done';
 }
 
 /* ---------------- GARAGE / TITLE / SHOP ---------------- */
 function renderTitleStats(){
   $('title-stats').innerHTML='Street points <b>$'+save.cash+'</b> · Record <b>'+save.wins+'W – '+save.losses+'L</b>'+
-    (save.bestET?' · Best ET <b>'+save.bestET.toFixed(3)+'s</b>':'');
+    (save.bestET?' · Best ET <b>'+save.bestET.toFixed(3)+'s</b>':'')+
+    (save.champion?' · <b style="color:#FFD75E">★ LADDER CHAMPION</b>':'');
 }
 function pips(tier){
   let s=''; for(let i=0;i<3;i++) s+= i<tier?'●':'<span class="off">●</span>';
   return s;
 }
 function renderGarage(){
+  S.blown=false; /* back in the garage, the motor is whole again */
   $('g-cash').textContent='$'+save.cash;
   $('g-best').innerHTML=save.bestET?
     'Best ET <b>'+save.bestET.toFixed(3)+'s</b> · Best trap <b>'+(save.bestTrap*2.23694).toFixed(1)+' MPH</b> · '+save.wins+' wins':
     'No runs yet. Set a time.';
-  $('g-build').innerHTML='YOUR BUILD — ' + PARTS.map(p=>{
+  $('g-build').innerHTML=(save.champion?'<b style="color:#FFD75E">★ LADDER CHAMPION</b> — ':'')+'YOUR BUILD — ' + PARTS.map(p=>{
     const t=save.up[p.id];
     return p.name.split(' — ')[0]+' <b>'+(t===0?'stock':'tier '+t)+'</b>'; }).join(' · ');
   const list=$('rival-list'); list.innerHTML='';
-  RIVALS.forEach(r=>{
-    const b=document.createElement('button'); b.className='rival'+(save.beaten[r.id]?' beaten':'');
+  let lastLvl=null;
+  RIVALS.forEach((r,idx)=>{
+    if(r.lvl!==lastLvl){ lastLvl=r.lvl;
+      const h=document.createElement('div'); h.className='lvlhdr'; h.textContent=r.lvl; list.appendChild(h); }
+    const locked=idx>0&&!save.beaten[RIVALS[idx-1].id];
+    const b=document.createElement('button'); b.className='rival'+(save.beaten[r.id]?' beaten':'')+(locked?' locked':'');
     b.innerHTML='<div class="face" style="background:'+r.face+'">'+r.name[0]+'</div>'+
       '<div class="info"><div class="nm">'+r.name+' '+(save.beaten[r.id]?'<span class="beatentag">✓ BEATEN</span>':'')+
-      '</div><div class="car">'+r.car+' · runs about '+r.etBase.toFixed(1)+'s</div></div>'+
-      '<div class="pay"><b>$'+r.pay+'</b><span>TO WINNER</span><div class="diff '+r.dcls+'">'+r.diff+'</div></div>';
-    b.addEventListener('click',()=>{ AudioX.init(); startRace(r); });
+      '</div><div class="car">'+r.car+' · runs about '+r.etBase.toFixed(1)+'s</div><div class="rline">“'+r.line+'”</div></div>'+
+      (locked? '<div class="pay"><b>🔒</b><span>BEAT '+RIVALS[idx-1].name.split(' ')[0].toUpperCase()+' FIRST</span><div class="diff '+r.dcls+'">'+r.diff+'</div></div>'
+             : '<div class="pay"><b>$'+r.pay+'</b><span>TO WINNER</span><div class="diff '+r.dcls+'">'+r.diff+'</div></div>');
+    if(locked){ b.disabled=true; }
+    else b.addEventListener('click',()=>{ AudioX.init(); startRace(r); });
     list.appendChild(b);
   });
   const shop=$('shop-list'); shop.innerHTML='';
@@ -1122,7 +1424,7 @@ function renderGarage(){
       if(save.cash<price){ btn.disabled=true; btn.textContent='NEED $'+price; }
       btn.addEventListener('click',()=>{
         if(save.up[p.id]>=3||save.cash<p.prices[save.up[p.id]]) return;
-        save.cash-=p.prices[save.up[p.id]]; save.up[p.id]++; storeSave();
+        save.cash-=p.prices[save.up[p.id]]; save.up[p.id]++; save.gainPending=true; storeSave();
         buildPlayerCar(); /* the mod appears on the car, live */
         AudioX.buy(); renderGarage();
       });
@@ -1196,6 +1498,10 @@ function drawTach(rpm,gear){
   tach.beginPath(); tach.arc(cx,cy,R,ang(7500),a1); tach.strokeStyle='#FF3355'; tach.lineWidth=17; tach.stroke();
   tach.beginPath(); tach.arc(cx,cy,R,a0,ang(rpm)); tach.strokeStyle='#0096FF'; tach.lineWidth=17;
   tach.shadowColor='#0096FF'; tach.shadowBlur=14; tach.stroke(); tach.shadowBlur=0;
+  if(S.overRev>0.35){ /* the tach itself screams before the motor lets go */
+    tach.beginPath(); tach.arc(cx,cy,R+14,ang(7500),a1);
+    tach.strokeStyle='rgba(255,51,85,'+(S.overRev>0.95?(0.6+0.4*Math.sin(performance.now()/40)):0.85)+')';
+    tach.lineWidth=6; tach.stroke(); }
   tach.fillStyle='#8FA9C4'; tach.font='700 19px Arial'; tach.textAlign='center';
   for(let r=0;r<=8000;r+=1000){ const a=ang(r),x=cx+Math.cos(a)*(R-26),y=cy+Math.sin(a)*(R-26)+7;
     tach.fillText(r/1000+'',x,y); }
@@ -1214,8 +1520,36 @@ let camAngle=0, titleSmokeT=0, audioT=0;
 const _camTarget=new THREE.Vector3(), _camLook=new THREE.Vector3();
 function engineAudio(rpm,thr,running,dt){
   audioT+=dt;
-  if(audioT>=0.08){ audioT=0; AudioX.engine(rpm,thr,running); }
+  if(audioT>=0.08){ audioT=0;
+    if(S.blown){ AudioX.engine(0,0,false,0,false,0); return; } /* a blown motor stays dead */
+    const strain=S.overRev?clamp(S.overRev/1.6,0,1):0;
+    AudioX.engine(rpm,thr,running, save?save.up.engine:0, !!(S.player&&S.player.nitroT>0&&S.player.finishTotal===null), strain); }
 }
+/* REDLINE = BLOWN MOTOR (v0.3): the bang, the clip, the DNF */
+function blowMotor(){
+  if(S.blown) return; S.blown=true; S.phase='blown'; S.resultShown=true;
+  const p=S.player; if(p) p.throttle=0;
+  S.gasHeld=false;
+  AudioX.blow();
+  setPovHide(false);
+  puff(playerCar.position.x,0.85,playerCar.position.z+0.8,34,1.8,2.4);
+  banner('BLOWN MOTOR!','foul',0);
+  setTimeout(showBlownVideo,450);
+}
+let blownVidDone=true;
+function showBlownVideo(){
+  const w=$('blownwrap'), v=$('blownvid');
+  blownVidDone=false;
+  w.classList.add('show');
+  const done=()=>{ if(blownVidDone) return; blownVidDone=true; w.classList.remove('show');
+    try{ v.pause(); }catch(e){} fadeToResult(false,false); };
+  v.onended=done; v.onerror=done; w.onclick=done; /* tap skips */
+  setTimeout(()=>{ if(!blownVidDone&&v.readyState<2) done(); },1600); /* clip unreachable -> straight to the slip */
+  const pr=v.play(); if(pr&&pr.catch) pr.catch(()=>{});
+  setTimeout(()=>{ if(isFinite(v.duration)&&v.duration>0) setTimeout(done,v.duration*1000+1200); },60);
+  setTimeout(done,10000); /* hard cap: the moment never outlasts the clip */
+}
+setTimeout(()=>{ const v=$('blownvid'); if(v){ v.preload='auto'; try{ v.load(); }catch(e){} } },5000); /* warm the clip in the background, never in the load path */
 function stepFlames(car,state,dt){
   const u=car.userData;
   if(u.flameT>0) u.flameT-=dt;
@@ -1241,6 +1575,28 @@ function animate(){
   if(Q.t>1.6){ Q.t=0;
     if(S.fpsEMA<45&&Q.idx<Q.steps.length-1){ Q.idx++; renderer.setPixelRatio(Q.steps[Q.idx]); }
     else if(S.fpsEMA>57&&Q.idx>0){ Q.idx--; renderer.setPixelRatio(Q.steps[Q.idx]); } }
+  if(S.phase==='burnout'){
+    /* THE BURNOUT (v0.3, in-engine): the SAME two car objects that are
+       about to race — same paint, same blower, same slicks — smoking
+       their rear tires on the burnout box, 7 m behind the line */
+    S.burnT+=dt;
+    const rev=3400+1500*Math.sin(S.burnT*6.3)+450*Math.sin(S.burnT*17.7);
+    if(S.player) S.player.rpmDisp=rev;
+    [playerCar,rivalCar].forEach(car=>{ const w=car.userData.wheels;
+      w[2].rotation.x+=dt*40; w[3].rotation.x+=dt*40;
+      car.position.y=0.012*Math.sin(now*61+car.position.x); });
+    S._burnSmoke=(S._burnSmoke||0)-dt;
+    if(S._burnSmoke<=0){ S._burnSmoke=0.03;
+      puff(-2.91,0.35,-8.5,3,1.1,1.3); puff(-1.19,0.35,-8.5,3,1.1,1.3);
+      puff( 1.19,0.35,-8.5,3,1.1,1.3); puff( 2.91,0.35,-8.5,3,1.1,1.3); }
+    if(S.burnT>=3.2) startRollin();
+  } else if(S.phase==='rollin'){
+    S.rollT+=dt; const k=Math.min(1,S.rollT/0.75), e=1-Math.pow(1-k,3);
+    S.carBack=7*(1-e);
+    [playerCar,rivalCar].forEach(car=>{ car.position.y=0;
+      car.userData.wheels.forEach(wh=>{ wh.rotation.x+=dt*2.4; }); });
+    if(k>=1){ S.carBack=0; S.phase='staging'; S.camMode='stage'; banner('STAGE UP…','',0); }
+  }
   if(S.phase==='staging'||S.phase==='run'||S.phase==='foul'){
     S.simTime+=dt;
     if(S.phase==='staging'){
@@ -1263,11 +1619,23 @@ function animate(){
             const arpm=rpmFor(a.v,a.gear);
             if(arpm>=S.rival.shiftRpm&&a.gear<4&&a.shiftCut<=0) doShiftCar(a,nowI);
           }
+          a.forceMult=rivalShapeAt(S.rival.shape,a.dist);
           stepCar(a,sdt,nowI);
         }
         if(S.player.launched) stepCar(S.player,sdt,nowI);
       }
       const p=S.player, a=S.ai;
+      /* REDLINE = BLOWN MOTOR: sustained over-rev in a gear that still
+         has a shift left in it cooks the motor. Perfect shifts never
+         get near it; top gear is exempt — no shift left to take. */
+      if(p.launched&&p.finishTotal===null&&!S.blown){
+        const rNow=rpmForC(p,p.gear);
+        if(p.gear<4&&p.throttle>0&&rNow>PERFECT_HI) S.overRev+=dt;
+        else S.overRev=Math.max(0,S.overRev-dt*1.5);
+        if(S.overRev>0.95){ S._wisp=(S._wisp||0)-dt;
+          if(S._wisp<=0){ S._wisp=0.12; puff(playerCar.position.x,0.85,playerCar.position.z+0.9,2,0.5,0.9); } }
+        if(S.overRev>=1.6) blowMotor();
+      }
       /* live HUD */
       if(p.launched&&p.finishTotal===null)
         $('hud-et').innerHTML=(S.simTime-p.launchT).toFixed(2)+'<small>s</small>';
@@ -1284,10 +1652,14 @@ function animate(){
       if(p.finishTotal!==null&&S.playerFinishAt===null){
         S.playerFinishAt=S.simTime;
         banner('FINISH! '+p.finishTotal.toFixed(3)+'s','perfect',1500);
+        S.crowdEx=1.6; /* the crowd goes up */
+        puff(playerCar.position.x,0.6,playerCar.position.z+1.2,26,2.6,2.0);
       }
       if(a.finishTotal!==null&&S.aiFinishAt===null) S.aiFinishAt=S.simTime;
       if(S.playerFinishAt!==null&&S.camMode==='pov'&&S.simTime-S.playerFinishAt>0.3){
         S.camMode='finish'; setPovHide(false); /* back outside for the linger */
+        if(!S._finFaded){ S._finFaded=true; const f=$('fade'); f.style.opacity='0.8';
+          setTimeout(()=>{ f.style.opacity='0'; },120); }
       }
       if(!S.resultShown&&S.playerFinishAt!==null){
         const bothDone=S.aiFinishAt!==null;
@@ -1309,9 +1681,9 @@ function animate(){
     const c=i===0?pp:S.ai, dist=inRace?(c?c.dist:0):0;
     const last=car.userData.lastDist||0, dd=dist-last; car.userData.lastDist=dist;
     if(Math.abs(dd)<5) car.userData.wheels.forEach(w=>{ w.rotation.x+=dd/0.38; });
-    const target=(c&&c.launched&&c.throttle>0&&c.finishTotal===null)?-0.008:0;
+    const target=(c&&c.launched&&c.throttle>0&&c.finishTotal===null)?-0.008-((c.nitroT>0)?0.016:0):0;
     car.rotation.x+=(target-car.rotation.x)*Math.min(1,dt*6);
-    car.position.z=dist;
+    car.position.z=dist-((S.screen==='race')?(S.carBack||0):0);
     stepFlames(car,c,dt);
   });
   if(S.screen==='race'&&pp){
@@ -1319,14 +1691,34 @@ function animate(){
     $('gr-num').textContent=pp.gear+1;
     $('gr-mph').textContent=Math.round(pp.v*2.23694)+' MPH';
     if(S.shiftFlashT>0){ S.shiftFlashT-=dt; if(S.shiftFlashT<=0) $('shiftflash').textContent=''; }
-    engineAudio(pp.rpmDisp,pp.throttle,S.phase==='run'||S.phase==='staging',dt);
+    engineAudio(pp.rpmDisp,S.phase==='burnout'?0.85:pp.throttle,S.phase==='run'||S.phase==='staging'||S.phase==='burnout'||S.phase==='rollin',dt);
+    /* the big HUD tree rides the whole start sequence, then clears */
+    $('hudtree').classList.toggle('show', S.phase==='burnout'||S.phase==='rollin'||S.phase==='staging'||S.phase==='foul'||(S.phase==='run'&&S.greenTime!==null&&S.simTime-S.greenTime<1.2));
+    const dz=$('danger');
+    if(S.overRev>0.95){ dz.textContent='⚠ MOTOR DYING — SHIFT NOW ⚠'; dz.className='show hot'; }
+    else if(S.overRev>0.35){ dz.textContent='⚠ REDLINE — SHIFT! ⚠'; dz.className='show'; }
+    else if(dz.className) dz.className='';
+    if(S.nitroKick>0) S.nitroKick=Math.max(0,S.nitroKick-dt*1.7);
   } else if(S.screen==='race'){ engineAudio(900,0,false,dt); }
   stepSmoke(dt);
-  crowd.forEach(m=>{ m.position.y=0.92+Math.sin(now*1.8+m.userData.ph)*0.03; });
+  if(S.crowdEx>0) S.crowdEx=Math.max(0,S.crowdEx-dt*0.7);
+  crowd.forEach(m=>{ const ex=S.crowdEx||0;
+    m.position.y=0.92+Math.sin(now*1.8+m.userData.ph)*(0.03+0.05*ex)+(ex>0?Math.abs(Math.sin(now*8+m.userData.ph))*0.13*ex:0); });
+  lampGlowMat.opacity=0.30+Math.sin(now*47)*0.02+Math.sin(now*13.7)*0.015; /* mains hum */
+  if(typeof neonMats!=='undefined'&&neonMats.length&&Math.random()<dt*0.8){
+    const m=neonMats[(Math.random()*neonMats.length)|0]; m.opacity=0.25;
+    setTimeout(()=>{ m.opacity=1; },80); } /* one sign buzzes, somewhere down the street */
   /* ---------------- camera director ---------------- */
   const pz=playerCar.position.z, px=playerCar.position.x;
   const pv=pp?pp.v:0;
-  if(S.screen==='race'&&S.camMode==='stage'){
+  if(S.screen==='race'&&S.camMode==='burnout'){
+    /* low rear three-quarter on the burnout box — smoke, shake, your car */
+    _camTarget.set(-4.9,1.35,pz-5.4);
+    camera.position.lerp(_camTarget,Math.min(1,dt*4));
+    _camLook.set(0.2,0.6,pz+1.4); camera.lookAt(_camLook);
+    camera.fov+=(60-camera.fov)*Math.min(1,dt*4); camera.updateProjectionMatrix();
+    streakMat.opacity*=0.8; $('speedfx').style.opacity='0';
+  } else if(S.screen==='race'&&S.camMode==='stage'){
     /* exterior high rear three-quarter (the thumb-10 angle): your car,
        your mods, the rival, the tree — one slow push-in */
     const push=Math.min(S.simTime,2.2)*0.14;
@@ -1337,14 +1729,15 @@ function animate(){
     streakMat.opacity*=0.8; $('speedfx').style.opacity='0';
   } else if(S.screen==='race'&&S.camMode==='pov'){
     /* DRIVER'S SEAT — over the hood and the blower, rival lane to the right */
-    const shake=(pv/82)*0.02, vib=Math.sin(now*87)*0.0035*(pp?pp.rpmDisp/7500:0);
+    const kick=S.nitroKick||0, bScore=(save.up.engine+save.up.tires+save.up.gears+save.up.nitro+save.up.weight+(save.up.exhaust||0)+(save.up.susp||0)+(save.up.fuel||0))*0.66;
+    const shake=(pv/82)*0.02+kick*0.03, vib=Math.sin(now*87)*0.0035*(pp?pp.rpmDisp/7500:0);
     camera.position.set(px-0.38+(Math.random()-0.5)*shake, 1.33+vib+(Math.random()-0.5)*shake, pz-0.3);
     _camLook.set(px+1.15,0.5,pz+30); camera.lookAt(_camLook);
-    const targetFov=74+clamp(pv,0,82)*0.17+((pp&&pp.nitroT>0)?6:0);
+    const targetFov=74+clamp(pv,0,82)*0.17+((pp&&pp.nitroT>0)?6:0)+kick*9+bScore*0.35;
     camera.fov+=(targetFov-camera.fov)*Math.min(1,dt*4); camera.updateProjectionMatrix();
     const sf=clamp((pv-16)/60,0,1);
-    streakMat.opacity+=((sf*0.5)-streakMat.opacity)*Math.min(1,dt*6);
-    $('speedfx').style.opacity=(sf*0.9).toFixed(2);
+    streakMat.opacity+=((sf*0.5+((pp&&pp.nitroT>0)?0.3:0))-streakMat.opacity)*Math.min(1,dt*6);
+    $('speedfx').style.opacity=Math.min(1,(sf*0.9)+((pp&&pp.nitroT>0)?0.35:0)).toFixed(2);
     stepStreaks(pz,pv,dt);
   } else if((S.screen==='race'&&S.camMode==='finish')||(S.screen==='result'&&S.camMode==='finish')){
     /* winner linger — outside, tracking the car as it coasts down */
@@ -1383,6 +1776,7 @@ window.__HCR={S,RIVALS,PARTS,
   get inputLog(){ return S.inputLog||[]; },
   get save(){ return JSON.parse(JSON.stringify(save)); },
   get camMode(){ return S.camMode; },
+  get fov(){ return camera.fov; },
   get quality(){ return Q.steps[Q.idx]; },
   get player(){ return S.player?{dist:S.player.dist,v:S.player.v,gear:S.player.gear,
     rpm:S.player.rpmDisp,throttle:S.player.throttle,launched:S.player.launched,
