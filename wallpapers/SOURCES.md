@@ -27,3 +27,15 @@ license are recorded in `manifest.json` (title, source, license, creator).
   cropped to 1080×2400 WebP for phone screens; thumbnails are 360×800 WebP.
 - Joshua pre-approved the full batch on 2026-11-18 and will prune by name;
   removals are pulled on his word.
+
+- **Batch 2 — J-Dawgs in-house generation (2026-11-18)** — 240 wallpapers:
+  Electric Solids (80, procedural solid-color fields in the house electric
+  palette), Aurora Gradients (36), Chrome & Carbon (28), Geometry & Lines (42),
+  Marble & Ink (20) — all procedural originals generated with our own Python/PIL
+  pipeline — plus the Hero Collection (20) and a fully restocked Muscle Cars &
+  Bikes set (14), AI-generated in-house, original unbranded vehicle designs.
+  Batch-2 manifest hashes use a standard 128-bit dhash.
+- **Muscle Cars & Bikes swap (Joshua's order, 2026-11-18):** the previous 5
+  cars entries (2 in-house Charger renders, 2 mislabeled Wikimedia pulls,
+  1 Wikimedia CC0 photo) were removed entirely and replaced by the 14-piece
+  in-house set above.

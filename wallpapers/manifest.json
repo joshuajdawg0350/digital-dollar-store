@@ -817,22 +817,6 @@
    "creator": "J-Dawgs Industries"
   },
   {
-   "slug": "cars-own-charger-front",
-   "cat": "cars",
-   "title": "Charger \u2014 Front",
-   "source": "J-Dawgs in-house generation",
-   "license": "J-Dawgs original",
-   "creator": "J-Dawgs Industries"
-  },
-  {
-   "slug": "cars-own-charger-side",
-   "cat": "cars",
-   "title": "Charger \u2014 Side",
-   "source": "J-Dawgs in-house generation",
-   "license": "J-Dawgs original",
-   "creator": "J-Dawgs Industries"
-  },
-  {
    "slug": "nature-wc-2016-grand-canyon-history-symposium-desert-view",
    "cat": "nature",
    "title": "2016 Grand Canyon History Symposium Desert View Watchtower 0403.jpg",
@@ -4169,28 +4153,1924 @@
    "creator": "Special Collections, University of Houston Libraries"
   },
   {
-   "slug": "cars-wc-big-motorcycle-in-tokyo",
-   "cat": "cars",
-   "title": "wc-big-motorcycle-in-tokyo.jpg",
+   "slug": "solids-electric-blue",
+   "cat": "solids",
+   "title": "Electric Blue",
    "source": "J-Dawgs in-house generation",
    "license": "J-Dawgs original",
-   "creator": ""
+   "creator": "J-Dawgs Industries"
   },
   {
-   "slug": "cars-wc-brembo-motorcycle-brake",
-   "cat": "cars",
-   "title": "wc-brembo-motorcycle-brake.jpg",
+   "slug": "solids-electric-blue-deep",
+   "cat": "solids",
+   "title": "Electric Blue Deep",
    "source": "J-Dawgs in-house generation",
    "license": "J-Dawgs original",
-   "creator": ""
+   "creator": "J-Dawgs Industries"
   },
   {
-   "slug": "cars-wc-old-vintage-car-in-lindenhurst--ny---february-20",
+   "slug": "solids-electric-blue-bright",
+   "cat": "solids",
+   "title": "Electric Blue Bright",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-ion-blue",
+   "cat": "solids",
+   "title": "Ion Blue",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-laser-blue",
+   "cat": "solids",
+   "title": "Laser Blue",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-cobalt-charge",
+   "cat": "solids",
+   "title": "Cobalt Charge",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-sky-surge",
+   "cat": "solids",
+   "title": "Sky Surge",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-midnight-circuit",
+   "cat": "solids",
+   "title": "Midnight Circuit",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-electric-cyan",
+   "cat": "solids",
+   "title": "Electric Cyan",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-volt-cyan",
+   "cat": "solids",
+   "title": "Volt Cyan",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-glacier-volt",
+   "cat": "solids",
+   "title": "Glacier Volt",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-aqua-surge",
+   "cat": "solids",
+   "title": "Aqua Surge",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-teal-current",
+   "cat": "solids",
+   "title": "Teal Current",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-deep-teal-charge",
+   "cat": "solids",
+   "title": "Deep Teal Charge",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-ice-circuit",
+   "cat": "solids",
+   "title": "Ice Circuit",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-lagoon-neon",
+   "cat": "solids",
+   "title": "Lagoon Neon",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-electric-violet",
+   "cat": "solids",
+   "title": "Electric Violet",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-ultraviolet",
+   "cat": "solids",
+   "title": "Ultraviolet",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-ion-purple",
+   "cat": "solids",
+   "title": "Ion Purple",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-plasma-purple",
+   "cat": "solids",
+   "title": "Plasma Purple",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-deep-violet",
+   "cat": "solids",
+   "title": "Deep Violet",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-orchid-surge",
+   "cat": "solids",
+   "title": "Orchid Surge",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-lavender-volt",
+   "cat": "solids",
+   "title": "Lavender Volt",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-royal-current",
+   "cat": "solids",
+   "title": "Royal Current",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-electric-magenta",
+   "cat": "solids",
+   "title": "Electric Magenta",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-hot-circuit-pink",
+   "cat": "solids",
+   "title": "Hot Circuit Pink",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-neon-rose",
+   "cat": "solids",
+   "title": "Neon Rose",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-plasma-pink",
+   "cat": "solids",
+   "title": "Plasma Pink",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-fuchsia-surge",
+   "cat": "solids",
+   "title": "Fuchsia Surge",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-bubblegum-volt",
+   "cat": "solids",
+   "title": "Bubblegum Volt",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-crimson-current",
+   "cat": "solids",
+   "title": "Crimson Current",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-laser-red",
+   "cat": "solids",
+   "title": "Laser Red",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-ember-red",
+   "cat": "solids",
+   "title": "Ember Red",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-soft-neon-pink",
+   "cat": "solids",
+   "title": "Soft Neon Pink",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-electric-tangerine",
+   "cat": "solids",
+   "title": "Electric Tangerine",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-volt-orange",
+   "cat": "solids",
+   "title": "Volt Orange",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-amber-charge",
+   "cat": "solids",
+   "title": "Amber Charge",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-solar-flare",
+   "cat": "solids",
+   "title": "Solar Flare",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-copper-current",
+   "cat": "solids",
+   "title": "Copper Current",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-apricot-glow",
+   "cat": "solids",
+   "title": "Apricot Glow",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-marigold",
+   "cat": "solids",
+   "title": "Marigold",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-ember-orange",
+   "cat": "solids",
+   "title": "Ember Orange",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-electric-yellow",
+   "cat": "solids",
+   "title": "Electric Yellow",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-volt-yellow",
+   "cat": "solids",
+   "title": "Volt Yellow",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-laser-lemon",
+   "cat": "solids",
+   "title": "Laser Lemon",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-golden-current",
+   "cat": "solids",
+   "title": "Golden Current",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-pale-volt",
+   "cat": "solids",
+   "title": "Pale Volt",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-electric-lime",
+   "cat": "solids",
+   "title": "Electric Lime",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-neon-green",
+   "cat": "solids",
+   "title": "Neon Green",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-spring-volt",
+   "cat": "solids",
+   "title": "Spring Volt",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-laser-lime",
+   "cat": "solids",
+   "title": "Laser Lime",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-ion-mint",
+   "cat": "solids",
+   "title": "Ion Mint",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-circuit-green",
+   "cat": "solids",
+   "title": "Circuit Green",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-deep-circuit-green",
+   "cat": "solids",
+   "title": "Deep Circuit Green",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-chartreuse-surge",
+   "cat": "solids",
+   "title": "Chartreuse Surge",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-soft-ion-green",
+   "cat": "solids",
+   "title": "Soft Ion Green",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-chrome-silver",
+   "cat": "solids",
+   "title": "Chrome Silver",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-liquid-chrome-light",
+   "cat": "solids",
+   "title": "Liquid Chrome Light",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-steel-silver",
+   "cat": "solids",
+   "title": "Steel Silver",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-brushed-steel",
+   "cat": "solids",
+   "title": "Brushed Steel",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-gunmetal-silver",
+   "cat": "solids",
+   "title": "Gunmetal Silver",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-graphite-chrome",
+   "cat": "solids",
+   "title": "Graphite Chrome",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-dark-chrome",
+   "cat": "solids",
+   "title": "Dark Chrome",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-black-chrome",
+   "cat": "solids",
+   "title": "Black Chrome",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-house-black",
+   "cat": "solids",
+   "title": "House Black",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-pure-black",
+   "cat": "solids",
+   "title": "Pure Black",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-midnight-black",
+   "cat": "solids",
+   "title": "Midnight Black",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-ink-black",
+   "cat": "solids",
+   "title": "Ink Black",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-slate-black",
+   "cat": "solids",
+   "title": "Slate Black",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-carbon-black",
+   "cat": "solids",
+   "title": "Carbon Black",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-pure-white",
+   "cat": "solids",
+   "title": "Pure White",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-snow-circuit",
+   "cat": "solids",
+   "title": "Snow Circuit",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-frost-white",
+   "cat": "solids",
+   "title": "Frost White",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-pearl-white",
+   "cat": "solids",
+   "title": "Pearl White",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-warm-white",
+   "cat": "solids",
+   "title": "Warm White",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-bone-white",
+   "cat": "solids",
+   "title": "Bone White",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-pale-ion-blue",
+   "cat": "solids",
+   "title": "Pale Ion Blue",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-pale-plasma-pink",
+   "cat": "solids",
+   "title": "Pale Plasma Pink",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-pale-volt-green",
+   "cat": "solids",
+   "title": "Pale Volt Green",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "solids-pale-solar",
+   "cat": "solids",
+   "title": "Pale Solar",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-northern-circuit",
+   "cat": "aurora",
+   "title": "Northern Circuit",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-northern-circuit-2",
+   "cat": "aurora",
+   "title": "Northern Circuit II",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-northern-circuit-3",
+   "cat": "aurora",
+   "title": "Northern Circuit III",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-ion-drift",
+   "cat": "aurora",
+   "title": "Ion Drift",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-ion-drift-2",
+   "cat": "aurora",
+   "title": "Ion Drift II",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-ion-drift-3",
+   "cat": "aurora",
+   "title": "Ion Drift III",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-plasma-veil",
+   "cat": "aurora",
+   "title": "Plasma Veil",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-plasma-veil-2",
+   "cat": "aurora",
+   "title": "Plasma Veil II",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-plasma-veil-3",
+   "cat": "aurora",
+   "title": "Plasma Veil III",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-violet-surge",
+   "cat": "aurora",
+   "title": "Violet Surge",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-violet-surge-2",
+   "cat": "aurora",
+   "title": "Violet Surge II",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-violet-surge-3",
+   "cat": "aurora",
+   "title": "Violet Surge III",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-emerald-current",
+   "cat": "aurora",
+   "title": "Emerald Current",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-emerald-current-2",
+   "cat": "aurora",
+   "title": "Emerald Current II",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-emerald-current-3",
+   "cat": "aurora",
+   "title": "Emerald Current III",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-solar-wind",
+   "cat": "aurora",
+   "title": "Solar Wind",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-solar-wind-2",
+   "cat": "aurora",
+   "title": "Solar Wind II",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-solar-wind-3",
+   "cat": "aurora",
+   "title": "Solar Wind III",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-midnight-aurora",
+   "cat": "aurora",
+   "title": "Midnight Aurora",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-midnight-aurora-2",
+   "cat": "aurora",
+   "title": "Midnight Aurora II",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-midnight-aurora-3",
+   "cat": "aurora",
+   "title": "Midnight Aurora III",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-ultraviolet-drift",
+   "cat": "aurora",
+   "title": "Ultraviolet Drift",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-ultraviolet-drift-2",
+   "cat": "aurora",
+   "title": "Ultraviolet Drift II",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-ultraviolet-drift-3",
+   "cat": "aurora",
+   "title": "Ultraviolet Drift III",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-glacier-glow",
+   "cat": "aurora",
+   "title": "Glacier Glow",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-glacier-glow-2",
+   "cat": "aurora",
+   "title": "Glacier Glow II",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-glacier-glow-3",
+   "cat": "aurora",
+   "title": "Glacier Glow III",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-rose-plasma",
+   "cat": "aurora",
+   "title": "Rose Plasma",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-rose-plasma-2",
+   "cat": "aurora",
+   "title": "Rose Plasma II",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-rose-plasma-3",
+   "cat": "aurora",
+   "title": "Rose Plasma III",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-teal-tempest",
+   "cat": "aurora",
+   "title": "Teal Tempest",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-teal-tempest-2",
+   "cat": "aurora",
+   "title": "Teal Tempest II",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-teal-tempest-3",
+   "cat": "aurora",
+   "title": "Teal Tempest III",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-ember-aurora",
+   "cat": "aurora",
+   "title": "Ember Aurora",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-ember-aurora-2",
+   "cat": "aurora",
+   "title": "Ember Aurora II",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "aurora-ember-aurora-3",
+   "cat": "aurora",
+   "title": "Ember Aurora III",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-brushed-chrome",
+   "cat": "chrome",
+   "title": "Brushed Chrome",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-brushed-blue-steel",
+   "cat": "chrome",
+   "title": "Brushed Blue Steel",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-brushed-gunmetal",
+   "cat": "chrome",
+   "title": "Brushed Gunmetal",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-brushed-midnight",
+   "cat": "chrome",
+   "title": "Brushed Midnight",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-brushed-silver-mist",
+   "cat": "chrome",
+   "title": "Brushed Silver Mist",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-brushed-graphite",
+   "cat": "chrome",
+   "title": "Brushed Graphite",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-brushed-ion-blue",
+   "cat": "chrome",
+   "title": "Brushed Ion Blue",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-brushed-dark-steel",
+   "cat": "chrome",
+   "title": "Brushed Dark Steel",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-carbon-fiber-classic",
+   "cat": "chrome",
+   "title": "Carbon Fiber Classic",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-carbon-fiber-blue",
+   "cat": "chrome",
+   "title": "Carbon Fiber Blue",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-carbon-fiber-silver",
+   "cat": "chrome",
+   "title": "Carbon Fiber Silver",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-carbon-fiber-midnight",
+   "cat": "chrome",
+   "title": "Carbon Fiber Midnight",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-carbon-fiber-electric",
+   "cat": "chrome",
+   "title": "Carbon Fiber Electric",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-carbon-fiber-graphite",
+   "cat": "chrome",
+   "title": "Carbon Fiber Graphite",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-carbon-fiber-deep-weave",
+   "cat": "chrome",
+   "title": "Carbon Fiber Deep Weave",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-carbon-fiber-ion",
+   "cat": "chrome",
+   "title": "Carbon Fiber Ion",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-liquid-chrome",
+   "cat": "chrome",
+   "title": "Liquid Chrome",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-liquid-chrome-blue",
+   "cat": "chrome",
+   "title": "Liquid Chrome Blue",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-liquid-chrome-violet",
+   "cat": "chrome",
+   "title": "Liquid Chrome Violet",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-liquid-chrome-dark",
+   "cat": "chrome",
+   "title": "Liquid Chrome Dark",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-liquid-chrome-cyan",
+   "cat": "chrome",
+   "title": "Liquid Chrome Cyan",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-liquid-chrome-rose",
+   "cat": "chrome",
+   "title": "Liquid Chrome Rose",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-liquid-chrome-steel",
+   "cat": "chrome",
+   "title": "Liquid Chrome Steel",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-liquid-chrome-onyx",
+   "cat": "chrome",
+   "title": "Liquid Chrome Onyx",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-chrome-horizon",
+   "cat": "chrome",
+   "title": "Chrome Horizon",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-chrome-horizon-blue",
+   "cat": "chrome",
+   "title": "Chrome Horizon Blue",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-chrome-horizon-dusk",
+   "cat": "chrome",
+   "title": "Chrome Horizon Dusk",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "chrome-chrome-horizon-ion",
+   "cat": "chrome",
+   "title": "Chrome Horizon Ion",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-neon-grid-horizon",
+   "cat": "patterns",
+   "title": "Neon Grid Horizon",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-neon-grid-magenta",
+   "cat": "patterns",
+   "title": "Neon Grid Magenta",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-neon-grid-cyan",
+   "cat": "patterns",
+   "title": "Neon Grid Cyan",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-neon-grid-violet",
+   "cat": "patterns",
+   "title": "Neon Grid Violet",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-neon-grid-lime",
+   "cat": "patterns",
+   "title": "Neon Grid Lime",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-neon-grid-sunset",
+   "cat": "patterns",
+   "title": "Neon Grid Sunset",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-topo-lines-blue",
+   "cat": "patterns",
+   "title": "Topo Lines Blue",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-topo-lines-cyan",
+   "cat": "patterns",
+   "title": "Topo Lines Cyan",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-topo-lines-violet",
+   "cat": "patterns",
+   "title": "Topo Lines Violet",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-topo-lines-silver",
+   "cat": "patterns",
+   "title": "Topo Lines Silver",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-topo-lines-lime",
+   "cat": "patterns",
+   "title": "Topo Lines Lime",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-topo-lines-magenta",
+   "cat": "patterns",
+   "title": "Topo Lines Magenta",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-topo-lines-amber",
+   "cat": "patterns",
+   "title": "Topo Lines Amber",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-topo-lines-white",
+   "cat": "patterns",
+   "title": "Topo Lines White",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-halftone-wave-blue",
+   "cat": "patterns",
+   "title": "Halftone Wave Blue",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-halftone-radial-cyan",
+   "cat": "patterns",
+   "title": "Halftone Radial Cyan",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-halftone-fade-magenta",
+   "cat": "patterns",
+   "title": "Halftone Fade Magenta",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-halftone-pulse-violet",
+   "cat": "patterns",
+   "title": "Halftone Pulse Violet",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-halftone-drift-silver",
+   "cat": "patterns",
+   "title": "Halftone Drift Silver",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-halftone-surge-lime",
+   "cat": "patterns",
+   "title": "Halftone Surge Lime",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-halftone-orbit-white",
+   "cat": "patterns",
+   "title": "Halftone Orbit White",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-halftone-tide-ion",
+   "cat": "patterns",
+   "title": "Halftone Tide Ion",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-triangle-field-ion",
+   "cat": "patterns",
+   "title": "Triangle Field Ion",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-triangle-field-dusk",
+   "cat": "patterns",
+   "title": "Triangle Field Dusk",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-triangle-field-steel",
+   "cat": "patterns",
+   "title": "Triangle Field Steel",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-triangle-field-ember",
+   "cat": "patterns",
+   "title": "Triangle Field Ember",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-concentric-ion",
+   "cat": "patterns",
+   "title": "Concentric Ion",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-concentric-magenta",
+   "cat": "patterns",
+   "title": "Concentric Magenta",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-concentric-silver",
+   "cat": "patterns",
+   "title": "Concentric Silver",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-concentric-violet",
+   "cat": "patterns",
+   "title": "Concentric Violet",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-truchet-circuit-blue",
+   "cat": "patterns",
+   "title": "Truchet Circuit Blue",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-truchet-circuit-violet",
+   "cat": "patterns",
+   "title": "Truchet Circuit Violet",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-chevron-surge",
+   "cat": "patterns",
+   "title": "Chevron Surge",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-chevron-pulse",
+   "cat": "patterns",
+   "title": "Chevron Pulse",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-wave-lines-ion",
+   "cat": "patterns",
+   "title": "Wave Lines Ion",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-wave-lines-spectrum",
+   "cat": "patterns",
+   "title": "Wave Lines Spectrum",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-wave-lines-silver",
+   "cat": "patterns",
+   "title": "Wave Lines Silver",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-wave-lines-violet",
+   "cat": "patterns",
+   "title": "Wave Lines Violet",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-wave-lines-ocean",
+   "cat": "patterns",
+   "title": "Wave Lines Ocean",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-wave-lines-ember",
+   "cat": "patterns",
+   "title": "Wave Lines Ember",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-wave-lines-mono",
+   "cat": "patterns",
+   "title": "Wave Lines Mono",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "geo-wave-lines-aurora",
+   "cat": "patterns",
+   "title": "Wave Lines Aurora",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "marble-ion-vein",
+   "cat": "inkflow",
+   "title": "Marble Ion Vein",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "marble-onyx-silver",
+   "cat": "inkflow",
+   "title": "Marble Onyx Silver",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "marble-violet-storm",
+   "cat": "inkflow",
+   "title": "Marble Violet Storm",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "marble-teal-deep",
+   "cat": "inkflow",
+   "title": "Marble Teal Deep",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "marble-rose-current",
+   "cat": "inkflow",
+   "title": "Marble Rose Current",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "marble-glacier",
+   "cat": "inkflow",
+   "title": "Marble Glacier",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "marble-ember-vein",
+   "cat": "inkflow",
+   "title": "Marble Ember Vein",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "marble-circuit-green",
+   "cat": "inkflow",
+   "title": "Marble Circuit Green",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "marble-midnight-gold",
+   "cat": "inkflow",
+   "title": "Marble Midnight Gold",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "marble-magenta-flow",
+   "cat": "inkflow",
+   "title": "Marble Magenta Flow",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "marble-steel-flow",
+   "cat": "inkflow",
+   "title": "Marble Steel Flow",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "marble-azure-drift",
+   "cat": "inkflow",
+   "title": "Marble Azure Drift",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "ink-ion",
+   "cat": "inkflow",
+   "title": "Ink Swirl Ion",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "ink-violet",
+   "cat": "inkflow",
+   "title": "Ink Swirl Violet",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "ink-magenta",
+   "cat": "inkflow",
+   "title": "Ink Swirl Magenta",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "ink-silver",
+   "cat": "inkflow",
+   "title": "Ink Swirl Silver",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "ink-cyan",
+   "cat": "inkflow",
+   "title": "Ink Swirl Cyan",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "ink-ember",
+   "cat": "inkflow",
+   "title": "Ink Swirl Ember",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "ink-lime",
+   "cat": "inkflow",
+   "title": "Ink Swirl Lime",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "ink-rose",
+   "cat": "inkflow",
+   "title": "Ink Swirl Rose",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "cars-gen-midnight-blower",
    "cat": "cars",
-   "title": "Old vintage car in Lindenhurst, NY - February 2025.jpg",
-   "source": "Wikimedia Commons",
-   "license": "Cc0",
-   "creator": "LostplanetKD73"
+   "title": "Midnight Blower",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "cars-gen-burnout-strip",
+   "cat": "cars",
+   "title": "Burnout at the Strip",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "cars-gen-chrome-chopper",
+   "cat": "cars",
+   "title": "Chrome Chopper",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "cars-gen-rain-rider",
+   "cat": "cars",
+   "title": "Rain Rider Sport Bike",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "cars-gen-candy-convertible",
+   "cat": "cars",
+   "title": "Candy Red Convertible",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "cars-gen-chrome-v8",
+   "cat": "cars",
+   "title": "Chrome V8 Engine Bay",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "cars-gen-desert-bobber",
+   "cat": "cars",
+   "title": "Desert Bobber",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "cars-gen-staging-lanes",
+   "cat": "cars",
+   "title": "Staging Lanes",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "cars-gen-silver-launch",
+   "cat": "cars",
+   "title": "Silver Launch",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "cars-gen-diner-cruiser",
+   "cat": "cars",
+   "title": "Diner Cruiser",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "cars-gen-neon-rear",
+   "cat": "cars",
+   "title": "Neon Street Rear View",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "cars-gen-cafe-racer",
+   "cat": "cars",
+   "title": "Cafe Racer",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "cars-gen-garage-green",
+   "cat": "cars",
+   "title": "Garage Find",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "cars-gen-studio-sport",
+   "cat": "cars",
+   "title": "Studio Sport Bike",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "hero-neon-city-rain",
+   "cat": "heroes",
+   "title": "Neon City Rain",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "hero-ion-nebula",
+   "cat": "heroes",
+   "title": "Ion Nebula",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "hero-midnight-wave",
+   "cat": "heroes",
+   "title": "Midnight Wave",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "hero-peak-above-clouds",
+   "cat": "heroes",
+   "title": "Peak Above the Clouds",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "hero-liquid-chrome-ribbons",
+   "cat": "heroes",
+   "title": "Liquid Chrome Ribbons",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "hero-chrome-sentinel",
+   "cat": "heroes",
+   "title": "Chrome Sentinel",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "hero-aurora-lake",
+   "cat": "heroes",
+   "title": "Aurora Lake",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "hero-lightning-strike",
+   "cat": "heroes",
+   "title": "Lightning Strike",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "hero-deep-light",
+   "cat": "heroes",
+   "title": "Deep Light",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "hero-lava-river",
+   "cat": "heroes",
+   "title": "Lava River",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "hero-ice-cave",
+   "cat": "heroes",
+   "title": "Ice Cave",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "hero-neon-jellyfish",
+   "cat": "heroes",
+   "title": "Neon Jellyfish",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "hero-dunes-night",
+   "cat": "heroes",
+   "title": "Dunes at Night",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "hero-gorge-falls",
+   "cat": "heroes",
+   "title": "Gorge Falls",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "hero-prism-split",
+   "cat": "heroes",
+   "title": "Prism Split",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "hero-cyber-alley",
+   "cat": "heroes",
+   "title": "Cyber Alley",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "hero-chrome-dragon",
+   "cat": "heroes",
+   "title": "Chrome Dragon",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "hero-spiral-galaxy",
+   "cat": "heroes",
+   "title": "Spiral Galaxy",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "hero-moon-wolf",
+   "cat": "heroes",
+   "title": "Moon Wolf",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
+  },
+  {
+   "slug": "hero-chrome-orbit",
+   "cat": "heroes",
+   "title": "Chrome Orbit",
+   "source": "J-Dawgs in-house generation",
+   "license": "J-Dawgs original",
+   "creator": "J-Dawgs Industries"
   }
  ],
  "hashes": [
@@ -4296,8 +6176,6 @@
   "00000100000101010000000001010100000000010001010000000000000101010100000000010101010001000001010101000101010101010101010100000000",
   "00000100000101010100000001010100010000010101010101000101010100000001010101010000010101010000010001010100000000000101000000000000",
   "00000100010000000000010000000000010001000101000001000101000000000001010100000100010100000100010001000001010100010000010101000001",
-  "00000100010000000001010000010000010100000001000001010101010001000101010101010100010101000001010101010100000001010000000000010101",
-  "00000100010000000100010101000000000001010001010000010100000101000001010100000100010001010000000001000001010000010000010000000001",
   "00000100010000010100010000000101000101000100010100010100000001010001010000000001010101010000000101010000010000010001000001000100",
   "00000100010001000000010001000100000101000100010101010001010000010101000101000001000001000100010000000000000000000000010001000100",
   "00000100010001000000010001000100000101000100010101010001010000010101000101000001000001000100010000000100010001000000010001000100",
@@ -4715,8 +6593,245 @@
   "01010101010101010101010101010001010101010101000101010101010101010101010101010000010101010101000001010101010000000101010101000000",
   "01010101010101010101010101010100010101010100000001010101010000000101000100000000010001010001000101000101010100000100010101010000",
   "01010101010101010101010101010101000001010000010100000101000000010100000100000000010000010100000000000001010000000001000101000001",
-  "01010101010101010101010101010101010101000101010000010101000101010001010100000001000000010101010000000001010101010000000101010101",
-  "01010101010101010101010101010101010101010101010101010101000101010101010101010101010101010000000101010001010000010101010101000000",
-  "01010101010101010101010101010101010101010101010101010101010101010101010101010000010101010100000000010101000000010000010100000000"
+  "00000011000010010000010100000010000000010000000100000001000000010000000100000001000000010000000100000010000001010000100100000011",
+  "10000110000000100000010100000011000000100000000100000001000000010000000100000001000000010000001000000011000001010000001000000100",
+  "00000010000000110000010100000010000010010000010100000101000000110000001100000101000001010000100100000010000001010000001100000010",
+  "00001101000000100000001100000101000000110000001000000010000000010000000100000010000000100000001100000101000000110000001000001100",
+  "00001011000000110000001100000101000000110000001000000010000000010000000100000010000000100000001100000101000000110000001100001011",
+  "01000001100001101000001000000011000000010000000100000001000000010000000100000001000000010000000100000011100000101000011001000001",
+  "00000101000001100000011100000011000000110000000100000001000000010000000100000001000000010000001100000011000001110000011000000101",
+  "01000000100000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000001000000001000000",
+  "00000101000001110000001100000011000001010000010100000011000000110000001100000011000001010000010100000011000000110000011100000101",
+  "00000111000000110000000100000101000000110000001000000010000000010000000100000001000000100000001100000101000010010000001100000111",
+  "00000111000000110000100100000101000010110000011000000011000000110000001100000011000001100000101100000101000010010000001100000111",
+  "00001001000000110000001000000101000001110000011000000110000001100000011000000110000001100000011100000101000000100000001100001001",
+  "00000101000010100000001100000011000001010000001100000011000000110000001100000011000000110000010100000011000000110000101000000101",
+  "00000010000000100000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000001000000010",
+  "00001011000010110000011100000011000010110000010100000101000000110000001100000101000001010000101100000011000001110000101100001011",
+  "00000010000001100000001100000001000001010000010100000010000000100000001000000010000001010000010100000001000000110000011000000010",
+  "00000010000010010000010100000010000000010000000100000001000000010000000100000001000000010000000100000010000001010000100100000010",
+  "00000000000000000000010000000010000000100000000100000001000000010000000100000001000000010000001000000010000001000000000000000000",
+  "00000001000001010000001000000010000000010000000100000001000000010000000100000001000000010000000100000010000000100000010100000001",
+  "00000000000010000000001000000010000010010000010100000101000000110000001100000101000001010000100100000010000000100000100000000000",
+  "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "00000011000000100000010100000011000000100000000100000001000000010000000100000001000000010000001000000011000001010000001000000011",
+  "00000011000001010000011100001010000001110000001100000011000000110000001100000011000000110000011100001010000001110000010100000011",
+  "00000010000000010000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000100000010",
+  "00001001000000100000001000000001000011010000010000000110000001100000011000000110000001000000110100000001000000100000001000001001",
+  "00000011000000010000000100000100000000100000001000000010000000100000001000000010000000100000001000000100000000010000000100000011",
+  "00000011000000010000010000000110000010100000011100000011000000110000001100000011000001110000101000000110000001000000000100000011",
+  "00000011000010010000001100000010000000010000000100000001000000010000000100000001000000010000000100000010000000110000100100000011",
+  "00001011000100110000100101000101000010100000010100000010000000100000001000000010000001010000101001000101000010010001001100001011",
+  "00000101000010110000001100000011000001010000010100000011000000110000001100000011000001010000010100000011000000110000101100000101",
+  "00000000000000000000000000000100000010100000011000000010000000100000001000000010000001100000101000000100000000000000000000000000",
+  "00001001000010100000001000000011000000010000000100000001000000010000000100000001000000010000000100000011000000100000101000001001",
+  "00000010000000100000000100000001000000000000000000000000000000000000000000000000000000000000000000000001000000010000001000000010",
+  "00000101000001110000011100001011000001110000001100000011000000110000001100000011000000110000011100001011000001110000011100000101",
+  "00000011000000010000000100001101000001100000001000000010000000110000001100000010000000100000011000001101000000010000001100000011",
+  "00000011000010010000010100000010000001010000010100000111000001110000011100000111000001010000010100000010000001110000100100000011",
+  "00000001000010100000011000000011000010110000011100000101000000110000001100000101000001010000101100000011000001100000101000000001",
+  "00001001000010110000001000000111000000110000001100000011000000010000000100000011000000110000001100000111000000100000101100001001",
+  "00000010000000010000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000100000010",
+  "00000011000001010000011100001011000001110000001100000011000000110000001100000011000000110000011100001011000001110000010100000011",
+  "00000011000001010000011100001010000001110000001100000011000000110000001100000011000000110000011100001010000001110000010100000011",
+  "00001001000000110000101000000101000000110000001000000011000000110000001100000011000000100000001100000101000010100000001100001001",
+  "00001011000001110000101100000111000001110000011100000011000000110000001100000011000001110000011100000111000010110000011100001011",
+  "00000011000000010000101100000110000000110000001100000011000000110000001100000011000000110000001100000110000010110000000100000011",
+  "00001011000000110000101100000111000001110000011100000011000000110000001100000011000001110000011100000111000010110000001100001011",
+  "00000011000001010000011100000011000011110000011100000111000001110000011100000111000001110000111100000011000001110000010100000011",
+  "00000111000011110000001100000111000000110000001100000011000000010000000100000011000000110000001100000111000000110000111100000111",
+  "00001011000000110000001100000101000000110000001000000010000000100000001000000010000000100000001100000101000000110000001100001011",
+  "00001001000000110000101000000101000000110000001000000011000000110000001100000011000000100000001100000101000010100000001100001001",
+  "00001011000000110000001000000101000000110000001000000010000000010000000100000010000000100000001100000101000000100000001100001011",
+  "00001110000000110000101100000101000010110000011100000110000000100000001000000110000001110000101100000101000010110000001100001110",
+  "00000111000001110000011100000011000010110000010100000101000000110000001100000101000001010000101100000011000001110000011100000111",
+  "00000001000000110000101000000011000000110000001100000001000000010000000100000001000000110000001100000011000010100000001100000001",
+  "00000010000000100000010100000010000000100000000100000001000000010000000100000001000000010000001000000010000001010000001000000010",
+  "00000011000000110000001100000101000010110000011100000010000000100000001000000010000001110000101100000101000000110000001100000011",
+  "00001011000010110000001100000111000010110000011100000111000000110000001100000011000001110000101100000111000000110000101100000111",
+  "00000101000001110000101100000011000001110000011100000011000000110000001100000011000001110000011100000011000010110000011100000101",
+  "00000111000001110000011100000011000001110000010100000011000000110000001100000011000001010000011100000011000001110000011100000111",
+  "00000110000000110000010100000011000001110000001100000011000000110000001100000011000000110000011100000011000001010000001100000110",
+  "00000101000010110000001100001011000001010000001100000011000000110000001100000011000000110000010100001011000000110000101100000101",
+  "00001001000001100000001000000101000000110000001100000011000000110000001100000011000000110000001100000101000000110000011000001001",
+  "00000010000000010000010100000010000000100000000100000001000000010000000100000001000000010000001000000010000001010000000100000010",
+  "00000100000000100000000100000001000000000000000000000000000000000000000000000000000000000000000000000001000000010000001000000100",
+  "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "00000101000011110000001100000111000010110000011100000011000000110000001100000011000001110000101100000111000000110000111100000101",
+  "00000111000001110000111100000111000000110000001100000011000000010000000100000011000000110000001100000111000011110000011100000111",
+  "00000111000001110000101100000011000011110000011100000111000001110000011100000111000001110000111100000011000010110000011100000111",
+  "00001101000010110000001100000111000010110000011100000011000000110000001100000011000001110000101100000111000000110000101100001101",
+  "00000110000001110000111100000111000010110000011100000011000000110000001100000011000001110000101100000111000011110000011100000110",
+  "00000111000001110000101100000111000001110000011100000011000000110000001100000011000001110000011100000111000010110000011100000111",
+  "00000111000000110000011100000011000001110000010100000011000000110000001100000011000001010000011100000011000001110000001100001111",
+  "00001011000010110000001100000011000001010000010100000011000000110000001100000011000001010000010100000011000000110000101100001011",
+  "00000111000010110000101100000111000000110000001100000011000000110000001100000011000000110000001100000111000010110000101100000111",
+  "00000111000001110000011100000111000001110000111100001111000011110000111100001111000111110001111100011111000111110001111100011111",
+  "00000111000111110001111100111111001111110010111110001111100011111000111010001110100011100000111000011110000111100001111000011110",
+  "00000111000001110000011100000111000001110000011100001111000011110000111100011111000111110011111100111111001111110001111100011111",
+  "00000111000001110000011100000111000000110000001100000111000011110000011100000011000000010000000100000001000000000000000100000000",
+  "01111101011111110111111100001111000000110000010100011011000111110001111100111111000110110000011100000111000001110000011100000111",
+  "00001111000011110000011100000111000001110000111100001111000111110011111100111111001111110001111100000001000000000000000000000000",
+  "00000000000000000000000000000000000000000000000100000001000000110000011100001111000111110001111100011111000111110001111100011111",
+  "00000111000011110001111100011111000111110001111100011111000111110000111100001111000011110000111100000011000000110000001100000001",
+  "00011111000111110011111100111111001111110011111100111111001111110011111100011111000011110000011100000111000001110000011100000111",
+  "00000011000000110000001100000011000000110011111100111111001111110000011100000011000000110000001100000011000000110000000100000011",
+  "01100000011000010100000100000001000000010000001100000011000000110000001100000011000000110000011100000111000001110000011100000111",
+  "00000001000000110000001100000011000000110000001100000011000000110000001100000111000001110000011100000111000001110000011100000111",
+  "00111111001111110001111100011111000011110000001100000001000000010000000100000100000010000000100000001000000001000000001100000011",
+  "01000011010001110000011100010111000001110000011100000111000001110000011100000111000011110000000000000000000000000000000000001000",
+  "00000000000000000000000100000001000000110000011100000111000001110000011100000111000001110000011100000111000011110001111100111111",
+  "00000111000001110000011100000111000001110000011100000111000000110000001100000011000000110000000100000001000000010000000100000001",
+  "00000001000000010000000100000011000000110000001100000011000111110001011100000111000001110000011100000111000001110000011100000111",
+  "00001111000011110000111100000111000000110000001100000011000000110000011100001111000011110000111100001111000011110000111100001111",
+  "00011111000111110001111100001111000111110001111100011111000011110000011100001111000111110000111100001111000101110000111100000011",
+  "00000111000000110000010100000001000000010000000100000001000000010000001100000011000000110000001100000011000001110000011100000111",
+  "00000011000000110000011100001111000001110000111100001111000011110000111100001111000011110000111100001111000111110001111100111111",
+  "00001111000011110000011100000111000000110000000100000001000000010000000100000011000000110000011100000111000001110000001100000011",
+  "00000111000001110000011100001111000011110111111101111111011111110011111101111111011111110111111101111111011111110111111111111111",
+  "00000011000000110000001100000001000000010000001100111111001111110011111100011111000111110011111100111111001111110011111101111111",
+  "00000000000000000000000000000001000000010000111100011111000111110001111100011111000111110001111100111111001111110011111100011111",
+  "00000111000001110000011100000111000001110100111101111111011111110111111101111111011111110011111100111111001111110010011100100111",
+  "00000111000001110000011100000111000001110000011100000111000001110000011100000111000011110000011100000111000011110000111100001111",
+  "00000001000000010000000100000001000000010000000100001111001111110001111100011111000111110001111100001111000111110001111100011111",
+  "00001111000001110000011100000010000001100000111000001111000011110000111100001111000111110001111100011111000111110001111100011111",
+  "00001111000011110001111100011111000111110001111100011111000111110001111100011111000111110001111100011111000111110001111100001111",
+  "00000000000000010000000000000001000000010000011100011111001111110001111100011111000011110000011100000111000001110000011100000111",
+  "01100011010000110100011101000111000001110000011100000111000001110000000100001001000000000001000000010000000000110000111100001111",
+  "00001111000011110000111100001111000001110000011100000111000011110001111100011111000111110001111100001111000011110000111100001111",
+  "00000011000000110000001100000011000000010000000100000001000000010000000100000001000000110000000100000011000000110001111100111111",
+  "01100001010000110100001101000011000000110000011100000111001101110011111100111111001111110000111100000111000001110000111100001111",
+  "00000011000000110000001100000011000000110000001100000111000001110000011100000111000000110000001100000011000000110000001100000001",
+  "00000100001001100010001001000001010110000100000111010000011001000000010111000001000100000101000000000000110110000011000011000000",
+  "00101000001000001000000110000011110010000100000000100000000000101000000011001000110000000011000000000100000000110001110000100100",
+  "00000001001001000010110010001000000000000010000010000011001000010010000000000001000000000000100000000000000011001000100000000001",
+  "00011000000001100000010010000000000000100000001001000100010001001100110000001100001001000010010000000100110100001100000111011000",
+  "00010100000100000000100010011001000110000000000111000010000001000000010000100011001000101000000010000011000000111100011000000011",
+  "00010000000001000000000010000000000010000100001000000100110000000000100000000000000001000010001001100000010000000000000000000000",
+  "10100000010001000010001100010000010000010000000100100000001110000001000100100101000000000000010000010001000000000100010001000001",
+  "00010000001000000000000001000000000000001000001101000000000100000001000010000000100001000000100000010000110001000000100001000000",
+  "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "00100100111000100111001001010010010010110011101100110110010100111001001010010010101001011010100101101010110101011110110100100111",
+  "10110101011010011100111011010010001010101100110110101010011001101011101010010100001011001110110111000010101101101011001010011000",
+  "01100110001100101101011001001010101100111010101010011001101101010110001010101011011100011010011110001100000101100110101000111010",
+  "10101010010100111101101101001001000011011000110010010110110101110100001001001100001100101011001101010001010001101011001110101110",
+  "10100101010101110101010111010110101011100011100100100101010011001001100101111001001100111101001000101111100011011010010110100011",
+  "01100001110010100011001000111101010010101110001011000101100101111001010001010011011101010010011000110100100111001110011000110101",
+  "00101000010010011100010100100101011010111010001010010111100110101001011101101010100110111000101110110010101001101001010100110100",
+  "01110011010101010110011000101010100110100011001101100101101010101001001001010100011011101101101101010001010010000110010001001011",
+  "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "00000000000000000000000000000000000000000000000010100000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "00000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000",
+  "00000000000000000000000000000000000000000000000000000000000000000000000000000000000100100000000000100000000000000000000000000000",
+  "00000000000000000000000000001000100101101001011000010111001100111111000011110000111000000100000010010000000000001000000000000001",
+  "00000000000000000000000000000000010000000100000000110011001100110111000011100000111000000100000000100000000000001000000000000001",
+  "00000000000000000000000000001000000101101001011000010111001100111111000011110000101000000010000011000000010000011100000000000001",
+  "00000000000000000000000000000000000000000100000000010011001100111111000011100000111010000100000010000000010000001000000000000001",
+  "00000000000000000000000000001000000101101001011000010111001100111111000011100000101010000110000010100000010000011000000000000001",
+  "00000000000000000000000001000001000000001100000000010011001100111111000011110000111010000010000010000000000000001100000000000001",
+  "11100110100001100000110100101000110110001111001101100010010001001001100110010011000110101001111000111100111000011100111010001101",
+  "00100010100111000001000101100111111011101101101110100010000110011011001111110010100100101010010111000010011001101010100110011011",
+  "01101111010011011001101000110101010001001100010100101101000101101101110110001000001100111110001010001011000101101001100100010011",
+  "11110111110001100001000001000110110011001001101110010110101011101010101101001000010110010101100110111001100100110011001110010110",
+  "00001001000010111001101000011101001101111101011010110010001100011001100100111001011100010100101110011011101101100110110011010100",
+  "01100100011001111110000010001100100101111011110001110001011000101100011000010010111100101110011110110001100000110100001000010011",
+  "01010010000101100111101010110110111010000110100101101101111010011101001100100110000111000101100000011001101100101001001010010011",
+  "01001101010010010111001001100110000010011100110101001000111010011100011001011101100000010010100101101111110110101111011001101100",
+  "00111110011111001111100011111000111110001111110001111110000111110000111100000111000001110000011100001111000111110011111001111100",
+  "00000110000001110000011100001111000011110000011100001111000011110000111100001111000011110000111100000111000011110000011100000010",
+  "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "11110000100011100000111101110001111100001100110010001110000101110001011110001110110011001111000001110001000011111000111011110000",
+  "00111110011111001111100011111000111110001111110001111110000111110000111100000111000001110000011100001111000111110011111001111100",
+  "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "00000111000011110000111100001111000011110000111100001111000011110000111100001111000011110000111100000111000011110000011100010011",
+  "11110000100011100000111101110001111100001100110010001110000101110001011110001110110011001111000001110001000011111000111011110000",
+  "00001111000000000010000110100001011000000010011001010110011111100010111101101111001110010111011101110001001110000111110001111100",
+  "01100001000000010000011000000111001001011111000111100000000100101000000111010000011100001111000011110000001100011111000111110010",
+  "01111010111110111110111111101100100101110000111100001110000011100000011001100000010100010111100100110001001100100110000101110000",
+  "11110001011100000110000011000000101100000011001101100111010011111000110010000111000100010111000001110000011100001001101110011110",
+  "00101110000000010000000000000000100000000000000110001000010110101010000100000001100000000000000000000000000000000100001010011001",
+  "01000110101000011000010000100100010000011001100010100100100001000001001111000000001000000010000000000001000100100100000010000111",
+  "01001101001000101000000000000001110100000100100101101001010100001000001010000000000000000000000000000000000000001100010000010111",
+  "00110001100000100010000110000100000010010110100100010001100101000000000100000001000000000000000001010000000100000000000100001111",
+  "10010110010010000110011010010010100101001001001010010010101001010101001010110010100111010001001000010010101100101010101010010100",
+  "10001010101101010101001010101101100100100001001000010010100100100011001011001101100100101010011010100110010010101001011010101010",
+  "00001111001100111100110000110011110011000011001111001100001100111100110000110011110011000011001111001100001100111000110001110001",
+  "00001111001100011000110000110011100011000011001110001100001100111000110000110011100011000011001110001100001100111000110001110001",
+  "00000000011100000011000010110000001100010011001100110011001000110010011000000110000011100000110000101100001010000001000000000000",
+  "00000000001110010011100001011001110011001001100010011000100110011000100110001001000000110000001100000011000001110000111000010000",
+  "00000000111000000110000001100000011000000110011101100111010001110100011101001101000011010001110100011101011111000111000000000000",
+  "00000000000000100000010000000010000100110011001100010011101000111100001000100010101000001000011000000000100000010000000100000010",
+  "00000000000000010000010100000010001111000011110000111100011001100110111001101110110001001100010011000100001000110000001100010000",
+  "00000000000000000000000000000001000010100001101000010110001101100011011000100110011001100110011001100100110000011100000100001000",
+  "00000000101000000100000001100000011000100010011100100111010001110100011100001101000011000000110100011100011111000111000000000000",
+  "01000000000000110000101100001100011101000111100001101001110010001100110011001000110011001000100010001000000000010000010100000000",
+  "11000000110001100110011111101111111011000110000011100001010001101000111110100111110000100000010011000000010100110001100000011000",
+  "01111100001110101110000111100001000000101100100011000000111010001111100100011101000001110000011100110000111100001111000011110001",
+  "11001011110110111001100010011000001110000000110000001000101010001110001101111000110100101000111011001110111101101111101011110111",
+  "11000110000001111011000100111000000010001000100110001001100100000101001100011011000111000001111001111101011110110110111011100110",
+  "10000100000010001000011001110100001110000111100011000100011001000000010100010001101000001010000100101001111100001101110100110011",
+  "00011101100110110101100000011000100000111100111111001111111100011111010111000110001001111000000010000000100000010011010100111100",
+  "00110011011001110110011001110100101100011110001111001011000110110010001111001110100011000000110000100010000011000010010100100001",
+  "00100100110001000110010000000001010000000000111000001011110011000000100011001111110001110101100010000001100001110000111111100111",
+  "01100000001100100011011011100011111000111110000111100001011100110011001000111100100011101000011010000010100000001111000101110001",
+  "10011001100111110000110000110000111110011100111111001100011100011110000111001110110111111100010011100000010110111001101110000111",
+  "01111000011111001111110011011000110110011110000101111000010011100000110001100100000100000011100100111000101110001001111000011111",
+  "11110000111100101101101100011000100001001000011000000010110001101000011000011111000011001110000011000001011000000011000111110000",
+  "10001111000111110110100101100000011000010000011000100101100110011100001101100011001100110011111110011110100001111000011100001011",
+  "01100100000001010000111000000111100011101000011110011011100100111110010000100100001000111110000101110001001100010011100100111001",
+  "10000111100000111000111011000110000011000001110011011110010011110110101101111011111111110000111100111010101101001000001010001110",
+  "10011000000111110011100001110000110110111001101111100001110100011110000101111000011111001100010001000011010001111000010010011100",
+  "10011011110110011110010111101110010010010000100010001110000111100000011011000000110000001111000100000011000001110010000011010000",
+  "10000000111100001111100111111001110000111111001000110000100000101000100011100001001100010001000110011001110100010000011100000110",
+  "10111100011001000000010000011011100101111011111100101110110011111100101100101001001100000000011110011011110110001111100011111000",
+  "00001111000111100110011000100110000100000101000111011000110110001011110010001110000001110000110111001100110111100000111010011110",
+  "00000001100000010111000101110011101000100100101001111000010011001101111001100110011011100110110011001100011011100101011001001110",
+  "00001111111111111111011000011100000110010001100010001010000010001101110000110110100111000001110000110100110001100001110001000111",
+  "00000111100000001000000010010000100001001000101110001100100011100010101001011001001100010101001101001011000000110010101100010011",
+  "00001110000011110000111100100100000010010010100101101101110110101011001000100101001001100100110001100110101000101011010001110000",
+  "00001111000111110010111101111111000011111111111101111101011111110101110000011001011011111100111011011010111000010000111100001111",
+  "00011001000101000100111000011101001111001110100111001001100011000100110001001100110011011001011100001101000110011001111010001110",
+  "01001111001011110001111100011111001011010010111000100011000010110000101100010111101100011001011010010011111001010011111000011111",
+  "00010110000001010110000111100011111101000100101000001111000111101100011000000011100010101100001010000011000011010000101010001010",
+  "00010000000001010001100000011000001001001100101001011001001100001110011101100101101100101001100011000101110001111001011100110110",
+  "10000011011100111001111100001110000001101100111101001011001101110000101101011001101100111011001010100011101100111011001100110011",
+  "00011011000011100010110110110101100100000011000101110000111100001110001000010110101100101011001011010110111001101011010110110001",
+  "00000011000000010000011000011001001000011000001100001011001011110010010101100101011001100011001000110110001111100011001000110000",
+  "00000010011100101111000101110101001111010001111000101101000111110001110100001111000000011001100111110111001111100000111100110011",
+  "00000111000011100000111100010111000011110100110100101011000101110000111100010111001100110011001100110010001100110001000100010111",
+  "00111100100110000111100001110010101100101001101000100011110001010100100100011111000011100100011001011111010100010011000110111101",
+  "00100011001001110100111100100111010100111000110000001100000111110001001101100011001100010010110101001101000011010001111000110011",
+  "00000111000000000100000100001111001110110110111101100111001001110001111000111101010010010001111100111100000100010000111101111011",
+  "11101111001011110001111100011011000011110010011001101100010011010110001111000100011011001000100000000101000011011001100100101111",
+  "10110001001001110101111100101100001000110000000101001010000000110010111100110111100111001011001101010011100001010001110000111100",
+  "00001100001100110110001101000011011100010111000111101000110011011100011100010111000101110101011101010101111000001001001011010100",
+  "00110011101110011010110000101100000100111000101100000111000011110000111110001111000001110000111100011011000110010010110000010110",
+  "00100011110011110001111100010001001100010000000000000011000000110000101100000011000001110000011100000111010010010000101100000011",
+  "00000111000000110000011100101001010010010100100110011101000111010001010100010100001010010010100101100001010000011100000111000011",
+  "10100001101010010111100100000111000011100001101101100110001111100011110110001011001001110010011100010110001001100001101101001100",
+  "01000110110001101000110110011001001100010110110001000110100001111001111110001101001011100000110100001110000011110000111100010110",
+  "00001111100011010000111100101111000011010000100100001111000110110000111100010111000011100000010100000111000100111001000100010101",
+  "00111111000101110001111100001111011000010001110000011111000001110001111011111001111111100111111111011111011101110011101101010011",
+  "01001110000011010010011100001110000011110000111100011011010110111001101000011001000011001100110111000110000001100010011100100101",
+  "10000000000000000000000000000000000000000000000100000011000000110000011101101111001111010001110100111101011011111000011100000011",
+  "10010010100100101101000001110100001100110001001100010011000001110010111100100111000001110100011100010011000100110001001100010011",
+  "00011100100000010001011110000011011010111101100110010111100001110110100111101001101001100000110011110100111001000001000000110001",
+  "00000010000010000000100100000001000001110001011100001011010011010000111100011111001101111000111110011111011111111111011111001110",
+  "00110111001111110001110000011100101011010010110100110001001101100001101100011001000110011110100100000011000011110001111111001011",
+  "10110011101101110001011101010101101110010011010100100110110011000111101101110111001100110110111111000111100000110111000100111001"
  ]
 }
