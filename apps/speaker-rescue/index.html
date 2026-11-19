@@ -1,0 +1,804 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" href="data:," />
+    <title>J-Dawgs Speaker Rescue</title>
+    <style>
+      :root{
+        --page:#121418;
+        --panel:#1B1E24;
+        --raised:#23262E;
+        --raised2:#2C3038;
+        --line:#353A44;
+        --text:#EDEFF3;
+        --muted:#A9B0BE;
+        --faint:#7E8694;
+        --gold:#DFAF4B;
+        --gold-ink:#191204;
+        --red:#E5605E;
+        --green:#7FC98A;
+        --spring:cubic-bezier(.34,1.45,.64,1);
+      }
+      *{box-sizing:border-box;}
+      html{-webkit-text-size-adjust:100%;}
+      body{
+        margin:0;
+        background:var(--page);
+        color:var(--text);
+        font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+        font-size:17px;
+        line-height:1.45;
+        padding-top:70px;
+        padding-bottom:calc(86px + env(safe-area-inset-bottom));
+      }
+      .wrap{max-width:560px;margin:0 auto;padding:0 16px;}
+
+      header{padding:10px 0 4px;}
+      .appname{font-size:20px;font-weight:800;letter-spacing:.2px;}
+      .appname sup{font-size:11px;font-weight:700;color:var(--muted);}
+      .tagline{color:var(--muted);font-size:14px;margin-top:2px;}
+
+      .screen{display:none;}
+      .screen.active{display:block;}
+      .screen h1{font-size:23px;line-height:1.2;margin:10px 0 4px;font-weight:800;}
+      .screen .lede{color:var(--muted);margin:0 0 10px;font-size:15px;}
+
+      /* Pinned HUD: key state at a glance, on every view */
+      .hud{
+        position:fixed;top:0;left:0;right:0;z-index:50;
+        background:rgba(18,20,24,.97);border-bottom:1px solid var(--line);
+        padding-top:env(safe-area-inset-top);
+      }
+      .hud-in{
+        max-width:560px;margin:0 auto;padding:8px 16px 7px;
+        display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+      }
+      .hud-mode{font-size:15px;font-weight:800;letter-spacing:.2px;white-space:nowrap;}
+      .hud-state{
+        font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+        color:var(--faint);border:1px solid var(--line);border-radius:999px;padding:2px 9px;white-space:nowrap;
+      }
+      .hud-state.on{color:var(--gold-ink);background:var(--gold);border-color:var(--gold);}
+      .hud-freqbox{margin-left:auto;display:flex;align-items:baseline;gap:4px;font-variant-numeric:tabular-nums;}
+      .hud-freq{font-size:26px;font-weight:800;line-height:1;}
+      .hud-unit{font-size:13px;font-weight:700;color:var(--muted);}
+      .hud-check{display:flex;gap:14px;width:100%;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;}
+      .hud-check b{color:var(--text);font-weight:700;}
+      .hud-track{height:4px;background:#101216;}
+      .hud-fill{height:100%;background:var(--gold);transform-origin:left center;transform:scaleX(0);transition:transform .12s linear;}
+
+      .panel{
+        background:var(--panel);
+        border:1px solid var(--line);
+        border-radius:14px;
+        padding:18px;
+        margin:0 0 16px;
+      }
+      .panel h2{font-size:18px;margin:0 0 10px;font-weight:750;}
+      .panel p{margin:0 0 10px;}
+      .panel p:last-child{margin-bottom:0;}
+      .panel ul{margin:0;padding-left:20px;}
+      .panel li{margin:0 0 8px;}
+      .panel li:last-child{margin-bottom:0;}
+      .honest{border-left:4px solid var(--gold);}
+      .honest strong{color:var(--gold);}
+
+      /* Instrument readout */
+      .instrument{
+        background:linear-gradient(180deg,var(--raised2),var(--raised));
+        border:1px solid var(--line);
+        border-radius:16px;
+        padding:14px 16px 12px;
+        margin:0 0 16px;
+        text-align:center;
+        position:relative;
+        overflow:hidden;
+      }
+      .instrument .mode-label{
+        font-size:13px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--faint);
+      }
+      .freq-line{display:flex;align-items:baseline;justify-content:center;gap:8px;margin:6px 0 2px;}
+      .freq{
+        font-size:52px;line-height:1;font-weight:800;letter-spacing:-1px;
+        font-variant-numeric:tabular-nums;color:var(--text);
+      }
+      .freq-unit{font-size:22px;font-weight:700;color:var(--muted);}
+      .freq-sub{color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums;min-height:20px;}
+      .status-line{font-size:16px;font-weight:650;margin-top:8px;min-height:24px;}
+      .cycle-line{color:var(--muted);font-size:15px;font-variant-numeric:tabular-nums;min-height:22px;}
+      .track{
+        height:12px;border-radius:6px;background:#101216;border:1px solid var(--line);
+        margin:10px 0 2px;overflow:hidden;
+      }
+      .fill{
+        height:100%;width:100%;background:var(--gold);border-radius:6px;
+        transform-origin:left center;transform:scaleX(0);
+        transition:transform .12s linear;
+      }
+      .instrument.running .freq{color:var(--gold);}
+      .pulse-dot{
+        position:absolute;top:16px;right:16px;width:10px;height:10px;border-radius:50%;
+        background:var(--faint);opacity:.5;
+      }
+      .instrument.running .pulse-dot{background:var(--red);opacity:1;animation:pulse 1.1s ease-in-out infinite;}
+      @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.5);}}
+
+      .btn{
+        display:block;width:100%;border:0;border-radius:14px;cursor:pointer;
+        font:inherit;font-weight:800;font-size:19px;padding:14px 16px;
+        transition:transform .18s var(--spring),background .15s ease,opacity .15s ease;
+        -webkit-tap-highlight-color:transparent;
+      }
+      .btn:active{transform:scale(.97);}
+      .btn-start{background:var(--gold);color:var(--gold-ink);}
+      .btn-stop{background:var(--red);color:#fff;display:none;}
+      .running-ui .btn-stop{display:block;}
+      .running-ui .btn-start{display:none;}
+      .btn-ghost{
+        background:var(--raised);color:var(--text);border:1px solid var(--line);
+        font-size:16px;font-weight:700;padding:14px 16px;margin-top:10px;
+      }
+      .btn[disabled]{opacity:.45;cursor:default;}
+      .btn[disabled]:active{transform:none;}
+
+      .steps{counter-reset:step;list-style:none;padding:0;margin:0;}
+      .steps li{
+        position:relative;padding:10px 0 10px 44px;margin:0;border-bottom:1px solid var(--line);
+      }
+      .steps li:last-child{border-bottom:0;}
+      .steps li::before{
+        counter-increment:step;content:counter(step);
+        position:absolute;left:0;top:8px;width:30px;height:30px;border-radius:50%;
+        background:var(--raised2);border:1px solid var(--line);
+        display:flex;align-items:center;justify-content:center;
+        font-weight:800;font-size:15px;font-variant-numeric:tabular-nums;color:var(--gold);
+      }
+
+      .readings{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 12px;}
+      .reading{
+        background:var(--raised);border:1px solid var(--line);border-radius:12px;padding:14px;
+      }
+      .reading .r-name{font-size:13px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--faint);margin-bottom:8px;}
+      .reading .r-num{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.15;}
+      .reading .r-lab{font-size:13px;color:var(--muted);}
+      .reading .r-empty{color:var(--faint);font-size:15px;}
+      .delta{
+        background:var(--raised);border:1px solid var(--line);border-radius:12px;
+        padding:14px;font-size:16px;margin:0 0 12px;display:none;
+      }
+      .delta.show{display:block;}
+      .delta .up{color:var(--green);font-weight:800;font-variant-numeric:tabular-nums;}
+      .delta .down{color:var(--red);font-weight:800;font-variant-numeric:tabular-nums;}
+      .note{color:var(--muted);font-size:14px;}
+      .warn-text{color:#F2C14E;}
+      .error-text{color:var(--red);font-weight:650;}
+      .ok-text{color:var(--green);font-weight:650;}
+
+      /* Bottom nav */
+      nav.tabbar{
+        position:fixed;left:0;right:0;bottom:0;z-index:40;
+        background:rgba(18,20,24,.97);border-top:1px solid var(--line);
+        padding-bottom:env(safe-area-inset-bottom);
+      }
+      nav.tabbar .row{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);}
+      nav.tabbar button{
+        appearance:none;background:none;border:0;color:var(--faint);cursor:pointer;
+        font:inherit;font-size:12px;font-weight:700;padding:10px 2px 12px;
+        display:flex;flex-direction:column;align-items:center;gap:4px;
+        -webkit-tap-highlight-color:transparent;
+      }
+      nav.tabbar button svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+      nav.tabbar button[aria-selected="true"]{color:var(--gold);}
+
+      footer{padding:26px 0 10px;border-top:1px solid var(--line);margin-top:8px;}
+      footer p{margin:0 0 10px;font-size:14px;color:var(--muted);}
+      footer .guarantee{color:var(--text);font-size:15px;}
+      footer a{color:var(--gold);font-weight:700;}
+      footer .brandline{color:var(--text);font-size:16px;}
+      footer .legal{color:var(--faint);font-size:13px;}
+
+      /* Safety overlay */
+      .overlay{
+        position:fixed;inset:0;z-index:60;background:rgba(8,9,11,.78);
+        display:none;align-items:flex-end;justify-content:center;padding:16px;
+      }
+      .overlay.open{display:flex;}
+      .sheet{
+        background:var(--raised);border:1px solid var(--line);border-radius:18px;
+        max-width:520px;width:100%;padding:22px 20px calc(20px + env(safe-area-inset-bottom));
+        animation:sheet-in .28s var(--spring);
+      }
+      @keyframes sheet-in{from{transform:translateY(26px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+      .sheet h2{margin:0 0 10px;font-size:21px;}
+      .sheet ul{margin:0 0 18px;padding-left:20px;}
+      .sheet li{margin:0 0 8px;}
+      .sheet .btn{margin-top:10px;}
+
+      @media (prefers-reduced-motion: reduce){
+        *,*::before,*::after{animation:none !important;transition:none !important;}
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hud" id="hud" aria-label="Status at a glance">
+      <div class="hud-in">
+        <span class="hud-mode" id="hud-mode">Water Eject</span>
+        <span class="hud-state" id="hud-state">Idle</span>
+        <span class="hud-freqbox"><span class="hud-freq" id="hud-freq">—</span><span class="hud-unit">Hz</span></span>
+        <span class="hud-check"><span id="hud-before">Before: <b>none</b></span><span id="hud-after">After: <b>none</b></span></span>
+      </div>
+      <div class="hud-track" aria-hidden="true"><div class="hud-fill" id="hud-fill"></div></div>
+    </div>
+    <div class="wrap">
+      <header>
+        <div class="appname">J-Dawgs Speaker Rescue<sup>™</sup></div>
+        <div class="tagline">Low-frequency tones that can help eject water and dust from a phone speaker grille — plus a measured sound check.</div>
+      </header>
+
+      <!-- ============ WATER EJECT ============ -->
+      <section class="screen active" id="screen-water" aria-label="Water eject">
+        <h1>Water Eject</h1>
+        <p class="lede">Three cycles, about 20 seconds each. The tone sweeps between 140 and 185 Hz — the low range that can help push surface water out of the grille.</p>
+
+        <div class="instrument" id="w-inst">
+          <div class="pulse-dot" aria-hidden="true"></div>
+          <div class="mode-label">Water Eject · Frequency</div>
+          <div class="freq-line"><span class="freq" id="w-freq">—</span><span class="freq-unit">Hz</span></div>
+          <div class="freq-sub" id="w-sub">Sweep 140–185 Hz · 3 cycles × 20 s</div>
+          <div class="track" role="progressbar" aria-label="Cycle progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="w-bar"><div class="fill" id="w-fill"></div></div>
+          <div class="cycle-line" id="w-cycle">Ready when you are</div>
+          <div class="status-line" id="w-status">Not running</div>
+        </div>
+
+        <div id="w-controls">
+          <button class="btn btn-start" id="w-start" type="button">Start Water Eject</button>
+          <button class="btn btn-stop" id="w-stop" type="button">Stop</button>
+        </div>
+
+        <div class="panel" style="margin-top:16px;">
+          <h2>Set the phone up first</h2>
+          <ul>
+            <li><strong>Speaker facing down</strong>, so water can fall out of the grille.</li>
+            <li><strong>Grille clear</strong> — nothing pressed against it, no finger over it.</li>
+            <li><strong>Take off any case that covers the grille.</strong> A covered grille traps the water in.</li>
+            <li><strong>Turn the media volume up</strong> before you start — the tones work at the volume you set.</li>
+          </ul>
+        </div>
+
+        <div class="panel honest">
+          <h2>What this can and can't do — plain words</h2>
+          <p>Sound waves can help move <strong>surface water and dust</strong> out of a speaker grille. That is all this does.</p>
+          <p>It <strong>cannot</strong> repair water damage inside the phone, and it <strong>cannot</strong> fix a torn or blown speaker.</p>
+          <p><strong>No result is guaranteed.</strong> If the speaker still sounds muffled after two full cycles, the problem is hardware, not water in the grille — see <em>When this can't help</em>.</p>
+        </div>
+      </section>
+
+      <!-- ============ DUST MODE ============ -->
+      <section class="screen" id="screen-dust" aria-label="Dust mode">
+        <h1>Dust Mode</h1>
+        <p class="lede">Thirty seconds of alternating low tones — 120 Hz and 195 Hz, switching every two seconds — that can help shake loose dust out of the grille.</p>
+
+        <div class="instrument" id="d-inst">
+          <div class="pulse-dot" aria-hidden="true"></div>
+          <div class="mode-label">Dust Mode · Frequency</div>
+          <div class="freq-line"><span class="freq" id="d-freq">—</span><span class="freq-unit">Hz</span></div>
+          <div class="freq-sub" id="d-sub">Alternating 120 Hz / 195 Hz · 30 s</div>
+          <div class="track" role="progressbar" aria-label="Dust progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="d-bar"><div class="fill" id="d-fill"></div></div>
+          <div class="cycle-line" id="d-cycle">Ready when you are</div>
+          <div class="status-line" id="d-status">Not running</div>
+        </div>
+
+        <div id="d-controls">
+          <button class="btn btn-start" id="d-start" type="button">Start Dust Mode</button>
+          <button class="btn btn-stop" id="d-stop" type="button">Stop</button>
+        </div>
+
+        <div class="panel" style="margin-top:16px;">
+          <h2>Vibration</h2>
+          <p id="vib-status">Checking whether this browser supports vibration…</p>
+          <p class="note">Hold the phone speaker-down with the grille clear, same as Water Eject. Job-site dust, pocket lint, and dry grit are what this is for — wet mud in the grille is a Water Eject job first.</p>
+        </div>
+      </section>
+
+      <!-- ============ SOUND CHECK ============ -->
+      <section class="screen" id="screen-check" aria-label="Sound check">
+        <h1>Sound Check</h1>
+        <p class="lede">Proof instead of a progress animation: record the speaker before an eject cycle and after, and compare what the microphone actually measured.</p>
+
+        <div class="instrument" id="c-inst">
+          <div class="pulse-dot" aria-hidden="true"></div>
+          <div class="mode-label">Test Sweep · Frequency</div>
+          <div class="freq-line"><span class="freq" id="c-freq">—</span><span class="freq-unit">Hz</span></div>
+          <div class="freq-sub">Sweep 250–1,200 Hz · 3 s</div>
+          <div class="status-line" id="c-status">Not running</div>
+        </div>
+
+        <button class="btn btn-start" id="c-before" type="button">Record “before”</button>
+        <button class="btn btn-start" id="c-after" type="button" style="margin-top:10px;">Record “after”</button>
+        <button class="btn btn-ghost" id="c-play" type="button">Just play the test sweep (no recording)</button>
+        <p id="c-msg" style="min-height:24px;margin:12px 0 0;" aria-live="polite"></p>
+
+        <div class="readings" style="margin-top:16px;">
+          <div class="reading" id="r-before">
+            <div class="r-name">Before</div>
+            <div class="r-empty">No recording yet</div>
+          </div>
+          <div class="reading" id="r-after">
+            <div class="r-name">After</div>
+            <div class="r-empty">No recording yet</div>
+          </div>
+        </div>
+        <div class="delta" id="c-delta"></div>
+
+        <div class="panel">
+          <h2>How it works</h2>
+          <ol class="steps">
+            <li>Tap <strong>Record “before.”</strong> The app plays a 3-second test sweep (250–1,200 Hz) and records it with the mic.</li>
+            <li>Run a Water Eject or Dust cycle.</li>
+            <li>Come back and tap <strong>Record “after”</strong> — same spot, same volume, same quiet room.</li>
+          </ol>
+        </div>
+
+        <div class="panel">
+          <h2>Read this before you trust the numbers</h2>
+          <p>These readings are <strong>indicative, not a lab measurement</strong>. They are computed from the actual recording your mic made — <em>Level</em> is how loud the sweep came back, <em>Clarity</em> is where the sound's energy centered (a muffled, water-blocked speaker usually reads lower on both). Room noise, mic position, and distance all change the numbers, so compare two readings taken the same way — never treat one reading as a verdict.</p>
+          <p class="note">The mic is used only when you tap Record. Recordings are analyzed right here on this phone and never leave it.</p>
+        </div>
+      </section>
+
+      <!-- ============ WHEN THIS CAN'T HELP ============ -->
+      <section class="screen" id="screen-limits" aria-label="When this can't help">
+        <h1>When this can't help</h1>
+        <p class="lede">Tones move air. They cannot repair parts. If any of these sound like your phone, stop running cycles and save your money for the fix that actually works.</p>
+
+        <div class="panel">
+          <h2>It's hardware if…</h2>
+          <ul>
+            <li><strong>The speaker crackles or distorts at every volume</strong> — that is usually a torn or blown speaker driver.</li>
+            <li><strong>The phone went fully under water</strong>, or water got inside past the grille — internal water damage is not something sound can push out.</li>
+            <li><strong>It's still muffled after two full Water Eject cycles.</strong> Two honest tries is the test. More cycles won't change a hardware problem.</li>
+            <li><strong>There's no sound from the speaker at all</strong> — a dead driver or a loose connection, not a blocked grille.</li>
+            <li><strong>Charging, buttons, or the screen misbehave after the phone got wet</strong> — water is inside the phone. Power it off and get it looked at.</li>
+          </ul>
+        </div>
+
+        <div class="panel honest">
+          <h2>The honest summary</h2>
+          <p>Sound waves can help eject surface water and dust from a grille. They cannot repair internal water damage or a blown driver, and no result is guaranteed — anyone who promises otherwise is selling you something.</p>
+          <p>If the speaker is torn or blown, a repair shop can replace it. Knowing when to stop is worth more than another ten cycles.</p>
+        </div>
+      </section>
+
+      <footer>
+        <p class="guarantee"><strong>The J-Dawgs Fix-It Guarantee:</strong> if anything we sold or gave you doesn't work, tell us once — we fix it free. No receipts, no runaround.</p>
+        <p><a href="https://joshuajdawg0350.github.io/jdawgs-hub/support.html">Report a problem</a></p>
+        <p class="brandline"><strong>No fancy logos. Just quality products.</strong></p>
+        <p>No ads.</p>
+        <p class="legal">J-Dawgs Speaker Rescue™ · © 2026 Joshua Dawson · J-Dawgs™ is a trademark of Joshua Dawson.</p>
+      </footer>
+    </div>
+
+    <!-- Safety sheet -->
+    <div class="overlay" id="safety" role="dialog" aria-modal="true" aria-labelledby="safety-title">
+      <div class="sheet">
+        <h2 id="safety-title">Before the first run — these tones are loud</h2>
+        <ul>
+          <li>The eject tones play at the volume you set, and low tones at full volume are <strong>loud</strong>.</li>
+          <li>Hold the phone <strong>away from your ears</strong> while a cycle runs — and away from pets' ears too.</li>
+          <li><strong>Never run a cycle with earbuds in</strong> or headphones on.</li>
+          <li>If it ever sounds painfully loud, press <strong>Stop</strong> — it stops the tone instantly.</li>
+        </ul>
+        <button class="btn btn-start" id="safety-go" type="button">I understand — start</button>
+        <button class="btn btn-ghost" id="safety-cancel" type="button">Not now</button>
+      </div>
+    </div>
+
+    <nav class="tabbar" aria-label="Sections">
+      <div class="row">
+        <button type="button" data-screen="water" aria-selected="true">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3.5 4.2 6 7.6 6 10.5A6 6 0 0 1 6 13.5C6 10.6 8.5 7.2 12 3z"/></svg>
+          Water
+        </button>
+        <button type="button" data-screen="dust" aria-selected="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8h9a3 3 0 1 0-3-3"/><path d="M2 12h13a3 3 0 1 1-3 3"/><path d="M3 16h6"/></svg>
+          Dust
+        </button>
+        <button type="button" data-screen="check" aria-selected="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4"/><path d="M8 7v10"/><path d="M12 4v16"/><path d="M16 8v8"/><path d="M20 11v2"/></svg>
+          Sound Check
+        </button>
+        <button type="button" data-screen="limits" aria-selected="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/></svg>
+          Can't Help
+        </button>
+      </div>
+    </nav>
+
+    <script>
+    (function(){
+      "use strict";
+      var $ = function(id){ return document.getElementById(id); };
+
+      /* ---------- Vibration support: detected once, stated honestly ---------- */
+      var vibSupported = (typeof navigator !== "undefined") && ("vibrate" in navigator) && (typeof navigator.vibrate === "function");
+      var vibEl = $("vib-status");
+      if (vibSupported) {
+        vibEl.innerHTML = "<strong class='ok-text'>Vibration is available in this browser.</strong> While Dust Mode runs, the phone also vibrates in short pulses, in time with the tones, to help shake dust loose.";
+      } else {
+        vibEl.innerHTML = "<strong class='warn-text'>Vibration is not available in this browser</strong> — for example, Safari on iPhone doesn't offer it to web apps. Dust Mode will still play the alternating tones, but it will not vibrate, and it won't pretend to.";
+      }
+
+      /* ---------- Audio engine (single owner: one run at a time) ---------- */
+      var actx = null;
+      function audio(){
+        if (!actx) {
+          var AC = window.AudioContext || window.webkitAudioContext;
+          actx = new AC();
+        }
+        if (actx.state === "suspended") { actx.resume(); }
+        return actx;
+      }
+
+      var WATER = { mode:"water", dur:60000, cycleMs:20000, cycles:3,
+        freq:function(t){ var ph=(t%20000)/20000; var tri = ph<0.5 ? ph*2 : 2-ph*2; return 140 + 45*tri; } };
+      var DUST = { mode:"dust", dur:30000,
+        freq:function(t){ return (Math.floor(t/2000)%2===0) ? 120 : 195; } };
+      var SWEEP = { mode:"sweep", dur:3000,
+        freq:function(t){ return 250 + 950*(t/3000); } };
+
+      var run = null; /* {spec, osc, gain, t0, raf, ui, onDone, lastStep} */
+
+      var ui = {
+        water: { inst:$("w-inst"), freq:$("w-freq"), sub:$("w-sub"), fill:$("w-fill"), bar:$("w-bar"),
+                 cycle:$("w-cycle"), status:$("w-status"), controls:$("w-controls"), idleFreq:"—",
+                 idleCycle:"Ready when you are", label:$("w-inst").querySelector(".mode-label"), labelName:"Water Eject" },
+        dust:  { inst:$("d-inst"), freq:$("d-freq"), sub:$("d-sub"), fill:$("d-fill"), bar:$("d-bar"),
+                 cycle:$("d-cycle"), status:$("d-status"), controls:$("d-controls"), idleFreq:"—",
+                 idleCycle:"Ready when you are", label:$("d-inst").querySelector(".mode-label"), labelName:"Dust Mode" },
+        sweep: { inst:$("c-inst"), freq:$("c-freq"), status:$("c-status"), idleFreq:"—",
+                 label:$("c-inst").querySelector(".mode-label"), labelName:"Test Sweep" }
+      };
+
+      /* Exposed so behavior can be verified: live engine state, not decoration. */
+      window.__sr = { running:false, mode:null, freqHz:0, elapsedMs:0, vibSupported:vibSupported, readings:{ before:null, after:null } };
+
+      /* ---------- Pinned HUD: mirrors the same live engine state ---------- */
+      var hud = { mode:$("hud-mode"), state:$("hud-state"), freq:$("hud-freq"), fill:$("hud-fill"),
+                  before:$("hud-before"), after:$("hud-after") };
+      function hudRunning(on){
+        hud.state.textContent = on ? "Running" : "Idle";
+        hud.state.classList.toggle("on", on);
+        if (!on) { hud.freq.textContent = "—"; hud.fill.style.transform = "scaleX(0)"; }
+      }
+      function hudReading(which, r){
+        var el = which === "before" ? hud.before : hud.after;
+        var name = which === "before" ? "Before" : "After";
+        el.innerHTML = r ? name + ": <b>" + r.db.toFixed(1) + " dB</b>" : name + ": <b>none</b>";
+      }
+
+      function setStatus(u, txt){ if (u.status) u.status.textContent = txt; }
+
+      function startRun(spec, u, onDone){
+        stopRun("replace", true);
+        var ctx = audio();
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = spec.freq(0);
+        var now = ctx.currentTime;
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.9, now + 0.15);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start();
+        run = { spec:spec, osc:osc, gain:gain, t0:performance.now(), raf:0, ui:u, onDone:onDone||null, lastStep:-1 };
+        window.__sr.running = true; window.__sr.mode = spec.mode; window.__sr.freqHz = spec.freq(0); window.__sr.elapsedMs = 0;
+        hudRunning(true); hud.freq.textContent = String(Math.round(spec.freq(0)));
+        if (u.inst) u.inst.classList.add("running");
+        if (u.label) u.label.textContent = u.labelName + " · Live Frequency";
+        if (u.controls) u.controls.classList.add("running-ui");
+        setStatus(u, spec.mode === "sweep" ? "Playing test sweep…" : "Running…");
+        tick();
+      }
+
+      function tick(){
+        if (!run) return;
+        var t = performance.now() - run.t0;
+        var spec = run.spec, u = run.ui;
+        if (t >= spec.dur) { var cb = run.onDone; finishRun(); if (cb) cb(); return; }
+        var f = spec.freq(t);
+        run.osc.frequency.setValueAtTime(f, actx.currentTime);
+        window.__sr.freqHz = f; window.__sr.elapsedMs = t;
+        if (u.freq) u.freq.textContent = String(Math.round(f));
+        hud.freq.textContent = String(Math.round(f));
+        hud.fill.style.transform = "scaleX(" + Math.min(1, t/spec.dur) + ")";
+        if (u.fill) {
+          var pct = Math.min(100, (t/spec.dur)*100);
+          u.fill.style.transform = "scaleX(" + (pct/100) + ")";
+          if (u.bar) u.bar.setAttribute("aria-valuenow", String(Math.round(pct)));
+        }
+        if (u.cycle) {
+          if (spec.mode === "water") {
+            var cyc = Math.min(spec.cycles, Math.floor(t/spec.cycleMs)+1);
+            var left = Math.ceil((spec.dur - t)/1000);
+            u.cycle.textContent = "Cycle " + cyc + " of " + spec.cycles + " · " + left + " s left";
+          } else if (spec.mode === "dust") {
+            var dleft = Math.ceil((spec.dur - t)/1000);
+            u.cycle.textContent = dleft + " s left";
+          }
+        }
+        if (spec.mode === "dust" && vibSupported) {
+          var step = Math.floor(t/2000);
+          if (step !== run.lastStep) { run.lastStep = step; try { navigator.vibrate(220); } catch(e){} }
+        }
+        run.raf = requestAnimationFrame(tick);
+      }
+
+      function teardown(r){
+        if (!r) return;
+        if (r.raf) cancelAnimationFrame(r.raf);
+        try {
+          var now = actx ? actx.currentTime : 0;
+          r.gain.gain.cancelScheduledValues(now);
+          r.gain.gain.setTargetAtTime(0.0001, now, 0.02);
+          r.osc.stop(now + 0.08);
+        } catch(e){}
+        try { r.osc.disconnect(); r.gain.disconnect(); } catch(e){}
+        if (vibSupported) { try { navigator.vibrate(0); } catch(e){} }
+      }
+
+      function resetUi(u){
+        if (!u) return;
+        if (u.inst) u.inst.classList.remove("running");
+        if (u.label) u.label.textContent = u.labelName + " · Frequency";
+        if (u.controls) u.controls.classList.remove("running-ui");
+        if (u.freq) u.freq.textContent = u.idleFreq;
+        if (u.fill) { u.fill.style.transform = "scaleX(0)"; }
+        if (u.bar) u.bar.setAttribute("aria-valuenow", "0");
+      }
+
+      function stopRun(reason, silent){
+        if (!run) return;
+        var r = run; run = null;
+        teardown(r);
+        window.__sr.running = false; window.__sr.mode = null; window.__sr.elapsedMs = 0;
+        hudRunning(false);
+        resetUi(r.ui);
+        if (!silent) {
+          if (r.ui.cycle) r.ui.cycle.textContent = r.ui.idleCycle;
+          setStatus(r.ui, reason === "user" ? "Stopped" : "Not running");
+        }
+      }
+
+      function finishRun(){
+        if (!run) return;
+        var r = run; run = null;
+        teardown(r);
+        window.__sr.running = false; window.__sr.mode = null;
+        hudRunning(false);
+        resetUi(r.ui);
+        if (r.ui.cycle) r.ui.cycle.textContent = r.ui.idleCycle;
+        if (r.spec.mode === "water") setStatus(r.ui, "Done — all 3 cycles finished. Check how the speaker sounds.");
+        else if (r.spec.mode === "dust") setStatus(r.ui, "Done — 30 seconds finished. Check how the speaker sounds.");
+        else setStatus(r.ui, "Sweep finished");
+      }
+
+      /* ---------- Safety gate: warning before the first run of any tone ---------- */
+      var safetyOk = false;
+      var pendingAction = null;
+      var overlay = $("safety");
+      function withSafety(fn){
+        if (safetyOk) { fn(); return; }
+        pendingAction = fn;
+        overlay.classList.add("open");
+        $("safety-go").focus();
+      }
+      $("safety-go").addEventListener("click", function(){
+        safetyOk = true;
+        overlay.classList.remove("open");
+        var fn = pendingAction; pendingAction = null;
+        if (fn) fn();
+      });
+      $("safety-cancel").addEventListener("click", function(){
+        overlay.classList.remove("open");
+        pendingAction = null;
+      });
+
+      /* ---------- Water & dust controls ---------- */
+      $("w-start").addEventListener("click", function(){ withSafety(function(){ startRun(WATER, ui.water); }); });
+      $("w-stop").addEventListener("click", function(){ stopRun("user"); });
+      $("d-start").addEventListener("click", function(){ withSafety(function(){ startRun(DUST, ui.dust); }); });
+      $("d-stop").addEventListener("click", function(){ stopRun("user"); });
+
+      /* ---------- Sound check: mic capture + real buffer analysis ---------- */
+      var readings = { before:null, after:null };
+      var capturing = false;
+      var cMsg = $("c-msg");
+
+      function fft(re, im){
+        var n = re.length, j = 0, i, len, half, ang, wre, wim, tre, tim, ure, uim;
+        for (i = 1; i < n; i++) {
+          var bit = n >> 1;
+          for (; j & bit; bit >>= 1) j ^= bit;
+          j ^= bit;
+          if (i < j) {
+            var t1 = re[i]; re[i] = re[j]; re[j] = t1;
+            var t2 = im[i]; im[i] = im[j]; im[j] = t2;
+          }
+        }
+        for (len = 2; len <= n; len <<= 1) {
+          ang = -2 * Math.PI / len; half = len >> 1;
+          var stepRe = Math.cos(ang), stepIm = Math.sin(ang);
+          for (i = 0; i < n; i += len) {
+            wre = 1; wim = 0;
+            for (j = 0; j < half; j++) {
+              var a = i + j, b = i + j + half;
+              tre = re[b] * wre - im[b] * wim;
+              tim = re[b] * wim + im[b] * wre;
+              ure = re[a]; uim = im[a];
+              re[a] = ure + tre; im[a] = uim + tim;
+              re[b] = ure - tre; im[b] = uim - tim;
+              var nwre = wre * stepRe - wim * stepIm;
+              wim = wre * stepIm + wim * stepRe; wre = nwre;
+            }
+          }
+        }
+      }
+
+      /* Level (dBFS) + clarity (energy-weighted spectral centroid, Hz) from the recorded samples. */
+      function analyze(samples, sr){
+        var n = samples.length, i;
+        if (n < 2048) return null;
+        var sum = 0, peak = 0;
+        for (i = 0; i < n; i++) { var v = samples[i]; sum += v * v; if (Math.abs(v) > peak) peak = Math.abs(v); }
+        var rms = Math.sqrt(sum / n);
+        var db = 20 * Math.log10(rms + 1e-9);
+        var W = 2048, half = W >> 1;
+        var re = new Float64Array(W), im = new Float64Array(W);
+        var cSum = 0, wSum = 0;
+        for (var off = 0; off + W <= n; off += W) {
+          var wEnergy = 0;
+          for (i = 0; i < W; i++) {
+            var s = samples[off + i];
+            var win = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / (W - 1)); /* Hann window: keeps leakage out of the centroid */
+            re[i] = s * win; im[i] = 0; wEnergy += s * s;
+          }
+          if (wEnergy / W < 1e-6) continue; /* skip near-silent windows */
+          fft(re, im);
+          var num = 0, den = 0;
+          for (var k = 2; k < half; k++) {
+            var f = k * sr / W;
+            if (f < 80 || f > 10000) continue; /* the band a phone speaker and mic actually carry */
+            var mag = Math.sqrt(re[k] * re[k] + im[k] * im[k]);
+            num += f * mag; den += mag;
+          }
+          if (den > 0) { var w = Math.sqrt(wEnergy); cSum += (num / den) * w; wSum += w; }
+        }
+        var centroid = wSum > 0 ? cSum / wSum : 0;
+        return { db: db, centroid: centroid, peak: peak };
+      }
+
+      function renderReading(which){
+        var el = which === "before" ? $("r-before") : $("r-after");
+        var r = readings[which];
+        var name = which === "before" ? "Before" : "After";
+        if (!r) { el.innerHTML = "<div class='r-name'>" + name + "</div><div class='r-empty'>No recording yet</div>"; return; }
+        el.innerHTML = "<div class='r-name'>" + name + "</div>" +
+          "<div class='r-num'>" + r.db.toFixed(1) + " dB</div><div class='r-lab'>Level (recorded loudness)</div>" +
+          "<div class='r-num' style='margin-top:8px;'>" + Math.round(r.centroid) + " Hz</div><div class='r-lab'>Clarity (where the sound centered)</div>";
+        window.__sr.readings[which] = { db: r.db, centroidHz: Math.round(r.centroid) };
+        hudReading(which, r);
+        renderDelta();
+      }
+
+      function signed(v, dec, unit){
+        var s = (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(dec) + unit;
+        var cls = v >= 0 ? "up" : "down";
+        return "<span class='" + cls + "'>" + s + "</span>";
+      }
+
+      function renderDelta(){
+        var d = $("c-delta");
+        if (!readings.before || !readings.after) { d.className = "delta"; d.innerHTML = ""; return; }
+        var dDb = readings.after.db - readings.before.db;
+        var dC = readings.after.centroid - readings.before.centroid;
+        var verdict;
+        if (dDb > 0.5 || dC > 40) verdict = "The “after” reading came back stronger. That is consistent with a clearer path out of the speaker — indicative only, not proof.";
+        else if (dDb < -0.5 || dC < -40) verdict = "The “after” reading came back weaker. That can be mic position or room noise — retake both readings in the same spot before concluding anything. If it still sounds muffled after two eject cycles, see “When this can't help.”";
+        else verdict = "The two readings are about the same. If the speaker still sounds muffled after two full eject cycles, the problem is likely hardware — see “When this can't help.”";
+        d.innerHTML = "<strong>Change:</strong> Level " + signed(dDb, 1, " dB") + " · Clarity " + signed(dC, 0, " Hz") + "<br>" + verdict;
+        d.className = "delta show";
+      }
+
+      function setCheckButtons(disabled){
+        $("c-before").disabled = disabled;
+        $("c-after").disabled = disabled;
+        $("c-play").disabled = disabled;
+      }
+
+      function recordReading(which){
+        if (capturing) return;
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          cMsg.innerHTML = "<span class='error-text'>The microphone isn't available in this browser, so the sound check can't measure. The eject cycles don't need the mic and still work.</span>";
+          return;
+        }
+        capturing = true;
+        setCheckButtons(true);
+        cMsg.textContent = "Asking for microphone permission…";
+        navigator.mediaDevices.getUserMedia({ audio: { echoCancellation:false, noiseSuppression:false, autoGainControl:false } })
+        .then(function(stream){
+          var ctx = audio();
+          var src = ctx.createMediaStreamSource(stream);
+          var proc = ctx.createScriptProcessor(4096, 1, 1);
+          var mute = ctx.createGain(); mute.gain.value = 0;
+          var chunks = [];
+          proc.onaudioprocess = function(e){
+            var d = e.inputBuffer.getChannelData(0);
+            chunks.push(new Float32Array(d));
+          };
+          src.connect(proc); proc.connect(mute); mute.connect(ctx.destination);
+          cMsg.textContent = "Recording — keep the phone still and the room quiet…";
+          var startedAt = performance.now();
+          setTimeout(function(){
+            startRun(SWEEP, ui.sweep, function(){
+              setTimeout(function(){
+                try { proc.disconnect(); src.disconnect(); mute.disconnect(); } catch(e){}
+                stream.getTracks().forEach(function(tr){ tr.stop(); });
+                capturing = false;
+                setCheckButtons(false);
+                var total = 0, i;
+                for (i = 0; i < chunks.length; i++) total += chunks[i].length;
+                var flat = new Float32Array(total), pos = 0;
+                for (i = 0; i < chunks.length; i++) { flat.set(chunks[i], pos); pos += chunks[i].length; }
+                var res = analyze(flat, ctx.sampleRate);
+                if (!res || res.db < -55) {
+                  cMsg.innerHTML = "<span class='error-text'>Almost nothing was recorded. Check the media volume is up and nothing is covering the mic, then try again.</span>";
+                  return;
+                }
+                readings[which] = res;
+                renderReading(which);
+                cMsg.innerHTML = "<span class='ok-text'>“" + (which === "before" ? "Before" : "After") + "” reading recorded and measured.</span> Indicative only — not a lab measurement.";
+              }, 350);
+            });
+          }, 250);
+        })
+        .catch(function(err){
+          capturing = false;
+          setCheckButtons(false);
+          if (err && (err.name === "NotAllowedError" || err.name === "SecurityError")) {
+            cMsg.innerHTML = "<span class='error-text'>Microphone permission was not given, so the sound check can't measure. Nothing was recorded. The eject cycles don't need the mic and still work.</span>";
+          } else {
+            cMsg.innerHTML = "<span class='error-text'>The microphone couldn't be started (" + (err && err.name ? err.name : "unknown error") + "). The eject cycles don't need the mic and still work.</span>";
+          }
+        });
+      }
+
+      $("c-before").addEventListener("click", function(){ withSafety(function(){ recordReading("before"); }); });
+      $("c-after").addEventListener("click", function(){ withSafety(function(){ recordReading("after"); }); });
+      $("c-play").addEventListener("click", function(){
+        withSafety(function(){
+          cMsg.textContent = "";
+          startRun(SWEEP, ui.sweep);
+        });
+      });
+
+      /* ---------- Tabs: one job per screen; switching stops any running tone ---------- */
+      var screens = { water:$("screen-water"), dust:$("screen-dust"), check:$("screen-check"), limits:$("screen-limits") };
+      var tabBtns = document.querySelectorAll("nav.tabbar button");
+      tabBtns.forEach(function(btn){
+        btn.addEventListener("click", function(){
+          var key = btn.getAttribute("data-screen");
+          if (capturing) return; /* a capture in progress owns the check screen until it ends */
+          stopRun("switch", true);
+          hud.mode.textContent = { water:"Water Eject", dust:"Dust Mode", check:"Sound Check", limits:"Can't Help" }[key] || hud.mode.textContent;
+          for (var k in screens) screens[k].classList.toggle("active", k === key);
+          tabBtns.forEach(function(b){ b.setAttribute("aria-selected", b === btn ? "true" : "false"); });
+          if (screens[key].classList.contains("active")) window.scrollTo(0, 0);
+        });
+      });
+    })();
+    </script>
+  </body>
+</html>

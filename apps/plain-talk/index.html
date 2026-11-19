@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>J-Dawgs Plain Talk™ — Dictate it messy. Send it right.</title>
+<meta name="description" content="Your phone's talk-to-text garbles your words. Plain Talk fixes them: a personal dictionary that always spells your names your way, sound-alike repairs that show every change, and nothing you type ever leaves your device.">
+<style>
+:root{
+  --bg:#0a0c0f; --panel:#14171d; --panel2:#1a1e26; --line:#2a303c;
+  --chrome:#c9cfd8; --chrome-hi:#eef1f6; --ink:#dfe4ec; --muted:#8b96a5;
+  --blue:#35a7ff; --blue-dim:#1c5f96; --green:#3ddc84; --red:#ff6b5e; --amber:#ffb84d;
+  --rad:14px;
+}
+*{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{
+  background:radial-gradient(120% 90% at 50% -10%, #182030 0%, var(--bg) 55%) fixed, var(--bg);
+  color:var(--ink); font-family:Inter, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size:15px; line-height:1.45; overflow:hidden;
+}
+#app{height:100dvh; display:flex; flex-direction:column; max-width:560px; margin:0 auto;}
+header{
+  flex:0 0 auto; padding:10px 14px 8px; display:flex; align-items:center; gap:10px;
+  border-bottom:1px solid var(--line); background:rgba(10,12,15,.92);
+}
+#backBtn{
+  flex:0 0 auto; display:none; align-items:center; gap:6px; border:1px solid var(--blue);
+  background:linear-gradient(180deg,#12314e,#0d2236); color:#cfe8ff; font-family:Archivo,Inter,sans-serif;
+  font-weight:700; font-size:15px; letter-spacing:.04em; padding:10px 16px; border-radius:999px; min-height:48px;
+  box-shadow:0 0 14px rgba(53,167,255,.45), inset 0 1px 0 rgba(255,255,255,.25); cursor:pointer;
+}
+#backBtn.show{display:inline-flex;}
+#backBtn:active{transform:scale(.97);}
+.hgroup{flex:1 1 auto; min-width:0;}
+h1.brand{
+  font-family:Archivo,Inter,sans-serif; font-weight:800; font-size:20px; letter-spacing:.01em; line-height:1.15;
+  background:linear-gradient(180deg,#f4f6fa 15%, #aeb8c6 48%, #e8ecf2 52%, #7f8b9d 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.tagline{color:var(--blue); font-size:12px; font-weight:600; letter-spacing:.02em;}
+main{flex:1 1 auto; overflow-y:auto; padding:12px 14px 16px; -webkit-overflow-scrolling:touch;}
+.view{display:none;}
+.view.active{display:block; animation:fadein .18s ease-out;}
+@keyframes fadein{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;}}
+.card{
+  background:linear-gradient(180deg,var(--panel2),var(--panel)); border:1px solid var(--line);
+  border-radius:var(--rad); padding:14px; margin-bottom:12px;
+  box-shadow:0 2px 10px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.04);
+}
+.card h2{font-family:Archivo,Inter,sans-serif; font-size:16px; font-weight:700; color:var(--chrome-hi); margin-bottom:6px;}
+.card p{color:var(--ink); margin-bottom:8px;}
+.card p.small, .small{font-size:13px; color:var(--muted);}
+label.flabel{display:block; font-family:Archivo,Inter,sans-serif; font-size:13px; font-weight:700; color:var(--blue); letter-spacing:.03em; margin-bottom:6px;}
+textarea, input[type=text]{
+  width:100%; background:#0d1015; color:var(--chrome-hi); border:1px solid var(--line);
+  border-radius:10px; padding:12px; font-family:Inter,sans-serif; font-size:16px; line-height:1.5;
+}
+textarea:focus, input[type=text]:focus{outline:2px solid var(--blue-dim); border-color:var(--blue);}
+#inputText{min-height:110px; resize:vertical;}
+#outputText{min-height:110px; resize:vertical;}
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px; cursor:pointer;
+  border-radius:12px; border:1px solid var(--line); background:linear-gradient(180deg,#232833,#171b23);
+  color:var(--chrome-hi); font-family:Archivo,Inter,sans-serif; font-weight:700; font-size:15px;
+  padding:12px 18px; min-height:48px; letter-spacing:.02em;
+}
+.btn:active{transform:scale(.98);}
+.btn.primary{
+  width:100%; min-height:60px; font-size:19px; letter-spacing:.05em; border-color:var(--blue);
+  background:linear-gradient(180deg,#1d5c94,#123f66); color:#eaf6ff;
+  box-shadow:0 0 20px rgba(53,167,255,.5), inset 0 1px 0 rgba(255,255,255,.3);
+}
+.btn.good{border-color:#1f7a4d; background:linear-gradient(180deg,#14532d,#0d3a20); color:#d9ffe9; box-shadow:0 0 14px rgba(61,220,132,.35);}
+.btn.warn{border-color:#7a5410; background:linear-gradient(180deg,#4a3408,#332405); color:#ffe9bd;}
+.btn.ghost{background:transparent;}
+.btn:disabled{opacity:.45; cursor:not-allowed; box-shadow:none;}
+.btnrow{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;}
+.btnrow .btn{flex:1 1 140px;}
+.change{
+  display:flex; align-items:flex-start; gap:10px; border:1px solid var(--line); border-radius:10px;
+  background:#0d1015; padding:10px 12px; margin-bottom:8px;
+}
+.change .body{flex:1 1 auto; min-width:0; font-size:14px;}
+.change .heard{color:var(--red); text-decoration:line-through; text-decoration-color:rgba(255,107,94,.6);}
+.change .arrow{color:var(--muted); padding:0 4px;}
+.change .wrote{color:var(--green); font-weight:600;}
+.change .rule{display:block; font-size:12px; color:var(--muted); margin-top:2px;}
+.change .undo{flex:0 0 auto; min-height:44px; min-width:64px; padding:8px 12px; font-size:13px;}
+.flag{
+  border:1px solid var(--amber); border-radius:10px; background:#241a05; padding:12px; margin-bottom:10px;
+}
+.flag .q{font-size:14px; margin-bottom:8px;}
+.flag .q b{color:var(--amber);}
+.flag .opts{display:flex; gap:8px; flex-wrap:wrap;}
+.flag .opts .btn{min-height:48px; flex:1 1 120px;}
+.dictrow{
+  display:flex; align-items:center; gap:10px; border:1px solid var(--line); border-radius:10px;
+  background:#0d1015; padding:10px 12px; margin-bottom:8px; font-size:14px;
+}
+.dictrow .body{flex:1 1 auto; min-width:0;}
+.dictrow .h{color:var(--muted);}
+.dictrow .w{color:var(--chrome-hi); font-weight:700;}
+.dictrow .del{flex:0 0 auto; min-height:44px; min-width:56px; padding:8px 10px; font-size:13px;}
+#toast{
+  position:fixed; left:50%; bottom:22px; transform:translateX(-50%) translateY(20px); opacity:0;
+  background:#0d2236; border:1px solid var(--blue); color:#cfe8ff; padding:10px 18px; border-radius:999px;
+  font-size:14px; font-weight:600; pointer-events:none; transition:all .2s ease; z-index:50; max-width:92vw; text-align:center;
+}
+#toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+#banner{
+  display:none; border:1px solid var(--amber); background:#241a05; color:#ffe9bd; border-radius:10px;
+  padding:10px 12px; font-size:13px; margin-bottom:12px;
+}
+#banner.show{display:block;}
+footer{
+  flex:0 0 auto; border-top:1px solid var(--line); background:rgba(10,12,15,.95);
+  padding:8px 14px calc(8px + env(safe-area-inset-bottom)); text-align:center;
+}
+footer .promises{font-size:12.5px; line-height:1.5;}
+footer .promises b{color:var(--chrome-hi);}
+footer .copy{font-size:11.5px; color:var(--muted); margin-top:2px;}
+.empty{color:var(--muted); font-size:14px; padding:6px 0;}
+.hidden{display:none !important;}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <button id="backBtn" type="button" aria-label="Back to the fixer">&#8592; BACK</button>
+    <div class="hgroup">
+      <h1 class="brand">J-Dawgs Plain Talk&#8482;</h1>
+      <div class="tagline">Dictate it messy. Send it right.</div>
+    </div>
+  </header>
+  <main id="mainScroll">
+    <div id="banner" role="alert"></div>
+
+    <!-- ============ FIX VIEW ============ -->
+    <section class="view active" id="view-fix" aria-label="Fix my dictation">
+      <div class="card">
+        <h2>Your phone heard it wrong. Fix it here.</h2>
+        <p>Dictate into any app, paste the mess below, and get back what you actually meant. Plain Talk does <b>not</b> do its own speech recognition &mdash; it fixes the words your phone already wrote, using <b>your</b> dictionary of names and sayings, and it shows you every single change it makes. Nothing changes silently.</p>
+        <p class="small">Your text never leaves this device. The fixing runs right here on your phone &mdash; nothing you type or paste is uploaded, sent, or stored anywhere else.</p>
+      </div>
+
+      <div class="card">
+        <label class="flabel" for="inputText">1 &middot; PASTE WHAT YOUR PHONE WROTE</label>
+        <textarea id="inputText" placeholder="Paste the garbled dictation here&hellip; or tap the mic and talk." aria-label="Raw dictation text"></textarea>
+        <div class="btnrow">
+          <button class="btn" id="micBtn" type="button" aria-label="Dictate with your browser's built-in speech recognition">&#127908; Dictate</button>
+          <button class="btn ghost" id="clearBtn" type="button">Clear</button>
+        </div>
+        <p class="small" id="micNote">Dictate uses your browser&rsquo;s own built-in speech recognition. Don&rsquo;t want to talk? Paste text instead &mdash; that&rsquo;s the main way this works.</p>
+      </div>
+
+      <button class="btn primary" id="fixBtn" type="button">&#128295; FIX IT</button>
+
+      <div id="flagZone" style="margin-top:12px;"></div>
+
+      <div class="card hidden" id="outputCard" style="margin-top:12px;">
+        <label class="flabel" for="outputText">2 &middot; WHAT YOU MEANT</label>
+        <textarea id="outputText" readonly aria-label="Fixed text"></textarea>
+        <div class="btnrow">
+          <button class="btn good" id="copyBtn" type="button">&#128203; COPY RESULT</button>
+          <button class="btn warn" id="revertBtn" type="button">&#8617; Revert all</button>
+        </div>
+        <p class="small hidden" id="copyFallbackNote">Copy didn&rsquo;t go through on this device &mdash; no problem: tap the text above, select all, and copy it by hand. It&rsquo;s the same text.</p>
+      </div>
+
+      <div class="card hidden" id="changesCard">
+        <h2>3 &middot; Every change, in the open</h2>
+        <p class="small">Heard &rarr; wrote, and the rule that fired. Don&rsquo;t like one? Undo just that one.</p>
+        <div id="changesList"></div>
+        <p class="empty hidden" id="noChanges">No changes &mdash; your phone got it right this time.</p>
+      </div>
+
+      <div class="card">
+        <h2>Teach it your words</h2>
+        <p>Your dictionary is the heart of this tool &mdash; your names, your people, your sayings, spelled your way, every time.</p>
+        <button class="btn" id="dictBtn" type="button" style="width:100%;">&#128214; My Dictionary (<span id="dictCount">0</span> entries)</button>
+      </div>
+    </section>
+
+    <!-- ============ DICTIONARY VIEW ============ -->
+    <section class="view" id="view-dict" aria-label="My dictionary">
+      <div class="card">
+        <h2>My Dictionary</h2>
+        <p>When your phone hears the left side, Plain Talk always writes the right side &mdash; exact spelling, exact capitals. Longest phrases win. Entries save on this device only.</p>
+      </div>
+      <div class="card">
+        <h2>Add an entry</h2>
+        <label class="flabel" for="newHeard">PHONE HEARS IT AS</label>
+        <input type="text" id="newHeard" placeholder="e.g. hustle city too" autocomplete="off">
+        <label class="flabel" for="newWrite" style="margin-top:10px;">ALWAYS WRITE</label>
+        <input type="text" id="newWrite" placeholder="e.g. Hustle City 2" autocomplete="off">
+        <div class="btnrow">
+          <button class="btn primary" id="addEntryBtn" type="button" style="min-height:52px; font-size:16px;">+ ADD ENTRY</button>
+        </div>
+        <p class="small" id="addNote"></p>
+      </div>
+      <div class="card">
+        <h2>Your entries</h2>
+        <div id="dictList"></div>
+        <div class="btnrow">
+          <button class="btn ghost" id="resetDictBtn" type="button">Reset to the starter dictionary</button>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="promises"><b>No fancy logos. Just quality products.</b> &middot; <b>No ads.</b> &middot; <b>We never sell your information.</b></div>
+    <div class="copy">&copy; 2026 Joshua Dawson &middot; J-Dawgs Industries, Springfield, MO &middot; $1.00 one-time &middot; Included in the $99.99 Unlimited Pass</div>
+  </footer>
+</div>
+<div id="toast" role="status"></div>
+
+<script>
+"use strict";
+/* ================================================================
+   J-Dawgs Plain Talk — a talk-to-text FIXER.
+   Text in, text out. It does NOT do its own speech recognition.
+   All repair runs locally in this file. No network calls are made
+   with user text: there is no fetch/XHR/beacon anywhere below.
+   ================================================================ */
+
+/* ---------- guarded storage (app must survive blocked storage) ---------- */
+var storageOK = true;
+var memStore = {};
+var store = {
+  get: function(k){
+    if (storageOK) { try { return window.localStorage.getItem(k); } catch(e){ storageOK = false; } }
+    return Object.prototype.hasOwnProperty.call(memStore, k) ? memStore[k] : null;
+  },
+  set: function(k, v){
+    if (storageOK) { try { window.localStorage.setItem(k, v); return; } catch(e){ storageOK = false; } }
+    memStore[k] = v;
+  }
+};
+
+/* ---------- the starter dictionary (Joshua's set, editable) ----------
+   heard (what the phone writes) -> write (always this, exactly) */
+var DEFAULT_DICT = [
+  { heard: "hustle city too", write: "Hustle City 2" },
+  { heard: "hustle city to", write: "Hustle City 2" },
+  { heard: "j dawgs industries", write: "J-Dawgs Industries" },
+  { heard: "j dogs industries", write: "J-Dawgs Industries" },
+  { heard: "jay dawgs industries", write: "J-Dawgs Industries" },
+  { heard: "j dogs", write: "J-Dawgs" },
+  { heard: "jay dawgs", write: "J-Dawgs" },
+  { heard: "jay dogs", write: "J-Dawgs" },
+  { heard: "j-dogs", write: "J-Dawgs" },
+  { heard: "j dawgs", write: "J-Dawgs" },
+  { heard: "ballsy", write: "Balsey" },
+  { heard: "balsy", write: "Balsey" },
+  { heard: "ball see", write: "Balsey" },
+  { heard: "balsey", write: "Balsey" },
+  { heard: "king ballsy", write: "King Balsey" },
+  { heard: "king balsey", write: "King Balsey" },
+  { heard: "e stomp", write: "E'Stomp" },
+  { heard: "estomp", write: "E'Stomp" },
+  { heard: "e-stomp", write: "E'Stomp" },
+  { heard: "mike miekely", write: "Mikolaj" },
+  { heard: "miekely", write: "Mikolaj" },
+  { heard: "mick o lie", write: "Mikolaj" },
+  { heard: "miko lie", write: "Mikolaj" },
+  { heard: "nickel eye", write: "Mikolaj" },
+  { heard: "mikolaj", write: "Mikolaj" },
+  { heard: "eric", write: "Aric" },
+  { heard: "erik", write: "Aric" },
+  { heard: "a ric", write: "Aric" },
+  { heard: "aric", write: "Aric" },
+  { heard: "win wim win", write: "Win Win Win" },
+  { heard: "win win wim", write: "Win Win Win" },
+  { heard: "her up", write: "hurry up" },
+  { heard: "midas", write: "Midas" },
+  { heard: "human hands", write: "Human Hands" },
+  { heard: "credential compass", write: "Credential Compass" },
+  { heard: "ai tool store", write: "AI Tool Store" },
+  { heard: "springfield", write: "Springfield" }
+];
+var DICT_KEY = "plaintalk.dict.v1";
+var dict = loadDict();
+function loadDict(){
+  var raw = store.get(DICT_KEY);
+  if (raw) { try { var p = JSON.parse(raw); if (Array.isArray(p) && p.length) return p; } catch(e){} }
+  return DEFAULT_DICT.slice();
+}
+function saveDict(){ store.set(DICT_KEY, JSON.stringify(dict)); }
+
+/* ---------- helpers ---------- */
+function escRe(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+function escHtml(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function $(id){ return document.getElementById(id); }
+var toastTimer = null;
+function toast(msg){
+  var t = $("toast"); t.textContent = msg; t.classList.add("show");
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.classList.remove("show"); }, 2400);
+}
+
+/* ---------- repair engine ----------
+   Deterministic: repair(text, disabledIds, flagPicks) re-runs the same
+   passes in the same order, so undo = disable an id and re-run. */
+var changeSeq = 0;
+function passReplace(text, regex, makeReplacement, ruleLabel, disabled, changes){
+  var out = "", last = 0, m;
+  regex.lastIndex = 0;
+  while ((m = regex.exec(text)) !== null) {
+    var rep = makeReplacement(m);
+    if (rep === null || rep === m[0]) { if (m[0].length === 0) regex.lastIndex++; continue; }
+    var id = "c" + (changeSeq++);
+    var applied = !disabled.has(id);
+    changes.push({ id: id, heard: m[0], wrote: rep, rule: ruleLabel, applied: applied });
+    out += text.slice(last, m.index) + (applied ? rep : m[0]);
+    last = m.index + m[0].length;
+    if (m[0].length === 0) regex.lastIndex++;
+  }
+  out += text.slice(last);
+  return out;
+}
+
+/* Ambiguity detectors: these NEVER auto-apply. They raise a flag with options. */
+var FLAG_RULES = [
+  { key: "mini-neither",
+    test: function(text){ return /\bmini\b/i.test(text) && /\bnor\b/i.test(text); },
+    find: /\bmini\b/i,
+    heardLabel: "mini",
+    question: "\u201Cmini\u201D at the start of a neither\u2026nor sentence is a classic garble \u2014 phones hear \u201Cneither\u201D as \u201Cmini\u201D.",
+    options: ["Neither", "mini"] },
+  { key: "my-node",
+    test: function(text){ return /\bmy node\b/i.test(text); },
+    find: /\bmy node\b/i,
+    heardLabel: "my node",
+    question: "\u201Cmy node\u201D usually means \u201Cmine\u201D when a phone mis-hears it (as in \u201Cmine would know me\u201D).",
+    options: ["mine", "my node"] },
+  { key: "your-right",
+    test: function(text){ return /\byour right\b/i.test(text); },
+    find: /\byour right\b/i,
+    heardLabel: "your right",
+    question: "\u201Cyour right\u201D could be praise (\u201Cyou\u2019re right\u201D) or a possession (\u201Cyour right hand\u201D). We won\u2019t guess.",
+    options: ["you're right", "your right"] }
+];
+
+function repair(original, disabled, picks){
+  changeSeq = 0;
+  var changes = [];
+  var text = original;
+
+  /* Pass 0 — flag picks the user already made become real changes. */
+  FLAG_RULES.forEach(function(fr){
+    if (picks.has(fr.key)) {
+      var pick = picks.get(fr.key);
+      text = passReplace(text, new RegExp(fr.find.source, "gi"), function(){ return pick; },
+        "Your pick (we flagged it, you chose)", disabled, changes);
+    }
+  });
+
+  /* Pass 1 — the personal dictionary, longest match first. */
+  var pairs = dict.slice().sort(function(a,b){ return b.heard.length - a.heard.length; });
+  pairs.forEach(function(p){
+    var re = new RegExp("\\b" + escRe(p.heard) + "\\b", "gi");
+    text = passReplace(text, re, function(){ return p.write; },
+      "Dictionary: \u201C" + p.heard + "\u201D \u2192 \u201C" + p.write + "\u201D", disabled, changes);
+  });
+
+  /* Pass 2 — conservative grammar sound-alikes (unambiguous only). */
+  var GRAMMAR = [
+    { re: /\btheir (is|are|was|were)\b/gi, fn: function(m){ return "there " + m[1].toLowerCase(); }, label: "Grammar: \u201Ctheir\u201D before a verb is \u201Cthere\u201D" },
+    { re: /\bthere (house|car|truck|dog|cat|kids|mom|dad|phone|boat|yard)\b/gi, fn: function(m){ return "their " + m[1].toLowerCase(); }, label: "Grammar: \u201Cthere\u201D before a possession is \u201Ctheir\u201D" },
+    { re: /\byour (welcome|going|doing|being|coming|leaving)\b/gi, fn: function(m){ return "you're " + m[1].toLowerCase(); }, label: "Grammar: \u201Cyour\u201D before an action is \u201Cyou\u2019re\u201D" },
+    { re: /\bits (a|an)\b/gi, fn: function(m){ return "it's " + m[1].toLowerCase(); }, label: "Grammar: \u201Cits\u201D before a/an is \u201Cit\u2019s\u201D" },
+    { re: /\bto (much|many|loud|late|early|expensive|busy)\b/gi, fn: function(m){ return "too " + m[1].toLowerCase(); }, label: "Grammar: \u201Cto\u201D before a quantity word is \u201Ctoo\u201D" }
+  ];
+  GRAMMAR.forEach(function(g){
+    text = passReplace(text, g.re, g.fn, g.label, disabled, changes);
+  });
+
+  /* Pass 3 — spoken punctuation commands (standalone dictation words). */
+  var PUNCT = [
+    { re: /\s*\bnew paragraph\b/gi, rep: "\n\n", label: "Dictation command: \u201Cnew paragraph\u201D" },
+    { re: /\s*\bnew line\b/gi, rep: "\n", label: "Dictation command: \u201Cnew line\u201D" },
+    { re: /\s*\bquestion mark\b/gi, rep: "?", label: "Dictation command: \u201Cquestion mark\u201D" },
+    { re: /\s*\bexclamation point\b/gi, rep: "!", label: "Dictation command: \u201Cexclamation point\u201D" },
+    { re: /\s*\bperiod\b/gi, rep: ".", label: "Dictation command: \u201Cperiod\u201D" },
+    { re: /\s*\bcomma\b/gi, rep: ",", label: "Dictation command: \u201Ccomma\u201D" },
+    { re: /\s*\bsemicolon\b/gi, rep: ";", label: "Dictation command: \u201Csemicolon\u201D" },
+    { re: /\s*\bcolon\b/gi, rep: ":", label: "Dictation command: \u201Ccolon\u201D" }
+  ];
+  PUNCT.forEach(function(p){
+    text = passReplace(text, p.re, function(){ return p.rep; }, p.label, disabled, changes);
+  });
+
+  /* Pass 4 — light cleanup: standalone \u201Ci\u201D, double spaces, space before
+     punctuation, sentence capitalization. Capitalization at the very start of
+     the text and after sentence punctuation is applied and listed too. */
+  text = passReplace(text, /\bi\b/g, function(){ return "I"; }, "Cleanup: standalone \u201Ci\u201D is always \u201CI\u201D", disabled, changes);
+  text = text.replace(/[ \t]{2,}/g, " ").replace(/ +([.,!?;:])/g, "$1").replace(/\n +/g, "\n").replace(/\n{3,}/g, "\n\n");
+  text = passReplace(text, /(^|[.!?]\s+|\n\n?)([a-z])/g, function(m){ return m[1] + m[2].toUpperCase(); },
+    "Cleanup: sentence start capitalized", disabled, changes);
+  text = text.trim();
+
+  /* Flags still unanswered on the repaired text. */
+  var flags = [];
+  FLAG_RULES.forEach(function(fr){ if (!picks.has(fr.key) && fr.test(text)) flags.push(fr); });
+
+  return { text: text, changes: changes, flags: flags };
+}
+
+/* ---------- app state ---------- */
+var state = { original: "", disabled: new Set(), picks: new Map(), result: null };
+
+function runRepair(){
+  state.result = repair(state.original, state.disabled, state.picks);
+  renderResult();
+}
+
+function renderResult(){
+  var r = state.result;
+  if (!r) return;
+  $("outputCard").classList.remove("hidden");
+  $("changesCard").classList.remove("hidden");
+  $("outputText").value = r.text;
+
+  /* flags */
+  var fz = $("flagZone"); fz.innerHTML = "";
+  r.flags.forEach(function(fr){
+    var div = document.createElement("div"); div.className = "flag";
+    var q = document.createElement("div"); q.className = "q";
+    q.innerHTML = "<b>Not guessing this one:</b> " + escHtml(fr.question);
+    div.appendChild(q);
+    var opts = document.createElement("div"); opts.className = "opts";
+    fr.options.forEach(function(opt){
+      var b = document.createElement("button"); b.type = "button"; b.className = "btn";
+      b.textContent = "\u201C" + opt + "\u201D";
+      b.setAttribute("aria-label", "Choose " + opt + " for " + fr.heardLabel);
+      b.addEventListener("click", function(){
+        if (opt.toLowerCase() !== fr.heardLabel.toLowerCase()) { state.picks.set(fr.key, opt); }
+        else { state.picks.set(fr.key, ""); state.disabled.add("flag-dismiss-" + fr.key); }
+        if (opt.toLowerCase() === fr.heardLabel.toLowerCase()) {
+          /* keeping the original words: mark flag answered with the same text */
+          state.picks.delete(fr.key);
+          r.flags = r.flags.filter(function(x){ return x.key !== fr.key; });
+          dismissedFlags.add(fr.key);
+          renderResultLite(r);
+          return;
+        }
+        runRepair();
+      });
+      opts.appendChild(b);
+    });
+    div.appendChild(opts);
+    fz.appendChild(div);
+  });
+
+  renderChanges(r);
+}
+var dismissedFlags = new Set();
+function renderResultLite(r){
+  /* re-render flags honoring dismissed set, without a full re-repair */
+  var fz = $("flagZone"); fz.innerHTML = "";
+  r.flags.filter(function(fr){ return !dismissedFlags.has(fr.key); }).forEach(function(fr){
+    var div = document.createElement("div"); div.className = "flag";
+    div.innerHTML = "<div class='q'><b>Not guessing this one:</b> " + escHtml(fr.question) + "</div>";
+    var opts = document.createElement("div"); opts.className = "opts";
+    fr.options.forEach(function(opt){
+      var b = document.createElement("button"); b.type = "button"; b.className = "btn";
+      b.textContent = "\u201C" + opt + "\u201D";
+      b.addEventListener("click", function(){
+        if (opt.toLowerCase() === fr.heardLabel.toLowerCase()) { dismissedFlags.add(fr.key); renderResultLite(r); }
+        else { state.picks.set(fr.key, opt); dismissedFlags.delete(fr.key); runRepair(); }
+      });
+      opts.appendChild(b);
+    });
+    div.appendChild(opts); fz.appendChild(div);
+  });
+}
+/* Wrap renderResult to honor dismissed flags */
+var _renderResult = renderResult;
+renderResult = function(){
+  _renderResult();
+  if (state.result && dismissedFlags.size) {
+    state.result.flags = state.result.flags.filter(function(fr){ return !dismissedFlags.has(fr.key); });
+    renderResultLite(state.result);
+  }
+};
+
+function renderChanges(r){
+  var list = $("changesList"); list.innerHTML = "";
+  var applied = r.changes.filter(function(c){ return c.applied; });
+  $("noChanges").classList.toggle("hidden", applied.length > 0);
+  applied.forEach(function(c){
+    var row = document.createElement("div"); row.className = "change";
+    var body = document.createElement("div"); body.className = "body";
+    body.innerHTML = "<span class='heard'>" + escHtml(c.heard) + "</span><span class='arrow'>\u2192</span>" +
+      "<span class='wrote'>" + escHtml(c.wrote) + "</span><span class='rule'>" + escHtml(c.rule) + "</span>";
+    var undo = document.createElement("button"); undo.type = "button"; undo.className = "btn undo";
+    undo.textContent = "Undo"; undo.setAttribute("aria-label", "Undo change " + c.heard + " to " + c.wrote);
+    undo.addEventListener("click", function(){ state.disabled.add(c.id); runRepair(); });
+    row.appendChild(body); row.appendChild(undo); list.appendChild(row);
+  });
+}
+
+/* ---------- view switching + BACK ---------- */
+function showView(name){
+  $("view-fix").classList.toggle("active", name === "fix");
+  $("view-dict").classList.toggle("active", name === "dict");
+  $("backBtn").classList.toggle("show", name === "dict");
+  $("mainScroll").scrollTop = 0;
+}
+$("backBtn").addEventListener("click", function(){ showView("fix"); });
+$("dictBtn").addEventListener("click", function(){ showView("dict"); renderDict(); });
+
+/* ---------- dictionary UI ---------- */
+function renderDict(){
+  $("dictCount").textContent = dict.length;
+  var list = $("dictList"); list.innerHTML = "";
+  var sorted = dict.slice().sort(function(a,b){ return a.write.localeCompare(b.write) || a.heard.localeCompare(b.heard); });
+  sorted.forEach(function(p){
+    var row = document.createElement("div"); row.className = "dictrow";
+    var body = document.createElement("div"); body.className = "body";
+    body.innerHTML = "<span class='h'>\u201C" + escHtml(p.heard) + "\u201D</span> \u2192 <span class='w'>" + escHtml(p.write) + "</span>";
+    var del = document.createElement("button"); del.type = "button"; del.className = "btn del"; del.textContent = "Delete";
+    del.setAttribute("aria-label", "Delete dictionary entry " + p.heard + " to " + p.write);
+    del.addEventListener("click", function(){
+      dict = dict.filter(function(x){ return !(x.heard === p.heard && x.write === p.write); });
+      saveDict(); renderDict(); toast("Entry deleted.");
+    });
+    row.appendChild(body); row.appendChild(del); list.appendChild(row);
+  });
+  if (!dict.length) list.innerHTML = "<p class='empty'>No entries yet. Add your first one above.</p>";
+}
+$("addEntryBtn").addEventListener("click", function(){
+  var h = $("newHeard").value.trim().toLowerCase(), w = $("newWrite").value.trim();
+  if (!h || !w) { $("addNote").textContent = "Fill in both boxes: what the phone hears, and what to always write."; return; }
+  var exists = dict.some(function(x){ return x.heard === h && x.write === w; });
+  if (exists) { $("addNote").textContent = "That entry is already in your dictionary."; return; }
+  dict.push({ heard: h, write: w }); saveDict();
+  $("newHeard").value = ""; $("newWrite").value = "";
+  $("addNote").textContent = "";
+  renderDict(); toast("Added: \u201C" + h + "\u201D \u2192 \u201C" + w + "\u201D");
+});
+$("resetDictBtn").addEventListener("click", function(){
+  dict = DEFAULT_DICT.slice(); saveDict(); renderDict(); toast("Starter dictionary restored.");
+});
+
+/* ---------- fix / copy / clear ---------- */
+$("fixBtn").addEventListener("click", function(){
+  var raw = $("inputText").value;
+  if (!raw.trim()) { toast("Paste some dictation first."); $("inputText").focus(); return; }
+  state.original = raw; state.disabled = new Set(); state.picks = new Map(); dismissedFlags = new Set();
+  runRepair();
+  toast("Fixed. Every change is listed below.");
+});
+$("revertBtn").addEventListener("click", function(){
+  state.disabled = new Set(); state.picks = new Map(); dismissedFlags = new Set();
+  state.result = null;
+  $("outputCard").classList.add("hidden"); $("changesCard").classList.add("hidden");
+  $("flagZone").innerHTML = ""; $("outputText").value = "";
+  toast("Reverted. Your original words are untouched in the box above.");
+});
+$("clearBtn").addEventListener("click", function(){
+  $("inputText").value = "";
+  $("outputCard").classList.add("hidden"); $("changesCard").classList.add("hidden");
+  $("flagZone").innerHTML = ""; state.result = null;
+});
+$("copyBtn").addEventListener("click", function(){
+  var txt = $("outputText").value;
+  var done = function(){ $("copyFallbackNote").classList.add("hidden"); toast("Copied. Paste it anywhere."); };
+  var fail = function(){
+    $("copyFallbackNote").classList.remove("hidden");
+    $("outputText").focus(); $("outputText").select();
+    toast("Copy blocked \u2014 the text is selected, copy it by hand.");
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(done, fail);
+  } else { fail(); }
+});
+
+/* ---------- mic (browser's built-in recognition, where it exists) ---------- */
+(function(){
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var btn = $("micBtn");
+  if (!SR) {
+    btn.disabled = true;
+    btn.textContent = "\uD83C\uDFA4 Dictate (not on this browser)";
+    $("micNote").textContent = "This browser doesn\u2019t offer built-in dictation, so the mic is off \u2014 no dead buttons here. Dictate into any app you like, then paste the words above.";
+    return;
+  }
+  var rec = null, listening = false;
+  btn.addEventListener("click", function(){
+    if (listening && rec) { rec.stop(); return; }
+    rec = new SR(); rec.lang = "en-US"; rec.interimResults = false;
+    rec.onresult = function(ev){
+      var said = "";
+      for (var i = 0; i < ev.results.length; i++) said += ev.results[i][0].transcript;
+      var cur = $("inputText").value;
+      $("inputText").value = cur ? cur + " " + said : said;
+    };
+    rec.onend = function(){ listening = false; btn.textContent = "\uD83C\uDFA4 Dictate"; };
+    rec.onerror = function(){ listening = false; btn.textContent = "\uD83C\uDFA4 Dictate"; toast("Dictation stopped \u2014 paste your text instead."); };
+    try { rec.start(); listening = true; btn.textContent = "\u23F9 Stop"; }
+    catch(e){ toast("Dictation wouldn\u2019t start \u2014 paste your text instead."); }
+  });
+})();
+
+/* ---------- storage banner + first render ---------- */
+if (!storageOK) {
+  var b = $("banner");
+  b.textContent = "Heads up: this browser is blocking saved storage, so your dictionary can\u2019t persist between visits. Everything still works right now \u2014 entries just won\u2019t be here next time.";
+  b.classList.add("show");
+}
+renderDict();
+</script>
+</body>
+</html>

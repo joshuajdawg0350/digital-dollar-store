@@ -1,0 +1,1210 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>J-Dawgs Seller Photo Studio</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --page: #121418;
+        --panel: #1b1e24;
+        --raised: #23272f;
+        --float: #2b3038;
+        --ink: #e9edf3;
+        --muted: #9ba5b1;
+        --silver: #c9cfd8;
+        --line: rgba(201, 207, 216, 0.16);
+        --btn: #c9cfd8;
+        --btn-ink: #16181d;
+        --field: #101215;
+        --ok: #7bc47f;
+        --warn: #e3b959;
+        --bad: #e4746a;
+        --shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+        --spring: cubic-bezier(0.25, 1.1, 0.35, 1);
+      }
+      @media (prefers-color-scheme: light) {
+        :root {
+          --page: #f3f5f8;
+          --panel: #ffffff;
+          --raised: #ffffff;
+          --float: #ffffff;
+          --ink: #182430;
+          --muted: #5b6b7c;
+          --silver: #46536a;
+          --line: #d9dfe8;
+          --btn: #23272f;
+          --btn-ink: #f2f4f7;
+          --field: #eef1f5;
+          --ok: #2e7d32;
+          --warn: #8a5f00;
+          --bad: #b3261e;
+          --shadow: 0 8px 28px rgba(11, 34, 57, 0.14);
+        }
+      }
+      * { box-sizing: border-box; }
+      html { -webkit-text-size-adjust: 100%; }
+      body {
+        margin: 0;
+        background: var(--page);
+        color: var(--ink);
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .mono { font-variant-numeric: tabular-nums; font-family: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace; }
+
+      /* ---------- No-scroll app shell: pinned HUD + step bar, switched views ---------- */
+      html, body { height: 100%; }
+      body { overflow: hidden; }
+      .shell { height: 100dvh; display: flex; flex-direction: column; max-width: 70rem; margin: 0 auto; min-width: 0; }
+      .topbar {
+        flex: none;
+        background: var(--panel);
+        border-bottom: 1px solid var(--line);
+        padding: 8px 14px 6px;
+      }
+      @media (max-width: 480px) { .topbar { padding: 8px 12px 6px; } }
+      .title-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+      .hud-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+      .chip {
+        border: 1px solid var(--line); border-radius: 999px;
+        padding: 2px 10px; font-size: 0.8rem; font-weight: 700; white-space: nowrap;
+        background: var(--raised);
+      }
+      .hud-status { display: flex; gap: 6px; align-items: baseline; font-size: 0.8rem; color: var(--muted); margin-top: 4px; min-width: 0; }
+      .hud-status .hud-status-label { font-weight: 700; flex: none; }
+      .topbar .export-status { margin: 0; min-height: 1.2em; font-size: 0.8rem; color: var(--ink); flex: 1; min-width: 0; overflow-wrap: anywhere; }
+      .stepbar {
+        flex: none; display: flex; gap: 8px;
+        padding: 6px 10px;
+        background: var(--page);
+        border-bottom: 1px solid var(--line);
+      }
+      .stepbar button {
+        flex: 1 1 0; min-width: 0;
+        padding: 7px 4px; font-size: 0.84rem; text-align: center;
+        border-radius: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      }
+      .stepbar button[aria-selected="true"] { background: var(--btn); color: var(--btn-ink); border-color: transparent; }
+      main.pane {
+        flex: 1 1 auto; min-height: 0; min-width: 0;
+        overflow-y: auto; overflow-x: hidden;
+        padding: 10px 16px 28px;
+        -webkit-overflow-scrolling: touch;
+      }
+      @media (max-width: 480px) { main.pane { padding: 8px 12px 24px; } }
+      .view[hidden] { display: none !important; }
+      .view { min-width: 0; }
+
+      h1 { font-size: 1.12rem; font-weight: 800; letter-spacing: -0.01em; line-height: 1.2; margin: 0; }
+      h2 { font-size: clamp(1.18rem, 3.4vw, 1.5rem); font-weight: 750; letter-spacing: -0.01em; line-height: 1.25; margin: 0 0 6px; }
+      h3 { font-size: 1.05rem; font-weight: 700; margin: 0 0 4px; }
+      p { margin: 0 0 12px; }
+      .lede { font-size: 0.88rem; line-height: 1.45; color: var(--ink); max-width: 62ch; margin: 0 0 8px; }
+      .view section.card > p.muted { font-size: 0.88rem; line-height: 1.45; }
+      .muted { color: var(--muted); }
+      .small { font-size: 0.875rem; }
+
+      section.card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px;
+        margin: 0 0 10px;
+        box-shadow: var(--shadow);
+        min-width: 0;
+      }
+      @media (max-width: 480px) { section.card { padding: 12px; } }
+      .step-tag {
+        display: inline-block;
+        font-size: 0.78rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+        color: var(--silver);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 1px 7px;
+        margin-bottom: 8px;
+      }
+
+      .limits { border-color: var(--warn); }
+      .limits h2 { margin-bottom: 4px; font-size: 1.08rem; }
+      .limits ul { margin: 6px 0 0; padding-left: 18px; font-size: 0.83rem; line-height: 1.5; }
+      .limits li { margin-bottom: 5px; }
+      .limits li:last-child { margin-bottom: 0; }
+      .limits strong { font-weight: 700; }
+
+      .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+      .row > * { min-width: 0; }
+
+      button, .btn {
+        font: inherit; font-weight: 600;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        background: var(--raised);
+        color: var(--ink);
+        padding: 10px 16px;
+        cursor: pointer;
+        transition: transform 0.18s var(--spring), background 0.15s ease;
+        text-decoration: none;
+        display: inline-block;
+      }
+      button:active, .btn:active { transform: scale(0.97); }
+      button.primary { background: var(--btn); color: var(--btn-ink); border-color: transparent; }
+      button:disabled { opacity: 0.45; cursor: not-allowed; }
+      button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid var(--silver); outline-offset: 2px; }
+      input[type="file"] { font: inherit; color: var(--muted); max-width: 100%; }
+      input[type="file"]::file-selector-button {
+        font: inherit; font-weight: 600;
+        border-radius: 12px;
+        border: 1px solid transparent;
+        background: var(--btn); color: var(--btn-ink);
+        padding: 10px 16px;
+        margin-right: 10px;
+        cursor: pointer;
+      }
+
+      /* Photo ledger: compact one-line rows; preview, controls and checks live in the tap-to-view detail strip */
+      #photoGrid { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+      #photoGrid:empty { display: none; }
+      .photo-row {
+        display: flex; align-items: center; gap: 10px; width: 100%;
+        text-align: left; padding: 5px 10px 5px 6px;
+        background: var(--raised); border: 1px solid var(--line); border-radius: 10px;
+        font-weight: 400;
+      }
+      .photo-row[aria-selected="true"] { border-color: var(--silver); box-shadow: inset 0 0 0 1px var(--silver); }
+      .photo-thumb { flex: none; width: 52px; height: 40px; border-radius: 6px; background: var(--field); display: block; }
+      .photo-row-main { flex: 1 1 auto; min-width: 0; display: flex; align-items: baseline; gap: 8px; }
+      .photo-row-name { font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .photo-row-dims { color: var(--muted); font-size: 0.8rem; white-space: nowrap; }
+      .photo-row-view { flex: none; font-size: 0.78rem; font-weight: 700; color: var(--muted); }
+      .photo-row[aria-selected="true"] .photo-row-view { color: var(--ink); }
+      #photoDetail { margin-top: 10px; }
+      #photoDetail:empty { display: none; }
+      .photo-card {
+        background: var(--raised);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px;
+      }
+      .photo-head { display: flex; gap: 8px; align-items: baseline; justify-content: space-between; margin-bottom: 8px; }
+      .photo-name { font-weight: 600; overflow-wrap: anywhere; font-size: 0.95rem; }
+      .photo-dims { color: var(--muted); font-size: 0.85rem; white-space: nowrap; }
+      .remove-btn { padding: 4px 10px; font-size: 0.85rem; border-radius: 8px; }
+      .preview-wrap { position: relative; background: var(--field); border-radius: 12px; overflow: hidden; line-height: 0; }
+      .preview-wrap canvas.pv { width: 100%; height: auto; display: block; }
+      .guide85 {
+        position: absolute; inset: 7.5%;
+        border: 2px dashed var(--warn);
+        border-radius: 4px;
+        pointer-events: none;
+        display: none;
+      }
+      .guide85 span {
+        position: absolute; top: 4px; left: 6px;
+        font-size: 0.75rem; font-weight: 700; line-height: 1.2;
+        color: var(--warn);
+        background: rgba(10, 10, 12, 0.65);
+        padding: 1px 6px; border-radius: 6px;
+      }
+      .guide-on .guide85 { display: block; }
+      .sample-note { font-size: 0.875rem; color: var(--warn); margin: 8px 0 0; line-height: 1.5; }
+
+      .ctl { margin-top: 12px; }
+      .ctl label { display: flex; justify-content: space-between; font-size: 0.875rem; font-weight: 600; margin-bottom: 2px; }
+      .ctl label output { font-weight: 500; color: var(--muted); }
+      input[type="range"] { width: 100%; accent-color: var(--silver); height: 28px; margin: 0; }
+      .ctl-group { border-top: 1px solid var(--line); margin-top: 12px; padding-top: 4px; }
+      .ctl-group > p { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 8px 0 2px; }
+      canvas.hist { width: 100%; height: 64px; display: block; background: var(--field); border-radius: 8px; margin-top: 8px; }
+      .stats { font-size: 0.82rem; color: var(--muted); margin-top: 6px; line-height: 1.55; overflow-wrap: anywhere; }
+      .stats b { color: var(--ink); font-weight: 600; }
+
+      ul.checks { list-style: none; margin: 12px 0 0; padding: 10px 12px; background: var(--field); border-radius: 12px; }
+      ul.checks li { font-size: 0.875rem; line-height: 1.5; padding: 3px 0 3px 22px; position: relative; }
+      ul.checks li::before { position: absolute; left: 0; top: 3px; font-weight: 700; }
+      ul.checks li.ok::before { content: "✓"; color: var(--ok); }
+      ul.checks li.warn::before { content: "!"; color: var(--warn); }
+      ul.checks li.bad::before { content: "✕"; color: var(--bad); }
+      ul.checks li.note::before { content: "–"; color: var(--muted); }
+
+      /* Platform picker: compact ledger rows; full rules live in the detail strip below */
+      .plat-grid { display: grid; grid-template-columns: 1fr; gap: 6px; margin-top: 8px; }
+      @media (min-width: 720px) { .plat-grid { grid-template-columns: 1fr 1fr; } }
+      .plat {
+        text-align: left; width: 100%;
+        background: var(--raised);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 8px 12px;
+        font-weight: 400;
+      }
+      .plat[aria-pressed="true"] { border-color: var(--silver); box-shadow: inset 0 0 0 1px var(--silver); }
+      .plat[data-focused="true"] { background: var(--float); }
+      .plat .plat-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+      .plat .plat-name { font-weight: 700; font-size: 0.98rem; }
+      .plat .plat-state { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+      .plat[aria-pressed="true"] .plat-state { color: var(--ink); }
+      .plat .plat-spec { font-size: 0.82rem; line-height: 1.35; margin: 2px 0 0; }
+      .plat-detail { margin-top: 10px; background: var(--field); border-radius: 12px; padding: 10px 12px; }
+      .plat-detail .plat-detail-name { font-weight: 700; font-size: 0.95rem; margin: 0; }
+      .plat-detail ul { margin: 4px 0 0; padding-left: 18px; font-size: 0.83rem; line-height: 1.4; color: var(--muted); }
+      .plat-detail li { margin-bottom: 2px; }
+      .plat-detail li:last-child { margin-bottom: 0; }
+
+      .swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+      .swatch {
+        width: 40px; height: 40px; border-radius: 10px; padding: 0;
+        border: 2px solid var(--line);
+      }
+      .swatch[aria-pressed="true"] { border-color: var(--silver); box-shadow: 0 0 0 2px var(--page), 0 0 0 4px var(--silver); }
+      .export-status { font-size: 0.9rem; margin-top: 12px; min-height: 1.4em; }
+
+      footer { border-top: 2px solid var(--silver); margin-top: 32px; padding-top: 16px; font-size: 0.9rem; color: var(--muted); }
+      footer p { margin-bottom: 8px; }
+      footer a { color: var(--ink); }
+      .brandline { font-size: 1.02rem; font-weight: 700; letter-spacing: 0.01em; color: var(--ink); }
+
+
+      /* ===== Chrome Tier in-app UI kit (2026-11-07 graphics upgrade) ===== */
+      :root {
+        --jd-bg:#05070a; --jd-surface:#0b0f14; --jd-card:linear-gradient(180deg,#10161d,#0a0e13);
+        --jd-line:rgba(160,190,215,.18); --jd-line-strong:rgba(190,215,235,.38);
+        --jd-text:#e8eef4; --jd-muted:#93a5b5; --jd-accent:#7fd4ff; --jd-accent-deep:#3d9bdc;
+        --jd-chrome:linear-gradient(180deg,#3a4756,#161d25 55%,#0d1218);
+      }
+      @media (prefers-color-scheme: dark) {
+        body { background: var(--jd-bg); color: var(--jd-text); }
+        .topbar { background: rgba(11,15,20,.92); border-bottom: 1px solid var(--jd-line); }
+        .stepbar { background: var(--jd-bg); border-bottom: 1px solid var(--jd-line); }
+        section.card { background: var(--jd-card); border: 1px solid var(--jd-line); border-radius: 14px; box-shadow: inset 0 1px 0 rgba(255,255,255,.05); }
+        button, .btn { background: var(--jd-chrome); border: 1px solid var(--jd-line-strong); color: var(--jd-text); box-shadow: inset 0 1px 0 rgba(255,255,255,.14); border-radius: 12px; }
+        button:active, .btn:active { transform: translateY(1px); filter: brightness(.92); }
+        button.primary { background: var(--jd-chrome); color: var(--jd-accent); border-color: var(--jd-line-strong); }
+        .stepbar button[aria-selected="true"] { background: var(--jd-chrome); color: var(--jd-accent); border-color: var(--jd-accent); }
+        .chip { background: var(--jd-surface); border-color: var(--jd-line); color: var(--jd-text); display: inline-flex; align-items: center; gap: 6px; }
+        input[type="file"]::file-selector-button { background: var(--jd-chrome); color: var(--jd-accent); border: 1px solid var(--jd-line-strong); }
+        .photo-row, .plat, .photo-card { background: var(--jd-card); border-color: var(--jd-line); }
+        .plat[aria-pressed="true"] { border-color: var(--jd-accent); box-shadow: inset 0 0 0 1px var(--jd-accent); }
+        .plat[aria-pressed="true"] .plat-state { color: var(--jd-accent); }
+        .photo-row[aria-selected="true"] { border-color: var(--jd-accent); box-shadow: inset 0 0 0 1px var(--jd-accent); }
+        ul.checks, .plat-detail { background: #0d1218; border: 1px solid var(--jd-line); }
+        input[type="range"] { accent-color: var(--jd-accent); }
+      }
+      @media (prefers-color-scheme: light) { .step-tab-btn .jd-ic, h2 .jd-ic, .step-tag .jd-ic { color: #1f7ab8; } .swatch[aria-pressed="true"] { border-color: #1f7ab8; box-shadow: 0 0 0 2px var(--page), 0 0 0 4px #1f7ab8; } }
+      @media (max-width: 480px) { .step-tab-btn { flex-direction: column; font-size: 0.73rem; gap: 2px; padding-left: 1px; padding-right: 1px; letter-spacing: -0.01em; } .step-tab-btn .jd-ic { width: 16px; height: 16px; } }
+      .jd-ic { width: 18px; height: 18px; flex: none; vertical-align: -3px; }
+      .jd-ic.lg { width: 24px; height: 24px; vertical-align: -5px; }
+      .jd-paw { width: 20px; height: 20px; border-radius: 5px; flex: none; }
+      .step-tab-btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; }
+      .step-tab-btn .jd-ic { color: var(--jd-accent); }
+      .step-tag { display: inline-flex; align-items: center; gap: 6px; }
+      .step-tag .jd-ic { width: 14px; height: 14px; vertical-align: 0; color: var(--jd-accent); }
+      h2 .jd-ic { color: var(--jd-accent); margin-right: 6px; }
+      /* numbered icon chips on step flow */
+      .photo-thumb { border: 1px solid var(--jd-line-strong); border-radius: 8px; box-shadow: inset 0 1px 0 rgba(255,255,255,.08); }
+      .preview-wrap { border: 1px solid var(--jd-line-strong); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,.35); }
+      .photo-row-view { display: inline-flex; align-items: center; gap: 2px; }
+      .photo-row-view::after { content: ""; width: 16px; height: 16px; background: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20fill%3D%22none%22%20stroke%3D%22%2393a5b5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22m9%206l6%206l-6%206%22%2F%3E%3C%2Fsvg%3E") center/contain no-repeat; }
+      /* platform cards: visual, icon-led */
+      .plat .plat-top::before { content: ""; width: 20px; height: 20px; flex: none; background: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%2393a5b5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6.331%208H17.67a2%202%200%200%201%201.977%202.304l-1.255%208.152A3%203%200%200%201%2015.426%2021H8.574a3%203%200%200%201-2.965-2.544l-1.255-8.152A2%202%200%200%201%206.331%208%22%2F%3E%3Cpath%20d%3D%22M9%2011V6a3%203%200%200%201%206%200v5%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") center/contain no-repeat; margin-right: 8px; }
+      .plat .plat-top { justify-content: flex-start; }
+      .plat .plat-state { margin-left: auto; }
+      /* background / mat choices as visual swatches */
+      .swatch { width: 48px; height: 48px; border-radius: 12px; box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 2px 8px rgba(0,0,0,.25); }
+      .swatch[aria-pressed="true"] { border-color: var(--jd-accent); box-shadow: 0 0 0 2px var(--page), 0 0 0 4px var(--jd-accent); transform: scale(1.06); }
+      /* checklist rows: icon chips that fill when done */
+      ul.checks li { padding-left: 30px; }
+      ul.checks li::before {
+        content: ""; left: 0; top: 4px; width: 20px; height: 20px; border-radius: 50%;
+        border: 1.5px solid var(--muted); background-position: center; background-size: 13px; background-repeat: no-repeat;
+      }
+      ul.checks li.ok::before { content: ""; background-color: rgba(87,230,163,.16); border-color: var(--ok); background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20fill%3D%22none%22%20stroke%3D%22%2357e6a3%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22m5%2012l5%205L20%207%22%2F%3E%3C%2Fsvg%3E"); }
+      ul.checks li.warn::before { content: ""; background-color: rgba(227,185,89,.14); border-color: var(--warn); background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20fill%3D%22none%22%20stroke%3D%22%23e3b959%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M13%203v7h6l-8%2011v-7H5z%22%2F%3E%3C%2Fsvg%3E"); }
+      ul.checks li.bad::before { content: ""; background-color: rgba(255,110,110,.14); border-color: var(--bad); background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20fill%3D%22none%22%20stroke%3D%22%23ff8f8f%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M18%206L6%2018M6%206l12%2012%22%2F%3E%3C%2Fsvg%3E"); }
+      ul.checks li.note::before { content: ""; }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { transition: none !important; animation: none !important; }
+      }
+    </style>
+  </head>
+  <body>
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true"><symbol id="i-camera" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M5 7h1a2 2 0 0 0 2-2a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2"/><path d="M9 13a3 3 0 1 0 6 0a3 3 0 0 0-6 0"/></g></symbol><symbol id="i-shopping-bag" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M6.331 8H17.67a2 2 0 0 1 1.977 2.304l-1.255 8.152A3 3 0 0 1 15.426 21H8.574a3 3 0 0 1-2.965-2.544l-1.255-8.152A2 2 0 0 1 6.331 8"/><path d="M9 11V6a3 3 0 0 1 6 0v5"/></g></symbol><symbol id="i-download" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M7 11l5 5l5-5m-5-7v12"/></symbol><symbol id="i-photo" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M15 8h.01M3 6a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/><path d="m3 16l5-5c.928-.893 2.072-.893 3 0l5 5"/><path d="m14 14l1-1c.928-.893 2.072-.893 3 0l3 3"/></g></symbol><symbol id="i-palette" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M12 21a9 9 0 0 1 0-18c4.97 0 9 3.582 9 8c0 1.06-.474 2.078-1.318 2.828S17.693 15 16.5 15H14a2 2 0 0 0-1 3.75A1.3 1.3 0 0 1 12 21"/><path d="M7.5 10.5a1 1 0 1 0 2 0a1 1 0 1 0-2 0m4-3a1 1 0 1 0 2 0a1 1 0 1 0-2 0m4 3a1 1 0 1 0 2 0a1 1 0 1 0-2 0"/></g></symbol><symbol id="i-sun" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12a4 4 0 1 0 8 0a4 4 0 1 0-8 0m-5 0h1m8-9v1m8 8h1m-9 8v1M5.6 5.6l.7.7m12.1-.7l-.7.7m0 11.4l.7.7m-12.1-.7l-.7.7"/></symbol><symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 12l5 5L20 7"/></symbol><symbol id="i-sparkles" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2m0-12a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2M9 18a6 6 0 0 1 6-6a6 6 0 0 1-6-6a6 6 0 0 1-6 6a6 6 0 0 1 6 6"/></symbol></svg>
+    <div class="shell">
+      <header class="topbar">
+        <div class="title-row">
+          <h1>Seller Photo Studio</h1>
+          <div class="hud-chips" aria-label="Set state">
+            <span class="chip" id="hudPhotos">0 photos loaded</span>
+            <span class="chip" id="hudMarkets">0 marketplaces</span>
+          </div>
+          <img class="jd-paw" src="data:image/png;base64,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" alt="" width="20" height="20">
+        </div>
+        <div class="hud-status">
+          <span class="hud-status-label">Status:</span>
+          <p class="export-status mono" id="exportStatus" role="status">Ready — no export yet.</p>
+        </div>
+      </header>
+      <nav class="stepbar" role="tablist" aria-label="Studio steps">
+        <button type="button" role="tab" class="step-tab-btn" data-view="add" aria-selected="true"><svg class="jd-ic" aria-hidden="true"><use href="#i-camera"/></svg>1 · Add photos</button>
+        <button type="button" role="tab" class="step-tab-btn" data-view="markets" aria-selected="false"><svg class="jd-ic" aria-hidden="true"><use href="#i-shopping-bag"/></svg>2 · Markets</button>
+        <button type="button" role="tab" class="step-tab-btn" data-view="export" aria-selected="false"><svg class="jd-ic" aria-hidden="true"><use href="#i-download"/></svg>3 · Mat &amp; Export</button>
+      </nav>
+    <main class="pane" id="pane">
+      <div class="view" data-panel="add">
+      <p class="lede">One photo set in — correctly sized, honestly lit exports out for every marketplace you sell on. Everything runs on this device, in this page. Your photos are never uploaded, collected, or tracked.</p>
+
+      <section class="card" aria-labelledby="step1-h">
+        <span class="step-tag"><svg class="jd-ic" aria-hidden="true"><use href="#i-camera"/></svg>Step 1</span>
+        <h2 id="step1-h"><svg class="jd-ic lg" aria-hidden="true"><use href="#i-photo"/></svg>Add one item's photo set</h2>
+        <p class="muted">Pick the whole set at once — front, back, angles, close-ups, flaws and all. Files are read straight from this device; no camera or microphone is ever requested.</p>
+        <div class="row">
+          <input type="file" id="fileInput" accept="image/*" multiple aria-label="Add photos from this device" />
+          <button type="button" id="sampleBtn">Load the SAMPLE item set</button>
+        </div>
+        <p class="small muted" style="margin-top:12px">No photos yet? The SAMPLE set is a drawn stand-in item — a folding pocket knife photographed three ways, with a scratch on the handle kept visible on purpose. It runs the full flow end-to-end so you can see exactly what your own photos will get.</p>
+        <div id="photoGrid" aria-live="polite"></div>
+        <div id="photoDetail"></div>
+        <p id="emptyState" class="muted" style="margin-top:12px">No photos loaded.</p>
+      </section>
+
+      <section class="card limits" aria-labelledby="limits-h">
+        <h2 id="limits-h">Read first — what this studio will not do</h2>
+        <ul>
+          <li><strong>No background removal. No AI anything.</strong> This studio does sizing, framing, light correction, spec checks, before/after pairs, and collages. It does not cut subjects out of photos or invent new backgrounds — a browser page cannot honestly do that; tools that promise it are cloud AI with subscriptions and credits.</li>
+          <li><strong>Light correction cannot create detail.</strong> Upscaling a 400&nbsp;px photo to 1,600&nbsp;px makes a bigger file, not a sharper photo. This studio never upscales — the checklist flags too-small originals instead of faking them.</li>
+          <li><strong>Specs are guidance, not a guarantee.</strong> Marketplace rules below were checked <span class="mono">Oct 18, 2026</span>. Marketplaces change rules without notice — confirm before a big upload.</li>
+          <li><strong>Batch size:</strong> keep it to about <strong>12 photos at a time</strong> on a phone. Very large batches are bounded by phone memory; if the page slows down, split the set.</li>
+          <li><strong>Need a real AI cutout?</strong> That is Photoroom's job — its paid plans start at $12.99/mo, and its free tier is personal use only. This studio won't fake one.</li>
+        </ul>
+      </section>
+
+      
+      </div>
+
+      <div class="view" data-panel="markets" hidden>
+      <section class="card" aria-labelledby="step2-h">
+        <span class="step-tag"><svg class="jd-ic" aria-hidden="true"><use href="#i-shopping-bag"/></svg>Step 2</span>
+        <h2 id="step2-h"><svg class="jd-ic lg" aria-hidden="true"><use href="#i-shopping-bag"/></svg>Pick your marketplaces</h2>
+        <p class="muted">One pass exports the whole set at every chosen platform's spec — correct pixel size, correct ratio, platform-named files. Specs as published, checked <span class="mono">Oct 18, 2026</span>.</p>
+        <div class="plat-grid" id="platGrid"></div>
+        <div class="plat-detail" id="platDetail" aria-live="polite"></div>
+        <div class="row" style="margin-top:12px">
+          <button type="button" id="guideBtn" aria-pressed="false">Show Amazon 85% fill guide</button>
+          <span class="small muted">Draws the 85% frame on every preview. You judge whether your product fills it — the studio does not measure your product for you.</span>
+        </div>
+      </section>
+      </div>
+
+      <div class="view" data-panel="export" hidden>
+      <section class="card" aria-labelledby="step3-h">
+        <span class="step-tag"><svg class="jd-ic" aria-hidden="true"><use href="#i-download"/></svg>Step 3</span>
+        <h2 id="step3-h"><svg class="jd-ic lg" aria-hidden="true"><use href="#i-palette"/></svg>Mat &amp; exports</h2>
+        <p class="muted">A <strong>mat</strong> is a plain solid-color border placed <em>behind and around</em> a whole rectangular photo in pairs and collages. It is a frame, not a background swap — nothing in your photo is cut out or covered.</p>
+        <h3>Mat color</h3>
+        <div class="swatches" id="matSwatches" role="group" aria-label="Mat color"></div>
+        <div class="row" style="margin-top:20px">
+          <button type="button" class="primary" id="exportBtn">Export platform sets</button>
+          <button type="button" id="pairsBtn">Before/after pairs</button>
+          <button type="button" id="collageBtn">Multi-angle collage</button>
+        </div>
+        <p class="small muted" style="margin-top:10px">Pairs put the untouched original beside the light-fixed version at the photo's full native size, nothing cropped away — proof the fix hid nothing. The collage fits every angle in whole, flaws in frame by design. Files download one at a time; on some phones the browser asks once to allow multiple downloads.</p>
+        <p class="small muted" style="margin-top:10px">Export progress and results show in the status line pinned at the top of the screen.</p>
+      </section>
+      </div>
+
+      <footer>
+        <p><strong>The J-Dawgs Fix-It Guarantee:</strong> if anything we sold or gave you doesn't work, tell us once — we fix it free. No receipts, no runaround.</p>
+        <p><a href="https://joshuajdawg0350.github.io/jdawgs-hub/support.html">Report a problem</a></p>
+        <p class="brandline">No fancy logos. Just quality products.</p>
+        <p>No ads.</p>
+        <p>© 2026 Joshua Dawson · J-Dawgs Seller Photo Studio™ · J-Dawgs Industries™</p>
+      </footer>
+    </main>
+    </div>
+
+    <script>
+      "use strict";
+
+      /* ---------- Guarded storage: a storage-restricted webview must never kill the script ---------- */
+      var store = {
+        get: function (k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } },
+        set: function (k, v) { try { window.localStorage.setItem(k, v); } catch (e) { /* storage unavailable — UI prefs just don't persist */ } }
+      };
+
+      /* ---------- Marketplace specs (as published, checked Oct 18, 2026) ---------- */
+      var CHECK_DATE = "Oct 18, 2026";
+      var PLATFORMS = [
+        {
+          id: "ebay", name: "eBay", tw: 1600, th: 1600, ratio: 1, ext: "jpg",
+          minLong: 500, recLong: 1600, minEach: 0,
+          specLine: "Exports 1600 × 1600 JPEG, square crop.",
+          rules: [
+            "Minimum 500 px on the longest side; ~1600 × 1600 recommended.",
+            "No added text, borders, or watermarks of any kind.",
+            "Up to 24 photos; used items must be photos of the actual item."
+          ]
+        },
+        {
+          id: "amazon", name: "Amazon", tw: 2000, th: 2000, ratio: 1, ext: "jpg",
+          minLong: 500, recLong: 1000, minEach: 0,
+          specLine: "Exports 2000 × 2000 JPEG, square crop.",
+          rules: [
+            "Main image on a pure white background (RGB 255, 255, 255).",
+            "Product must fill 85% or more of the frame.",
+            "1000 px+ on the longest side enables zoom (500 min, 10,000 max)."
+          ]
+        },
+        {
+          id: "etsy", name: "Etsy", tw: 2000, th: 2000, ratio: null, ext: "jpg",
+          minLong: 635, recLong: 2000, minEach: 635,
+          specLine: "Exports longest side 2000 px JPEG, your photo's own ratio — Etsy sets no fixed crop.",
+          rules: [
+            "Listing images are 2000 px class.",
+            "First image at least 635 px in each direction.",
+            "Photos must be of the actual item — not renderings or stock."
+          ]
+        },
+        {
+          id: "meta", name: "Meta (Facebook / Instagram Shops)", tw: 1024, th: 1024, ratio: 1, ext: "jpg",
+          minLong: 500, recLong: 1024, minEach: 0,
+          specLine: "Exports 1024 × 1024 JPEG, square crop.",
+          rules: [
+            "500 × 500 minimum; 1024 × 1024 recommended.",
+            "Square 1:1 or 4:5; JPEG or PNG accepted (this studio exports JPEG)."
+          ]
+        },
+        {
+          id: "tradingpost", name: "J-Dawgs Trading Post", tw: 1600, th: 1600, ratio: 1, ext: "jpg",
+          minLong: 800, recLong: 1600, minEach: 0,
+          specLine: "Exports 1600 × 1600 JPEG, square crop.",
+          rules: [
+            "House standard (not a marketplace rule): 800 px minimum, 1600 × 1600 recommended.",
+            "Photos of the actual item, flaws shown — never hidden."
+          ]
+        }
+      ];
+      function platById(id) { for (var i = 0; i < PLATFORMS.length; i++) { if (PLATFORMS[i].id === id) return PLATFORMS[i]; } return null; }
+
+      var MATS = [
+        { name: "Pure white", hex: "#ffffff" },
+        { name: "Off-white", hex: "#f2efe9" },
+        { name: "Light gray", hex: "#d8d8d8" },
+        { name: "Charcoal", hex: "#26282d" },
+        { name: "Black", hex: "#111111" }
+      ];
+
+      /* ---------- State ---------- */
+      var state = {
+        photos: [],
+        platforms: {},
+        mat: "#ffffff",
+        guide: false,
+        seq: 0
+      };
+      PLATFORMS.forEach(function (p) { state.platforms[p.id] = (p.id === "ebay" || p.id === "meta" || p.id === "tradingpost"); });
+      (function restorePrefs() {
+        var saved = store.get("sps.platforms");
+        if (saved) {
+          try {
+            var parsed = JSON.parse(saved);
+            PLATFORMS.forEach(function (p) { if (typeof parsed[p.id] === "boolean") state.platforms[p.id] = parsed[p.id]; });
+          } catch (e) { /* corrupted pref — defaults stand */ }
+        }
+        var m = store.get("sps.mat");
+        if (m) { for (var i = 0; i < MATS.length; i++) { if (MATS[i].hex === m) state.mat = m; } }
+      })();
+      function savePrefs() {
+        store.set("sps.platforms", JSON.stringify(state.platforms));
+        store.set("sps.mat", state.mat);
+      }
+      function selectedPlatforms() { return PLATFORMS.filter(function (p) { return state.platforms[p.id]; }); }
+
+      /* ---------- Pinned HUD: set state visible on every view, no scrolling ---------- */
+      function updateHUD() {
+        var hp = document.getElementById("hudPhotos");
+        var hm = document.getElementById("hudMarkets");
+        if (hp) hp.textContent = state.photos.length + (state.photos.length === 1 ? " photo" : " photos") + " loaded";
+        if (hm) { var n = selectedPlatforms().length; hm.textContent = n + (n === 1 ? " marketplace" : " marketplaces"); }
+      }
+
+      /* ---------- SAMPLE set: canvas-drawn product shots, flaw kept visible ---------- */
+      function drawWorkbench(ctx, W, H, dim) {
+        var g = ctx.createLinearGradient(0, 0, 0, H);
+        g.addColorStop(0, "#97795a"); g.addColorStop(1, "#7d6247");
+        ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+        ctx.strokeStyle = "rgba(60,40,20,0.35)"; ctx.lineWidth = 4;
+        for (var y = H / 4; y < H; y += H / 4) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+        ctx.strokeStyle = "rgba(90,64,36,0.25)"; ctx.lineWidth = 2;
+        for (var i = 0; i < 26; i++) {
+          var gy = Math.random() * H;
+          ctx.beginPath(); ctx.moveTo(0, gy);
+          ctx.bezierCurveTo(W * 0.3, gy + 8, W * 0.7, gy - 8, W, gy + 4); ctx.stroke();
+        }
+        if (dim) { ctx.fillStyle = "rgba(8,8,18,0.38)"; ctx.fillRect(0, 0, W, H); }
+      }
+      function drawKnife(ctx, cx, cy, len, angle, open) {
+        ctx.save(); ctx.translate(cx, cy); ctx.rotate(angle);
+        ctx.fillStyle = "rgba(0,0,0,0.28)";
+        ctx.beginPath(); ctx.ellipse(10, 26, len * 0.52, 20, 0, 0, Math.PI * 2); ctx.fill();
+        /* handle */
+        var hw = len * 0.42, hh = len * 0.11;
+        var hg = ctx.createLinearGradient(0, -hh / 2, 0, hh / 2);
+        hg.addColorStop(0, "#6d4a2c"); hg.addColorStop(0.5, "#54371f"); hg.addColorStop(1, "#3f2812");
+        ctx.fillStyle = hg;
+        roundRect(ctx, -hw, -hh / 2, hw, hh, hh * 0.32); ctx.fill();
+        /* bolsters + rivets */
+        ctx.fillStyle = "#c8a24a";
+        roundRect(ctx, -hw, -hh / 2, len * 0.045, hh, 4); ctx.fill();
+        roundRect(ctx, -len * 0.045, -hh / 2, len * 0.045, hh, 4); ctx.fill();
+        ctx.fillStyle = "#d9b45c";
+        [-0.32, -0.2, -0.08].forEach(function (f) {
+          ctx.beginPath(); ctx.arc(len * f, 0, len * 0.016, 0, Math.PI * 2); ctx.fill();
+        });
+        if (open) {
+          var bg = ctx.createLinearGradient(0, -hh * 0.42, 0, hh * 0.42);
+          bg.addColorStop(0, "#e8ecf0"); bg.addColorStop(0.55, "#b9c1ca"); bg.addColorStop(1, "#8d97a1");
+          ctx.fillStyle = bg;
+          ctx.beginPath();
+          ctx.moveTo(0, -hh * 0.42);
+          ctx.lineTo(len * 0.5, -hh * 0.30);
+          ctx.quadraticCurveTo(len * 0.60, 0, len * 0.52, hh * 0.18);
+          ctx.lineTo(0, hh * 0.30);
+          ctx.closePath(); ctx.fill();
+          ctx.strokeStyle = "rgba(70,80,90,0.6)"; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(len * 0.03, hh * 0.26); ctx.lineTo(len * 0.5, hh * 0.14); ctx.stroke();
+        }
+        ctx.restore();
+      }
+      function roundRect(ctx, x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+      }
+      function makeSampleCanvas(kind) {
+        var W = 2200, H = 1650;
+        var c = document.createElement("canvas"); c.width = W; c.height = H;
+        var ctx = c.getContext("2d");
+        if (kind === "front") {
+          drawWorkbench(ctx, W, H, false);
+          drawKnife(ctx, W * 0.5, H * 0.52, 1500, -0.06, true);
+        } else if (kind === "side") {
+          drawWorkbench(ctx, W, H, true);
+          /* leather sheath */
+          ctx.save(); ctx.translate(W * 0.34, H * 0.55); ctx.rotate(0.1);
+          ctx.fillStyle = "rgba(0,0,0,0.3)";
+          ctx.beginPath(); ctx.ellipse(8, 24, 430, 26, 0, 0, Math.PI * 2); ctx.fill();
+          var sg = ctx.createLinearGradient(0, -70, 0, 70);
+          sg.addColorStop(0, "#7a4b28"); sg.addColorStop(1, "#5b3517");
+          ctx.fillStyle = sg; roundRect(ctx, -430, -70, 860, 140, 60); ctx.fill();
+          ctx.strokeStyle = "rgba(240,210,150,0.55)"; ctx.lineWidth = 5; ctx.setLineDash([22, 14]);
+          roundRect(ctx, -405, -48, 810, 96, 44); ctx.stroke(); ctx.setLineDash([]);
+          ctx.fillStyle = "#c8a24a"; ctx.beginPath(); ctx.arc(360, 0, 26, 0, Math.PI * 2); ctx.fill();
+          ctx.restore();
+          drawKnife(ctx, W * 0.62, H * 0.30, 1050, 0.22, false);
+        } else { /* flaw close-up */
+          drawWorkbench(ctx, W, H, false);
+          ctx.save(); ctx.translate(W * 0.5, H * 0.52); ctx.rotate(-0.03);
+          var hg = ctx.createLinearGradient(0, -330, 0, 330);
+          hg.addColorStop(0, "#6d4a2c"); hg.addColorStop(0.5, "#54371f"); hg.addColorStop(1, "#3f2812");
+          ctx.fillStyle = hg; roundRect(ctx, -950, -330, 1900, 660, 130); ctx.fill();
+          ctx.strokeStyle = "rgba(30,18,6,0.35)"; ctx.lineWidth = 3;
+          for (var i = 0; i < 12; i++) {
+            var gy = -300 + i * 55 + Math.random() * 20;
+            ctx.beginPath(); ctx.moveTo(-920, gy);
+            ctx.bezierCurveTo(-300, gy + 26, 300, gy - 26, 920, gy + 10); ctx.stroke();
+          }
+          ctx.fillStyle = "#d9b45c";
+          [-620, -60, 500].forEach(function (x) { ctx.beginPath(); ctx.arc(x, 0, 52, 0, Math.PI * 2); ctx.fill(); });
+          ctx.fillStyle = "#c8a24a"; roundRect(ctx, -950, -330, 130, 660, 40); ctx.fill();
+          roundRect(ctx, 820, -330, 130, 660, 40); ctx.fill();
+          /* THE FLAW: a bright scratch scored across the handle + scuffs. Drawn on purpose, never removed. */
+          ctx.strokeStyle = "#e9e2d2"; ctx.lineWidth = 15; ctx.lineCap = "round";
+          ctx.beginPath();
+          ctx.moveTo(-700, 190); ctx.lineTo(-380, 60); ctx.lineTo(-90, 130); ctx.lineTo(240, -40); ctx.lineTo(560, 30); ctx.lineTo(760, -70);
+          ctx.stroke();
+          ctx.strokeStyle = "rgba(233,226,210,0.5)"; ctx.lineWidth = 6;
+          ctx.beginPath(); ctx.moveTo(-640, 235); ctx.lineTo(-330, 115); ctx.lineTo(60, 175); ctx.stroke();
+          ctx.fillStyle = "rgba(233,226,210,0.45)";
+          [[-480, -180], [180, 210], [640, 160], [-150, -235]].forEach(function (pt) {
+            ctx.beginPath(); ctx.ellipse(pt[0], pt[1], 34, 13, 0.6, 0, Math.PI * 2); ctx.fill();
+          });
+          ctx.restore();
+        }
+        return c;
+      }
+      var SAMPLE_DEFS = [
+        { kind: "front", name: "sample-knife-front", note: "" },
+        { kind: "side", name: "sample-knife-side-sheath", note: "This shot is drawn a little dark on purpose — try the light fix below and watch the measured numbers move." },
+        { kind: "flaw", name: "sample-knife-handle-closeup", note: "The scratch across the handle is the deliberate flaw. It stays in every export — that is the point of an honest listing photo." }
+      ];
+
+      /* ---------- Image math: crop, light adjustment, measurement ---------- */
+      function cropRect(p, ratio) {
+        var sw = p.sw, sh = p.sh;
+        if (!ratio) return { sx: 0, sy: 0, cw: sw, ch: sh };
+        var cw, ch;
+        if (sw / sh > ratio) { ch = sh; cw = Math.round(sh * ratio); }
+        else { cw = sw; ch = Math.round(sw / ratio); }
+        var sx = Math.round((sw - cw) * p.crop.x);
+        var sy = Math.round((sh - ch) * p.crop.y);
+        return { sx: sx, sy: sy, cw: cw, ch: ch };
+      }
+      function outDims(cw, ch, plat) {
+        var ow, oh;
+        if (plat.ratio) {
+          ow = Math.min(plat.tw, cw);
+          oh = Math.round(ow / plat.ratio);
+          if (oh > ch) { oh = ch; ow = Math.round(oh * plat.ratio); }
+        } else {
+          var longest = Math.max(cw, ch);
+          var scale = Math.min(1, plat.tw / longest); /* never upscale */
+          ow = Math.max(1, Math.round(cw * scale));
+          oh = Math.max(1, Math.round(ch * scale));
+        }
+        return { ow: ow, oh: oh };
+      }
+      function adjustFactor(adj) {
+        return {
+          exp: Math.pow(2, adj.ev),
+          con: 1 + adj.c / 100,
+          bri: adj.b / 200
+        };
+      }
+      function isNeutral(adj) { return adj.b === 0 && adj.c === 0 && adj.ev === 0; }
+      function applyAdjust(canvas, adj) {
+        if (isNeutral(adj)) return;
+        var ctx = canvas.getContext("2d");
+        var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        var d = img.data, f = adjustFactor(adj);
+        for (var i = 0; i < d.length; i += 4) {
+          for (var k = 0; k < 3; k++) {
+            var v = d[i + k] * f.exp / 255;
+            v = (v - 0.5) * f.con + 0.5 + f.bri;
+            d[i + k] = v < 0 ? 0 : v > 1 ? 255 : Math.round(v * 255);
+          }
+        }
+        ctx.putImageData(img, 0, 0);
+      }
+      function renderCanvas(p, plat, maxDim, withAdjust) {
+        var r = cropRect(p, plat ? plat.ratio : null);
+        var dims = plat ? outDims(r.cw, r.ch, plat) : { ow: r.cw, oh: r.ch };
+        var ow = dims.ow, oh = dims.oh;
+        if (maxDim) {
+          var s = Math.min(1, maxDim / Math.max(ow, oh));
+          ow = Math.max(1, Math.round(ow * s)); oh = Math.max(1, Math.round(oh * s));
+        }
+        var c = document.createElement("canvas"); c.width = ow; c.height = oh;
+        var ctx = c.getContext("2d");
+        ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, ow, oh);
+        ctx.drawImage(p.source, r.sx, r.sy, r.cw, r.ch, 0, 0, ow, oh);
+        if (withAdjust) applyAdjust(c, p.adj);
+        return c;
+      }
+      function measure(canvas) {
+        var ctx = canvas.getContext("2d");
+        var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        var d = img.data, n = d.length / 4;
+        var bins = new Array(64).fill(0);
+        var sum = 0, clipLo = 0, clipHi = 0;
+        for (var i = 0; i < d.length; i += 4) {
+          var lum = 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2];
+          sum += lum;
+          if (lum <= 2) clipLo++;
+          if (lum >= 253) clipHi++;
+          bins[Math.min(63, Math.floor(lum / 4))]++;
+        }
+        return {
+          mean: sum / n,
+          clipLo: 100 * clipLo / n,
+          clipHi: 100 * clipHi / n,
+          bins: bins, maxBin: Math.max.apply(null, bins)
+        };
+      }
+      function drawHist(canvas, before, after) {
+        var ctx = canvas.getContext("2d");
+        var W = canvas.width, H = canvas.height;
+        ctx.clearRect(0, 0, W, H);
+        var bw = W / 64, maxB = Math.max(before.maxBin, after.maxBin, 1);
+        ctx.fillStyle = "rgba(150,160,175,0.35)";
+        for (var i = 0; i < 64; i++) {
+          var hb = before.bins[i] / maxB * (H - 6);
+          ctx.fillRect(i * bw + 0.5, H - hb, bw - 1, hb);
+        }
+        ctx.fillStyle = "rgba(233,237,243,0.85)";
+        for (var j = 0; j < 64; j++) {
+          var ha = after.bins[j] / maxB * (H - 6);
+          ctx.fillRect(j * bw + 0.5, H - ha, bw - 1, ha);
+        }
+        ctx.fillStyle = "rgba(155,165,177,0.9)";
+        ctx.font = "11px system-ui, sans-serif";
+        ctx.fillText("shadows", 4, 12);
+        var label = "highlights";
+        ctx.fillText(label, W - ctx.measureText(label).width - 4, 12);
+      }
+      function fmt(n, digits) { return n.toFixed(digits === undefined ? 1 : digits); }
+
+      /* ---------- Spec checklist (honest wording: reminders and guides, never detection claims) ---------- */
+      function buildChecks(p) {
+        var checks = [];
+        var plats = selectedPlatforms();
+        if (!plats.length) {
+          checks.push({ level: "note", text: "Pick at least one marketplace in Step 2 to run its spec checks on this photo." });
+          return checks;
+        }
+        plats.forEach(function (plat, pi) {
+          var r = cropRect(p, plat.ratio);
+          var dims = outDims(r.cw, r.ch, plat);
+          var longest = Math.max(dims.ow, dims.oh);
+          var shortest = Math.min(dims.ow, dims.oh);
+          if (longest < plat.minLong) {
+            checks.push({ level: "bad", text: plat.name + ": too small — this photo exports at " + dims.ow + " × " + dims.oh + " px; the minimum is " + plat.minLong + " px on the longest side. Shoot or scan it bigger; upscaling would fake detail this studio won't fake." });
+          } else if (longest < plat.recLong) {
+            checks.push({ level: "warn", text: plat.name + ": lists at " + dims.ow + " × " + dims.oh + " px, below the " + plat.recLong + " px recommended level" + (plat.id === "amazon" ? " (the zoom threshold)" : "") + ". It can list, but buyers get a softer zoom." });
+          } else {
+            checks.push({ level: "ok", text: plat.name + ": size good — exports at " + dims.ow + " × " + dims.oh + " px." });
+          }
+          if (plat.minEach && shortest < plat.minEach) {
+            checks.push({ level: "bad", text: plat.name + ": the short side exports at " + shortest + " px; the first image needs at least " + plat.minEach + " px in each direction." });
+          }
+          if (plat.ratio && Math.abs(p.sw / p.sh - plat.ratio) > 0.01) {
+            checks.push({ level: "note", text: plat.name + ": your photo is " + p.sw + " × " + p.sh + " and exports square-cropped to " + plat.ratio + ":1. Set the crop position sliders so nothing important — and no flaw — is cut off. Nothing is center-cropped behind your back." });
+          }
+          if (plat.id === "ebay" && p.index === 0) {
+            checks.push({ level: "note", text: "eBay rule reminder for your main photo: no added text, borders, or watermarks are allowed. Check your original photo against that rule — this is a reminder, not a scan; the studio does not detect text." });
+          }
+          if (plat.id === "amazon") {
+            checks.push({ level: "note", text: "Amazon main photo: the product must sit on pure white (RGB 255, 255, 255) and fill 85%+ of the frame. Turn on the 85% fill guide in Step 2 and judge the framing yourself — this is a framing guide, not a measurement, and the studio cannot whiten a background." });
+          }
+        });
+        return checks;
+      }
+
+      /* ---------- Photo cards ---------- */
+      var grid = document.getElementById("photoGrid");
+      var emptyState = document.getElementById("emptyState");
+      var statusEl = document.getElementById("exportStatus");
+
+      /* ---------- Ledger selection: the tapped photo's full card shows in the detail strip ---------- */
+      var selectedPhoto = null;
+      function selectPhoto(p) {
+        selectedPhoto = p || null;
+        state.photos.forEach(function (q) {
+          if (q.cardEl) q.cardEl.style.display = q === selectedPhoto ? "" : "none";
+          if (q.rowEl) q.rowEl.setAttribute("aria-selected", q === selectedPhoto ? "true" : "false");
+        });
+        var detail = document.getElementById("photoDetail");
+        if (detail) detail.style.display = selectedPhoto ? "" : "none";
+      }
+
+      function primaryPlat() {
+        var plats = selectedPlatforms();
+        for (var i = 0; i < plats.length; i++) { if (plats[i].ratio) return plats[i]; }
+        return plats[0] || null;
+      }
+      function refreshPhoto(p) {
+        var plat = primaryPlat();
+        var afterC = renderCanvas(p, plat, 440, true);
+        p.pvCanvas.width = afterC.width; p.pvCanvas.height = afterC.height;
+        p.pvCanvas.getContext("2d").drawImage(afterC, 0, 0);
+        /* Always re-measure the original at the current crop so before/after always describe the same pixels. */
+        p.baseStats = measure(renderCanvas(p, plat, 440, false));
+        var afterStats = measure(afterC);
+        drawHist(p.histCanvas, p.baseStats, afterStats);
+        p.statsEl.innerHTML =
+          "Mean luminance <b class='mono'>" + fmt(p.baseStats.mean, 0) + " → " + fmt(afterStats.mean, 0) + "</b> · " +
+          "clipped shadows <b class='mono'>" + fmt(p.baseStats.clipLo) + "% → " + fmt(afterStats.clipLo) + "%</b> · " +
+          "clipped highlights <b class='mono'>" + fmt(p.baseStats.clipHi) + "% → " + fmt(afterStats.clipHi) + "%</b>" +
+          "<br><span>Measured from this photo's actual pixels (preview scale). First number is the untouched original, second is after your light fix.</span>";
+        var checks = buildChecks(p);
+        p.checksEl.innerHTML = "";
+        checks.forEach(function (ck) {
+          var li = document.createElement("li");
+          li.className = ck.level; li.textContent = ck.text;
+          p.checksEl.appendChild(li);
+        });
+        p.outB.textContent = (p.adj.b > 0 ? "+" : "") + p.adj.b;
+        p.outC.textContent = (p.adj.c > 0 ? "+" : "") + p.adj.c;
+        p.outEv.textContent = (p.adj.ev > 0 ? "+" : "") + fmt(p.adj.ev, 2) + " EV";
+        p.outX.textContent = Math.round(p.crop.x * 100) + "%";
+        p.outY.textContent = Math.round(p.crop.y * 100) + "%";
+      }
+      function refreshAll() { state.photos.forEach(refreshPhoto); }
+
+      function sliderRow(label, min, max, step, val) {
+        var wrap = document.createElement("div"); wrap.className = "ctl";
+        var lab = document.createElement("label");
+        var span = document.createElement("span"); span.textContent = label;
+        var out = document.createElement("output");
+        lab.appendChild(span); lab.appendChild(out);
+        var input = document.createElement("input");
+        input.type = "range"; input.min = min; input.max = max; input.step = step; input.value = val;
+        wrap.appendChild(lab); wrap.appendChild(input);
+        return { wrap: wrap, input: input, out: out };
+      }
+
+      function addPhoto(source, sw, sh, name, note) {
+        var p = {
+          id: ++state.seq, index: state.photos.length,
+          source: source, sw: sw, sh: sh, name: name, note: note || "",
+          adj: { b: 0, c: 0, ev: 0 }, crop: { x: 0.5, y: 0.5 },
+          baseStats: null
+        };
+        var card = document.createElement("article");
+        card.className = "photo-card";
+
+        var head = document.createElement("div"); head.className = "photo-head";
+        var nameEl = document.createElement("span"); nameEl.className = "photo-name"; nameEl.textContent = name;
+        var dimsEl = document.createElement("span"); dimsEl.className = "photo-dims mono"; dimsEl.textContent = sw + " × " + sh;
+        var rm = document.createElement("button"); rm.type = "button"; rm.className = "remove-btn"; rm.textContent = "Remove";
+        rm.addEventListener("click", function () {
+          var wasSelected = selectedPhoto === p;
+          state.photos = state.photos.filter(function (q) { return q.id !== p.id; });
+          state.photos.forEach(function (q, i) { q.index = i; });
+          card.remove();
+          if (p.rowEl) p.rowEl.remove();
+          if (wasSelected) selectPhoto(state.photos[0] || null);
+          refreshAll(); syncEmpty();
+        });
+        var leftHead = document.createElement("div");
+        leftHead.appendChild(nameEl); leftHead.appendChild(document.createTextNode(" ")); leftHead.appendChild(dimsEl);
+        head.appendChild(leftHead); head.appendChild(rm);
+        card.appendChild(head);
+
+        var wrap = document.createElement("div"); wrap.className = "preview-wrap" + (state.guide ? " guide-on" : "");
+        var pv = document.createElement("canvas"); pv.className = "pv";
+        pv.setAttribute("role", "img");
+        pv.setAttribute("aria-label", "Preview of " + name);
+        var guide = document.createElement("div"); guide.className = "guide85";
+        var gspan = document.createElement("span"); gspan.textContent = "85% fill guide";
+        guide.appendChild(gspan);
+        wrap.appendChild(pv); wrap.appendChild(guide);
+        card.appendChild(wrap);
+        p.pvWrap = wrap; p.pvCanvas = pv;
+
+        if (note) {
+          var noteEl = document.createElement("p"); noteEl.className = "sample-note"; noteEl.textContent = note;
+          card.appendChild(noteEl);
+        }
+
+        var cropGroup = document.createElement("div"); cropGroup.className = "ctl-group";
+        var cgTitle = document.createElement("p"); cgTitle.textContent = "Crop position — for the square marketplace crops";
+        cropGroup.appendChild(cgTitle);
+        var rowX = sliderRow("Horizontal position", 0, 100, 1, 50);
+        var rowY = sliderRow("Vertical position", 0, 100, 1, 50);
+        cropGroup.appendChild(rowX.wrap); cropGroup.appendChild(rowY.wrap);
+        card.appendChild(cropGroup);
+        p.outX = rowX.out; p.outY = rowY.out;
+        var raf = null;
+        function queue() { if (raf) return; raf = requestAnimationFrame(function () { raf = null; refreshPhoto(p); }); }
+        rowX.input.addEventListener("input", function () { p.crop.x = rowX.input.value / 100; queue(); });
+        rowY.input.addEventListener("input", function () { p.crop.y = rowY.input.value / 100; queue(); });
+
+        var lightGroup = document.createElement("div"); lightGroup.className = "ctl-group";
+        var lgTitle = document.createElement("p"); lgTitle.textContent = "Light fix — plain image adjustment, not AI";
+        lightGroup.appendChild(lgTitle);
+        var rowB = sliderRow("Brightness", -50, 50, 1, 0);
+        var rowC = sliderRow("Contrast", -50, 50, 1, 0);
+        var rowEv = sliderRow("Exposure", -1, 1, 0.05, 0);
+        lightGroup.appendChild(rowB.wrap); lightGroup.appendChild(rowC.wrap); lightGroup.appendChild(rowEv.wrap);
+        var hist = document.createElement("canvas"); hist.className = "hist"; hist.width = 520; hist.height = 128;
+        hist.setAttribute("aria-label", "Luminance histogram: gray is the original photo, bright bars are after your light fix");
+        lightGroup.appendChild(hist);
+        var stats = document.createElement("p"); stats.className = "stats";
+        lightGroup.appendChild(stats);
+        var revert = document.createElement("button"); revert.type = "button"; revert.textContent = "Revert light fix";
+        revert.style.marginTop = "8px";
+        revert.addEventListener("click", function () {
+          p.adj = { b: 0, c: 0, ev: 0 };
+          rowB.input.value = 0; rowC.input.value = 0; rowEv.input.value = 0;
+          refreshPhoto(p);
+        });
+        lightGroup.appendChild(revert);
+        card.appendChild(lightGroup);
+        p.histCanvas = hist; p.statsEl = stats;
+        p.outB = rowB.out; p.outC = rowC.out; p.outEv = rowEv.out;
+        rowB.input.addEventListener("input", function () { p.adj.b = +rowB.input.value; queue(); });
+        rowC.input.addEventListener("input", function () { p.adj.c = +rowC.input.value; queue(); });
+        rowEv.input.addEventListener("input", function () { p.adj.ev = +rowEv.input.value; queue(); });
+
+        var checksTitle = document.createElement("div"); checksTitle.className = "ctl-group";
+        var ckT = document.createElement("p"); ckT.textContent = "Spec checklist";
+        checksTitle.appendChild(ckT); card.appendChild(checksTitle);
+        var checks = document.createElement("ul"); checks.className = "checks";
+        card.appendChild(checks);
+        p.checksEl = checks;
+
+        /* Compact one-line ledger row: thumbnail + name + native size. Tap to view in the detail strip. */
+        var row = document.createElement("button");
+        row.type = "button"; row.className = "photo-row";
+        row.setAttribute("aria-selected", "false");
+        var thumb = document.createElement("canvas");
+        thumb.className = "photo-thumb"; thumb.width = 104; thumb.height = 80;
+        thumb.setAttribute("aria-hidden", "true");
+        (function () {
+          var tctx = thumb.getContext("2d");
+          tctx.fillStyle = "#ffffff"; tctx.fillRect(0, 0, 104, 80);
+          var ts = Math.min(104 / sw, 80 / sh);
+          var tw = Math.round(sw * ts), th = Math.round(sh * ts);
+          tctx.drawImage(source, Math.round((104 - tw) / 2), Math.round((80 - th) / 2), tw, th);
+        })();
+        var rowMain = document.createElement("span"); rowMain.className = "photo-row-main";
+        var rowName = document.createElement("span"); rowName.className = "photo-row-name"; rowName.textContent = name;
+        var rowDims = document.createElement("span"); rowDims.className = "photo-row-dims mono"; rowDims.textContent = sw + " × " + sh;
+        rowMain.appendChild(rowName); rowMain.appendChild(rowDims);
+        var rowView = document.createElement("span"); rowView.className = "photo-row-view"; rowView.textContent = "View";
+        row.appendChild(thumb); row.appendChild(rowMain); row.appendChild(rowView);
+        row.addEventListener("click", function () { selectPhoto(p); });
+        grid.appendChild(row);
+        document.getElementById("photoDetail").appendChild(card);
+        p.rowEl = row; p.cardEl = card;
+        state.photos.push(p);
+        refreshPhoto(p);
+        selectPhoto(p);
+        syncEmpty();
+        return p;
+      }
+      function syncEmpty() {
+        emptyState.style.display = state.photos.length ? "none" : "";
+        document.getElementById("exportBtn").disabled = !state.photos.length;
+        document.getElementById("pairsBtn").disabled = !state.photos.length;
+        document.getElementById("collageBtn").disabled = !state.photos.length;
+        updateHUD();
+      }
+
+      /* ---------- Inputs: file picker only (no camera / mic permission anywhere) ---------- */
+      document.getElementById("fileInput").addEventListener("change", function (ev) {
+        var files = Array.prototype.slice.call(ev.target.files || []);
+        var pending = files.length;
+        if (!pending) return;
+        statusEl.textContent = "Loading " + pending + " photo" + (pending === 1 ? "" : "s") + "…";
+        files.forEach(function (file) {
+          var url = URL.createObjectURL(file);
+          var img = new Image();
+          img.onload = function () {
+            addPhoto(img, img.naturalWidth, img.naturalHeight, file.name.replace(/\.[a-z0-9]+$/i, ""));
+            URL.revokeObjectURL(url);
+            if (--pending === 0) statusEl.textContent = "";
+          };
+          img.onerror = function () {
+            URL.revokeObjectURL(url);
+            if (--pending === 0) statusEl.textContent = "";
+          };
+          img.src = url;
+        });
+        ev.target.value = "";
+      });
+      document.getElementById("sampleBtn").addEventListener("click", function () {
+        SAMPLE_DEFS.forEach(function (def) {
+          var c = makeSampleCanvas(def.kind);
+          addPhoto(c, c.width, c.height, def.name, def.note);
+        });
+        statusEl.textContent = "SAMPLE set loaded — 3 drawn photos of one pocket knife, scratch included.";
+      });
+
+      /* ---------- Platform picker + mat swatches + guide ---------- */
+      var platGrid = document.getElementById("platGrid");
+      var platDetail = document.getElementById("platDetail");
+      function focusPlat(plat) {
+        Array.prototype.forEach.call(platGrid.children, function (el) {
+          el.setAttribute("data-focused", el.getAttribute("data-plat") === plat.id ? "true" : "false");
+        });
+        platDetail.innerHTML = "";
+        var nm = document.createElement("p"); nm.className = "plat-detail-name"; nm.textContent = plat.name;
+        platDetail.appendChild(nm);
+        var ul = document.createElement("ul");
+        plat.rules.forEach(function (r) { var li = document.createElement("li"); li.textContent = r; ul.appendChild(li); });
+        platDetail.appendChild(ul);
+        var date = document.createElement("p");
+        date.className = "small muted"; date.style.margin = "6px 0 0";
+        date.textContent = plat.id === "tradingpost" ? "House standard, set by the shop." : "As published — checked " + CHECK_DATE + ".";
+        platDetail.appendChild(date);
+      }
+      PLATFORMS.forEach(function (plat) {
+        var btn = document.createElement("button");
+        btn.type = "button"; btn.className = "plat";
+        btn.setAttribute("data-plat", plat.id);
+        btn.setAttribute("aria-pressed", state.platforms[plat.id] ? "true" : "false");
+        var top = document.createElement("div"); top.className = "plat-top";
+        var nm = document.createElement("span"); nm.className = "plat-name"; nm.textContent = plat.name;
+        var st = document.createElement("span"); st.className = "plat-state"; st.textContent = state.platforms[plat.id] ? "On" : "Off";
+        top.appendChild(nm); top.appendChild(st); btn.appendChild(top);
+        var spec = document.createElement("p"); spec.className = "plat-spec"; spec.textContent = plat.specLine;
+        btn.appendChild(spec);
+        btn.addEventListener("click", function () {
+          state.platforms[plat.id] = !state.platforms[plat.id];
+          btn.setAttribute("aria-pressed", state.platforms[plat.id] ? "true" : "false");
+          st.textContent = state.platforms[plat.id] ? "On" : "Off";
+          focusPlat(plat);
+          savePrefs(); refreshAll(); updateHUD();
+        });
+        platGrid.appendChild(btn);
+      });
+      focusPlat(selectedPlatforms()[0] || PLATFORMS[0]);
+
+      var swatchWrap = document.getElementById("matSwatches");
+      MATS.forEach(function (mat) {
+        var b = document.createElement("button");
+        b.type = "button"; b.className = "swatch";
+        b.style.background = mat.hex;
+        b.title = mat.name; b.setAttribute("aria-label", "Mat color: " + mat.name);
+        b.setAttribute("aria-pressed", state.mat === mat.hex ? "true" : "false");
+        b.addEventListener("click", function () {
+          state.mat = mat.hex; savePrefs();
+          Array.prototype.forEach.call(swatchWrap.children, function (el, i) {
+            el.setAttribute("aria-pressed", MATS[i].hex === state.mat ? "true" : "false");
+          });
+        });
+        swatchWrap.appendChild(b);
+      });
+
+      document.getElementById("guideBtn").addEventListener("click", function () {
+        state.guide = !state.guide;
+        this.setAttribute("aria-pressed", state.guide ? "true" : "false");
+        this.textContent = state.guide ? "Hide Amazon 85% fill guide" : "Show Amazon 85% fill guide";
+        state.photos.forEach(function (p) { if (p.pvWrap) p.pvWrap.classList.toggle("guide-on", state.guide); });
+      });
+
+      /* ---------- Exports ---------- */
+      function downloadBlob(blob, filename) {
+        return new Promise(function (resolve) {
+          var a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); resolve(); }, 350);
+        });
+      }
+      function canvasBlob(canvas) {
+        return new Promise(function (resolve) { canvas.toBlob(resolve, "image/jpeg", 0.92); });
+      }
+      function safeName(name) {
+        return (name || "photo").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "photo";
+      }
+      function pad2(n) { return (n < 10 ? "0" : "") + n; }
+
+      document.getElementById("exportBtn").addEventListener("click", function () {
+        var plats = selectedPlatforms();
+        if (!state.photos.length) { statusEl.textContent = "Add photos first."; return; }
+        if (!plats.length) { statusEl.textContent = "Pick at least one marketplace in Step 2."; return; }
+        var btn = this; btn.disabled = true;
+        var total = state.photos.length * plats.length, done = 0;
+        var chain = Promise.resolve();
+        state.photos.forEach(function (p) {
+          plats.forEach(function (plat) {
+            chain = chain.then(function () {
+              var canvas = renderCanvas(p, plat, 0, true);
+              return canvasBlob(canvas).then(function (blob) {
+                if (blob) {
+                  done++;
+                  statusEl.textContent = "Exporting " + done + " of " + total + "…";
+                  return downloadBlob(blob, safeName(p.name) + "_" + plat.id + "_" + pad2(p.index + 1) + "." + plat.ext);
+                }
+              });
+            });
+          });
+        });
+        chain.then(function () {
+          statusEl.textContent = "Done — " + done + " file" + (done === 1 ? "" : "s") + " exported across " + plats.length + " marketplace" + (plats.length === 1 ? "" : "s") + ", named by platform. Sizes are capped at what each original photo honestly has — nothing was upscaled.";
+          btn.disabled = false;
+        });
+      });
+
+      document.getElementById("pairsBtn").addEventListener("click", function () {
+        if (!state.photos.length) { statusEl.textContent = "Add photos first."; return; }
+        var btn = this; btn.disabled = true;
+        var total = state.photos.length, done = 0;
+        var chain = Promise.resolve();
+        state.photos.forEach(function (p) {
+          chain = chain.then(function () {
+            /* Pairs use the photo's native ratio — the whole photo, nothing cropped away. */
+            var before = renderCanvas(p, null, 760, false);
+            var after = renderCanvas(p, null, 760, true);
+            var pad = 28, gap = 28, labelH = 44;
+            var W = pad * 2 + before.width + gap + after.width;
+            var H = pad * 2 + before.height + labelH;
+            var c = document.createElement("canvas"); c.width = W; c.height = H;
+            var ctx = c.getContext("2d");
+            ctx.fillStyle = state.mat; ctx.fillRect(0, 0, W, H);
+            ctx.drawImage(before, pad, pad);
+            ctx.drawImage(after, pad + before.width + gap, pad);
+            var dark = state.mat === "#111111" || state.mat === "#26282d";
+            ctx.fillStyle = dark ? "#e9edf3" : "#23272f";
+            ctx.font = "700 24px system-ui, sans-serif";
+            ctx.fillText("BEFORE — untouched", pad, pad + before.height + 32);
+            ctx.fillText("AFTER — light fix only", pad + before.width + gap, pad + before.height + 32);
+            return canvasBlob(c).then(function (blob) {
+              if (blob) {
+                done++;
+                statusEl.textContent = "Building pairs " + done + " of " + total + "…";
+                return downloadBlob(blob, safeName(p.name) + "_before-after_" + pad2(p.index + 1) + ".jpg");
+              }
+            });
+          });
+        });
+        chain.then(function () {
+          statusEl.textContent = "Done — " + done + " before/after pair" + (done === 1 ? "" : "s") + " downloaded. The full photo appears in both halves, flaws visible in both.";
+          btn.disabled = false;
+        });
+      });
+
+      document.getElementById("collageBtn").addEventListener("click", function () {
+        if (!state.photos.length) { statusEl.textContent = "Add photos first."; return; }
+        var btn = this; btn.disabled = true;
+        statusEl.textContent = "Building collage…";
+        setTimeout(function () {
+          var n = state.photos.length;
+          var cols = n === 1 ? 1 : n <= 4 ? 2 : 3;
+          var rows = Math.ceil(n / cols);
+          var cell = 620, pad = 24;
+          var W = cols * cell + (cols + 1) * pad;
+          var H = rows * cell + (rows + 1) * pad;
+          var c = document.createElement("canvas"); c.width = W; c.height = H;
+          var ctx = c.getContext("2d");
+          ctx.fillStyle = state.mat; ctx.fillRect(0, 0, W, H);
+          state.photos.forEach(function (p, i) {
+            var col = i % cols, row = Math.floor(i / cols);
+            var x0 = pad + col * (cell + pad), y0 = pad + row * (cell + pad);
+            var s = Math.min(cell / p.sw, cell / p.sh);
+            var w = Math.round(p.sw * s), h = Math.round(p.sh * s);
+            /* whole photo fitted inside the cell on the mat — nothing cropped, flaws stay in frame */
+            var tmp = renderCanvas(p, null, Math.max(w, h), true);
+            ctx.drawImage(tmp, x0 + Math.round((cell - w) / 2), y0 + Math.round((cell - h) / 2), w, h);
+          });
+          canvasBlob(c).then(function (blob) {
+            if (blob) {
+              downloadBlob(blob, "item_multi-angle-collage.jpg").then(function () {
+                statusEl.textContent = "Done — collage downloaded with all " + n + " angle" + (n === 1 ? "" : "s") + " fitted in whole on the mat. Nothing was cropped out.";
+                btn.disabled = false;
+              });
+            } else { btn.disabled = false; }
+          });
+        }, 30);
+      });
+
+      /* ---------- Step switching: switch views, don't scroll ---------- */
+      var paneEl = document.getElementById("pane");
+      var tabBtns = Array.prototype.slice.call(document.querySelectorAll(".step-tab-btn"));
+      var viewPanels = Array.prototype.slice.call(document.querySelectorAll(".view[data-panel]"));
+      function showView(name) {
+        viewPanels.forEach(function (panel) { panel.hidden = panel.getAttribute("data-panel") !== name; });
+        tabBtns.forEach(function (btn) { btn.setAttribute("aria-selected", btn.getAttribute("data-view") === name ? "true" : "false"); });
+        if (paneEl) paneEl.scrollTop = 0;
+      }
+      tabBtns.forEach(function (btn) {
+        btn.addEventListener("click", function () { showView(btn.getAttribute("data-view")); });
+      });
+
+      showView("add");
+      syncEmpty();
+    </script>
+  </body>
+</html>

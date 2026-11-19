@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="dark" />
+<link rel="icon" href="data:," />
+<title>J-Dawgs Credential Compass</title>
+<style>
+  :root{
+    --bg:#05070b; --bg2:#0a0e16; --panel:#0d1320; --panel2:#111a2c;
+    --line:#223252; --line2:#2e4a7a;
+    --silver:#e8edf5; --silver2:#aeb9cc; --muted:#8b9bb8;
+    --blue:#25b6ff; --blue2:#0077ff; --blue-dim:#0b2f52;
+    --green:#2ee06f; --red:#ff4d5e; --amber:#ffb020;
+    --chrome:linear-gradient(180deg,#ffffff 0%,#cfd9e8 38%,#7f8ea6 50%,#e6edf7 62%,#93a3bb 100%);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:radial-gradient(900px 500px at 50% -120px,#12294d 0%,var(--bg) 55%);color:var(--silver);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;min-height:100vh}
+  button,input,select,textarea{font:inherit}
+  button{cursor:pointer}
+  .wrap{max-width:880px;margin:0 auto;padding:14px 14px 30px}
+  /* Header */
+  .brandline{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .brand{font-weight:900;letter-spacing:.14em;font-size:12px;color:var(--blue)}
+  .price{display:flex;gap:6px;flex-wrap:wrap}
+  .pill{border:1px solid var(--line2);background:var(--panel2);border-radius:999px;padding:5px 10px;font-size:12px;font-weight:800;color:var(--silver)}
+  .pill b{color:var(--blue)}
+  h1.chrome{margin:8px 0 2px;font-size:clamp(30px,7vw,52px);line-height:.95;font-weight:1000;letter-spacing:.01em;background:var(--chrome);-webkit-background-clip:text;background-clip:text;color:transparent;text-transform:uppercase;filter:drop-shadow(0 2px 10px rgba(37,182,255,.25))}
+  .sub{color:var(--silver2);font-size:15px;margin:4px 0 0;max-width:62ch}
+  .promises{margin:14px 0;border:1.5px solid var(--blue2);border-radius:10px;background:linear-gradient(180deg,#0a1c38,#081426);padding:10px 12px;text-align:center;font-weight:900;font-size:clamp(13px,3.4vw,16px);letter-spacing:.02em;color:#fff;box-shadow:0 0 18px rgba(0,119,255,.35), inset 0 0 0 1px rgba(37,182,255,.25)}
+  .promises span{color:var(--blue)}
+  /* Panels */
+  .panel{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0}
+  .panel h2{margin:0 0 4px;font-size:19px;color:#fff}
+  .panel h3{margin:14px 0 6px;font-size:15px;color:var(--blue);text-transform:uppercase;letter-spacing:.08em}
+  .hint{color:var(--muted);font-size:13.5px;margin:0 0 10px}
+  label.flabel{display:block;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--silver2);margin:10px 0 5px}
+  select,input[type=text]{width:100%;background:#070b13;color:#fff;border:1.5px solid var(--line2);border-radius:10px;padding:12px;font-size:16px}
+  select:focus,input:focus{outline:2px solid var(--blue);outline-offset:1px}
+  .seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .seg button{border:1.5px solid var(--line2);background:#070b13;color:var(--silver2);border-radius:12px;padding:14px 10px;font-weight:900;font-size:15px;text-align:center}
+  .seg button.on{border-color:var(--blue);color:#fff;background:var(--blue-dim);box-shadow:0 0 16px rgba(37,182,255,.45)}
+  .seg button small{display:block;font-weight:600;font-size:12px;color:var(--muted);margin-top:3px}
+  .seg button.on small{color:#bfe6ff}
+  .trades{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:520px){.trades{grid-template-columns:1fr}}
+  .trade{display:flex;gap:12px;align-items:center;text-align:left;border:1.5px solid var(--line2);background:#070b13;color:#fff;border-radius:14px;padding:16px}
+  .trade:active{border-color:var(--blue)}
+  .trade .ic{flex:0 0 46px;width:46px;height:46px;border-radius:10px;background:var(--blue-dim);border:1px solid var(--blue2);display:grid;place-items:center;color:var(--blue)}
+  .trade b{font-size:17px;display:block}
+  .trade span{font-size:12.5px;color:var(--muted);display:block;margin-top:2px}
+  .trade .go{margin-left:auto;color:var(--blue);font-weight:1000;font-size:20px}
+  /* BACK */
+  .backbtn{display:flex;align-items:center;gap:10px;width:100%;border:2px solid var(--blue);background:linear-gradient(180deg,#0d2c52,#081a33);color:#fff;border-radius:12px;padding:15px 16px;font-weight:1000;font-size:18px;letter-spacing:.06em;box-shadow:0 0 20px rgba(37,182,255,.55);margin:0 0 12px;text-transform:uppercase}
+  .backbtn .arr{font-size:22px;color:var(--blue)}
+  /* Detail */
+  .kv{border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:8px 0}
+  .kv div{display:grid;grid-template-columns:150px 1fr;border-top:1px solid var(--line)}
+  .kv div:first-child{border-top:0}
+  .kv dt{background:#0a1220;color:var(--blue);font-weight:800;font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;padding:11px}
+  .kv dd{margin:0;padding:11px;font-size:15px;color:var(--silver)}
+  @media(max-width:520px){.kv div{grid-template-columns:1fr}.kv dt{padding-bottom:2px}.kv dd{padding-top:2px}}
+  ol.steps,ul.steps{margin:6px 0;padding-left:22px;font-size:15px;line-height:1.55;color:var(--silver)}
+  .alert{border-radius:10px;padding:12px 14px;font-size:14.5px;line-height:1.5;margin:10px 0;border:1.5px solid}
+  .alert.red{border-color:var(--red);background:#2a0a10;color:#ffd7db}
+  .alert.amber{border-color:var(--amber);background:#2a1e04;color:#ffe9b8}
+  .alert.blue{border-color:var(--blue2);background:#081c38;color:#d6efff}
+  .alert b{color:#fff}
+  a{color:var(--blue);font-weight:700}
+  .phone{font-size:19px;font-weight:1000;color:#fff;letter-spacing:.02em}
+  .consentbox{background:#fff;color:#111;border-radius:10px;padding:14px;font-size:14.5px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+  .rowbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .btn{border:1.5px solid var(--blue2);background:var(--blue-dim);color:#fff;border-radius:10px;padding:11px 14px;font-weight:900;font-size:14px}
+  .btn.ghost{background:#070b13;color:var(--silver)}
+  .btn:active{filter:brightness(1.3)}
+  .verdicts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  @media(max-width:520px){.verdicts{grid-template-columns:1fr}}
+  .vbtn{border-radius:12px;padding:16px 10px;font-weight:1000;font-size:17px;border:2px solid;color:#fff;background:#070b13}
+  .vbtn small{display:block;font-size:12px;font-weight:600;margin-top:4px;color:var(--silver2);line-height:1.4}
+  .v-pass{border-color:var(--green);box-shadow:0 0 14px rgba(46,224,111,.35)}
+  .v-fail{border-color:var(--red);box-shadow:0 0 14px rgba(255,77,94,.35)}
+  .v-unc{border-color:var(--amber);box-shadow:0 0 14px rgba(255,176,32,.35)}
+  .logentry{border:1px solid var(--line2);border-left:6px solid var(--muted);border-radius:8px;padding:10px 12px;margin:8px 0;background:#070b13;font-size:14px;line-height:1.5}
+  .logentry.PASS{border-left-color:var(--green)} .logentry.FAIL{border-left-color:var(--red)} .logentry.UNCONFIRMABLE{border-left-color:var(--amber)}
+  .logentry b.tag{font-weight:1000}
+  .empty{color:var(--muted);font-size:14px;border:1px dashed var(--line2);border-radius:8px;padding:12px;text-align:center}
+  .foot{color:var(--muted);font-size:12.5px;line-height:1.6;margin-top:16px;text-align:center}
+  .hidden{display:none!important}
+  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;background:#0d2c52;border:1.5px solid var(--blue);color:#fff;font-weight:800;padding:11px 16px;border-radius:999px;box-shadow:0 0 20px rgba(37,182,255,.5);z-index:50;font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brandline">
+    <div class="brand">J-DAWGS INDUSTRIES</div>
+    <div class="price">
+      <span class="pill"><b>$1.00</b> single</span>
+      <span class="pill">Included in the <b>$99.99 Unlimited Pass</b></span>
+    </div>
+  </div>
+  <h1 class="chrome">Credential Compass™</h1>
+  <p class="sub">For workers and the businesses that hire them. Know exactly what your trade credential is called, who issued it, and exactly where to check one — no guessing.</p>
+
+  <div class="promises">No fancy logos. Just quality products. <span>•</span> No ads. <span>•</span> We never sell your information.</div>
+
+  <!-- ============ HOME VIEW ============ -->
+  <section id="view-home">
+    <div class="panel">
+      <h2>1 — Pick your state</h2>
+      <p class="hint">Missouri is mapped in full in this release. If your state isn't mapped yet, this tool says so straight — it never guesses at another state's rules.</p>
+      <label class="flabel" for="stateSel">State</label>
+      <select id="stateSel"></select>
+    </div>
+
+    <div class="panel">
+      <h2>2 — Who are you?</h2>
+      <div class="seg" role="group" aria-label="Mode">
+        <button type="button" id="modeWorker" class="on">👷 I'M A WORKER<small>What my credential is, where the number is, replacing a lost card</small></button>
+        <button type="button" id="modeOperator">🏢 I CHECK CREDENTIALS<small>For shops, contractors &amp; operators verifying a hire</small></button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>3 — Pick your trade</h2>
+      <p class="hint">Tap a trade to open its full card.</p>
+      <div class="trades" id="tradeGrid"></div>
+    </div>
+
+    <div class="panel" id="homeLogPanel">
+      <h2>Verification log</h2>
+      <p class="hint">Entries you record in Operator mode appear here, dated. The log lives in this session only — download it to keep a copy for your records.</p>
+      <div id="homeLogList"></div>
+      <div class="rowbtns">
+        <button type="button" class="btn" id="copyLogBtn2">Copy log</button>
+        <button type="button" class="btn ghost" id="dlLogBtn2">Download log (.txt)</button>
+      </div>
+    </div>
+
+    <p class="foot">Credential Compass™ points you to the official record — it does not replace it. Always confirm status with the issuing authority before starting licensed work. © 2026 Joshua Dawson / J-Dawgs Industries.</p>
+  </section>
+
+  <!-- ============ DETAIL VIEW ============ -->
+  <section id="view-detail" class="hidden">
+    <button type="button" class="backbtn" data-back><span class="arr">←</span> Back — All Trades</button>
+
+    <div class="panel">
+      <h2 id="dTitle">—</h2>
+      <p class="hint" id="dModeLine">—</p>
+      <div id="dBody"></div>
+    </div>
+
+    <div id="dExtra"></div>
+
+    <button type="button" class="backbtn" data-back><span class="arr">←</span> Back — All Trades</button>
+  </section>
+
+</div>
+<div id="toast" class="toast hidden">Copied</div>
+
+<script>
+var STATES = ["Missouri","Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming","District of Columbia"];
+
+var TRADES = {
+  electrician: {
+    name: "Electrician",
+    blurb: "Journeyman / Master — City of Springfield + state contractor license",
+    icon: '<svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4.5 13.5H11L9.5 22 19 10h-6.5L13 2z"/></svg>',
+    worker: {
+      credName: "Two different credentials — don't mix them up. (1) Your individual trade credential is a Journeyman Electrician or Master Electrician Certificate. (2) If you run the business, that's a separate Missouri Electrical Contractor License.",
+      issuer: "(1) Individual certificate: City of Springfield — Building Development Services (BDS). Missouri does not license individual electricians at the state level; Springfield does. (2) Contractor license: State of Missouri, Division of Professional Registration — Office of Statewide Electrical Contractors (OSEC).",
+      numberLoc: "Individual: your certificate number is printed on the front of your BDS trade card, with your name, trade, and expiration date. Contractor: your license number is printed on your OSEC license and appears in the state roster at pr.mo.gov.",
+      replace: [
+        "BDS card lost: call City of Springfield BDS at 417-864-1585 or 417-864-1617 and ask for a duplicate trade card.",
+        "Be ready to verify your identity and your certificate number (a photo of the card helps if you have one).",
+        "Ask on the call what the duplicate fee is and whether you pick it up in person — don't assume, they will tell you.",
+        "State contractor license lost: contact the Missouri Division of Professional Registration (OSEC) — your record is also confirmable online at pr.mo.gov while you wait."
+      ]
+    },
+    operator: {
+      where: [
+        "<b>Individual Journeyman / Master certificate — NOT name-searchable online.</b> Springfield BDS does not publish a public name lookup for individual trade certificates. Confirm it one of these three ways:",
+        "1) By the <b>certificate number</b> — have the worker give you the number off the card.",
+        "2) By a <b>clear photo of the front of the BDS card</b> — name, trade, number, and expiration must all be readable.",
+        "3) By <b>phone</b> — call City of Springfield BDS at <span class='phone'>417-864-1585</span> or <span class='phone'>417-864-1617</span> and confirm the number with them.",
+        "<b>Electrical CONTRACTOR license — IS name-searchable online.</b> Search the Missouri OSEC roster at <a href='https://pr.mo.gov' target='_blank' rel='noopener'>pr.mo.gov</a> (Division of Professional Registration, Office of Statewide Electrical Contractors) by business/name or license number."
+      ],
+      fields: ["Full legal name — exact match to the card / roster","Trade and level — Journeyman vs. Master (they are not interchangeable)","Certificate / license number — exact, digit for digit","Expiration date and status — must be active and unexpired on the day work starts","Photo / ID — the person in front of you matches the card"]
+    }
+  },
+  plumber: {
+    name: "Plumber",
+    blurb: "Journeyman / Master Plumber — City of Springfield BDS",
+    icon: '<svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.7 6.3a5.5 5.5 0 0 1-7.4 5.2L7 18.8a2.3 2.3 0 0 1-3.2-3.2l7.3-7.3A5.5 5.5 0 0 1 16.3 1l-2.5 2.5 2 3.3 3.3 2 2.6-2.6z"/></svg>',
+    worker: {
+      credName: "Journeyman Plumber or Master Plumber License — the city trade license for plumbing work in Springfield.",
+      issuer: "City of Springfield — Building Development Services (BDS). Plumbing licensure for individuals in Missouri is handled at the city level, and Springfield is the issuing authority here.",
+      numberLoc: "Your license number is printed on the front of your BDS license card, with your name, trade level (Journeyman or Master), and expiration date.",
+      replace: [
+        "Call City of Springfield BDS at 417-864-1585 or 417-864-1617 and ask for a duplicate license card.",
+        "Verify your identity and give your license number if you know it (a photo of the old card works).",
+        "Ask on the call about any duplicate fee and pickup vs. mail — confirm it with BDS directly.",
+        "Until the new card arrives, ask BDS to confirm your active status by phone so an operator can still verify you by number."
+      ]
+    },
+    operator: {
+      where: [
+        "<b>NOT name-searchable online.</b> Springfield BDS does not publish a public name lookup for individual plumbing licenses. Confirm it one of these three ways:",
+        "1) By the <b>license number</b> off the worker's card.",
+        "2) By a <b>clear photo of the front of the BDS card</b> — name, level, number, and expiration all readable.",
+        "3) By <b>phone</b> — call City of Springfield BDS at <span class='phone'>417-864-1585</span> or <span class='phone'>417-864-1617</span> and confirm the number with them."
+      ],
+      fields: ["Full legal name — exact match to the card","Level — Journeyman vs. Master Plumber","License number — exact, digit for digit","Expiration date and status — active and unexpired","Photo / ID — the person matches the card"]
+    }
+  },
+  hvac: {
+    name: "HVAC-Mechanic",
+    blurb: "Mechanical certificate (BDS) + federal EPA 608 for refrigerant",
+    icon: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none"/><path d="M12 9.8c-.6-2.8.4-5.6 2-6.3 1.4 1.8 1.2 4.7-.2 6.5M14 12.6c2.8-.4 5.5.7 6.1 2.4-1.9 1.3-4.8 1-6.5-.5M10.2 12.4c.4 2.8-.6 5.6-2.2 6.3-1.4-1.9-1.1-4.8.4-6.6M9.8 10.2C7 10.6 4.4 9.6 3.8 7.9c1.9-1.3 4.7-1 6.4.5"/></svg>',
+    worker: {
+      credName: "Two credentials. (1) Journeyman or Master Mechanical Certificate — your city HVAC/mechanical trade credential. (2) EPA Section 608 Certification (Type I, II, III, or Universal) — the federal credential required to buy and handle refrigerant. A shop will ask for both.",
+      issuer: "(1) Mechanical certificate: City of Springfield — Building Development Services (BDS). (2) EPA 608: the U.S. EPA, issued through the EPA-approved certifying organization that gave your exam (for example ESCO Institute or Mainstream Engineering) — that organization, not the city or state, holds your 608 record.",
+      numberLoc: "Mechanical: certificate number on the front of your BDS card. EPA 608: your certification number is printed on your 608 card, along with your certification type(s) and date.",
+      replace: [
+        "BDS mechanical card lost: call BDS at 417-864-1585 or 417-864-1617 for a duplicate; verify your identity and ask about any fee.",
+        "EPA 608 card lost: contact the certifying organization that tested you — they are the only ones who can reissue it. The EPA and the city cannot replace a 608 card.",
+        "Don't remember who certified you? That's common — check old paperwork, email receipts, or your employer's training file for the organization's name before re-testing.",
+        "Keep phone photos of both cards (front and back) so you always have both numbers."
+      ]
+    },
+    operator: {
+      where: [
+        "<b>Mechanical certificate — NOT name-searchable online.</b> Confirm by <b>certificate number</b>, a <b>clear photo of the BDS card</b>, or by phone: City of Springfield BDS at <span class='phone'>417-864-1585</span> or <span class='phone'>417-864-1617</span>.",
+        "<b>EPA 608 — confirmed through the certifying organization.</b> There is no single public EPA lookup for an individual's 608. Ask the worker which organization issued the card (printed on it — e.g., ESCO, Mainstream Engineering), then confirm the number and type with that organization directly.",
+        "Check the 608 <b>type</b> against the job: Type I = small appliances, Type II = high-pressure, Type III = low-pressure, Universal = all three."
+      ],
+      fields: ["Full legal name — exact match to both cards","Mechanical level — Journeyman vs. Master, and BDS certificate number","BDS expiration / status — active and unexpired","EPA 608 number AND type — type must cover the equipment being serviced","Photo / ID — the person matches the cards"]
+    }
+  },
+  gasfitter: {
+    name: "Gas Fitter",
+    blurb: "Gas Fitter certificate — City of Springfield BDS",
+    icon: '<svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.7 2.2c.4 3-1.2 4.6-2.6 6.2C8.8 9.9 7.6 11.4 7.6 14a4.5 4.5 0 0 0 9 .1c0-1.2-.5-2.2-1.1-3.2-.4 1-1 1.7-2 2 .3-3.2-.6-7.4-2.8-10.7zM12 21.8A6.9 6.9 0 0 1 5.2 14c0-2.4 1-4.3 2.2-6C9 6 10.6 4.4 11 2c3.4 3.2 4.2 7.2 3.4 10.6.5-.3 1-1 1.3-1.8 1.5 1.6 2.4 3.4 2.4 5.2A6.9 6.9 0 0 1 12 21.8z"/></svg>',
+    worker: {
+      credName: "Gas Fitter Certificate — the City of Springfield trade credential covering gas piping and gas appliance installation work.",
+      issuer: "City of Springfield — Building Development Services (BDS).",
+      numberLoc: "Your certificate number is printed on the front of your BDS trade card, with your name, trade, and expiration date.",
+      replace: [
+        "Call City of Springfield BDS at 417-864-1585 or 417-864-1617 and ask for a duplicate card.",
+        "Verify your identity and give your certificate number if you have it (a photo of the card helps).",
+        "Ask on the call about any duplicate fee and how the replacement is issued.",
+        "Gas work is safety-critical: if your card is lost, ask BDS to confirm your active status by phone so you can be verified by number in the meantime — do not work off an expired or unverifiable credential."
+      ]
+    },
+    operator: {
+      where: [
+        "<b>NOT name-searchable online.</b> Springfield BDS does not publish a public name lookup for individual gas fitter certificates. Confirm it one of these three ways:",
+        "1) By the <b>certificate number</b> off the worker's card.",
+        "2) By a <b>clear photo of the front of the BDS card</b> — name, trade, number, and expiration all readable.",
+        "3) By <b>phone</b> — call City of Springfield BDS at <span class='phone'>417-864-1585</span> or <span class='phone'>417-864-1617</span> and confirm the number with them.",
+        "Gas work leaves no room for 'probably fine.' If you cannot confirm it, the answer for gas work is <b>UNCONFIRMABLE — do not assign the work</b> until BDS confirms it."
+      ],
+      fields: ["Full legal name — exact match to the card","Trade — Gas Fitter, and any level/endorsement shown","Certificate number — exact, digit for digit","Expiration date and status — active and unexpired","Photo / ID — the person matches the card"]
+    }
+  }
+};
+
+var state = { mode: "worker", trade: null, log: [] };
+
+var stateSel = document.getElementById("stateSel");
+STATES.forEach(function(s){ var o=document.createElement("option"); o.value=s; o.textContent=s; if(s==="Missouri") o.selected=true; stateSel.appendChild(o); });
+
+var grid = document.getElementById("tradeGrid");
+Object.keys(TRADES).forEach(function(key){
+  var t = TRADES[key];
+  var b = document.createElement("button");
+  b.type = "button"; b.className = "trade";
+  b.innerHTML = '<span class="ic">'+t.icon+'</span><span><b>'+t.name+'</b><span>'+t.blurb+'</span></span><span class="go">›</span>';
+  b.addEventListener("click", function(){ openTrade(key); });
+  grid.appendChild(b);
+});
+
+var mw = document.getElementById("modeWorker"), mo = document.getElementById("modeOperator");
+function setMode(m){ state.mode = m; mw.classList.toggle("on", m==="worker"); mo.classList.toggle("on", m==="operator"); }
+mw.addEventListener("click", function(){ setMode("worker"); });
+mo.addEventListener("click", function(){ setMode("operator"); });
+
+function toast(msg){ var t=document.getElementById("toast"); t.textContent=msg; t.classList.remove("hidden"); setTimeout(function(){ t.classList.add("hidden"); }, 2200); }
+function copyText(txt, msg){
+  function done(){ toast(msg||"Copied to clipboard"); }
+  if (navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done).catch(function(){ fallback(); }); } else { fallback(); }
+  function fallback(){ var ta=document.createElement("textarea"); ta.value=txt; document.body.appendChild(ta); ta.select(); try{ document.execCommand("copy"); done(); }catch(e){ toast("Copy failed — select the text manually"); } document.body.removeChild(ta); }
+}
+function downloadText(name, txt){
+  var blob = new Blob([txt], {type:"text/plain"}); var url = URL.createObjectURL(blob);
+  var a = document.createElement("a"); a.href=url; a.download=name; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 800); toast("Downloaded "+name);
+}
+function esc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function todayStr(){ return new Date().toLocaleString("en-US",{timeZone:"America/Chicago", year:"numeric", month:"2-digit", day:"2-digit", hour:"numeric", minute:"2-digit", hour12:true}) + " (Central)"; }
+
+function openTrade(key){
+  state.trade = key;
+  var t = TRADES[key];
+  var st = stateSel.value;
+  document.getElementById("dTitle").innerHTML = t.name + " — " + esc(st);
+  document.getElementById("dModeLine").textContent = state.mode === "worker" ? "Worker card — your credential, your number, replacing a lost card." : "Operator card — exactly where and how to verify this credential.";
+  var body = document.getElementById("dBody"), extra = document.getElementById("dExtra");
+  body.innerHTML = ""; extra.innerHTML = "";
+
+  if (st !== "Missouri"){
+    body.innerHTML = '<div class="alert amber"><b>Honest answer: '+esc(st)+' is not mapped yet.</b><br>Missouri — including City of Springfield BDS, the Missouri OSEC contractor roster, and EPA 608 — is the state mapped in full in this release. We will not guess at '+esc(st)+'\'s licensing names, lookups, or phone numbers and risk sending you to the wrong office.<br><br>What to do meanwhile: trade credentials are issued by your state licensing board or your city/county permit office. Your credential name and number are printed on your card, and your issuing office is the only authority that can confirm or replace it.</div>';
+    document.getElementById("view-home").classList.add("hidden");
+    document.getElementById("view-detail").classList.remove("hidden");
+    window.scrollTo(0,0);
+    return;
+  }
+
+  if (state.mode === "worker"){
+    var w = t.worker;
+    body.innerHTML =
+      '<dl class="kv">' +
+      '<div><dt>Credential</dt><dd>'+esc(w.credName)+'</dd></div>' +
+      '<div><dt>Issued by</dt><dd>'+esc(w.issuer)+'</dd></div>' +
+      '<div><dt>Your number</dt><dd>'+esc(w.numberLoc)+'</dd></div>' +
+      '</dl>' +
+      '<h3>Lost your card? Replace it</h3><ol class="steps">' + w.replace.map(function(s){ return "<li>"+esc(s)+"</li>"; }).join("") + '</ol>' +
+      '<div class="alert blue"><b>Carry your number, not just your card.</b> Save a photo of the front and back of your card on your phone right now. With the number, any operator can confirm you by phone with BDS in minutes — even while a replacement is on its way.</div>';
+
+    extra.innerHTML =
+      '<div class="panel"><h2>Consent note — hand this to an operator</h2>' +
+      '<p class="hint">Fill in your details and this note gives a business your written permission to pull your record from the public record / issuing authority. Print it, copy it, or download it.</p>' +
+      '<label class="flabel" for="cName">Your full legal name</label><input type="text" id="cName" placeholder="e.g. John A. Smith" />' +
+      '<label class="flabel" for="cNum">Credential number</label><input type="text" id="cNum" placeholder="Number on the front of your card" />' +
+      '<label class="flabel" for="cBiz">Business / operator name (optional)</label><input type="text" id="cBiz" placeholder="Who may verify you" />' +
+      '<label class="flabel">Your consent note</label><div class="consentbox" id="consentText"></div>' +
+      '<div class="rowbtns"><button type="button" class="btn" id="copyConsent">Copy consent note</button><button type="button" class="btn ghost" id="dlConsent">Download (.txt)</button></div></div>';
+
+    var update = function(){
+      var n = document.getElementById("cName").value.trim() || "________________________";
+      var num = document.getElementById("cNum").value.trim() || "________________________";
+      var biz = document.getElementById("cBiz").value.trim() || "the operator / business named below";
+      var txt = "CONSENT TO VERIFY CREDENTIAL\n\nI, " + n + ", give " + biz + " my permission to verify my " + t.name + " credential, number " + num + ", with the issuing authority (City of Springfield Building Development Services, and where applicable the Missouri Division of Professional Registration / my EPA 608 certifying organization) and to pull my record from the public record for the purpose of confirming my credential for work.\n\nName: " + n + "\nTrade: " + t.name + " — Missouri\nCredential No.: " + num + "\nDate: " + new Date().toLocaleDateString("en-US",{timeZone:"America/Chicago"}) + "\nSignature: ________________________";
+      document.getElementById("consentText").textContent = txt;
+      return txt;
+    };
+    ["cName","cNum","cBiz"].forEach(function(id){ document.getElementById(id).addEventListener("input", update); });
+    update();
+    document.getElementById("copyConsent").addEventListener("click", function(){ copyText(update(), "Consent note copied"); });
+    document.getElementById("dlConsent").addEventListener("click", function(){ downloadText("credential-consent.txt", update()); });
+  } else {
+    var o = t.operator;
+    body.innerHTML =
+      '<h3>Where to check — exactly</h3>' + o.where.map(function(s){ return '<div class="alert blue" style="margin:6px 0">'+s+'</div>'; }).join("") +
+      '<h3>Match these fields — all of them</h3><ul class="steps">' + o.fields.map(function(s){ return "<li>"+esc(s)+"</li>"; }).join("") + '</ul>' +
+      '<div class="alert red"><b>FAIL</b> = number not found, expired or revoked status, name mismatch, or wrong trade/level. <b>UNCONFIRMABLE</b> = no number and no card photo, or the authority can\'t be reached. Unconfirmable is not a pass — do not assign licensed work until it is confirmed.</div>';
+
+    extra.innerHTML =
+      '<div class="panel"><h2>Record the result — dated log entry</h2>' +
+      '<label class="flabel" for="vName">Worker full legal name</label><input type="text" id="vName" placeholder="As shown on the card" />' +
+      '<label class="flabel" for="vNum">Credential number checked</label><input type="text" id="vNum" placeholder="Exact number checked" />' +
+      '<label class="flabel" for="vBy">Checked by (your name / business)</label><input type="text" id="vBy" placeholder="e.g. ABC Mechanical — office" />' +
+      '<label class="flabel" for="vNote">Note (optional)</label><input type="text" id="vNote" placeholder="e.g. Confirmed by phone with BDS; card photo on file" />' +
+      '<h3>Outcome</h3><div class="verdicts">' +
+      '<button type="button" class="vbtn v-pass" data-v="PASS">✓ PASS<small>All fields match, status active &amp; unexpired</small></button>' +
+      '<button type="button" class="vbtn v-fail" data-v="FAIL">✗ FAIL<small>Not found, expired, revoked, or fields mismatch</small></button>' +
+      '<button type="button" class="vbtn v-unc" data-v="UNCONFIRMABLE">? UNCONFIRMABLE<small>Could not confirm — no licensed work until confirmed</small></button>' +
+      '</div>' +
+      '<h3>Log — this session</h3><div id="dLogList"></div>' +
+      '<div class="rowbtns"><button type="button" class="btn" id="copyLogBtn">Copy log</button><button type="button" class="btn ghost" id="dlLogBtn">Download log (.txt)</button></div></div>';
+
+    extra.querySelectorAll("[data-v]").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var v = btn.getAttribute("data-v");
+        var entry = {
+          outcome: v, trade: t.name, state: st,
+          worker: document.getElementById("vName").value.trim(),
+          number: document.getElementById("vNum").value.trim(),
+          by: document.getElementById("vBy").value.trim(),
+          note: document.getElementById("vNote").value.trim(),
+          when: todayStr()
+        };
+        if (!entry.worker || !entry.number){ toast("Enter the worker name and credential number first"); return; }
+        state.log.unshift(entry);
+        renderLogs();
+        toast(v + " logged — " + entry.when);
+      });
+    });
+    document.getElementById("copyLogBtn").addEventListener("click", function(){ copyText(logText(), "Log copied"); });
+    document.getElementById("dlLogBtn").addEventListener("click", function(){ downloadText("credential-verification-log.txt", logText()); });
+    renderLogs();
+  }
+
+  document.getElementById("view-home").classList.add("hidden");
+  document.getElementById("view-detail").classList.remove("hidden");
+  window.scrollTo(0,0);
+}
+
+function logText(){
+  if (!state.log.length) return "Credential Compass — verification log\nNo entries recorded yet.";
+  var lines = ["Credential Compass™ — Verification Log", "Exported: " + todayStr(), ""];
+  state.log.forEach(function(e){
+    lines.push(e.outcome + " — " + e.trade + " (" + e.state + ")");
+    lines.push("  Worker: " + e.worker + "  |  Credential No.: " + e.number);
+    lines.push("  Checked by: " + (e.by || "—") + "  |  Date: " + e.when);
+    if (e.note) lines.push("  Note: " + e.note);
+    lines.push("");
+  });
+  return lines.join("\n");
+}
+function renderLogs(){
+  var html = state.log.length ? state.log.map(function(e){
+    return '<div class="logentry '+e.outcome+'"><b class="tag">'+e.outcome+'</b> — '+esc(e.trade)+' · '+esc(e.when)+'<br>Worker: <b>'+esc(e.worker)+'</b> · No. '+esc(e.number)+'<br>Checked by: '+esc(e.by||"—")+(e.note ? '<br>Note: '+esc(e.note) : '')+'</div>';
+  }).join("") : '<div class="empty">No verifications logged yet in this session.</div>';
+  ["homeLogList","dLogList"].forEach(function(id){ var el=document.getElementById(id); if(el) el.innerHTML = html; });
+}
+document.getElementById("copyLogBtn2").addEventListener("click", function(){ copyText(logText(), "Log copied"); });
+document.getElementById("dlLogBtn2").addEventListener("click", function(){ downloadText("credential-verification-log.txt", logText()); });
+renderLogs();
+
+document.querySelectorAll("[data-back]").forEach(function(b){
+  b.addEventListener("click", function(){
+    document.getElementById("view-detail").classList.add("hidden");
+    document.getElementById("view-home").classList.remove("hidden");
+    renderLogs();
+    window.scrollTo(0,0);
+  });
+});
+stateSel.addEventListener("change", function(){ /* state applies on next trade open */ });
+</script>
+</body>
+</html>
