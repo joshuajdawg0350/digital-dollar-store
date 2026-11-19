@@ -5,7 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#04060A">
 <title>Create with J-Dawg</title>
-<link rel="manifest" href='data:application/manifest+json,{"name":"Create with J-Dawg","short_name":"J-Dawg Draw","display":"standalone","background_color":"%2304060A","theme_color":"%2304060A"}'>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Create with J-Dawg">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html,body { height:100%; overflow:hidden; }
@@ -134,6 +139,13 @@
   #textBar.open { display:flex; }
   #textInput { flex:1; min-height:44px; border-radius:10px; border:1px solid #0096FF;
     background:#04060A; color:#fff; font-size:16px; padding:6px 10px; }
+
+  /* ---------- install bar (home-screen icon) ---------- */
+  #installBar{flex:0 0 auto;background:linear-gradient(180deg,#0d2f4d,#081c30);border-bottom:2px solid #0096FF;padding:8px 10px;z-index:45}
+  #installBtn{width:100%;min-height:48px;border:1px solid #66ccff;border-radius:12px;background:linear-gradient(180deg,#00b0ff,#0077cc);color:#fff;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 0 12px rgba(0,150,255,.5);font-family:inherit}
+  #installBtn:active{transform:scale(.98)}
+  #installSteps{display:none;margin-top:8px;background:#04060A;border:1px solid #263449;border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.55;color:#E8EDF2;text-align:left}
+  #installSteps b{color:#6FC3FF}
 </style>
 </head>
 <body>
@@ -142,6 +154,14 @@
   <button class="hbtn" id="saveBtn">💾 SAVE PICTURE</button>
   <button class="hbtn" id="helpBtn" aria-label="Help">?</button>
 </header>
+<div id="installBar">
+  <button id="installBtn" type="button">📲 Put this on your home screen</button>
+  <div id="installSteps">
+    <p id="stepsAndroid"><b>Android:</b> Tap the ⋮ menu at the top right, then tap "Add to Home screen."</p>
+    <p id="stepsIos"><b>iPhone:</b> Tap the Share button, then "Add to Home Screen."</p>
+  </div>
+</div>
+
 
 <div id="toolRail" role="toolbar" aria-label="Drawing tools"></div>
 
@@ -1057,6 +1077,39 @@ fitView();
 window.addEventListener('resize', function(){ if (!userZoomed) fitView(); });
 window.addEventListener('orientationchange', function(){ setTimeout(function(){ if (!userZoomed) fitView(); }, 150); });
 window.addEventListener('beforeunload', saveNow);
+})();
+</script>
+
+<script>
+(function () {
+  'use strict';
+  var bar = document.getElementById('installBar');
+  if (!bar) return;
+  var btn = document.getElementById('installBtn');
+  var steps = document.getElementById('installSteps');
+  var deferred = null;
+  var standalone = false;
+  try { standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true; } catch (e) {}
+  if (standalone) { bar.style.display = 'none'; return; }
+  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); deferred = e; });
+  window.addEventListener('appinstalled', function () { bar.style.display = 'none'; });
+  btn.addEventListener('click', function () {
+    if (deferred) {
+      var d = deferred; deferred = null;
+      d.prompt();
+      if (d.userChoice) { d.userChoice.then(function () {}, function () {}); }
+      return;
+    }
+    var ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    document.getElementById('stepsAndroid').style.display = ios ? 'none' : 'block';
+    document.getElementById('stepsIos').style.display = ios ? 'block' : 'none';
+    steps.style.display = (steps.style.display === 'block') ? 'none' : 'block';
+  });
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    });
+  }
 })();
 </script>
 </body>
