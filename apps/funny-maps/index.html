@@ -284,11 +284,13 @@
 /* ---------------- Characters & script books ----------------
    Garnish lines only — the instruction is built from the real
    OSRM maneuver and spoken before any of these, every time.   */
+/* say = the name as SPOKEN (phonetic respelling for the speech
+   engine); name = the name as DISPLAYED. Display text never uses say. */
 const CHARS = {
   bubba: { name:"Bubba", emoji:"🤠", tag:"Laid-back country buddy",
-    pitch:0.80, rate:0.90, voiceNames:["David","Daniel","Google US English","en-US"],
+    pitch:0.60, rate:0.84, voiceNames:["David","Daniel","Google US English","Google UK English Male","en-US"], say:"Bubba",
     lines:{
-      depart:["Alright, let's roll. I got shotgun and the directions — you just drive.",
+      depart:["Alright… let's roll. I got shotgun, and I got the directions — you just drive, partner.",
               "Easy peasy. Follow my lead and we'll be there 'fore the ice melts.",
               "Let's go see what's over yonder."],
       left:["Hang a left up here, smooth as butter.",
@@ -323,7 +325,7 @@ const CHARS = {
               "Park 'er right there. Good drivin', partner."]
     }},
   dre: { name:"Dre", emoji:"🎧", tag:"Streetwise. Coolest head in the car.",
-    pitch:0.70, rate:0.96, voiceNames:["Google US English","David","Daniel","en-US"],
+    pitch:0.92, rate:0.94, voiceNames:["Mark","Google UK English Male","Daniel","Google US English","David"], say:"Dray",
     lines:{
       depart:["Aight, I got you. Sit back — I know these streets like I drew 'em.",
               "We locked in. I'll call it out early so you never gotta guess."],
@@ -354,9 +356,9 @@ const CHARS = {
               "Destination secured. That's how we do it."]
     }},
   hurt: { name:'Major "Hurt"', emoji:"🎖️", tag:"Drill sergeant. Zero patience for wrong turns.",
-    pitch:0.55, rate:1.08, voiceNames:["David","Daniel","Google US English","en-US"],
+    pitch:0.48, rate:1.16, voiceNames:["Guy","Alex","Google UK English Male","Daniel","David","Google US English"], say:"Major Hurt",
     lines:{
-      depart:["MOVE OUT! I will call every turn. You WILL arrive on time. That is not a request.",
+      depart:["MOVE OUT! I will call every turn. You WILL arrive on time. That is NOT a request.",
               "Operation Get There has begun. Stay frosty, stay in your lane."],
       left:["LEFT TURN! Execute! Execute!",
             "Turn left like you MEAN it, soldier!"],
@@ -385,9 +387,9 @@ const CHARS = {
               "You have ARRIVED. I am not saying I'm proud, but my voice just cracked a little."]
     }},
   doright: { name:"Officer Doright", emoji:"🚔", tag:"By-the-book traffic officer. Dead serious about safety.",
-    pitch:1.02, rate:0.94, voiceNames:["Daniel","David","Google US English","en-US"],
+    pitch:1.10, rate:0.86, voiceNames:["Daniel","Google US English","David","Google UK English Male"], say:"Officer Do-right",
     lines:{
-      depart:["Seatbelts fastened, mirrors adjusted, hands at nine and three. We may proceed.",
+      depart:["Seatbelts fastened. Mirrors adjusted. Hands at nine and three. We may proceed.",
               "This is a lawful journey at lawful speeds. As it should be.",
               "Headlights on, distractions off. We roll by the book."],
       left:["Left turn. Signal on — a full three seconds before the turn, per regulation.",
@@ -417,9 +419,9 @@ const CHARS = {
               "We have arrived without a single violation. I am putting that in the report."]
     }},
   steve: { name:"Stoner Steve", emoji:"🌅", tag:"No tolls, scenic route, arrives when he arrives.",
-    pitch:0.90, rate:0.78, voiceNames:["David","Google US English","Daniel","en-US"], scenic:true,
+    pitch:1.00, rate:0.64, voiceNames:["Fred","English (United States)","Google US English","David","Daniel"], say:"Stoner Steve", scenic:true,
     lines:{
-      depart:["Alright, we're rollin'. No tolls, no highways, no hurry. The long way's the good way.",
+      depart:["Alright… we're rollin'. No tolls… no highways… no hurry. The long way's the good way, man.",
               "Let's take the chill route. Windows down, snacks up."],
       left:["Left up here, man. Easy does it. Everything's easy.",
             "Hang a left. No rush — the left will wait for you. It did for me."],
@@ -447,7 +449,7 @@ const CHARS = {
               "And we're here. Whenever we got here was exactly the right time."]
     }},
   nora: { name:"Nagging Nora", emoji:"📋", tag:"Backseat planner. Yes, we're behind schedule.",
-    pitch:1.15, rate:1.06, voiceNames:["Zira","Samantha","Google US English","en-US"],
+    pitch:1.32, rate:1.14, voiceNames:["Zira","Samantha","Google UK English Female","Aria","Jenny","Female","Google US English"], say:"Nagging Nora",
     lines:{
       depart:["Itinerary's printed and highlighted. We were supposed to leave at nine, but we're leaving together, and that's what counts.",
               "Okay! Stops are numbered, snacks are scheduled, and I've got the map. Follow my calls and we'll stay right on plan.",
@@ -1501,7 +1503,7 @@ function hearMe(k){
   const sample = pickLine(k, 'depart') || 'Follow my directions and we will get there.';
   const errBase = window.__speechErrors.length;
   setStatus('That\'s ' + c.name + ' talking. If you heard that, your sound works.');
-  speakAs(k, 'Hi, I\'m ' + c.name + '. ' + sample, 'sample');
+  speakAs(k, 'Hi, I\'m ' + (c.say || c.name) + '. ' + sample, 'sample');
   setTimeout(() => {
     if (window.__speechErrors.length > errBase){
       const last = window.__speechErrors[window.__speechErrors.length - 1];
