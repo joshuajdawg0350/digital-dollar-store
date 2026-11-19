@@ -53,7 +53,7 @@
   .title-stats b{color:#fff}
   .legal{margin-top:10px;font-size:10.5px;color:#5F748C;letter-spacing:.05em}
   /* v0.3: HUD christmas tree — big, unmissable, readable from the seat */
-  #hudtree{position:absolute;top:70px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:5px;align-items:center;background:linear-gradient(180deg,rgba(16,28,44,.88),rgba(4,7,12,.86));border:1px solid #2A435F;border-radius:14px;padding:9px 12px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:6;box-shadow:inset 0 1px 0 rgba(160,200,240,.18),0 10px 24px rgba(0,0,0,.5)}
+  #hudtree{position:absolute;top:292px;left:50%;transform:translateX(-50%) scale(.9);display:flex;flex-direction:column;gap:5px;align-items:center;background:linear-gradient(180deg,rgba(16,28,44,.88),rgba(4,7,12,.86));border:1px solid #2A435F;border-radius:14px;padding:9px 12px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:6;box-shadow:inset 0 1px 0 rgba(160,200,240,.18),0 10px 24px rgba(0,0,0,.5)}
   #hudtree.show{opacity:1}
   .ht-bulb{width:29px;height:29px;border-radius:50%;background:#12181f;border:2px solid #2a3644}
   .ht-bulb.stage.lit{background:#fff2b0;border-color:#fff2b0;box-shadow:0 0 20px #fff2b0}
@@ -80,6 +80,26 @@
   #blownvid{width:100%;height:100%;object-fit:cover}
   #blownwrap .blownstamp{position:absolute;top:12%;left:50%;transform:translateX(-50%) rotate(-4deg);font-size:34px;font-weight:900;letter-spacing:.18em;color:#FF3355;border:4px solid #FF3355;border-radius:8px;padding:6px 18px;text-shadow:0 0 22px rgba(255,51,85,.7);background:rgba(0,0,0,.35)}
   #blownwrap .blownskip{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:700;letter-spacing:.3em;color:#9FB8D4}
+  /* v0.4.1: pre-race burnout clip (rotating muscle cars) */
+  #clipwrap{position:fixed;inset:0;background:#000;z-index:60;display:none;transition:opacity .22s ease}
+  #clipwrap.show{display:block}
+  #clipwrap.fadeout{opacity:0}
+  #clipvid{width:100%;height:100%;object-fit:cover}
+  #clipwrap .clipname{position:absolute;top:10%;left:50%;transform:translateX(-50%);font-size:19px;font-weight:900;letter-spacing:.22em;color:#EAF4FF;text-shadow:0 0 18px rgba(0,150,255,.85);white-space:nowrap}
+  #clipwrap .blownskip{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:700;letter-spacing:.3em;color:#9FB8D4}
+  /* v0.4.1: explicit SAVE GAME */
+  #savetoast{position:fixed;top:14px;left:50%;transform:translateX(-50%) translateY(-70px);z-index:80;background:linear-gradient(180deg,#2A3B52,#131E2E);border:1.5px solid #0096FF;border-radius:10px;color:#EAF4FF;font-weight:900;letter-spacing:.14em;font-size:15px;padding:10px 22px;box-shadow:0 6px 24px rgba(0,0,0,.6),0 0 18px rgba(0,150,255,.35);transition:transform .25s ease;pointer-events:none}
+  #savetoast.show{transform:translateX(-50%) translateY(0)}
+  .savebtn{border-color:#0096FF!important;color:#CFEAFF!important}
+  #title-saved{margin:10px auto 0;max-width:430px;font-size:13px;color:#9FB8D4;line-height:1.45}
+  #title-saved .savedcard{border:1.5px solid #2A4A6B;border-radius:10px;background:rgba(10,18,30,.72);padding:10px 12px}
+  #title-saved .savedcard b{color:#EAF4FF}
+  #title-saved .rowbtns{justify-content:center;margin-top:8px}
+  /* v0.4.1 detail: surface texture on the menu screens (CSS-cheap) */
+  #scr-garage{background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.016) 0 2px,transparent 2px 7px),radial-gradient(120% 55% at 50% 0%,rgba(0,150,255,.08),transparent 60%)}
+  #scr-title .inner{background-image:radial-gradient(90% 40% at 50% 0%,rgba(0,150,255,.06),transparent 65%)}
+  .carcard{background-image:linear-gradient(155deg,rgba(255,255,255,.075),rgba(255,255,255,0) 42%),linear-gradient(0deg,rgba(0,150,255,.05),rgba(0,150,255,0) 55%)}
+  .secttl{box-shadow:0 1px 0 rgba(0,150,255,.30)}
   /* v0.3: ladder garage rows */
   .lvlhdr{margin:14px 2px 6px;font-size:12px;font-weight:900;letter-spacing:.28em;color:#66BAFF}
   .rival .rline{font-size:12px;color:#B9CFE8;font-style:italic;margin-top:2px}
@@ -160,7 +180,7 @@
   #splitflash{position:absolute;top:27%;left:0;right:0;text-align:center;font-size:clamp(17px,5.4vw,24px);font-weight:900;
     letter-spacing:.14em;color:var(--blue-hi);text-shadow:0 0 14px rgba(0,150,255,.8),0 2px 0 #000;opacity:0;transition:opacity .15s}
   #splitflash.show{opacity:1}
-  .hud-mid{display:flex;justify-content:center}
+  .hud-mid{display:flex;justify-content:center;margin-top:auto}
   #tachwrap{pointer-events:none;width:min(54vw,264px);background:linear-gradient(180deg,rgba(24,39,60,.92),rgba(6,11,19,.95));border:1px solid #3A5A7E;border-radius:16px;padding:8px 12px 6px;
     box-shadow:inset 0 1px 0 rgba(170,205,245,.20),inset 0 0 24px rgba(0,0,0,.5),inset 0 0 18px rgba(0,150,255,.05),0 10px 24px rgba(0,0,0,.55)}
   #tach{width:100%;height:76px;display:block}
@@ -224,10 +244,17 @@
 <div id="speedfx"></div>
 <div id="fade"></div>
 <div id="blownwrap" aria-hidden="true">
-  <video id="blownvid" src="assets/blown-motor.mp4" muted playsinline preload="metadata"></video>
+  <video id="blownvid" src="assets/blown-strip.mp4" muted playsinline preload="metadata"></video>
   <div class="blownstamp">BLOWN MOTOR</div>
   <div class="blownskip">TAP TO SKIP</div>
 </div>
+<div id="clipwrap" aria-hidden="true">
+  <video id="clipvid" muted playsinline preload="none"></video>
+  <div class="clipname" id="clip-name"></div>
+  <div class="blownskip">TAP TO SKIP</div>
+</div>
+<audio id="clipaudio" preload="auto" aria-hidden="true"></audio>
+<div id="savetoast" aria-hidden="true">💾 GAME SAVED ✓</div>
 
 <!-- TITLE -->
 <section id="scr-title" class="screen on">
@@ -240,10 +267,12 @@
     <button id="btn-race-title" class="bigbtn blue">Race</button>
     <div class="rowbtns">
       <button id="btn-how-title" class="smallbtn">How to race</button>
+      <button id="btn-save-title" class="smallbtn savebtn">💾 Save game</button>
       <button id="btn-reset" class="smallbtn">Reset game</button>
     </div>
+    <div id="title-saved"></div>
     <div class="title-stats" id="title-stats"></div>
-    <div class="legal">© 2026 Joshua Dawson / J-Dawgs Industries · Hustle City Drag Racing™ · v0.4 — Land Speed</div>
+    <div class="legal">© 2026 Joshua Dawson / J-Dawgs Industries · Hustle City Drag Racing™ · v0.4.1 — Land Speed</div>
   </div>
 </section>
 
@@ -258,6 +287,8 @@
     <div class="spec">Old muscle, street-modded · blown V8 · 5-speed stick · one bottle of nitrous</div>
     <div class="best" id="g-best">No runs yet. Set a time.</div>
     <div class="build" id="g-build"></div>
+    <button id="btn-save-garage" class="bigbtn savebtn" style="margin-top:12px">💾 SAVE GAME</button>
+    <div style="font-size:11.5px;color:#7E97AE;margin-top:6px">Saving is your choice — if you don't save, the next visit starts completely over.</div>
   </div>
   <div class="secttl" style="margin-top:16px">Record board — the marks that matter</div>
   <div id="record-board"></div>
@@ -548,10 +579,13 @@ function upParams(up){
   return P;
 }
 let save;
+function freshSave(){
+  return {cash:250,bestET:null,bestTrap:null,wins:0,losses:0,beaten:{},races:0,champion:false,gainPending:false,up:{engine:0,tires:0,gears:0,nitro:0,weight:0}};
+}
 function loadSave(){
   try{ save=JSON.parse(localStorage.getItem(SAVE_KEY))||null; }catch(e){ save=null; }
   if(!save||typeof save!=='object') save=null;
-  if(!save) save={cash:250,bestET:null,bestTrap:null,wins:0,losses:0,beaten:{},races:0,champion:false,gainPending:false,up:{engine:0,tires:0,gears:0,nitro:0,weight:0}};
+  if(!save) save=freshSave();
   if(!save.up) save.up={engine:0,tires:0,gears:0,nitro:0,weight:0};
   PARTS.forEach(p=>{ if(typeof save.up[p.id]!=='number') save.up[p.id]=0; });
   if(!save.records||typeof save.records!=='object') save.records={};
@@ -560,6 +594,16 @@ function loadSave(){
   return save;
 }
 function storeSave(){ try{ localStorage.setItem(SAVE_KEY,JSON.stringify(save)); }catch(e){} }
+/* v0.4.1 (Joshua): SAVING IS THE PLAYER'S CHOICE. storeSave() is now
+   called ONLY from doSaveGame() — the explicit SAVE GAME button.
+   Nothing autosaves anymore: no save = the next visit starts over. */
+function doSaveGame(){
+  storeSave();
+  const t=$('savetoast'); t.classList.add('show');
+  clearTimeout(doSaveGame._t); doSaveGame._t=setTimeout(()=>t.classList.remove('show'),1600);
+  AudioX.buy();
+  if(S.screen==='title') renderTitleStats();
+}
 loadSave();
 
 /* ---------------- AUDIO (all synthesized, no files) ---------------- */
@@ -1053,6 +1097,92 @@ parkedCar(0x5a1f1f,-11.8,16,0.35); parkedCar(0x1f3a5a,12.2,-4,-0.3);
       blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide}));
   cone.position.set(-2.05,2.2,0); scene.add(cone); }
 
+/* v0.4.1 TRACKSIDE DETAIL (Joshua: more detail, the race view
+   especially) — the near field the driver actually reads at speed:
+   rubber laid in the burnout box, painted distance numbers ON the
+   asphalt, oil stains, cat's-eye studs on the center line, a
+   pedestrian bridge mid-track, a timing booth at the stripe, the
+   starter standing at the tree, light strips on the barrier tops. */
+/* rubber streaks in the burnout box, right where the tires spin */
+[-2.91,-1.19,1.19,2.91].forEach(x=>{
+  const st=new THREE.Mesh(new THREE.PlaneGeometry(0.55,10),
+    new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:0.38,depthWrite:false}));
+  st.rotation.x=-Math.PI/2; st.position.set(x,0.013,-6.5); scene.add(st);
+});
+/* painted distance numbers on the road surface */
+function roadPaint(z,label){
+  const t=canvasTex(512,160,(g,w,h)=>{ g.clearRect(0,0,w,h);
+    g.font='900 118px Arial'; g.textAlign='center'; g.textBaseline='middle';
+    g.fillStyle='rgba(232,238,245,0.88)'; g.fillText(label,w/2,h/2); });
+  const p=new THREE.Mesh(new THREE.PlaneGeometry(9,2.8),
+    new THREE.MeshBasicMaterial({map:t,transparent:true,opacity:0.85,depthWrite:false}));
+  p.rotation.x=-Math.PI/2; p.rotation.z=Math.PI; p.position.set(0,0.014,z); scene.add(p);
+}
+roadPaint(196,'1/8'); roadPaint(QUARTER_M-6,'1/4');
+/* oil + coolant stains breaking up the flat asphalt */
+for(let i=0;i<7;i++){
+  const s=new THREE.Mesh(new THREE.PlaneGeometry(1.3+Math.random()*1.6,2.2+Math.random()*2.6),
+    new THREE.MeshBasicMaterial({map:glowTex,color:0x000000,transparent:true,opacity:0.30,depthWrite:false}));
+  s.rotation.x=-Math.PI/2; s.rotation.z=Math.random()*3;
+  s.position.set((Math.random()*9-4.5),0.012,25+i*52+Math.random()*26); scene.add(s);
+}
+/* cat's-eye studs marching down the center line */
+{ const studGeo=new THREE.BoxGeometry(0.10,0.035,0.10);
+  const studMat=new THREE.MeshBasicMaterial({color:0x66d9ff});
+  const studs=new THREE.InstancedMesh(studGeo,studMat,20);
+  const m4=new THREE.Matrix4();
+  for(let i=0;i<20;i++){ m4.makeTranslation(0,0.02,12+i*20); studs.setMatrixAt(i,m4); }
+  scene.add(studs); }
+/* light strips riding the barrier tops — a depth rail at speed */
+[-8.35,8.35].forEach(x=>{
+  const strip=new THREE.Mesh(new THREE.PlaneGeometry(0.07,QUARTER_M+90),
+    new THREE.MeshBasicMaterial({color:0x1e9dff,transparent:true,opacity:0.32,
+      blending:THREE.AdditiveBlending,depthWrite:false}));
+  strip.rotation.x=-Math.PI/2; strip.position.set(x,0.985,(QUARTER_M+90)/2-40); scene.add(strip);
+});
+/* pedestrian bridge mid-track — the big depth moment of the run */
+{ const steel=new THREE.MeshStandardMaterial({color:0x232d38,roughness:0.55,metalness:0.7});
+  [-10.6,10.6].forEach(x=>{ const tw=new THREE.Mesh(new THREE.BoxGeometry(1.3,9.2,1.3),steel);
+    tw.position.set(x,4.6,255); tw.castShadow=true; scene.add(tw); });
+  const deck=new THREE.Mesh(new THREE.BoxGeometry(22.6,1.1,2.7),steel);
+  deck.position.set(0,8.9,255); scene.add(deck);
+  [-1.25,1.25].forEach(dz=>{ const rail=new THREE.Mesh(new THREE.BoxGeometry(22.6,0.65,0.09),steel);
+    rail.position.set(0,9.75,255+dz); scene.add(rail); });
+  const bt=canvasTex(1024,80,(g,w,h)=>{ g.fillStyle='#060a10'; g.fillRect(0,0,w,h);
+    g.font='900 50px Arial'; g.textAlign='center'; g.textBaseline='middle';
+    g.shadowColor='#0096ff'; g.shadowBlur=14; g.fillStyle='#eaf6ff'; g.fillText('HUSTLE CITY',w/2,h/2+2); });
+  const bp=new THREE.Mesh(new THREE.PlaneGeometry(15,1.0),
+    new THREE.MeshBasicMaterial({map:bt,transparent:true,side:THREE.DoubleSide}));
+  bp.position.set(0,8.9,253.6); bp.rotation.y=Math.PI; scene.add(bp);
+}
+/* timing booth at the stripe */
+{ const booth=new THREE.Group();
+  const wall=new THREE.Mesh(new THREE.BoxGeometry(2.4,2.6,2.0),
+    new THREE.MeshStandardMaterial({color:0x1a222d,roughness:0.7,metalness:0.4}));
+  wall.position.y=1.3; booth.add(wall);
+  const win=new THREE.Mesh(new THREE.PlaneGeometry(1.7,0.8),
+    new THREE.MeshBasicMaterial({color:0xffd9a3}));
+  win.position.set(-1.21,1.65,0); win.rotation.y=-Math.PI/2; booth.add(win);
+  const roof=new THREE.Mesh(new THREE.BoxGeometry(2.8,0.12,2.4),
+    new THREE.MeshStandardMaterial({color:0x2c3644,roughness:0.5,metalness:0.7}));
+  roof.position.y=2.72; booth.add(roof);
+  const ant=new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.03,1.6,5),
+    new THREE.MeshStandardMaterial({color:0x39434e,metalness:0.8,roughness:0.4}));
+  ant.position.set(0.8,3.5,-0.6); booth.add(ant);
+  booth.position.set(10.9,0,QUARTER_M-4); scene.add(booth);
+}
+/* the starter, standing at the tree */
+{ const pt=canvasTex(128,256,(g,w,h)=>{ g.clearRect(0,0,w,h);
+    g.fillStyle='rgba(5,7,12,0.97)';
+    g.beginPath(); g.arc(64,42,17,0,7); g.fill();
+    g.fillRect(44,58,40,86); g.fillRect(46,144,15,100); g.fillRect(67,144,15,100);
+    g.fillRect(20,64,24,10); g.fillRect(84,64,24,10);
+    g.fillStyle='rgba(0,150,255,0.9)'; g.fillRect(47,26,34,9); });
+  const starter=new THREE.Mesh(new THREE.PlaneGeometry(0.95,1.9),
+    new THREE.MeshBasicMaterial({map:pt,transparent:true,side:THREE.DoubleSide}));
+  starter.position.set(1.35,0.95,-1.1); starter.rotation.y=Math.PI; scene.add(starter);
+}
+
 /* christmas tree */
 const treeGrp=new THREE.Group();
 const treeBulbs={};
@@ -1204,6 +1334,31 @@ function buildCar(paintColor,opts){
     car.userData.flames.push(f);
   });
   car.userData.flameT=0;
+  /* v0.4.1 DETAIL PASS (Joshua: "definitely more detail to the car"):
+     the trim a real street car wears — door seams + chrome handles,
+     side markers, window chrome, hood pins, fuel cap, a rear plate,
+     mirrors, antenna, front signals. Cheap boxes, house materials. */
+  const amberM=new THREE.MeshBasicMaterial({color:0xffa726});
+  const redMkM=new THREE.MeshBasicMaterial({color:0xff2233});
+  [-1,1].forEach(s=>{
+    add(box(0.02,0.52,0.03,darkM),s*0.95,0.62,-0.12);                    // door seam
+    add(box(0.03,0.035,0.17,chrome),s*0.96,0.79,-0.38);                 // door handle
+    add(box(0.03,0.05,0.13,amberM),s*0.95,0.52,2.02);                   // front side marker
+    add(box(0.03,0.05,0.13,redMkM),s*0.95,0.52,-2.18);                  // rear side marker
+    add(box(0.30,0.06,0.03,amberM),s*0.58,0.42,2.58);                   // front turn signal
+    add(box(0.02,0.03,1.52,chrome),s*0.80,1.235,-0.5);                  // window chrome, top
+    add(box(0.03,0.10,0.13,chrome),s*0.90,1.03,0.30);                   // mirror head
+    add(box(0.10,0.025,0.03,darkM),s*0.84,0.99,0.28);                   // mirror stalk
+  });
+  [-0.55,0.55].forEach(x=>{ const pin=new THREE.Mesh(new THREE.CylinderGeometry(0.028,0.028,0.022,10),chrome);
+    add(pin,x,0.935,1.92); });                                          // hood pins
+  { const cap2=new THREE.Mesh(new THREE.CylinderGeometry(0.055,0.055,0.025,12),chrome);
+    cap2.rotation.x=Math.PI/2; add(cap2,0.55,0.68,-2.44); }             // fuel cap
+  add(box(0.46,0.23,0.02,new THREE.MeshStandardMaterial({color:0xdfe6ee,roughness:0.5})),0,0.40,-2.50); // rear plate
+  add(box(0.38,0.15,0.006,new THREE.MeshStandardMaterial({color:0x14263e,roughness:0.5})),0,0.40,-2.515);
+  { const ant=new THREE.Mesh(new THREE.CylinderGeometry(0.008,0.011,0.5,6),darkM);
+    add(ant,0.80,1.02,-2.05);
+    const tip=new THREE.Mesh(new THREE.SphereGeometry(0.017,8,6),chrome); add(tip,0.80,1.28,-2.05); } // antenna
   /* wheels — wide rear slicks, skinny fronts */
   const tireTier=opts.tireTier||0;
   const rearW=0.30*[1,1.22,1.45,1.68][tireTier], frontW=tireTier>=2?0.19:0.24;
@@ -1227,6 +1382,14 @@ function buildCar(paintColor,opts){
     tr.rotation.y=Math.PI/2; tr.position.x=out; wg.add(tr);
     const cap=new THREE.Mesh(new THREE.CylinderGeometry(r*0.17,r*0.17,0.03,12),darkM);
     cap.rotation.z=Math.PI/2; cap.position.x=out; wg.add(cap);
+    /* v0.4.1: lug nuts + a second sidewall ring — the wheel stops
+       reading as a plain disc in the garage and burnout shots */
+    for(let li2=0;li2<5;li2++){ const la=li2/5*Math.PI*2;
+      const lug=new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.02,0.025,6),darkM);
+      lug.rotation.z=Math.PI/2; lug.position.set(out,Math.cos(la)*r*0.33,Math.sin(la)*r*0.33); wg.add(lug); }
+    const sw2=new THREE.Mesh(new THREE.TorusGeometry(r*0.93,0.010,6,28),
+      new THREE.MeshStandardMaterial({color:0x1d1f24,roughness:0.9}));
+    sw2.rotation.y=Math.PI/2; sw2.position.x=out; wg.add(sw2);
     wg.position.set(x,r,z); car.add(wg); car.userData.wheels.push(wg);
   });
   /* wheelie bars — the boss runs them, and so does a tier-2+ suspension
@@ -1286,12 +1449,120 @@ function buildCar(paintColor,opts){
   const shadow=new THREE.Mesh(new THREE.PlaneGeometry(2.5,5.2),
     new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:0.30,depthWrite:false}));
   shadow.rotation.x=-Math.PI/2; shadow.position.y=0.02; car.add(shadow);
+  /* v0.4.1 COCKPIT (Joshua: "definitely more detail to the driver
+     scene") — player car only. Lives inside the glasshouse: the
+     opaque glass hides it from outside; in POV the glass hides and
+     the driver gets a real dash, a working tach, a wheel, a shifter.
+     The tach needle is LIVE — animate() drives it off rpmDisp. */
+  if(opts.cockpit){
+    const vinyl=new THREE.MeshStandardMaterial({color:0x14171d,roughness:0.88,metalness:0.08});
+    /* v0.4.1 DRIVER VIEW PUSH (Joshua 16:21/16:27 — the heaviest
+       detail item): the dash gets a real vinyl GRAIN texture with a
+       stitched seam, and the gauges get drawn faces — ticks, numbers,
+       a redline arc — backlit for the night, with LIVE needles
+       (tach + speedo) driven by animate(). */
+    const dashTex=(()=>{ const cv=document.createElement('canvas'); cv.width=512; cv.height=128; const g=cv.getContext('2d');
+      g.fillStyle='#181c23'; g.fillRect(0,0,512,128);
+      for(let i=0;i<2800;i++){ g.fillStyle='rgba(255,255,255,'+(Math.random()*0.05)+')'; g.fillRect(Math.random()*512,Math.random()*128,1.4,1.4); }
+      for(let i=0;i<1800;i++){ g.fillStyle='rgba(0,0,0,'+(Math.random()*0.18)+')'; g.fillRect(Math.random()*512,Math.random()*128,1.6,1.6); }
+      g.strokeStyle='rgba(190,205,225,0.45)'; g.lineWidth=2; g.setLineDash([7,5]);
+      g.beginPath(); g.moveTo(8,102); g.lineTo(504,102); g.stroke();
+      const t=new THREE.CanvasTexture(cv); t.wrapS=t.wrapT=THREE.RepeatWrapping; return t; })();
+    const padM2=new THREE.MeshStandardMaterial({color:0xffffff,map:dashTex,roughness:0.96});
+    const gaugeTex=(kind,max,major,nums,label,redFrom)=>{ const cv=document.createElement('canvas'); cv.width=cv.height=256; const g=cv.getContext('2d');
+      g.fillStyle='#070b12'; g.beginPath(); g.arc(128,128,127,0,7); g.fill();
+      g.strokeStyle='rgba(0,150,255,0.30)'; g.lineWidth=3; g.beginPath(); g.arc(128,128,117,0,7); g.stroke();
+      const pt=(f,r)=>{ const th=2.2-f*3.6; return [128+r*(-Math.sin(th)),128-r*Math.cos(th)]; };
+      if(redFrom!==null){ g.strokeStyle='#e5323e'; g.lineWidth=11; g.beginPath();
+        for(let f=redFrom;f<=1.001;f+=0.02){ const p=pt(f,104); if(f===redFrom) g.moveTo(p[0],p[1]); else g.lineTo(p[0],p[1]); } g.stroke(); }
+      g.fillStyle='#e6dbc4'; g.strokeStyle='#e6dbc4'; g.textAlign='center'; g.textBaseline='middle';
+      for(let v=0;v<=max+0.001;v+=major/2){ const f=v/max, big=Math.abs(v%major)<0.001, p1=pt(f,big?88:97), p2=pt(f,106);
+        g.lineWidth=big?4:2; g.beginPath(); g.moveTo(p1[0],p1[1]); g.lineTo(p2[0],p2[1]); g.stroke();
+        if(big&&nums){ const pn=pt(f,68); g.font='900 25px Arial'; g.fillText(Math.round(v)+'',pn[0],pn[1]); } }
+      g.font='700 17px Arial'; g.fillStyle='#7fb6e8'; g.fillText(label,128,168);
+      return new THREE.CanvasTexture(cv); };
+    const ck=new THREE.Group(); bodyG.add(ck);
+    const cadd=(m,x,y,z)=>{ m.position.set(x,y,z); ck.add(m); return m; };
+    const cbox=(w,h,d,mat)=>{ const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat); return m; };
+    cadd(cbox(1.52,0.17,0.36,vinyl),0,1.00,0.14);                       // dash body
+    cadd(cbox(1.52,0.05,0.42,padM2),0,1.10,0.12);                       // dash top pad (grained vinyl)
+    cadd(cbox(1.52,0.028,0.02,chrome),0,0.99,-0.045);                   // chrome dash strip
+    cadd(cbox(0.64,0.10,0.22,vinyl),-0.38,1.13,0.10);                   // gauge hood
+    cadd(cbox(0.30,0.018,0.012,new THREE.MeshBasicMaterial({color:0x0096ff})),0.38,1.03,-0.048); // dash glow line
+    [-0.62,0.30].forEach(x=>cadd(cbox(0.16,0.03,0.10,darkM),x,1.135,0.16)); // dash vents
+    /* gauge cluster: speedo (left) + tach (center, live needle,
+       redline arc) + aux (right) — drawn faces, backlit */
+    const mkGauge=(x,r,tex,withNeedle,storeKey)=>{
+      const f=new THREE.Mesh(new THREE.CircleGeometry(r,24),new THREE.MeshBasicMaterial({map:tex}));
+      cadd(f,x,1.03,-0.028);
+      const ring=new THREE.Mesh(new THREE.TorusGeometry(r,0.011,8,24),chrome);
+      cadd(ring,x,1.03,-0.045);
+      if(withNeedle){ const ng=new THREE.BoxGeometry(0.016,0.15,0.008); ng.translate(0,0.055,0);
+        const nd=new THREE.Mesh(ng,new THREE.MeshBasicMaterial({color:0xff3355}));
+        nd.position.set(x,1.03,-0.055); ck.add(nd); car.userData[storeKey]=nd; }
+    };
+    mkGauge(-0.60,0.075,gaugeTex('mph',200,20,true,'MPH',null),true,'speedNeedle');
+    mkGauge(-0.38,0.10,gaugeTex('rpm',8,1,true,'RPM x1000',0.8125),true,'tachNeedle');
+    /* FUEL gauge (Option 4 blueprint: MPH · RPM · FUEL) — needle parked at 3/4 */
+    const fuelTex=(()=>{ const cv=document.createElement('canvas'); cv.width=cv.height=256; const g=cv.getContext('2d');
+      g.fillStyle='#070b12'; g.beginPath(); g.arc(128,128,127,0,7); g.fill();
+      g.strokeStyle='rgba(0,150,255,0.30)'; g.lineWidth=3; g.beginPath(); g.arc(128,128,117,0,7); g.stroke();
+      const pt=(f,r)=>{ const th=2.2-f*3.6; return [128+r*(-Math.sin(th)),128-r*Math.cos(th)]; };
+      g.fillStyle='#e6dbc4'; g.strokeStyle='#e6dbc4'; g.textAlign='center'; g.textBaseline='middle';
+      for(let v=0;v<=4;v++){ const f=v/4, p1=pt(f,88), p2=pt(f,106); g.lineWidth=4;
+        g.beginPath(); g.moveTo(p1[0],p1[1]); g.lineTo(p2[0],p2[1]); g.stroke();
+        const pn=pt(f,66); g.font='900 26px Arial'; g.fillText(v===0?'E':(v===4?'F':''),pn[0],pn[1]); }
+      g.font='700 17px Arial'; g.fillStyle='#7fb6e8'; g.fillText('FUEL',128,168);
+      return new THREE.CanvasTexture(cv); })();
+    mkGauge(-0.16,0.075,fuelTex,true,'fuelNeedle');
+    if(car.userData.fuelNeedle) car.userData.fuelNeedle.rotation.z=2.2-0.72*3.6;
+    /* electric-blue glow UNDER the dash line (Option 4 signature) */
+    cadd(cbox(1.44,0.016,0.012,new THREE.MeshBasicMaterial({color:0x1e9bff})),0,0.905,-0.048);
+    /* keys in the ignition, hanging off the switch (Option 4) */
+    const ign=new THREE.Mesh(new THREE.CylinderGeometry(0.024,0.024,0.03,10),chrome);
+    ign.rotation.x=Math.PI/2; cadd(ign,-0.13,0.90,-0.05);
+    const keyRing=new THREE.Mesh(new THREE.TorusGeometry(0.020,0.004,6,14),chrome);
+    cadd(keyRing,-0.13,0.862,-0.055);
+    const keyBlade=cbox(0.016,0.055,0.006,chrome); keyBlade.position.set(-0.122,0.815,-0.055); keyBlade.rotation.z=0.18; ck.add(keyBlade);
+    const keyHead=cbox(0.030,0.026,0.008,darkM); keyHead.position.set(-0.128,0.845,-0.055); keyHead.rotation.z=0.18; ck.add(keyHead);
+    /* center stack: radio with a lit display + knobs, dash face vents */
+    cadd(cbox(0.34,0.13,0.03,darkM),0.22,1.0,-0.035);
+    cadd(cbox(0.20,0.045,0.012,new THREE.MeshBasicMaterial({color:0x1d5f9e})),0.22,1.025,-0.052);
+    [0.10,0.22,0.34].forEach(x=>{ const kb=new THREE.Mesh(new THREE.CylinderGeometry(0.021,0.021,0.025,10),chrome);
+      kb.rotation.x=Math.PI/2; cadd(kb,x,0.955,-0.045); });
+    [0.52,0.68].forEach(x=>{ const vt=new THREE.Mesh(new THREE.CylinderGeometry(0.038,0.038,0.02,14),darkM);
+      vt.rotation.x=Math.PI/2; cadd(vt,x,1.06,-0.03);
+      const vr=new THREE.Mesh(new THREE.TorusGeometry(0.038,0.006,6,18),chrome); cadd(vr,x,1.06,-0.042); });
+    /* steering wheel + column, driver side */
+    const wheel=new THREE.Group(); wheel.position.set(-0.38,0.99,-0.20); wheel.rotation.x=-0.32; ck.add(wheel);
+    const rim2=new THREE.Mesh(new THREE.TorusGeometry(0.185,0.027,10,28),vinyl); wheel.add(rim2);
+    [0,2.09,4.19].forEach(a=>{ const sp=new THREE.Mesh(new THREE.BoxGeometry(0.032,0.175,0.02),chrome);
+      sp.position.set(Math.sin(a)*0.088,Math.cos(a)*0.088,0); sp.rotation.z=-a; wheel.add(sp); });
+    const hub=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.045,12),chrome);
+    hub.rotation.x=Math.PI/2; wheel.add(hub);
+    const col=new THREE.Mesh(new THREE.CylinderGeometry(0.026,0.026,0.30,8),darkM);
+    col.rotation.x=1.15; cadd(col,-0.38,1.0,0.0);
+    /* shifter on the tunnel */
+    cadd(cbox(0.30,0.20,1.15,vinyl),0,0.76,-0.38);                      // tunnel
+    const lev=new THREE.Mesh(new THREE.CylinderGeometry(0.014,0.014,0.17,8),chrome);
+    lev.rotation.x=0.25; cadd(lev,0.02,0.92,-0.28);
+    const knob=new THREE.Mesh(new THREE.SphereGeometry(0.034,10,8),darkM); cadd(knob,0.02,1.0,-0.30);
+    /* A-pillars, mirror, visors, door tops — the POV frame itself */
+    [-1,1].forEach(s=>{
+      const pil=cadd(cbox(0.07,0.66,0.07,vinyl),s*0.72,1.06,0.16); pil.rotation.x=0.42;
+      cadd(cbox(0.40,0.02,0.17,padM2),s*0.38,1.215,0.03).rotation.x=0.30;  // visor
+      cadd(cbox(0.06,0.09,1.35,padM2),s*0.80,0.94,-0.42);                 // door top pad
+    });
+    cadd(cbox(0.34,0.10,0.03,darkM),0,1.185,0.06);                      // rear-view mirror
+    cadd(cbox(0.03,0.09,0.03,darkM),0,1.26,0.09);                       // mirror stem
+  }
   return car;
 }
 let playerCar=null, rivalCar=null;
-function buildPlayerCar(){
+let playerCarColor=0x0b0d12; /* v0.4.1: the clip color-match state — a plain module var, NOT S.* (buildPlayerCar runs before S exists) */
+function buildPlayerCar(color){
   if(playerCar) scene.remove(playerCar);
-  playerCar=buildCar(0x0b0d12,{halo:0x66c8ff,realBeams:true,
+  playerCar=buildCar(color===undefined?(playerCarColor!==undefined?playerCarColor:0x0b0d12):color,{halo:0x66c8ff,realBeams:true,cockpit:true,
     blower:save.up.engine,tireTier:save.up.tires,carbon:save.up.weight,
     exhaust:save.up.exhaust||0,susp:save.up.susp||0,fuel:save.up.fuel||0,
     turbo:save.up.turbo||0,fuelsys:save.up.fuelsys||0,chassis:save.up.chassis||0,
@@ -1392,7 +1663,10 @@ function stepStreaks(camZ,v,dt){
    v0.2 tune (Joshua: "nines at like 180"): lazy launch, violent top end.
    Stock perfect run ≈ 9.1s @ ~176 mph; the nitro bottle is the
    180-mph maker. Verified in a node replica of this exact math. */
-const RATIOS=[2.9,2.15,1.62,1.22,0.81], FINAL_D=3.7, WHEEL_C=2.05;
+/* v0.4.1 (Joshua, 2026-11-19): first gear a HAIR longer — 2.9 -> 2.82.
+   His one sanctioned tuning change: more time in first before the
+   shift. Everything re-measured in qa-v0.4/results-races.json. */
+const RATIOS=[2.82,2.15,1.62,1.22,0.81], FINAL_D=3.7, WHEEL_C=2.05;
 const REDLINE=7500, LIMITER=7680, PERFECT_LO=6850, PERFECT_HI=7500;
 const FORCE_K=5.4, DRAG_C=0.0005, ROLL_R=0.25;
 const STOCK_UP=upParams({engine:0,tires:0,gears:0,nitro:0,weight:0});
@@ -1507,7 +1781,11 @@ let treeFired={};
 function showScreen(name){
   S.screen=name;
   ['title','garage','race','result','how'].forEach(n=>$('scr-'+n).classList.toggle('on',n===name));
-  if(name==='garage') renderGarage();
+  if(name==='garage'){ renderGarage();
+    /* v0.4.1 (Joshua): tapping GARAGE lands ON the garage — the scroll
+       resets to the top (your car, first viewport) every entry, from
+       every path: title button, race quit, result screen, rematch. */
+    $('scr-garage').scrollTop=0; }
   if(name==='title') renderTitleStats();
   if(name==='title'||name==='garage') applyVenue(false); /* the street is home */
 }
@@ -1526,6 +1804,121 @@ function setPovHide(hidden){
   playerCar.userData.povHide.forEach(m=>{ m.visible=!hidden; });
 }
 function startRollin(){ if(S.phase!=='burnout') return; S.phase='rollin'; S.rollT=0; }
+/* ---------------- COMPETITIVE LADDER (v0.4.1, Joshua 2026-11-19) ----
+   "After the third round I started blowing them away. Keep it
+   competitive." Ladder rivals (everyone before Scotty) now BUILD
+   ALONG WITH YOU: at race time an in-page replica sim measures YOUR
+   perfect run in your current build, and the rival runs YOUR build
+   spec with his power bisected so his ET lands on yours + a margin.
+   The margin GROWS with your build (upgrades still pay — a maxed car
+   gets a bigger cushion than a stocker) and SHRINKS up the ladder
+   (the top is supposed to be tight), and it never drops under 0.22s:
+   a perfect start + perfect shifts ALWAYS wins; sloppy driving can
+   still lose. Scotty and the salt racers are EXEMPT — they run their
+   own fixed build specs. Scotty stays the wall. */
+function simET(power,up,shiftRpm,shape,withNitro){
+  const c=newCarState(power,up); c.launched=true; c.launchT=0; c.throttle=1; c.slip=c.slipT;
+  const dt=1/120; let t=0, fired=false;
+  while(t<30){
+    if(shape) c.forceMult=rivalShapeAt(shape,c.dist);
+    stepCar(c,dt,t);
+    if(c.finishTotal!==null) return c.finishTotal;
+    /* shift on the COUPLED reading (rpmForC) — the same one the
+       limiter and tach use. (v0.4.1: ladder-scaled rivals run the
+       player's build; on raw rpmFor a steepened launch gear caps
+       first-gear rpm at LIMITER/launchMult, below the shift point —
+       the AI would sit in first gear forever.) */
+    if(rpmForC(c,c.gear)>=shiftRpm&&c.gear<4&&c.shiftCut<=0) doShiftCar(c,t);
+    if(withNitro&&!fired&&c.dist>=200&&c.nitroLeft>0){ fired=true; c.nitroLeft--; c.nitroT=c.nitroDur; }
+    t+=dt;
+  }
+  return 30;
+}
+let _ladderCache={sig:'',anchors:null,map:{}};
+function ladderInfo(rival){
+  if(rival.up||rival.needChute) return null; /* Scotty + salt: fixed spec */
+  const sig=PARTS.map(p=>save.up[p.id]||0).join(',');
+  if(_ladderCache.sig!==sig){
+    const up=upParams(save.up);
+    const pET=simET(1.0,up,7150,null,true);
+    const sET=simET(1.0,upParams(freshUp()),7150,null,true);
+    const maxSpec={}; PARTS.forEach(p=>{ maxSpec[p.id]=p.prices.length; });
+    const mET=simET(1.0,upParams(maxSpec),7150,null,true);
+    _ladderCache={sig,anchors:{pET,bf:clamp((sET-pET)/Math.max(0.001,(sET-mET)),0,1)},map:{}};
+  }
+  if(_ladderCache.map[rival.id]) return _ladderCache.map[rival.id];
+  const A=_ladderCache.anchors, idx=RIVALS.indexOf(rival);
+  const margin=Math.max(0.22,0.42-0.02*idx)+0.35*A.bf;
+  const target=A.pET+margin;
+  let lo=0.5, hi=1.5, pw=1;
+  for(let i=0;i<6;i++){ pw=(lo+hi)/2;
+    if(simET(pw,upParams(save.up),rival.shiftRpm,rival.shape,false)>target) lo=pw; else hi=pw; }
+  const info={playerET:A.pET,targetET:target,power:pw,margin,bf:A.bf};
+  _ladderCache.map[rival.id]=info; return info;
+}
+function freshUp(){ const u={}; PARTS.forEach(p=>{ u[p.id]=0; }); return u; }
+
+/* ---------------- PRE-RACE BURNOUT CLIPS (v0.4.1, Joshua) ----
+   Five old muscle cars, one uniform set — same night street, same
+   rear three-quarter framing, same smoke; only the car changes.
+   Rotates every race, never the same car twice in a row. Only the
+   chosen clip loads, only at race time. Tap skips; a clip that
+   can't load falls straight through to the race — dressing, never
+   a blocker. Then OUR car burns out in-game, then the driver view. */
+const CLIP_CARS=[['charger',"'69 CHARGER"],['mustang',"'67 MUSTANG"],['nova',"'70 NOVA"],['chevelle',"'70 CHEVELLE"],['gto',"'69 GTO"]];
+/* Joshua (16:21): "make sure our cartoon car matches the color" —
+   the player's car wears the clip car's color for that race:
+   Charger black, Mustang Grabber Blue, Nova dark green,
+   Chevelle orange, GTO deep plum. The stitch never jumps colors. */
+const CLIP_COLORS={charger:0x0b0d12,mustang:0x1f6fd0,nova:0x1d5c33,chevelle:0xe8641c,gto:0x5a2472};
+let lastClip=-1, clipBag=[];
+function nextClipIdx(){
+  /* shuffle bag: every car plays once per five races, and the bag
+     boundary never deals the same car twice in a row */
+  if(!clipBag.length){ clipBag=[0,1,2,3,4].sort(()=>Math.random()-0.5);
+    if(clipBag[0]===lastClip) clipBag.push(clipBag.shift()); }
+  const i=clipBag.shift(); lastClip=i; return i;
+}
+function startRaceWithClip(rival){
+  if(rival.needChute&&!(save.up.chute>0)){ S.clipCar=null; startRace(rival); return; } /* tech-inspection message, no clip */
+  const i=nextClipIdx();
+  const car=CLIP_CARS[i][0]; S.clipCar=car;
+  const wrap=$('clipwrap'), vid=$('clipvid');
+  $('clip-name').textContent=CLIP_CARS[i][1]+' — BURNOUT';
+  /* AUDIO STITCH (Joshua 16:26): the clip's own burnout audio is
+     the bed for the whole sequence — it starts with the video and
+     keeps rolling across the cut, under our car's in-game burnout,
+     until the smoking is DONE. The game's engine audio stays
+     silent while the bed plays (see engineAudio). */
+  const bed=$('clipaudio');
+  S.audioBed=true;
+  try{ bed.src='assets/burnout-'+car+'-audio.m4a'; bed.currentTime=0; bed.volume=1;
+    const bp=bed.play(); if(bp&&bp.catch) bp.catch(()=>{ S.audioBed=false; }); }catch(e){ S.audioBed=false; }
+  let done=false;
+  const go=()=>{ if(done) return; done=true; clearTimeout(hard);
+    wrap.onclick=null; vid.onended=null; vid.onerror=null;
+    /* STITCH (Joshua 16:17): the race starts UNDER the clip, our car
+       already smoking (startRace pre-seeds the smoke) — then the
+       clip dissolves out through its own smoke cloud. A clean
+       smoke-matched dissolve, nothing else. No wipes, no flashes. */
+    startRace(rival);
+    wrap.classList.add('fadeout');
+    setTimeout(()=>{ wrap.classList.remove('show','fadeout'); try{ vid.pause(); }catch(e){} },230); };
+  const hard=setTimeout(go,6500); /* the clip never holds the race hostage */
+  wrap.onclick=go; vid.onended=go; vid.onerror=go;
+  vid.src='assets/burnout-'+car+'.mp4';
+  wrap.classList.add('show');
+  try{ const pr=vid.play(); if(pr&&pr.catch) pr.catch(()=>go()); }catch(e){ go(); }
+}
+function stopAudioBed(){
+  if(!S.audioBed) return; S.audioBed=false;
+  const bed=$('clipaudio'); if(!bed) return;
+  try{ const t0=performance.now();
+    const fade=()=>{ const k=1-(performance.now()-t0)/180;
+      if(k<=0){ bed.pause(); bed.volume=1; return; }
+      bed.volume=Math.max(0,k); requestAnimationFrame(fade); };
+    fade(); }catch(e){ try{ bed.pause(); }catch(e2){} }
+}
 function startRace(rival){
   if(rival.needChute&&!(save.up.chute>0)){ showScreen('garage');
     $('g-best').innerHTML='<b style="color:#FFB300">TECH INSPECTION:</b> Bonneville racers need a parachute fitted first — the twin-chute pack is in the parts shop below.';
@@ -1537,13 +1930,24 @@ function startRace(rival){
   S.camMode='burnout'; S.playerFinishAt=null; S.aiFinishAt=null; S.lastSplitIdx=0; S.accounted=false;
   camera.position.set(-5.0,1.5,-12.6); /* composed on the burnout box from frame one */
   S.player=newCarState(1.0, upParams(save.up));
-  S.ai=newCarState(rival.power*(0.988+Math.random()*0.024), rival.up?upParams(rival.up):undefined); /* salt rivals run their own build specs — Scotty's is the drag-record build */
+  /* v0.4.1 competitive ladder: before Scotty, the rival runs YOUR
+     build spec with ladder-scaled power (see ladderInfo). Scotty and
+     the salt racers keep their own fixed build specs. */
+  const li=ladderInfo(rival);
+  if(li){ S.ai=newCarState(li.power*(0.988+Math.random()*0.024), upParams(save.up));
+    S.aiAnchor={playerET:li.playerET,targetET:li.targetET,margin:li.margin}; }
+  else { S.ai=newCarState(rival.power*(0.988+Math.random()*0.024), rival.up?upParams(rival.up):undefined);
+    S.aiAnchor=null; }
   S.aiRT=rival.rtBase+Math.random()*rival.rtVar; S.aiLaunchAt=null;
   /* rival car in its colors, with its own street mods */
   scene.remove(rivalCar); rivalCar=buildCar(rival.color,{halo:0xffd9a0,
     blower:rival.blower, tireTier:rival.blower, wheelie:!!rival.wheelie||rival.id==='cole',
     aero:rival.aero||0, turbo:rival.turbo||0, chute:rival.chute||0});
   rivalCar.position.set(2.05,0,-7); scene.add(rivalCar);
+  /* v0.4.1 color match: our car wears the clip car's color for
+     this race (Joshua: "make sure our cartoon car matches"). */
+  if(S.clipCar&&CLIP_COLORS[S.clipCar]!==undefined&&playerCarColor!==CLIP_COLORS[S.clipCar]){
+    playerCarColor=CLIP_COLORS[S.clipCar]; buildPlayerCar(playerCarColor); }
   playerCar.position.set(-2.05,0,-7); playerCar.rotation.set(0,0,0);
   setPovHide(false);
   treeAllOff(); $('btn-nitro').classList.remove('used');
@@ -1551,6 +1955,14 @@ function startRace(rival){
   $('gr-num').textContent='1'; banner('BURNOUT — TAP GAS TO SKIP','',0);
   $('prog-me').style.left='0%'; $('prog-opp').style.left='0%';
   applyVenue(!!rival.needChute); /* the record chase runs on the salt */
+  /* v0.4.1: warm the blown-motor clip while the race runs, so if the
+     motor lets go the video is READY — never the 1.6s bail-out. */
+  const bv=$('blownvid'); if(bv){ bv.preload='auto'; if(bv.readyState===0){ try{ bv.load(); }catch(e){} } }
+  /* v0.4.1 stitch: the video ends in a cloud of tire smoke, so our
+     burnout opens with smoke ALREADY in the air at all four rear
+     tires — the cut lands on smoke, never on a cold car. */
+  puff(-2.91,0.35,-8.5,10,1.5,1.2); puff(-1.19,0.35,-8.5,10,1.5,1.2);
+  puff( 1.19,0.35,-8.5,10,1.5,1.2); puff( 2.91,0.35,-8.5,10,1.5,1.2);
   AudioX.init(); showScreen('race');
 }
 function fireTree(name){
@@ -1571,7 +1983,7 @@ function gasDown(){
   if(S.phase==='staging'){
     /* stomped before green = red light */
     S.phase='foul'; setTree('red',true); banner('RED LIGHT — FOUL!','foul',0);
-    AudioX.foul(); save.losses++; save.races++; S.accounted=true; storeSave();
+    AudioX.foul(); save.losses++; save.races++; S.accounted=true;
     setTimeout(()=>fadeToResult(false,true),1300); return;
   }
   if(S.phase!=='run') return;
@@ -1620,7 +2032,7 @@ function finalizeResult(win,foul){
   S.accounted=true;
   const p=S.player;
   if(foul){ /* already counted in gasDown */ return; }
-  if(S.blown){ save.losses++; save.races++; storeSave(); return; } /* DNF: a loss, NO payout, no show-up points */
+  if(S.blown){ save.losses++; save.races++; return; } /* DNF: a loss, NO payout, no show-up points */
   if(win){ save.cash+=S.rival.pay; save.wins++; save.beaten[S.rival.id]=true;
     if(S.rival.id==='scotty') save.champion=true; }
   else { save.losses++; save.cash+=25; } /* show-up points for a clean loss */
@@ -1629,7 +2041,6 @@ function finalizeResult(win,foul){
     if(!save.bestET||p.finishTotal<save.bestET) save.bestET=p.finishTotal;
     if(!save.bestTrap||p.trapV>save.bestTrap) save.bestTrap=p.trapV;
   }
-  storeSave();
 }
 function fadeToResult(win,foul){
   const f=$('fade'); f.style.opacity='1';
@@ -1663,7 +2074,7 @@ function showResult(win,foul){
                        : 'No gain on this run — your best is still '+pb.toFixed(3)+'s. The parts are on; run it again.'):
       'First timed run on the new parts: '+p.finishTotal.toFixed(3)+'s';
     gr.style.display='';
-    save.gainPending=false; storeSave();
+    save.gainPending=false;
   } else gr.style.display='none';
   /* RECORD BROKEN check — a record is a speed, not a win: any clean
      finished run that traps past a standing salt mark breaks it. The
@@ -1675,7 +2086,6 @@ function showResult(win,foul){
       brokeTxt='★ RECORD TAKEN — THE DRAG RACING RECORD (346.95 MPH) is yours. Scotty held it; now the board says your name.'; }
     RECORDS.slice(1).forEach(rec=>{ if(!save.records[rec.id]&&trapMph>rec.mark){ save.records[rec.id]=+trapMph.toFixed(1);
       brokeTxt+=(brokeTxt?'<br>':'')+'★ RECORD BROKEN — '+rec.name+': '+rec.mark+' MPH ('+rec.holder+') FALLS. Your new number: '+trapMph.toFixed(1)+' MPH.'; } });
-    if(brokeTxt) storeSave();
   }
   if(brokeTxt){ rr.style.display=''; rr.innerHTML=brokeTxt; } else rr.style.display='none';
   const idx=RIVALS.indexOf(r), nxt=RIVALS[idx+1];
@@ -1692,6 +2102,22 @@ function renderTitleStats(){
     (save.bestET?' · Best ET <b>'+save.bestET.toFixed(3)+'s</b>':'')+
     (save.champion?' · <b style="color:#FFD75E">★ LADDER CHAMPION</b>':'')+
     (save.records&&save.records.lsr?' · <b style="color:#FFD75E">★ LAND SPEED RECORD HOLDER</b>':(save.records&&save.records.drag?' · <b style="color:#FFD75E">★ DRAG RACING RECORD HOLDER</b>':''));
+  /* v0.4.1: the saved-game panel reads the STORED save (what the next
+     visit loads) — CONTINUE plays it, NEW GAME starts this session
+     fresh (the stored save survives until you SAVE over it or RESET). */
+  const panel=$('title-saved'); if(!panel) return;
+  let stored=null; try{ stored=JSON.parse(localStorage.getItem(SAVE_KEY)); }catch(e){}
+  if(stored&&typeof stored==='object'){
+    const built=PARTS.filter(p=>(stored.up&&stored.up[p.id])>0).length;
+    panel.innerHTML='<div class="savedcard">💾 <b>SAVED GAME</b> — $'+stored.cash+' · '+stored.wins+'W – '+stored.losses+'L'+
+      (stored.bestET?' · best '+stored.bestET.toFixed(3)+'s':'')+' · '+built+' parts fitted'+
+      '<div class="rowbtns"><button id="btn-continue" class="smallbtn savebtn">▶ Continue saved game</button>'+
+      '<button id="btn-newgame" class="smallbtn">New game (fresh)</button></div></div>';
+    $('btn-continue').addEventListener('click',()=>{ AudioX.init(); loadSave(); playerCarColor=0x0b0d12; buildPlayerCar(0x0b0d12); showScreen('garage'); });
+    $('btn-newgame').addEventListener('click',()=>{ AudioX.init(); save=freshSave(); PARTS.forEach(p=>{ if(typeof save.up[p.id]!=='number') save.up[p.id]=0; }); save.records={}; playerCarColor=0x0b0d12; buildPlayerCar(0x0b0d12); showScreen('garage'); });
+  } else {
+    panel.innerHTML='No saved game yet — progress only sticks when you hit <b>💾 SAVE GAME</b>. No save = next visit starts completely over.';
+  }
 }
 function pips(tier,max){
   let s=''; for(let i=0;i<max;i++) s+= i<tier?'●':'<span class="off">●</span>';
@@ -1720,14 +2146,15 @@ function renderGarage(){
     const locked=idx>0&&!save.beaten[RIVALS[idx-1].id];
     const chuteLock=!locked&&!!r.needChute&&!(save.up.chute>0);
     const b=document.createElement('button'); b.className='rival'+(save.beaten[r.id]?' beaten':'')+(locked?' locked':'');
+    const li=ladderInfo(r); const pace=li?li.targetET:r.etBase;
     b.innerHTML='<div class="face" style="background:'+r.face+'">'+r.name[0]+'</div>'+
       '<div class="info"><div class="nm">'+r.name+' '+(save.beaten[r.id]?'<span class="beatentag">✓ BEATEN</span>':'')+
-      '</div><div class="car">'+r.car+' · runs about '+r.etBase.toFixed(1)+'s</div><div class="rline">“'+r.line+'”</div></div>'+
+      '</div><div class="car">'+r.car+' · runs about '+pace.toFixed(1)+'s'+(li&&li.targetET<r.etBase-0.2?' · 🔧 he\'s been building too':'')+'</div><div class="rline">“'+r.line+'”</div></div>'+
       (locked? '<div class="pay"><b>🔒</b><span>BEAT '+RIVALS[idx-1].name.split(' ')[0].toUpperCase()+' FIRST</span><div class="diff '+r.dcls+'">'+r.diff+'</div></div>'
              : chuteLock? '<div class="pay"><b>🔒</b><span>NEEDS TWIN CHUTE — TECH INSPECTION (IN THE SHOP)</span><div class="diff '+r.dcls+'">'+r.diff+'</div></div>'
              : '<div class="pay"><b>$'+r.pay+'</b><span>TO WINNER</span><div class="diff '+r.dcls+'">'+r.diff+'</div></div>');
     if(locked||chuteLock){ b.disabled=true; }
-    else b.addEventListener('click',()=>{ AudioX.init(); startRace(r); });
+    else b.addEventListener('click',()=>{ AudioX.init(); startRaceWithClip(r); });
     list.appendChild(b);
   });
   const shop=$('shop-list'); shop.innerHTML='';
@@ -1745,7 +2172,7 @@ function renderGarage(){
       btn.addEventListener('click',()=>{
         if(lockFor(p,save.up[p.id]+1)) return; /* locked tiers refuse, even by script */
         if(save.up[p.id]>=p.prices.length||save.cash<p.prices[save.up[p.id]]) return;
-        save.cash-=p.prices[save.up[p.id]]; save.up[p.id]++; save.gainPending=true; storeSave();
+        save.cash-=p.prices[save.up[p.id]]; save.up[p.id]++; save.gainPending=true;
         buildPlayerCar(); /* the mod appears on the car, live */
         AudioX.buy(); renderGarage();
       });
@@ -1841,6 +2268,8 @@ addEventListener('keyup',e=>{
   if(e.code==='Space'){ gasUp(); $('btn-gas').classList.remove('held'); }
 });
 $('btn-race-title').addEventListener('click',()=>{ AudioX.init(); showScreen('garage'); });
+$('btn-save-title').addEventListener('click',()=>{ AudioX.init(); doSaveGame(); });
+$('btn-save-garage').addEventListener('click',()=>{ AudioX.init(); doSaveGame(); });
 $('btn-back-garage').addEventListener('click',()=>showScreen('title'));
 $('btn-how-title').addEventListener('click',()=>showScreen('how'));
 $('btn-how-garage').addEventListener('click',()=>showScreen('how'));
@@ -1848,12 +2277,12 @@ $('btn-how-back').addEventListener('click',()=>showScreen(save&&S._howFrom==='ga
 $('btn-how-title').addEventListener('click',()=>{ S._howFrom='title'; });
 $('btn-how-garage').addEventListener('click',()=>{ S._howFrom='garage'; });
 $('btn-reset').addEventListener('click',()=>{
-  localStorage.removeItem(SAVE_KEY); loadSave(); buildPlayerCar(); renderTitleStats(); banner('', '', 0);
+  localStorage.removeItem(SAVE_KEY); loadSave(); playerCarColor=0x0b0d12; buildPlayerCar(0x0b0d12); renderTitleStats(); banner('', '', 0);
   $('title-stats').innerHTML='Game reset. Fresh $250, clean record.'; });
-$('btn-quit').addEventListener('click',()=>{ S.phase='idle'; S.camMode='orbit'; setPovHide(false); treeAllOff(); showScreen('garage'); });
+$('btn-quit').addEventListener('click',()=>{ stopAudioBed(); S.phase='idle'; S.camMode='orbit'; setPovHide(false); treeAllOff(); showScreen('garage'); });
 $('btn-mute').addEventListener('click',e=>{ AudioX.muted=!AudioX.muted; e.target.textContent=AudioX.muted?'✕':'♪'; });
-$('btn-rematch').addEventListener('click',()=>startRace(S.rival));
-$('btn-next').addEventListener('click',()=>{ const n=RIVALS[RIVALS.indexOf(S.rival)+1]; if(n) startRace(n); });
+$('btn-rematch').addEventListener('click',()=>startRaceWithClip(S.rival));
+$('btn-next').addEventListener('click',()=>{ const n=RIVALS[RIVALS.indexOf(S.rival)+1]; if(n) startRaceWithClip(n); });
 $('btn-garage2').addEventListener('click',()=>showScreen('garage'));
 
 /* ---------------- TACH ---------------- */
@@ -1892,6 +2321,11 @@ const _camTarget=new THREE.Vector3(), _camLook=new THREE.Vector3();
 function engineAudio(rpm,thr,running,dt){
   audioT+=dt;
   if(audioT>=0.08){ audioT=0;
+    /* AUDIO STITCH: while the clip's burnout bed plays, the game's
+       engine stays SILENT — one continuous bed across the cut, no
+       overlap, and the game audio enters only when the bed stops
+       (the moment the in-game smoking ends). */
+    if(S.audioBed){ AudioX.engine(0,0,false,0,false,0); return; }
     if(S.blown){ AudioX.engine(0,0,false,0,false,0); return; } /* a blown motor stays dead */
     const strain=S.overRev?clamp(S.overRev/1.6,0,1):0;
     AudioX.engine(rpm,thr,running, save?save.up.engine:0, !!(S.player&&S.player.nitroT>0&&S.player.finishTotal===null), strain); }
@@ -1911,14 +2345,26 @@ let blownVidDone=true;
 function showBlownVideo(){
   const w=$('blownwrap'), v=$('blownvid');
   blownVidDone=false;
-  w.classList.add('show');
-  const done=()=>{ if(blownVidDone) return; blownVidDone=true; w.classList.remove('show');
+  const done=()=>{ if(blownVidDone) return; blownVidDone=true; clearTimeout(cap); clearTimeout(bail);
+    w.classList.remove('show'); w.onclick=null;
     try{ v.pause(); }catch(e){} fadeToResult(false,false); };
-  v.onended=done; v.onerror=done; w.onclick=done; /* tap skips */
-  setTimeout(()=>{ if(!blownVidDone&&v.readyState<2) done(); },1600); /* clip unreachable -> straight to the slip */
-  const pr=v.play(); if(pr&&pr.catch) pr.catch(()=>{});
-  setTimeout(()=>{ if(isFinite(v.duration)&&v.duration>0) setTimeout(done,v.duration*1000+1200); },60);
-  setTimeout(done,10000); /* hard cap: the moment never outlasts the clip */
+  /* v0.4.1 (Joshua never SAW a blown motor): the clip is warmed at
+     race start now, and the show WAITS for it — up to 3.5s for
+     canplay instead of the old 1.6s bail that skipped the whole
+     moment on a slow phone. A hard error still falls straight
+     through; a 10s cap means the video never holds the result
+     hostage. The blow itself (banner, smoke, dead car) already
+     happened in-game — the video dresses it, never gates it. */
+  const cap=setTimeout(done,10000);
+  const bail=setTimeout(()=>{ if(!blownVidDone&&v.readyState<2) done(); },3500);
+  const play=()=>{ if(blownVidDone) return; clearTimeout(bail);
+    w.classList.add('show'); w.onclick=done; /* tap skips */
+    v.onended=done;
+    try{ v.currentTime=0; const pr=v.play(); if(pr&&pr.catch) pr.catch(()=>done()); }catch(e){ done(); } };
+  v.onerror=done;
+  if(v.readyState>=2) play();
+  else { v.addEventListener('canplay',function cp(){ v.removeEventListener('canplay',cp); play(); });
+    try{ v.load(); }catch(e){} }
 }
 setTimeout(()=>{ const v=$('blownvid'); if(v){ v.preload='auto'; try{ v.load(); }catch(e){} } },5000); /* warm the clip in the background, never in the load path */
 function stepFlames(car,state,dt){
@@ -1960,7 +2406,7 @@ function animate(){
     if(S._burnSmoke<=0){ S._burnSmoke=0.03;
       puff(-2.91,0.35,-8.5,3,1.1,1.3); puff(-1.19,0.35,-8.5,3,1.1,1.3);
       puff( 1.19,0.35,-8.5,3,1.1,1.3); puff( 2.91,0.35,-8.5,3,1.1,1.3); }
-    if(S.burnT>=3.2) startRollin();
+    if(S.burnT>=3.6) startRollin();
   } else if(S.phase==='rollin'){
     S.rollT+=dt; const k=Math.min(1,S.rollT/0.75), e=1-Math.pow(1-k,3);
     S.carBack=7*(1-e);
@@ -1987,7 +2433,15 @@ function animate(){
         }
         if(a.launched){
           if(a.finishTotal===null){
-            const arpm=rpmFor(a.v,a.gear);
+            /* v0.4.1: ladder-scaled rivals run the PLAYER's build — with
+               a steepened launch gear, raw rpmFor caps at
+               LIMITER/launchMult in first gear and can never reach the
+               shift point (the AI sat in first forever). Scaled rivals
+               therefore shift on the COUPLED reading (rpmForC), the one
+               the limiter gates. Fixed-spec rivals (Scotty, salt) keep
+               the original raw-rpmFor shift — their sealed numbers
+               (Scotty's 346.95 trap) were tuned on it. */
+            const arpm=S.aiAnchor?rpmForC(a,a.gear):rpmFor(a.v,a.gear);
             if(arpm>=S.rival.shiftRpm&&a.gear<4&&a.shiftCut<=0) doShiftCar(a,nowI);
           }
           if(S.rival.up&&a.nitroLeft>0&&a.dist>=200&&a.finishTotal===null){ a.nitroLeft--; a.nitroT=a.nitroDur; } /* build-spec rivals (Bonneville + Scotty) fire their bottle at 200 m, like you do */
@@ -2003,7 +2457,11 @@ function animate(){
       if(p.launched&&p.finishTotal===null&&!S.blown){
         const rNow=rpmForC(p,p.gear);
         if(p.gear<4&&p.throttle>0&&rNow>PERFECT_HI) S.overRev+=dt;
-        else S.overRev=Math.max(0,S.overRev-dt*1.5);
+        /* v0.4.1: forgiveness halved (was dt*1.5) — camping the redline
+           still blows in ~1.5s, and now repeated late shifts across a
+           run ADD UP toward a blow instead of wiping clean each gear.
+           One sloppy shift still forgives; a run of them cooks it. */
+        else S.overRev=Math.max(0,S.overRev-dt*0.75);
         if(S.overRev>0.95){ S._wisp=(S._wisp||0)-dt;
           if(S._wisp<=0){ S._wisp=0.12; puff(playerCar.position.x,0.85,playerCar.position.z+0.9,2,0.5,0.9); } }
         if(S.overRev>=1.6) blowMotor();
@@ -2064,8 +2522,19 @@ function animate(){
     drawTach(pp.rpmDisp,pp.gear);
     $('gr-num').textContent=pp.gear+1;
     $('gr-mph').textContent=Math.round(pp.v*2.23694)+' MPH';
+    /* v0.4.1: the cockpit tach needle is live off the same rpm */
+    if(playerCar.userData.tachNeedle)
+      playerCar.userData.tachNeedle.rotation.z=2.2-clamp((pp.rpmDisp-900)/6900,0,1)*3.6;
     if(S.shiftFlashT>0){ S.shiftFlashT-=dt; if(S.shiftFlashT<=0) $('shiftflash').textContent=''; }
     engineAudio(pp.rpmDisp,S.phase==='burnout'?0.85:pp.throttle,S.phase==='run'||S.phase==='staging'||S.phase==='burnout'||S.phase==='rollin',dt);
+    /* AUDIO STITCH: the bed plays until the smoking is DONE — the
+       moment the phase leaves 'burnout', the bed fades out and the
+       game's own audio takes over. */
+    if(S._bedPhase==='burnout'&&S.phase!=='burnout') stopAudioBed();
+    S._bedPhase=S.phase;
+    /* v0.4.1: the cockpit speedo needle is live off the same speed */
+    if(playerCar.userData.speedNeedle)
+      playerCar.userData.speedNeedle.rotation.z=2.2-clamp((pp.v*2.23694)/200,0,1)*3.6;
     /* the big HUD tree rides the whole start sequence, then clears */
     $('hudtree').classList.toggle('show', S.phase==='burnout'||S.phase==='rollin'||S.phase==='staging'||S.phase==='foul'||(S.phase==='run'&&S.greenTime!==null&&S.simTime-S.greenTime<1.2));
     const dz=$('danger');
@@ -2106,8 +2575,8 @@ function animate(){
     /* DRIVER'S SEAT — over the hood and the blower, rival lane to the right */
     const kick=S.nitroKick||0, bScore=(save.up.engine+save.up.tires+save.up.gears+save.up.nitro+save.up.weight+(save.up.exhaust||0)+(save.up.susp||0)+(save.up.fuel||0))*0.66;
     const shake=(pv/82)*0.02+kick*0.03, vib=Math.sin(now*87)*0.0035*(pp?pp.rpmDisp/7500:0);
-    camera.position.set(px-0.38+(Math.random()-0.5)*shake, 1.33+vib+(Math.random()-0.5)*shake, pz-0.3);
-    _camLook.set(px+1.15,0.5,pz+30); camera.lookAt(_camLook);
+    camera.position.set(px-0.38+(Math.random()-0.5)*shake, 1.22+vib+(Math.random()-0.5)*shake, pz-0.52);
+    _camLook.set(px+0.95,0.58,pz+30); camera.lookAt(_camLook);
     const targetFov=74+clamp(pv,0,82)*0.17+((pp&&pp.nitroT>0)?6:0)+kick*9+bScore*0.35;
     camera.fov+=(targetFov-camera.fov)*Math.min(1,dt*4); camera.updateProjectionMatrix();
     const sf=clamp((pv-16)/60,0,1);
