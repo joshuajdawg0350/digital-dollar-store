@@ -70,9 +70,10 @@
   .recboard{border:1px solid #2A3C52;border-radius:10px;padding:10px 12px;margin:0 0 6px;background:rgba(10,16,26,.55)}
   .recboard .rec{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px dashed #22344c}
   .recboard .rec:last-child{border-bottom:none}
+  .recboard .rec>div:first-child{flex:1 1 auto;min-width:0}
   .recboard .rn{font-weight:800;color:#DCE9F6}
   .recboard .rm{color:#8FA9C4;font-size:12px}
-  .recboard .rs{font-weight:900;color:#FFD75E;white-space:nowrap}
+  .recboard .rs{font-weight:900;color:#FFD75E;flex:0 1 46%;min-width:0;text-align:right;overflow-wrap:break-word}
   .recboard .rs.standing{color:#8FA9C4}
   #blownwrap{position:fixed;inset:0;background:#000;z-index:60;display:none}
   #blownwrap.show{display:block}
