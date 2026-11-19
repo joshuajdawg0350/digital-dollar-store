@@ -1,0 +1,4 @@
+Social Media Content Calendar
+=============================
+
+Open Content-Calendar.xlsx in Excel or Google Sheets. Plan on the calendar tab — January 2027 is the worked example, and the Blank Month tab copies cleanly for every other month. Keep raw ideas in the Ideas Bank, log each published post in the Post Tracker (engagement totals add themselves), keep copy-paste hashtag sets in the Hashtag Bank, and record one Analytics row per week per platform so follower growth calculates itself. The Repurposing Checklist turns every good post into five.

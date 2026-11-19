@@ -1,0 +1,4 @@
+Debt Payoff Tracker — Snowball & Avalanche
+==========================================
+
+Open Debt-Payoff-Tracker.xlsx in Excel or Google Sheets. On the Debt List tab, replace the EXAMPLE debts with your real ones — name, balance, APR and minimum payment; totals and your weighted-average APR calculate themselves. Then pick a method: Snowball (smallest balance first, quick wins) or Avalanche (highest APR first, cheapest overall) — each plan estimates months-to-clear with the real payoff formula, and the yellow extra-money cell shows what paying more does. The Payoff Schedule tab combines everything into one month-by-month chart of your balance falling to zero.

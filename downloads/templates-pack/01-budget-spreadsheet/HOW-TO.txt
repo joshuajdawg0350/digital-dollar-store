@@ -1,0 +1,4 @@
+Paycheck & Annual Budget Spreadsheet
+====================================
+
+Open Budget-Spreadsheet.xlsx in Microsoft Excel, or upload it to Google Drive and open it with Google Sheets — every formula works in both. Start on the Instructions tab: set your income and category budgets on the Monthly Budget tab, log spending on the Expense Tracker tab (the budget's Actual column totals itself), plan each paycheck on the Paycheck Budget tab, and glance at the Dashboard for the whole picture. Rows marked EXAMPLE are samples — delete them and type your own numbers.

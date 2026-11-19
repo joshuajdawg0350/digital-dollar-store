@@ -1,0 +1,4 @@
+Interview Planner (printable)
+=============================
+
+Print Interview-Planner.pdf and fill one set per interview: research notes, your three reusable stories, openers for the questions they always ask, smart questions to ask them, a day-of checklist, and copy-and-adjust thank-you and follow-up emails. The log page keeps every interview's next step in one place. It pairs with Job-Application-Tracker.xlsx in this folder, which tracks the applications themselves.

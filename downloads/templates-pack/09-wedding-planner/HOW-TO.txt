@@ -1,0 +1,4 @@
+Wedding Planner Spreadsheet + Binder
+====================================
+
+Open Wedding-Planner.xlsx in Excel or Google Sheets. Start on the Dashboard: type your wedding date and the days-to-go, budget and guest counts fill themselves from the other tabs. Track estimated vs. actual costs on the Budget tab, guests and RSVPs on the Guest List tab (headcounts total themselves), vendor deposits and balances on the Vendors tab, and work through the month-by-month Checklist. The Day-Of Timeline tab is the schedule for the big day, and Wedding-Planner-Binder.pdf has matching printable pages for a physical binder. Replace the EXAMPLE rows with your real wedding.

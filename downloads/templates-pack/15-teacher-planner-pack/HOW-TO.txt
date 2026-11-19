@@ -1,0 +1,4 @@
+Teacher Lesson Planner + Classroom Pack
+=======================================
+
+Print Teacher-Planner-Pages.pdf at 100% on US Letter: weekly lesson plan grids, a class roster, a seating chart, a substitute-teacher sheet that covers you on sick days, and two achievement certificates to hand out for real. Grade-Tracker.xlsx does the numbers — type assignment scores and each student's average and letter grade calculate themselves, and the attendance tab works out % present per student per week. Built for the way teachers actually buy: a few pages you'll reprint all year, plus the spreadsheet that saves the Sunday-night maths.

@@ -1,0 +1,4 @@
+Invoice + Quote/Estimate + Receipt Pack
+=======================================
+
+Three matching documents in Word/Google Docs format (PDFs included to show the finished look): send Quote-Estimate.docx before the job, Invoice.docx when the work is done, and Receipt.docx when the money lands. Swap in your business name, contact details and payment handles at the top of each, and type your real line items — the example numbers add up so you can see the layout working. Log every invoice in Invoice-Tracker.xlsx; it totals what you're still owed automatically. Delete the EXAMPLE lines and make each document yours before sending.

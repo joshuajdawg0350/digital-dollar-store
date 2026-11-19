@@ -1,0 +1,4 @@
+Small-Business Bookkeeping Spreadsheet
+======================================
+
+Open Bookkeeping-Spreadsheet.xlsx in Excel or Google Sheets (upload to Drive and open with Sheets). Log every payment in on the Income Log tab and every purchase on the Expense Log tab; product sales go on the Sales Log, where quantity × price totals itself. The Annual Summary fills itself by month from the logs, the Pricing Calculator works out the selling price you need from your costs and margin, and the Dashboard shows income, expenses and profit at a glance. The Tax Set-Aside tab is a rough planning estimate only — it is not tax advice. Delete the EXAMPLE rows and type your own.

@@ -1,0 +1,4 @@
+Seller / Maker Inventory + Pricing Calculator + Order Tracker
+=============================================================
+
+Open Seller-Tools.xlsx in Excel or Google Sheets. Keep products on the Inventory tab — value per row totals itself and the Status column flags REORDER when you run low. Work out what one item costs on the Materials Cost tab, then let the Pricing Calculator set a selling price that covers materials, labor, fees and your margin. Log every sale on the Order Tracker (net after fees calculates per row) and check Sales by Channel to see which shelf earns. Seller-Pages.pdf has printable inventory and order sheets for the workbench.

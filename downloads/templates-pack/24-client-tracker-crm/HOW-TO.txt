@@ -1,0 +1,4 @@
+Client Tracker / Simple CRM Spreadsheet
+=======================================
+
+Open Client-Tracker-CRM.xlsx in Excel or Google Sheets. Keep one row per client on the Clients tab (status, source, last contact, next follow-up), one row per job on Projects, and one row per invoice on Payments — the outstanding total adds itself up. The Dashboard counts your clients, flags follow-ups due in the next 7 days, and totals quoted work and unpaid invoices automatically. It's the whole CRM a small business needs, with no subscription. Delete the EXAMPLE rows and start with your real clients.

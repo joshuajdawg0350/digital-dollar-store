@@ -1,0 +1,4 @@
+Life OS Setup Guide (printable + Notion rebuild)
+================================================
+
+Life-OS-Setup-Guide.pdf explains the honest deal: a live Notion duplicate link can't be zipped into a file, so you get the system three real ways — the ready-built spreadsheet in this folder, a step-by-step guide to rebuilding the identical system free in Notion (dashboard, tasks database with the exact properties and views, goals, habits, finance, inbox), and printable dashboard and weekly-reset pages if paper works better for you. Whichever way you run it, the weekly 10-minute reset is what keeps it true.
