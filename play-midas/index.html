@@ -15,6 +15,7 @@
 <meta name="twitter:description" content="Heads-up poker against Midas. 10 hands, free, play chips. After hand 10 he reads your game.">
 <meta name="theme-color" content="#05080E">
 <link rel="icon" href="../assets/favicon.ico" sizes="any">
+<link rel="preload" as="image" href="backdrop.webp">
 <style>
   :root{
     --blue:#0096FF; --blue-hi:#5db9ff; --ink:#e8edf2; --muted:#9fb0c0;
@@ -23,9 +24,15 @@
   }
   *{ box-sizing:border-box; }
   html,body{ margin:0; padding:0; }
-  body{ background:var(--bg); color:var(--ink); font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; line-height:1.45; }
+  body{ background:#04070c; color:var(--ink); font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; line-height:1.45; }
+  /* Joshua's poker-room picture as the scene behind the page (fixed layer + readability veil) */
+  body::before{ content:""; position:fixed; inset:0; z-index:0; background:url('backdrop.webp') center 18%/cover no-repeat #04070c; }
+  body::after{ content:""; position:fixed; inset:0; z-index:0; background:linear-gradient(180deg, rgba(3,6,10,.66) 0%, rgba(3,6,10,.38) 26%, rgba(3,6,10,.34) 55%, rgba(3,6,10,.78) 100%); }
   a{ color:var(--blue-hi); }
-  .wrap{ max-width:560px; margin:0 auto; padding:10px 12px 34px; }
+  .wrap{ max-width:560px; margin:0 auto; padding:10px 12px 34px; position:relative; z-index:1; }
+  h1{ filter:drop-shadow(0 2px 9px rgba(0,0,0,.85)); }
+  .sub, .brand, .backlink{ text-shadow:0 1px 7px rgba(0,0,0,.9), 0 0 2px rgba(0,0,0,.9); }
+  footer{ text-shadow:0 1px 6px rgba(0,0,0,.95); }
   .topbar{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:4px 0 8px; }
   .brand{ font-weight:800; letter-spacing:.4px; font-size:.95rem; color:var(--ink); text-decoration:none; }
   .brand small{ display:block; color:var(--muted); font-weight:600; font-size:.68rem; letter-spacing:2px; }
@@ -40,21 +47,23 @@
   .howto li{ margin:.28em 0; }
 
   /* ---------- the table ---------- */
-  .table{ position:relative; border:1px solid #000; border-radius:20px; padding:13px 13px 15px;
+  .table{ position:relative; border:2px solid #120b06; border-radius:26px; padding:14px 13px 16px;
     background:
-      radial-gradient(115% 95% at 50% -5%, rgba(0,150,255,.16) 0%, rgba(0,150,255,0) 52%),
-      radial-gradient(75% 60% at 50% 47%, rgba(0,110,220,.13) 0%, rgba(0,110,220,0) 70%),
-      repeating-linear-gradient(0deg, rgba(255,255,255,.014) 0 2px, rgba(0,0,0,.014) 2px 4px),
-      radial-gradient(125% 135% at 50% 0%, #132c47 0%, #0a1a2c 55%, #060d16 100%);
+      radial-gradient(95% 55% at 50% -8%, rgba(140,200,255,.22) 0%, rgba(140,200,255,0) 55%),
+      radial-gradient(120% 100% at 50% 42%, rgba(255,255,255,.055) 0%, rgba(255,255,255,0) 55%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E"),
+      radial-gradient(130% 125% at 50% 38%, #127347 0%, #0d5c38 56%, #083d25 100%);
     box-shadow:
-      inset 0 0 0 2px rgba(195,204,214,.22),
-      inset 0 0 48px rgba(0,0,0,.62),
-      0 0 0 4px #11161d,
-      0 0 0 6px #7e8a99,
-      0 0 0 8px #39424e,
-      0 0 0 9px #98a4b3,
-      0 12px 34px rgba(0,0,0,.65),
-      0 0 46px rgba(0,150,255,.15); }
+      inset 0 0 0 2px rgba(0,0,0,.55),
+      inset 0 0 55px rgba(0,0,0,.55),
+      0 0 0 5px #2b1a0e,
+      0 0 0 6.5px #c3ccd6,
+      0 0 0 9px #1c1109,
+      0 14px 38px rgba(0,0,0,.72),
+      0 0 52px rgba(0,150,255,.14); }
+  .table::before{ content:""; position:absolute; inset:8px; border:1.5px solid rgba(255,255,255,.07); border-radius:20px; pointer-events:none; }
+  .table::after{ content:"PLAY MIDAS"; position:absolute; left:0; right:0; top:43%; text-align:center; font-weight:900; letter-spacing:9px; font-size:1.3rem; color:rgba(255,255,255,.05); pointer-events:none; }
+  .table > *{ position:relative; z-index:1; }
   .hud{ display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:.86rem; color:var(--muted); margin-bottom:10px; padding-bottom:7px; border-bottom:1px solid rgba(195,204,214,.13); }
   .hud .handno{ font-weight:800; color:#e6eef7; letter-spacing:.5px; text-shadow:0 0 10px rgba(0,150,255,.35); }
   .hud .blinds{ white-space:nowrap; }
@@ -73,33 +82,75 @@
   .avatar.big{ width:66px; height:66px; flex:0 0 66px; }
   .cards{ display:flex; gap:6px; margin-left:auto; }
   @keyframes dealIn{ from{ opacity:0; transform:translateY(-7px) scale(.93); } to{ opacity:1; transform:translateY(0) scale(1); } }
-  .card{ width:47px; height:66px; border-radius:8px; background:linear-gradient(165deg,#ffffff 0%,#eef2f7 58%,#ccd7e3 100%); color:#131a24; position:relative; flex:0 0 auto;
-    box-shadow:inset 0 0 0 1px #9fb0c2, inset 0 0 0 3px #ffffff, inset 0 0 0 4px rgba(23,43,69,.16), 0 3px 8px rgba(0,0,0,.62);
+  .card{ width:50px; height:70px; border-radius:9px; background:linear-gradient(165deg,#ffffff 0%,#f2f5f9 58%,#d3dde8 100%); color:#131a24; position:relative; flex:0 0 auto;
+    box-shadow:inset 0 0 0 1px #93a5ba, inset 0 0 0 3px #ffffff, inset 0 0 0 4px rgba(23,43,69,.15), inset 0 -9px 13px rgba(20,35,55,.09), 0 4px 9px rgba(0,0,0,.55);
     font-weight:800; animation:dealIn .22s ease-out; }
-  .card .cnr{ position:absolute; top:3px; left:4px; display:flex; flex-direction:column; align-items:center; line-height:.92; }
+  .card .cnr{ position:absolute; top:3px; left:4px; display:flex; flex-direction:column; align-items:center; line-height:.92; z-index:2; }
   .card .cnr .r{ font-size:.98rem; font-weight:900; }
   .card .cnr .s{ font-size:.78rem; }
   .card .cnr.br{ top:auto; left:auto; bottom:3px; right:4px; transform:rotate(180deg); }
-  .card .pip{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:1.5rem; }
-  .card .pip.ace{ font-size:2.15rem; }
-  .card .court{ position:absolute; top:14px; bottom:14px; left:8px; right:8px; border:1.5px solid currentColor; border-radius:5px;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    background:linear-gradient(180deg, rgba(0,150,255,.12), rgba(0,0,0,.04) 60%); box-shadow:inset 0 0 0 2px rgba(255,255,255,.65); }
-  .card .courtR{ font-family:Georgia,'Times New Roman',serif; font-size:1.28rem; font-weight:700; line-height:1; }
-  .card .courtS{ font-size:.8rem; line-height:1; margin-top:1px; }
+  /* full pip layouts for number cards */
+  .card .pips{ position:absolute; left:12px; right:12px; top:8px; bottom:8px; }
+  .card .pips i{ position:absolute; font-style:normal; line-height:1; font-size:.8rem; transform:translate(-50%,-50%); text-shadow:0 .5px 0 rgba(255,255,255,.7); }
+  .card .pips i.f{ transform:translate(-50%,-50%) rotate(180deg); }
+  /* ace: one big pip in a double-ring medallion */
+  .card .ace{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+  .card .ace b{ font-size:2.35rem; font-weight:400; line-height:1; position:relative; z-index:1; text-shadow:0 1px 0 #ffffff, 0 3px 6px rgba(0,0,0,.20); }
+  .card .ace::before{ content:""; position:absolute; width:38px; height:38px; border-radius:50%; border:1.5px solid currentColor; opacity:.38; }
+  .card .ace::after{ content:""; position:absolute; width:30px; height:30px; border-radius:50%; border:1px solid currentColor; opacity:.22; }
+  /* court cards: gold-framed panel, serif rank, suit, crown/shield motif */
+  .card .court2{ position:absolute; top:13px; bottom:13px; left:7px; right:7px; border-radius:4px; overflow:hidden;
+    border:1.5px solid #a8842c; box-shadow:inset 0 0 0 1.5px #f6e3a1, inset 0 0 0 3.5px rgba(122,95,26,.30);
+    background:linear-gradient(160deg, #fdf6dd 0%, #f3e5bb 48%, #e9d195 100%);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .card .court2::before{ content:""; position:absolute; inset:0; background:linear-gradient(155deg, rgba(255,255,255,.55) 0 50%, rgba(90,60,0,.08) 50% 100%); }
+  .card.red .court2{ background:linear-gradient(160deg, #fdeeee 0%, #f6d9d4 48%, #eec2ba 100%); }
+  .card .court2 .cr{ font-family:Georgia,'Times New Roman',serif; font-weight:700; font-size:1.08rem; line-height:.95; position:relative; }
+  .card .court2 .cs{ font-size:.58rem; line-height:1.05; position:relative; }
+  .card .court2 .cm{ width:18px; height:18px; position:relative; margin-top:1px; }
+  .card .court2 .cm svg{ width:100%; height:100%; display:block; }
   .card.red{ color:#c81e2b; }
-  .card.red .court{ background:linear-gradient(180deg, rgba(200,30,43,.10), rgba(0,0,0,.03) 60%); }
-  .card.back{ background:repeating-linear-gradient(45deg,#0e3157 0 5px,#081c33 5px 10px); border:2px solid #c3ccd6;
-    box-shadow:inset 0 0 0 2px #05080e, inset 0 0 0 4px rgba(195,204,214,.45), 0 3px 8px rgba(0,0,0,.62);
+  /* card backs in the picture's style: dark slate, fine diamond lattice, white frame */
+  .card.back{ background:
+      radial-gradient(circle at 50% 42%, rgba(0,150,255,.22), rgba(0,150,255,0) 62%),
+      repeating-linear-gradient(45deg, rgba(215,222,231,.20) 0 1px, rgba(215,222,231,0) 1px 6px),
+      repeating-linear-gradient(-45deg, rgba(215,222,231,.20) 0 1px, rgba(215,222,231,0) 1px 6px),
+      linear-gradient(165deg,#16283f 0%,#0b1728 60%,#081120 100%);
+    border:1.5px solid #d7dee7;
+    box-shadow:inset 0 0 0 2.5px #0a1420, inset 0 0 0 4px rgba(215,222,231,.55), inset 0 0 14px rgba(0,0,0,.5), 0 4px 9px rgba(0,0,0,.55);
     display:flex; align-items:center; justify-content:center; }
-  .card.back .emblem{ width:27px; height:27px; border-radius:50%; border:1.5px solid #d7dee7; flex:0 0 27px;
-    background:radial-gradient(circle at 50% 35%, #123c68, #050d18 78%); color:#eaf3ff;
-    display:flex; align-items:center; justify-content:center; font-size:.95rem; text-shadow:0 0 7px rgba(0,150,255,.95); box-shadow:0 0 9px rgba(0,150,255,.4); }
-  .card.empty{ background:rgba(255,255,255,.03); border:1.5px dashed #33506e; box-shadow:inset 0 0 14px rgba(0,0,0,.35); animation:none; }
-  .boardrow{ display:flex; align-items:center; gap:6px; margin:12px 0 4px; padding:3px 2px; border-radius:12px;
-    background:radial-gradient(65% 140% at 40% 50%, rgba(0,150,255,.10), rgba(0,150,255,0) 72%); }
+  .card.back .emblem{ width:25px; height:25px; border-radius:5px; border:1.5px solid #d7dee7; flex:0 0 25px; transform:rotate(45deg);
+    background:repeating-linear-gradient(45deg, rgba(215,222,231,.25) 0 1px, rgba(215,222,231,0) 1px 4px), radial-gradient(circle at 50% 40%, #14365e, #050d18 80%);
+    box-shadow:0 0 10px rgba(0,150,255,.45), inset 0 0 6px rgba(0,0,0,.6); }
+  .card.back .emblem span{ display:block; transform:rotate(-45deg); font-size:.85rem; line-height:25px; text-align:center; color:#eaf3ff; text-shadow:0 0 7px rgba(0,150,255,.95); }
+  .card.empty{ background:rgba(0,0,0,.18); border:1.5px dashed rgba(255,255,255,.28); box-shadow:inset 0 0 14px rgba(0,0,0,.4); animation:none; }
+  /* dealt hole cards sit with a slight natural tilt and overlap */
+  #yourCards .card:first-child{ rotate:-2.5deg; }
+  #yourCards .card:last-child{ rotate:2deg; margin-left:-4px; }
+  #midasCards .card:first-child{ rotate:2deg; }
+  #midasCards .card:last-child{ rotate:-2.5deg; margin-left:-4px; }
+  .boardrow{ display:flex; align-items:center; justify-content:center; gap:6px; margin:12px 0 4px; padding:7px 10px; border-radius:999px;
+    border:1.5px solid rgba(255,255,255,.10);
+    background:radial-gradient(70% 150% at 42% 50%, rgba(255,255,255,.07), rgba(255,255,255,0) 70%), rgba(0,0,0,.14);
+    box-shadow:inset 0 1px 8px rgba(0,0,0,.30); }
   .board{ display:flex; gap:6px; }
-  .potbox{ margin-left:auto; text-align:right; }
+  .potline{ display:grid; grid-template-columns:1fr auto 1fr; align-items:center; min-height:34px; margin-top:2px; }
+  .potline .street{ min-height:0; }
+  /* chrome chip stacks — striped chip edges under a dashed-rim top disc */
+  .chipstack{ position:relative; width:38px; height:40px; flex:0 0 38px; }
+  .chipstack i{ position:absolute; left:1px; right:1px; bottom:0; height:27px; border-radius:3px;
+    background:
+      repeating-linear-gradient(90deg, rgba(255,255,255,.85) 0 4px, rgba(255,255,255,0) 4px 11px),
+      repeating-linear-gradient(180deg, #e8eef5 0 3px, #39424e 3px 4.5px, #9aa7b8 4.5px 6.5px, #232a33 6.5px 7.5px);
+    box-shadow:0 2px 5px rgba(0,0,0,.5), inset 0 0 4px rgba(0,0,0,.35); }
+  .chipstack::before{ content:""; position:absolute; left:0; right:0; top:0; height:13px; border-radius:50%; z-index:1;
+    background:radial-gradient(ellipse at 50% 38%, #fbfcfe 0%, #c3ccd6 45%, #7e8a99 78%, #4a545f 100%);
+    border:2px dashed rgba(255,255,255,.85); box-shadow:0 1px 2px rgba(0,0,0,.45), inset 0 0 0 2.5px rgba(57,66,78,.55), inset 0 0 6px rgba(0,0,0,.3); }
+  .chipstack::after{ content:""; position:absolute; left:50%; top:2.5px; width:8px; height:8px; margin-left:-4px; border-radius:50%; z-index:2;
+    background:radial-gradient(circle at 40% 35%, #a8dcff, #0096FF 60%, #005a96); box-shadow:0 0 5px rgba(0,150,255,.8); }
+  .chipstack.mid{ height:34px; } .chipstack.mid i{ height:21px; }
+  .chipstack.short{ height:29px; } .chipstack.short i{ height:16px; }
+  .potbox{ text-align:right; display:flex; align-items:center; gap:7px; justify-self:end; }
   .potbox .potlab{ font-size:.7rem; letter-spacing:1.5px; color:var(--blue-hi); font-weight:700; }
   .potbox .pot{ display:inline-block; margin-top:2px; padding:2px 10px 3px; border-radius:6px; font-size:1.35rem; font-weight:900; line-height:1.1;
     color:#7cc4ff; background:linear-gradient(180deg,#03060a,#0a141f); border:1px solid #1e3a52; font-variant-numeric:tabular-nums;
@@ -138,7 +189,7 @@
   .thinking{ color:var(--muted); font-style:italic; }
 
   /* ---------- the read ---------- */
-  .read{ background:linear-gradient(180deg,#0c141f 0%,#0a0f16 100%); border:1px solid #000; border-radius:16px; padding:18px 16px; margin-top:18px;
+  .read{ background:linear-gradient(180deg,#0b2016 0%,#07130c 100%); border:1px solid #000; border-radius:16px; padding:18px 16px; margin-top:18px;
     box-shadow:inset 0 0 0 2px rgba(195,204,214,.16), inset 0 0 34px rgba(0,0,0,.5),
       0 0 0 4px #11161d, 0 0 0 6px #7e8a99, 0 0 0 8px #39424e, 0 0 30px rgba(0,150,255,.16); }
   .readHead{ display:flex; gap:12px; align-items:center; margin-bottom:4px; }
@@ -162,10 +213,16 @@
   .again{ width:100%; margin-top:12px; }
   footer{ color:var(--muted); font-size:.84rem; margin-top:26px; border-top:1px solid var(--line); padding-top:12px; }
   @media (max-width:380px){
-    .card{ width:43px; height:61px; }
-    .card .court{ top:12px; bottom:12px; left:7px; right:7px; }
-    .card .courtR{ font-size:1.12rem; }
-    .card .pip.ace{ font-size:1.9rem; }
+    .card{ width:44px; height:62px; }
+    .card .pips{ left:10px; right:10px; top:7px; bottom:7px; }
+    .card .pips i{ font-size:.68rem; }
+    .card .ace b{ font-size:2rem; }
+    .card .ace::before{ width:32px; height:32px; }
+    .card .ace::after{ width:25px; height:25px; }
+    .card .court2{ top:11px; bottom:11px; left:6px; right:6px; }
+    .card .court2 .cr{ font-size:.95rem; }
+    .card .court2 .cm{ width:13px; height:13px; }
+    .chipstack{ width:32px; flex-basis:32px; }
     .seat .who{ min-width:76px; }
     h1{ font-size:1.65rem; }
   }
@@ -225,18 +282,19 @@
     <div class="seat">
       <div class="avatar" aria-hidden="true"><svg viewBox="5 3 54 54"><use href="#midasBot"/></svg></div>
       <div class="who"><div class="name"><span class="chrome">Midas</span> <span class="tag">HOUSE</span></div><div class="stack" id="midasStack">1,000</div></div>
+      <div class="chipstack" aria-hidden="true"><i></i></div>
       <div class="cards" id="midasCards"></div>
     </div>
 
     <div class="boardrow">
       <div class="board" id="board"></div>
-      <div class="potbox"><div class="potlab">POT</div><div class="pot" id="pot">0</div></div>
     </div>
-    <div class="street" id="street"></div>
+    <div class="potline"><span></span><div class="street" id="street"></div><div class="potbox"><div class="chipstack short" aria-hidden="true"><i></i></div><div><div class="potlab">POT</div><div class="pot" id="pot">0</div></div></div></div>
 
     <div class="seat" style="margin-top:6px">
       <div class="avatar you" aria-hidden="true">♠</div>
       <div class="who" style="min-width:86px"><div class="name">You <span class="tag" id="btnTag" hidden>BUTTON</span></div><div class="stack" id="yourStack">1,000</div></div>
+      <div class="chipstack mid" aria-hidden="true"><i></i></div>
       <div class="cards" id="yourCards"></div>
     </div>
 
@@ -520,14 +578,32 @@ function fmt(n){ return n.toLocaleString("en-US"); }
 
 /* ---------------- rendering ---------------- */
 function $(id){ return document.getElementById(id); }
+/* presentation data for the deck: pip coordinates [x%, y%] in the pip field (y>50 renders flipped) */
+var PIPS = {
+  2:[[50,0],[50,100]],
+  3:[[50,0],[50,50],[50,100]],
+  4:[[0,0],[100,0],[0,100],[100,100]],
+  5:[[0,0],[100,0],[50,50],[0,100],[100,100]],
+  6:[[0,0],[100,0],[0,50],[100,50],[0,100],[100,100]],
+  7:[[0,0],[100,0],[50,25],[0,50],[100,50],[0,100],[100,100]],
+  8:[[0,0],[100,0],[50,25],[0,50],[100,50],[50,75],[0,100],[100,100]],
+  9:[[0,0],[100,0],[0,33],[100,33],[50,50],[0,67],[100,67],[0,100],[100,100]],
+  10:[[0,0],[100,0],[50,17],[0,33],[100,33],[0,67],[100,67],[50,83],[0,100],[100,100]]
+};
+/* court motifs: Jack = shield, Queen = crown with orbs, King = crown with finial (gold work) */
+var MOTIF = {
+  11:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 19.5 5.2v6C19.5 16.9 16.3 19.9 12 21.4 7.7 19.9 4.5 16.9 4.5 11.2v-6z" fill="#a8842c" stroke="#7a5f1a" stroke-width=".8"/><path d="M12 5.6 16.8 7.1v4.2c0 4-2 6.2-4.8 7.4-2.8-1.2-4.8-3.4-4.8-7.4V7.1z" fill="#f6e3a1"/></svg>',
+  12:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="2.9" cy="7.6" r="1.5" fill="#a8842c"/><circle cx="12" cy="2.8" r="1.7" fill="#a8842c"/><circle cx="21.1" cy="7.6" r="1.5" fill="#a8842c"/><path d="M3 20.5 1.7 10l5.6 3L12 5.8 16.7 13l5.6-3L21 20.5z" fill="#a8842c" stroke="#7a5f1a" stroke-width=".8"/><rect x="3" y="21" width="18" height="1.6" fill="#7a5f1a"/><circle cx="12" cy="15.4" r="1.9" fill="currentColor"/></svg>',
+  13:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.1 1.6h1.8v2.6h2.6v1.8h-2.6v2.4h-1.8V6H8.5V4.2h2.6z" fill="#a8842c"/><path d="M3 20.5 1.7 10.6l5.6 3L12 7.4l4.7 6.2 5.6-3L21 20.5z" fill="#a8842c" stroke="#7a5f1a" stroke-width=".8"/><rect x="3" y="21" width="18" height="1.6" fill="#7a5f1a"/></svg>'
+};
 function cardHTML(c, faceDown){
-  if(faceDown) return '<div class="card back" aria-label="face down"><span class="emblem">♠</span></div>';
+  if(faceDown) return '<div class="card back" aria-label="face down"><span class="emblem"><span>♠</span></span></div>';
   if(!c) return '<div class="card empty"></div>';
   var red = (c.s===1 || c.s===2) ? " red" : "";
   var suit = SUIT_CH[c.s], center;
-  if(c.r === 14) center = '<span class="pip ace">' + suit + '</span>';
-  else if(c.r >= 11) center = '<span class="court"><span class="courtR">' + rankName(c.r) + '</span><span class="courtS">' + suit + '</span></span>';
-  else center = '<span class="pip">' + suit + '</span>';
+  if(c.r === 14) center = '<span class="ace"><b>' + suit + '</b></span>';
+  else if(c.r >= 11) center = '<span class="court2"><span class="cr">' + rankName(c.r) + '</span><span class="cs">' + suit + '</span><span class="cm">' + MOTIF[c.r] + '</span></span>';
+  else center = '<span class="pips">' + PIPS[c.r].map(function(p){ return '<i class="' + (p[1] > 50 ? 'f' : '') + '" style="left:' + p[0] + '%;top:' + p[1] + '%">' + suit + '</i>'; }).join('') + '</span>';
   var cnr = '<span class="cnr"><span class="r">' + rankName(c.r) + '</span><span class="s">' + suit + '</span></span>';
   return '<div class="card'+red+'" data-r="'+c.r+'" data-s="'+c.s+'">' + cnr + center + '<span class="cnr br"><span class="r">' + rankName(c.r) + '</span><span class="s">' + suit + '</span></span></div>';
 }
