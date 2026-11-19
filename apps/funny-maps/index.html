@@ -160,6 +160,39 @@
   #map[data-style="steve"] .leaflet-tile-pane{filter:sepia(.5) saturate(.68) brightness(1.05) contrast(.95);}
   #map[data-style="nora"] .leaflet-tile-pane{filter:brightness(1.03) saturate(1.1) contrast(1.02);}
   #qa-log{display:none;}
+  /* ---------- wide screens: SIDE BY SIDE (Joshua's order, 2026-11-18) ----------
+     On laptop/desktop widths the map and the people sit next to each
+     other: map column on the left, the whole control sheet becomes a
+     fixed right-hand panel — search, all six riders, toggles and
+     actions visible at once, no scrolling to pick who's riding shotgun.
+     The guidance banner and location pill stay over the MAP column so
+     directions never cover the people panel. Phone widths are
+     untouched: the stacked bottom sheet behaves exactly as before. */
+  @media (min-width:900px){
+    :root{ --panelW:clamp(360px, 38%, 560px); }
+    #map{ right:var(--panelW); }
+    #sheet{ left:auto; right:0; top:0; bottom:0; width:var(--panelW); height:100dvh;
+      max-height:none; border-radius:0; border-top:none; border-left:2px solid var(--blue);
+      padding:14px 16px calc(14px + env(safe-area-inset-bottom)); }
+    h1{ font-size:27px; }
+    #tagline{ margin:2px 0 8px; }
+    #banner{ right:var(--panelW); }
+    #locPill{ right:calc(var(--panelW) + 10px); max-width:40vw; }
+    #deniedCard{ right:calc(var(--panelW) + 12px); }
+    .secLabel{ margin:11px 0 7px; }
+    #picker{ gap:8px; }
+    .charCard{ display:grid; grid-template-columns:52px 1fr; column-gap:10px;
+      grid-template-areas:"av nm" "av tg" "av btn"; align-content:center;
+      padding:9px 11px; min-height:0; }
+    .charCard .avatar{ grid-area:av; float:none; margin:0; width:52px; height:52px; align-self:center; }
+    .charCard .nm{ grid-area:nm; margin-left:0; font-size:17px; line-height:1.15; }
+    .charCard .tg{ grid-area:tg; margin-top:2px; font-size:12.5px; }
+    .charCard .hearBtn{ grid-area:btn; justify-self:start; margin-top:5px; min-height:36px; padding:4px 12px; font-size:12.5px; }
+    .charCard.regularCard{ min-height:0; }
+    #toggleRow{ margin-top:10px; }
+    .tog{ min-height:48px; }
+    #actionRow{ margin-top:10px; }
+  }
 </style>
 </head>
 <body>
