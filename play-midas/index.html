@@ -331,6 +331,13 @@ function describeScore(sc){
     default: return rankName(sc[1]) + " high";
   }
 }
+/* Possessive-safe variant: after "your" / "Midas's" the leading article must
+   drop ("your pair of Qs", never "your a pair of Qs"). Names that carry no
+   article (two pair, trips, quads, high card) pass through unchanged. */
+function describeScoreOwned(sc){
+  var s = describeScore(sc);
+  return s.indexOf("a ") === 0 ? s.slice(2) : s;
+}
 
 /* One hand of heads-up Texas Hold'em. players: [{name, stack}] — stacks mutate. */
 function PokerHand(players, button, opts){
@@ -657,8 +664,8 @@ function endHand(){
     S.showdowns++;
     var yourScore = r.scores[0], midasScore = r.scores[1];
     if(r.winners.indexOf(0) >= 0){ S.showdownsWon++; S.biggestPotWon = Math.max(S.biggestPotWon, Math.floor(r.amt / r.winners.length)); }
-    if(r.winner === 0) msg = "Showdown — your " + describeScore(yourScore) + " beats Midas's " + describeScore(midasScore) + ". You take <b class=\"amt\">" + fmt(r.amt) + "</b>.";
-    else if(r.winner === 1) msg = "Showdown — Midas shows " + describeScore(midasScore) + " against your " + describeScore(yourScore) + ". He takes <b class=\"amt\">" + fmt(r.amt) + "</b>.";
+    if(r.winner === 0) msg = "Showdown — your " + describeScoreOwned(yourScore) + " beats Midas's " + describeScoreOwned(midasScore) + ". You take <b class=\"amt\">" + fmt(r.amt) + "</b>.";
+    else if(r.winner === 1) msg = "Showdown — Midas shows " + describeScore(midasScore) + " against your " + describeScoreOwned(yourScore) + ". He takes <b class=\"amt\">" + fmt(r.amt) + "</b>.";
     else msg = "Showdown — dead even: " + describeScore(yourScore) + " apiece. The " + fmt(r.amt) + "-chip pot splits.";
   }
   render(true);
