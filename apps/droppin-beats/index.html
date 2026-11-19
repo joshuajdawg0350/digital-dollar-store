@@ -2244,34 +2244,19 @@ window.__P3QA={views:Object.keys(P3V).length,indexEntries:IDX.length,packs:Objec
 })();
 </script>
 <script>
-/* ============ UNIVERSAL FIT + TAP GUARANTEE ============
-   One locked 400px composition, scaled whole to the viewport — identical arrangement
-   and stage-relative geometry on every phone. Taps run on their own track: a press is
-   a tap until a real 14px drag, and if the viewer delivers the touch but swallows the
-   click, the guarantee layer fires the control itself. */
+/* ============ TAP GUARANTEE ============
+   Taps run on their own track: a press is a tap until a real 14px drag, and
+   if the viewer delivers the touch but swallows the click, the guarantee
+   layer fires the control itself. */
 (function(){
 "use strict";
-var DESIGN=400;
-var stage=document.getElementById("stage"),fitwrap=document.getElementById("fitwrap");
-if(!stage||!fitwrap)return;
-var bar=document.querySelector(".bottombar"),toastEl=document.getElementById("toast");
-function fit(){
-  var vw=document.documentElement.clientWidth||window.innerWidth;
-  var s=vw<=480?vw/DESIGN:1;
-  stage.style.transform="scale("+s+")";
-  fitwrap.style.height=(stage.offsetHeight*s)+"px";
-  if(bar){
-    bar.style.transform="scale("+s+")";
-    var pad=Math.ceil(bar.offsetHeight*s)+16;
-    document.body.style.paddingBottom=pad+"px";
-    if(toastEl)toastEl.style.bottom=(pad+14)+"px";
-  }
-}
-window.addEventListener("resize",fit);
-window.addEventListener("orientationchange",function(){setTimeout(fit,80)});
-window.addEventListener("load",fit);
-if(window.ResizeObserver){try{new ResizeObserver(function(){fit()}).observe(stage)}catch(e){}}
-fit();setTimeout(fit,300);setTimeout(fit,1200);
+/* ONE-SCREEN LAYOUT (2026-11-18 fix): the scale-to-fit machinery that used to
+   live here is GONE. It scaled a locked 400px stage by width while a second
+   script set the stage height from the UNSCALED deck-bar height; the two
+   disagreed by the scale factor, the document ended up taller than the
+   screen, the page scrolled, and the header scrolled off the top with no
+   way back. All geometry now belongs to the final CSS pass (style#onescreen):
+   a 100dvh flex column — the page can never scroll, the top can never be lost. */
 
 var downEl=null,downX=0,downY=0,clickSeen=false;
 function tapTarget(e){
@@ -2791,7 +2776,7 @@ setInterval(function(){onView(curViewName());syncBack();
 try{history.replaceState({jd:"make"},"")}catch(e){}
 
 /* keep the fixed bars + split top fitted (deck bar changed the bottom bar's height) */
-function refit(){var bar=document.querySelector(".bottombar");if(bar&&stage){stage.style.height="calc(100dvh - "+bar.offsetHeight+"px)"}try{window.dispatchEvent(new Event("resize"))}catch(e){}}
+function refit(){/* one-screen fix: stage height is pure CSS now (100dvh flex column) — refit only nudges resize listeners (canvas etc.) */try{window.dispatchEvent(new Event("resize"))}catch(e){}}
 setTimeout(refit,80);setTimeout(refit,700);setTimeout(refit,1600);
 
 window.__JDTest={perfStart:prStart,perfStop:prStop,takes:function(){return PR.takes.length},takePlay:function(i){tkToggle(i)},back:jdBack,stack:function(){return histStack.slice()},view:function(){return curView},deckStart:function(id){deckStart(decks[id])},deckStop:function(id){deckStop(decks[id])}};
@@ -3136,5 +3121,42 @@ input[type="range"].knobinput{position:absolute!important;width:1px!important;he
 })();
 </script>
 
+
+<style id="onescreen">
+/* ============ ONE-SCREEN STUDIO — final layout pass (2026-11-18) ============
+   The whole studio lives in a 100dvh flex column: header + split views fill
+   the top, the turntable deck bar + transport + room tabs sit pinned below
+   in normal flow. The page itself can never scroll, so the top of the app
+   can never be pushed off screen. Long panels scroll only inside their own
+   column. House chrome kept: silver + electric blue on near-black. */
+html{height:100%;overflow:hidden;scroll-padding:0}
+body{height:100dvh;max-height:100dvh;display:flex;flex-direction:column;overflow:hidden;overscroll-behavior:none;padding-bottom:0 !important}
+#fitwrap{flex:1 1 auto;min-height:0;width:100%;position:relative;overflow:hidden}
+#stage{position:absolute;inset:0;left:0;width:100%;max-width:100%;height:auto !important;margin:0;transform:none !important;display:flex;flex-direction:column;overflow:hidden}
+#stage>.apphead{position:static;flex:0 0 auto}
+#splitrow{flex:1 1 auto;min-height:0}
+.wrap{width:100%;max-width:100%}
+.bottombar{position:static !important;left:auto;right:auto;bottom:auto;width:100%;max-width:100%;margin:0;transform:none !important;flex:0 0 auto}
+.bottombar .playrow{max-width:100%}
+.mainnav{max-width:100%}
+.mainnav button{min-height:44px}
+.toast{top:10px;bottom:auto}
+/* deck bar compression — same decks and controls, less air */
+#deckbar{padding:2px 0 6px;margin-bottom:4px}
+.deckcard{padding:5px 6px 6px}
+.platter{width:96px;height:96px;margin:4px auto}
+#jdWave{height:22px}
+.dbXF{margin-top:4px}
+.knobwrap.small .knob{width:48px;height:48px}
+.knobwrap.small .knob::before{height:17px}
+.dbPerf{margin-top:3px}
+.dbPerf .btn{min-height:44px;padding:6px 12px;flex:0 0 auto}
+.dbPerf span{flex:1 1 auto;min-width:0;font-size:10px;line-height:1.25}
+.deckcard .btn{min-height:44px}
+.jdplatter{width:84px;height:84px;margin:4px auto 3px}
+.jdarm i{height:52px}
+.dcTop select{min-height:44px}
+#btnMenu{min-height:44px}
+</style>
 </body>
 </html>
