@@ -18,7 +18,8 @@
   canvas{display:block}
   /* speed vignette + finish fade (v0.2 realism pack) */
   #speedfx{position:absolute;inset:0;pointer-events:none;z-index:5;opacity:0;
-    background:radial-gradient(ellipse at 50% 46%,rgba(0,0,0,0) 52%,rgba(2,6,16,.38) 82%,rgba(2,8,24,.72) 100%)}
+    background:radial-gradient(ellipse at 50% 46%,rgba(0,0,0,0) 52%,rgba(2,6,16,.38) 82%,rgba(2,8,24,.72) 100%),
+               radial-gradient(ellipse at 50% 50%,rgba(0,0,0,0) 58%,rgba(0,90,200,.10) 100%)}
   #fade{position:absolute;inset:0;background:#010204;opacity:0;pointer-events:none;z-index:40;transition:opacity .22s linear}
   .chrome-text{background:linear-gradient(180deg,#FFFFFF 0%,#D7E4F2 34%,#7E97AE 50%,#E8F1FA 54%,#8FA6BC 78%,#F4F9FF 100%);
     -webkit-background-clip:text;background-clip:text;color:transparent;
@@ -28,7 +29,8 @@
   /* ---------- TITLE ---------- */
   #scr-title{background:#000}
   #scr-title .hero{position:absolute;inset:0;background:url('assets/title-art.webp') center 30%/cover no-repeat}
-  #scr-title .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,4,8,.42) 0%,rgba(2,4,8,0) 30%,rgba(2,4,8,.06) 55%,rgba(2,4,8,.93) 88%)}
+  #scr-title .shade{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 82%,rgba(0,110,220,.20),rgba(0,0,0,0) 55%),
+    linear-gradient(180deg,rgba(2,4,8,.42) 0%,rgba(2,4,8,0) 30%,rgba(2,4,8,.06) 55%,rgba(2,4,8,.93) 88%)}
   #scr-title .inner{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
     padding:0 20px calc(18px + var(--safe-b));text-align:center}
   .kicker{letter-spacing:.42em;font-size:11px;color:var(--blue-hi);text-transform:uppercase;
@@ -37,19 +39,21 @@
   .subtitle{font-size:clamp(15px,4.6vw,22px);font-weight:800;letter-spacing:.34em;color:#fff;text-shadow:0 0 16px rgba(0,150,255,.9)}
   .tagline{margin-top:8px;font-size:13px;color:#B9CCE0;letter-spacing:.08em}
   .bigbtn{margin-top:18px;min-width:min(78vw,340px);padding:16px 26px;border-radius:14px;border:1px solid #7E97AE;cursor:pointer;
-    background:linear-gradient(180deg,#3D4F63,#141E2A 55%,#0A1119);color:#fff;font-size:21px;font-weight:900;letter-spacing:.14em;
-    box-shadow:0 0 0 1px #000,0 0 22px rgba(0,150,255,.35),inset 0 1px 0 rgba(255,255,255,.35);text-transform:uppercase}
+    background:linear-gradient(180deg,#5A7189,#1B2836 48%,#0A1119 56%,#182635);color:#fff;font-size:21px;font-weight:900;letter-spacing:.14em;
+    box-shadow:0 0 0 1px #000,0 8px 20px rgba(0,0,0,.55),0 0 22px rgba(0,150,255,.35),inset 0 1px 0 rgba(255,255,255,.5),inset 0 -10px 16px rgba(0,0,0,.4);text-transform:uppercase}
   .bigbtn:active{transform:translateY(2px);box-shadow:0 0 0 1px #000,0 0 10px rgba(0,150,255,.5),inset 0 1px 0 rgba(255,255,255,.2)}
-  .bigbtn.blue{background:linear-gradient(180deg,#2FA8FF,#0067C8 55%,#00498F);border-color:#9FD8FF}
+  .bigbtn.blue{background:linear-gradient(180deg,#74C6FF,#1E90F5 45%,#0067C8 60%,#004B96);border-color:#9FD8FF;
+    box-shadow:0 0 0 1px #001A33,0 8px 22px rgba(0,0,0,.5),0 0 30px rgba(0,150,255,.5),inset 0 1px 0 rgba(255,255,255,.55),inset 0 -10px 16px rgba(0,30,70,.45)}
   .rowbtns{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;justify-content:center}
-  .smallbtn{padding:11px 18px;border-radius:11px;border:1px solid #54687C;background:linear-gradient(180deg,#26364A,#0D1622);color:#DCE9F6;
-    font-size:14px;font-weight:800;letter-spacing:.1em;cursor:pointer;text-transform:uppercase}
+  .smallbtn{padding:11px 18px;border-radius:11px;border:1px solid #54687C;background:linear-gradient(180deg,#31455E,#101B29 60%,#0B141F);color:#DCE9F6;
+    font-size:14px;font-weight:800;letter-spacing:.1em;cursor:pointer;text-transform:uppercase;
+    box-shadow:0 4px 12px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.28),inset 0 -6px 10px rgba(0,0,0,.3)}
   .smallbtn:active{transform:translateY(1px)}
   .title-stats{margin-top:14px;font-size:13px;color:#9FB8D2;letter-spacing:.06em}
   .title-stats b{color:#fff}
   .legal{margin-top:10px;font-size:10.5px;color:#5F748C;letter-spacing:.05em}
   /* v0.3: HUD christmas tree — big, unmissable, readable from the seat */
-  #hudtree{position:absolute;top:70px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:5px;align-items:center;background:rgba(5,8,13,.78);border:1px solid #22344a;border-radius:14px;padding:9px 12px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:6}
+  #hudtree{position:absolute;top:70px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:5px;align-items:center;background:linear-gradient(180deg,rgba(16,28,44,.88),rgba(4,7,12,.86));border:1px solid #2A435F;border-radius:14px;padding:9px 12px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:6;box-shadow:inset 0 1px 0 rgba(160,200,240,.18),0 10px 24px rgba(0,0,0,.5)}
   #hudtree.show{opacity:1}
   .ht-bulb{width:29px;height:29px;border-radius:50%;background:#12181f;border:2px solid #2a3644}
   .ht-bulb.stage.lit{background:#fff2b0;border-color:#fff2b0;box-shadow:0 0 20px #fff2b0}
@@ -79,20 +83,22 @@
   .g-head h2{font-size:30px;font-weight:900;font-style:italic}
   .cash{font-size:15px;color:#B9CCE0;text-align:right}
   .cash b{display:block;font-size:24px;color:var(--green);text-shadow:0 0 12px rgba(43,255,106,.35)}
-  .carcard{background:var(--panel);border:1px solid #33506E;border-radius:16px;padding:14px 16px;margin-bottom:14px;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 8px 24px rgba(0,0,0,.5)}
+  .carcard{background:linear-gradient(180deg,rgba(28,45,68,.94),rgba(7,12,20,.96));border:1px solid #3A5A7E;border-radius:16px;padding:14px 16px;margin-bottom:14px;
+    box-shadow:inset 0 1px 0 rgba(170,205,245,.20),inset 0 0 26px rgba(0,150,255,.06),0 10px 26px rgba(0,0,0,.55)}
   .carcard h3{font-size:20px;font-weight:900;letter-spacing:.04em}
   .carcard .spec{color:#9FB8D2;font-size:13px;margin-top:3px;letter-spacing:.05em}
   .carcard .best{color:#fff;font-size:13px;margin-top:6px}
   .carcard .best b{color:var(--blue-hi)}
   .carcard .build{color:#CFE0F0;font-size:12.5px;margin-top:7px;letter-spacing:.04em;line-height:1.5}
   .carcard .build b{color:var(--blue-hi)}
-  .secttl{font-size:13px;letter-spacing:.3em;color:var(--blue-hi);text-transform:uppercase;margin:6px 0 10px}
-  .rival{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid #2A435F;border-radius:16px;
-    padding:13px 14px;margin-bottom:10px;cursor:pointer;width:100%;text-align:left;color:#EAF2FA}
+  .secttl{font-size:13px;letter-spacing:.3em;color:var(--blue-hi);text-transform:uppercase;margin:6px 0 10px;
+    text-shadow:0 0 12px rgba(0,150,255,.45)}
+  .rival{display:flex;align-items:center;gap:12px;background:linear-gradient(180deg,rgba(24,39,60,.93),rgba(7,12,20,.95));border:1px solid #33506E;border-radius:16px;
+    padding:13px 14px;margin-bottom:10px;cursor:pointer;width:100%;text-align:left;color:#EAF2FA;
+    box-shadow:inset 0 1px 0 rgba(170,205,245,.16),inset 0 0 22px rgba(0,150,255,.05),0 8px 22px rgba(0,0,0,.5)}
   .rival:active{transform:scale(.99)}
   .rival .face{width:52px;height:52px;flex:0 0 52px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-    font-size:22px;font-weight:900;color:#fff;border:2px solid #54687C;box-shadow:inset 0 0 14px rgba(0,0,0,.6)}
+    font-size:22px;font-weight:900;color:#fff;border:2px solid #6E87A0;box-shadow:inset 0 2px 3px rgba(255,255,255,.35),inset 0 -9px 13px rgba(0,0,0,.5),0 0 0 2px rgba(0,0,0,.4),0 0 14px rgba(0,150,255,.18)}
   .rival .info{flex:1;min-width:0}
   .rival .nm{font-size:18px;font-weight:900;letter-spacing:.03em}
   .rival .car{font-size:12.5px;color:#9FB8D2;letter-spacing:.04em}
@@ -103,29 +109,33 @@
   .d1{color:#2BFF6A;border-color:#2BFF6A}.d2{color:#FFB300;border-color:#FFB300}.d3{color:#FF3355;border-color:#FF3355}
   .rival.beaten{opacity:.75}.rival .beatentag{color:var(--green);font-size:11px;font-weight:800;letter-spacing:.1em}
   /* parts shop (v0.2 progression) */
-  .part{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid #2A435F;border-radius:16px;
-    padding:12px 14px;margin-bottom:10px;width:100%;text-align:left;color:#EAF2FA}
+  .part{display:flex;align-items:center;gap:12px;background:linear-gradient(180deg,rgba(24,39,60,.93),rgba(7,12,20,.95));border:1px solid #33506E;border-radius:16px;
+    padding:12px 14px;margin-bottom:10px;width:100%;text-align:left;color:#EAF2FA;
+    box-shadow:inset 0 1px 0 rgba(170,205,245,.16),inset 0 0 22px rgba(0,150,255,.05),0 8px 22px rgba(0,0,0,.5)}
   .part .pinfo{flex:1;min-width:0}
   .part .pnm{font-size:16.5px;font-weight:900;letter-spacing:.03em}
-  .part .pips{color:var(--blue-hi);font-size:13px;letter-spacing:.28em;margin:2px 0}
+  .part .pips{color:var(--blue-hi);font-size:13px;letter-spacing:.28em;margin:2px 0;text-shadow:0 0 9px rgba(0,150,255,.65)}
   .part .pips .off{color:#33506E}
   .part .peff{font-size:12px;color:#9FB8D2;letter-spacing:.03em;line-height:1.4}
-  .buybtn{flex:0 0 auto;padding:12px 14px;border-radius:11px;border:1px solid #2FA8FF;cursor:pointer;
-    background:linear-gradient(180deg,#2FA8FF,#0067C8 60%,#00498F);color:#fff;font-size:14px;font-weight:900;
-    letter-spacing:.06em;text-transform:uppercase;min-width:92px}
+  .buybtn{flex:0 0 auto;padding:12px 14px;border-radius:11px;border:1px solid #5FC2FF;cursor:pointer;
+    background:linear-gradient(180deg,#63BFFF,#1E90F5 45%,#0067C8 62%,#00498F);color:#fff;font-size:14px;font-weight:900;
+    letter-spacing:.06em;text-transform:uppercase;min-width:92px;
+    box-shadow:0 5px 14px rgba(0,0,0,.45),0 0 16px rgba(0,150,255,.35),inset 0 1px 0 rgba(255,255,255,.5),inset 0 -7px 12px rgba(0,30,70,.4)}
   .buybtn:active{transform:translateY(1px)}
   .buybtn[disabled]{background:linear-gradient(180deg,#26364A,#0D1622);border-color:#54687C;color:#7E97AE;cursor:default}
   /* ---------- RACE HUD ---------- */
   #scr-race{pointer-events:none}
   #hud{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between}
   .hud-top{display:flex;justify-content:space-between;align-items:flex-start;padding:calc(10px + env(safe-area-inset-top,0px)) 12px 0}
-  .hud-box{background:var(--panel);border:1px solid #33506E;border-radius:12px;padding:7px 12px;min-width:104px;text-align:center}
+  .hud-box{background:linear-gradient(180deg,rgba(24,39,60,.92),rgba(6,11,19,.94));border:1px solid #3A5A7E;border-radius:12px;padding:7px 12px;min-width:104px;text-align:center;
+    box-shadow:inset 0 1px 0 rgba(170,205,245,.20),inset 0 0 18px rgba(0,150,255,.06),0 8px 20px rgba(0,0,0,.5)}
   .hud-box .lab{font-size:10px;letter-spacing:.26em;color:#8FA9C4}
-  .hud-box .val{font-size:23px;font-weight:900;line-height:1.05}
+  .hud-box .val{font-size:23px;font-weight:900;line-height:1.05;text-shadow:0 0 10px rgba(0,150,255,.35)}
   .hud-box .val small{font-size:12px;color:#9FB8D2;font-weight:700}
   /* dual-lane progress strip — who's winning, readable from the driver's seat */
   #prog{position:absolute;top:calc(64px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);
-    width:min(62vw,300px);background:var(--panel);border:1px solid #33506E;border-radius:10px;padding:6px 10px 7px}
+    width:min(62vw,300px);background:linear-gradient(180deg,rgba(24,39,60,.92),rgba(6,11,19,.94));border:1px solid #3A5A7E;border-radius:10px;padding:6px 10px 7px;
+    box-shadow:inset 0 1px 0 rgba(170,205,245,.18),0 8px 20px rgba(0,0,0,.5)}
   #prog .lane{position:relative;height:8px;margin:3px 0}
   #prog .rail{position:absolute;left:0;right:0;top:3px;height:2px;background:#33506E;border-radius:1px}
   #prog .dot{position:absolute;top:0;width:8px;height:8px;border-radius:50%;transform:translateX(-4px)}
@@ -134,14 +144,16 @@
   #prog .plabel{position:absolute;top:-3px;font-size:8.5px;letter-spacing:.14em;color:#8FA9C4}
   #banner{position:absolute;top:19%;left:0;right:0;text-align:center;font-size:clamp(30px,9.5vw,54px);font-weight:900;font-style:italic;
     letter-spacing:.04em;color:#fff;text-shadow:0 0 24px rgba(0,150,255,.85),0 3px 0 #000;opacity:0;transition:opacity .12s}
-  #banner.show{opacity:1}
+  #banner.show{opacity:1;animation:bannerpop .18s ease-out}
+  @keyframes bannerpop{0%{transform:scale(1.07)}100%{transform:scale(1)}}
   #banner.foul{color:var(--red);text-shadow:0 0 24px rgba(255,51,85,.8),0 3px 0 #000}
   #banner.perfect{color:var(--green);text-shadow:0 0 24px rgba(43,255,106,.8),0 3px 0 #000}
   #splitflash{position:absolute;top:27%;left:0;right:0;text-align:center;font-size:clamp(17px,5.4vw,24px);font-weight:900;
     letter-spacing:.14em;color:var(--blue-hi);text-shadow:0 0 14px rgba(0,150,255,.8),0 2px 0 #000;opacity:0;transition:opacity .15s}
   #splitflash.show{opacity:1}
   .hud-mid{display:flex;justify-content:center}
-  #tachwrap{pointer-events:none;width:min(54vw,264px);background:var(--panel);border:1px solid #33506E;border-radius:16px;padding:8px 12px 6px}
+  #tachwrap{pointer-events:none;width:min(54vw,264px);background:linear-gradient(180deg,rgba(24,39,60,.92),rgba(6,11,19,.95));border:1px solid #3A5A7E;border-radius:16px;padding:8px 12px 6px;
+    box-shadow:inset 0 1px 0 rgba(170,205,245,.20),inset 0 0 24px rgba(0,0,0,.5),inset 0 0 18px rgba(0,150,255,.05),0 10px 24px rgba(0,0,0,.55)}
   #tach{width:100%;height:76px;display:block}
   #gearread{display:flex;justify-content:space-between;align-items:baseline;margin-top:1px}
   #gearread .gear{font-size:30px;font-weight:900}
@@ -150,14 +162,15 @@
   #shiftflash{text-align:center;font-size:15px;font-weight:900;letter-spacing:.22em;height:19px;color:var(--green);
     text-shadow:0 0 12px rgba(43,255,106,.8)}
   .controls{pointer-events:none;display:flex;justify-content:space-between;align-items:flex-end;padding:0 12px calc(12px + var(--safe-b));gap:10px}
-  .pedal{pointer-events:auto;border-radius:20px;border:1px solid #54687C;color:#fff;font-weight:900;letter-spacing:.1em;
+  .pedal{pointer-events:auto;border-radius:20px;border:1px solid #6E87A0;color:#fff;font-weight:900;letter-spacing:.1em;
     display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;
-    background:linear-gradient(180deg,#2A3C52,#0D1622);box-shadow:0 6px 0 #05090F,0 10px 22px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.25)}
+    background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,0) 32%),linear-gradient(180deg,#3A5069,#16222F 55%,#0B141F);
+    box-shadow:0 6px 0 #05090F,0 12px 24px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.4),inset 0 -10px 16px rgba(0,0,0,.4)}
   .pedal .sub{font-size:10.5px;color:#9FB8D2;letter-spacing:.14em;font-weight:700}
   .pedal.held{transform:translateY(4px);box-shadow:0 2px 0 #05090F,0 4px 10px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.15);
     background:linear-gradient(180deg,#1D5C96,#0A2E52)}
-  #btn-nitro{width:96px;height:96px;border-radius:50%;border-color:#2FA8FF;background:radial-gradient(circle at 35% 30%,#3FB2FF,#0067C8 60%,#003B75);
-    font-size:17px}
+  #btn-nitro{width:96px;height:96px;border-radius:50%;border-color:#5FC2FF;background:radial-gradient(circle at 35% 28%,#9AD9FF,#3FB2FF 34%,#0067C8 62%,#003B75);
+    font-size:17px;box-shadow:0 6px 0 #02101F,0 12px 26px rgba(0,0,0,.6),0 0 26px rgba(0,150,255,.45),inset 0 2px 3px rgba(255,255,255,.55),inset 0 -12px 18px rgba(0,20,50,.5)}
   #btn-nitro.used{filter:grayscale(.8) brightness(.6)}
   #btn-nitro .sub{color:#CFEAFF}
   .rightpedals{display:flex;flex-direction:column;gap:10px;align-items:flex-end}
@@ -165,14 +178,15 @@
   #btn-gas{width:150px;height:104px;font-size:24px;border-color:#7E97AE}
   #btn-gas .sub{font-size:11px}
   .racebtns{display:flex;gap:8px}
-  .iconbtn{pointer-events:auto;width:42px;height:42px;border-radius:12px;border:1px solid #54687C;background:var(--panel);
-    color:#DCE9F6;font-size:18px;cursor:pointer}
+  .iconbtn{pointer-events:auto;width:42px;height:42px;border-radius:12px;border:1px solid #6E87A0;background:linear-gradient(180deg,rgba(38,56,80,.94),rgba(8,14,24,.95));
+    color:#DCE9F6;font-size:18px;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 5px 14px rgba(0,0,0,.5)}
   /* ---------- RESULTS ---------- */
   #scr-result{background:linear-gradient(180deg,rgba(3,6,10,.72),rgba(3,6,10,.96));align-items:center;justify-content:center;
     padding:20px;text-align:center}
   #res-verdict{font-size:clamp(38px,11vw,60px);font-weight:900;font-style:italic}
-  .res-card{background:var(--panel);border:1px solid #33506E;border-radius:18px;padding:18px 20px;margin-top:16px;width:min(92vw,420px)}
-  .res-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(120,160,200,.14);font-size:16px}
+  .res-card{background:linear-gradient(180deg,rgba(28,45,68,.94),rgba(7,12,20,.96));border:1px solid #3A5A7E;border-radius:18px;padding:18px 20px;margin-top:16px;width:min(92vw,420px);
+    box-shadow:inset 0 1px 0 rgba(170,205,245,.20),inset 0 0 26px rgba(0,150,255,.06),0 14px 34px rgba(0,0,0,.6)}
+  .res-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(130,175,220,.18);font-size:16px}
   .res-row:last-child{border-bottom:none}
   .res-row .k{color:#9FB8D2;letter-spacing:.06em}
   .res-row .v{font-weight:900}
@@ -187,6 +201,11 @@
   #scr-how img.pov{width:100%;border-radius:14px;border:1px solid #33506E;margin:4px 0 6px}
   #scr-how .cap{font-size:12px;color:#8FA9C4;letter-spacing:.06em;margin-bottom:12px}
   .foot{margin-top:auto;padding-top:16px;font-size:10.5px;color:#5F748C;text-align:center;letter-spacing:.05em}
+  /* chrome scrollbars on the two scrollable screens */
+  #scr-garage::-webkit-scrollbar,#scr-how::-webkit-scrollbar{width:9px}
+  #scr-garage::-webkit-scrollbar-track,#scr-how::-webkit-scrollbar-track{background:rgba(6,10,17,.4)}
+  #scr-garage::-webkit-scrollbar-thumb,#scr-how::-webkit-scrollbar-thumb{border-radius:5px;border:1px solid #22344A;
+    background:linear-gradient(180deg,#7E97AE,#3D4F63 55%,#22344A)}
 </style>
 </head>
 <body>
@@ -545,7 +564,10 @@ const Q={steps:[2,1.6,1.3,1.05],idx:0,t:0};
 renderer.setPixelRatio(Q.steps[Q.idx]);
 renderer.setSize(innerWidth,innerHeight);
 renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.12;
+/* GFX PASS: correct sRGB output — r147 defaults to linear output, which
+   was muting every authored color on the page. Presentation only. */
+renderer.outputEncoding=THREE.sRGBEncoding;
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.08;
 stage.appendChild(renderer.domElement);
 
 const scene=new THREE.Scene();
@@ -553,11 +575,21 @@ scene.background=new THREE.Color(0x04060d);
 scene.fog=new THREE.Fog(0x04060d, 60, 430);
 const camera=new THREE.PerspectiveCamera(62, innerWidth/innerHeight, 0.1, 1600);
 /* soft fill that travels with the camera so the hero car always reads */
-const camFill=new THREE.PointLight(0x88aaff,5,34,1.6);
+const camFill=new THREE.PointLight(0x88aaff,6,38,1.6);
 camera.add(camFill); camFill.position.set(0,1.2,5); scene.add(camera);
 
-scene.add(new THREE.HemisphereLight(0x3a5a8c, 0x05070a, 1.1));
-const moon=new THREE.DirectionalLight(0x8fc4ff,0.7); moon.position.set(-30,60,-40); scene.add(moon);
+scene.add(new THREE.HemisphereLight(0x3a5a8c, 0x05070a, 1.2));
+const moon=new THREE.DirectionalLight(0x8fc4ff,0.8); moon.position.set(-30,60,-40); scene.add(moon);
+/* GFX PASS: the moon finally casts — real shadows ground the cars and
+   the gantry. Tight ortho box that travels with the player car (set in
+   the render loop next to the rim light); 1024 map, soft PCF. */
+moon.castShadow=true;
+moon.shadow.mapSize.set(1024,1024);
+moon.shadow.camera.left=-16; moon.shadow.camera.right=16;
+moon.shadow.camera.top=16; moon.shadow.camera.bottom=-16;
+moon.shadow.camera.near=5; moon.shadow.camera.far=180;
+moon.shadow.bias=-0.0004; moon.shadow.normalBias=0.02;
+scene.add(moon.target);
 const rim=new THREE.DirectionalLight(0x66b8ff,1.25); scene.add(rim); scene.add(rim.target);
 
 /* --- environment: a tiny neon room rendered once for PBR reflections --- */
@@ -575,7 +607,13 @@ const rim=new THREE.DirectionalLight(0x66b8ff,1.25); scene.add(rim); scene.add(r
 function canvasTex(w,h,draw){
   const c=document.createElement('canvas'); c.width=w; c.height=h;
   draw(c.getContext('2d'),w,h);
-  const t=new THREE.CanvasTexture(c); t.anisotropy=8; return t;
+  const t=new THREE.CanvasTexture(c);
+  /* GFX PASS: canvas art is authored in sRGB — tag it so the sRGB
+     output pipeline doesn't double-darken it; full anisotropy the
+     device offers (capped) for sharper texture at grazing angles. */
+  t.encoding=THREE.sRGBEncoding;
+  t.anisotropy=Math.min(16,renderer.capabilities.getMaxAnisotropy());
+  return t;
 }
 const glowTex=canvasTex(64,64,(g,w,h)=>{ const gr=g.createRadialGradient(32,32,2,32,32,30);
   gr.addColorStop(0,'rgba(255,255,255,0.85)'); gr.addColorStop(1,'rgba(255,255,255,0)');
@@ -583,7 +621,7 @@ const glowTex=canvasTex(64,64,(g,w,h)=>{ const gr=g.createRadialGradient(32,32,2
 
 /* --- atmosphere (v0.3): exponential haze so the four depth planes
    (near trackside / mid buildings / far towers / sky) separate --- */
-scene.fog=new THREE.FogExp2(0x060a12,0.0011);
+scene.fog=new THREE.FogExp2(0x060a12,0.0013);
 /* --- night sky dome + moon + distant skyline (v0.2 HD depth) --- */
 (function makeSky(){
   const skyTex=canvasTex(1024,512,(g,w,h)=>{
@@ -598,6 +636,17 @@ scene.fog=new THREE.FogExp2(0x060a12,0.0011);
     mg.addColorStop(0,'rgba(190,220,255,0.5)'); mg.addColorStop(1,'rgba(190,220,255,0)');
     g.fillStyle=mg; g.fillRect(0,0,w,h);
     g.fillStyle='#dfeeff'; g.beginPath(); g.arc(w*0.78,h*0.20,13,0,7); g.fill();
+    /* GFX PASS: slow cloud bands + a city-glow breath at the horizon */
+    for(let i=0;i<26;i++){ const cy=h*(0.34+Math.random()*0.42), cw=90+Math.random()*260,
+        cx=Math.random()*w, lit=Math.random()<0.45;
+      const cg2=g.createRadialGradient(cx,cy,4,cx,cy,cw);
+      cg2.addColorStop(0,lit?'rgba(84,132,205,0.20)':'rgba(16,30,58,0.30)');
+      cg2.addColorStop(1,'rgba(0,0,0,0)');
+      g.save(); g.translate(cx,cy); g.scale(1,0.16); g.translate(-cx,-cy);
+      g.fillStyle=cg2; g.fillRect(cx-cw,cy-cw,cw*2,cw*2); g.restore(); }
+    const hz2=g.createLinearGradient(0,h*0.80,0,h);
+    hz2.addColorStop(0,'rgba(24,84,160,0)'); hz2.addColorStop(1,'rgba(24,84,160,0.38)');
+    g.fillStyle=hz2; g.fillRect(0,h*0.80,w,h*0.20);
   });
   const dome=new THREE.Mesh(new THREE.SphereGeometry(900,20,12),
     new THREE.MeshBasicMaterial({map:skyTex,side:THREE.BackSide,fog:false,depthWrite:false}));
@@ -629,6 +678,17 @@ const roadTex=canvasTex(1024,1024,(g,w,h)=>{
     g.fillRect(Math.random()*w,Math.random()*h,2,2); }
   for(let i=0;i<26;i++){ g.fillStyle=`rgba(0,0,0,${0.05+Math.random()*0.08})`;
     g.fillRect(0,Math.random()*h,w,2+Math.random()*5); }
+  /* GFX PASS: rubbered-in grooves where the tires actually run — two
+     dark polished bands per lane, with a faint sheen between them.
+     Texture spans the full 15.6 m road: lane centers at 0.369 / 0.631,
+     tire lines ±0.8 m (±52 px) either side of each. */
+  [326,430,594,698].forEach(gx=>{
+    const gg=g.createLinearGradient(gx-26,0,gx+26,0);
+    gg.addColorStop(0,'rgba(0,0,0,0)'); gg.addColorStop(0.5,'rgba(0,0,0,0.30)'); gg.addColorStop(1,'rgba(0,0,0,0)');
+    g.fillStyle=gg; g.fillRect(gx-26,0,52,h);
+    const sh=g.createLinearGradient(gx-7,0,gx+7,0);
+    sh.addColorStop(0,'rgba(170,210,255,0)'); sh.addColorStop(0.5,'rgba(170,210,255,0.06)'); sh.addColorStop(1,'rgba(170,210,255,0)');
+    g.fillStyle=sh; g.fillRect(gx-7,0,14,h); });
   g.fillStyle='#0b0e13'; g.fillRect(0,0,26,h); g.fillRect(w-26,0,26,h);
   g.fillStyle='rgba(230,238,245,0.85)'; g.fillRect(20,0,6,h); g.fillRect(w-26,0,6,h);
   g.fillStyle='rgba(0,150,255,0.95)'; g.fillRect(w/2-5,0,10,h);
@@ -639,7 +699,7 @@ const road=new THREE.Mesh(new THREE.PlaneGeometry(15.6,QUARTER_M+560),
 road.rotation.x=-Math.PI/2; road.position.set(0,0,(QUARTER_M+560)/2-95); road.receiveShadow=true; scene.add(road);
 const ground=new THREE.Mesh(new THREE.PlaneGeometry(1400,1600),
   new THREE.MeshStandardMaterial({color:0x05070a,roughness:0.95}));
-ground.rotation.x=-Math.PI/2; ground.position.set(0,-0.06,300); scene.add(ground);
+ground.rotation.x=-Math.PI/2; ground.position.set(0,-0.06,300); ground.receiveShadow=true; scene.add(ground);
 /* electric-blue lane glow strips, like the cover art */
 [-3.92,3.92].forEach(x=>{
   const strip=new THREE.Mesh(new THREE.PlaneGeometry(0.14,QUARTER_M+60),
@@ -684,6 +744,10 @@ const neonMats=[];
 const NEON=['HUSTLE CITY','NITRO','24H TIRES','BLUE ROOM','CASH PAWN','DRAG BAR','MOTEL','CHROME & CO'];
 const neonCols=[0x0096ff,0x66d9ff,0xff2fb3,0x2bff6a,0xffb300];
 const lampGlowMat=new THREE.SpriteMaterial({map:glowTex,color:0xa8d4ff,
+  transparent:true,opacity:0.30,depthWrite:false,blending:THREE.AdditiveBlending});
+/* GFX PASS: every third lamp burns sodium-warm — mixed color temps are
+   what real night streets look like */
+const lampGlowMatWarm=new THREE.SpriteMaterial({map:glowTex,color:0xffc98a,
   transparent:true,opacity:0.30,depthWrite:false,blending:THREE.AdditiveBlending});
 const facadeTints=[0x8a97a5,0x7d8ea3,0x97a3ad,0x6f8296,0x8698a8];
 const facadeTexs=[winTex,winTexB,winTexC];
@@ -740,10 +804,11 @@ for(let side=-1;side<=1;side+=2){
     const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.11,6.4,6),
       new THREE.MeshStandardMaterial({color:0x39434e,roughness:0.5,metalness:0.8}));
     pole.position.set(side*8.6,3.2,i*18); scene.add(pole);
+    const warm=i%3===2;
     const lamp=new THREE.Mesh(new THREE.SphereGeometry(0.17,10,8),
-      new THREE.MeshBasicMaterial({color:0xbfe3ff}));
+      new THREE.MeshBasicMaterial({color:warm?0xffd9a3:0xbfe3ff}));
     lamp.position.set(side*8.6,6.5,i*18); scene.add(lamp);
-    const gl=new THREE.Sprite(lampGlowMat);
+    const gl=new THREE.Sprite(warm?lampGlowMatWarm:lampGlowMat);
     gl.scale.set(3.6,3.6,1); gl.position.set(side*8.6,6.5,i*18); scene.add(gl);
   }
   /* concrete barriers with a reflective stripe */
@@ -772,6 +837,12 @@ const crowd=[];
       g.beginPath(); g.arc(x,h*0.30,9*s,0,7); g.fill();
       g.fillRect(x-10*s,h*0.30,20*s,h*0.62); };
     person(28,1); person(76,1.12); person(126,0.94); person(178,1.06); person(226,1);
+    /* GFX PASS: a hint of life in the silhouettes — dim jacket colors
+       and two phone screens up, the way a real crowd reads at night */
+    g.fillStyle='rgba(120,30,40,0.35)'; g.fillRect(66,h*0.34,20,h*0.5);
+    g.fillStyle='rgba(30,70,130,0.35)'; g.fillRect(168,h*0.34,20,h*0.5);
+    g.fillStyle='rgba(40,100,60,0.30)'; g.fillRect(18,h*0.34,20,h*0.5);
+    g.fillStyle='rgba(215,235,255,0.95)'; g.fillRect(120,h*0.52,3,4); g.fillRect(232,h*0.50,3,4);
     g.fillStyle='rgba(0,150,255,0.20)'; g.fillRect(0,h-4,w,2); });
   for(let i=0;i<14;i++){
     const side=i%2?1:-1;
@@ -810,6 +881,19 @@ function gantry(z,label,colHex){
   const bp=new THREE.Mesh(new THREE.PlaneGeometry(16.6,1.05),
     new THREE.MeshBasicMaterial({map:bt,transparent:true,side:THREE.DoubleSide}));
   bp.position.set(0,8.3,0.36); grp.add(bp);
+  /* GFX PASS: a working light bar under the beam + a real pool of light
+     on the asphalt below it — the gantries light their own patch of
+     track now, tinted to match their sign */
+  const barCol=new THREE.Color(colHex);
+  const lbar=new THREE.Mesh(new THREE.BoxGeometry(16.6,0.09,0.14),
+    new THREE.MeshBasicMaterial({color:barCol}));
+  lbar.position.set(0,7.68,0.1); grp.add(lbar);
+  [-5.4,0,5.4].forEach(x=>{
+    const gs=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:barCol,
+      transparent:true,opacity:0.34,depthWrite:false,blending:THREE.AdditiveBlending}));
+    gs.scale.set(4.2,2.2,1); gs.position.set(x,7.6,0.4); grp.add(gs); });
+  const pl=new THREE.PointLight(barCol,7,30,1.8);
+  pl.position.set(0,7.2,1.2); grp.add(pl);
   grp.position.z=z; scene.add(grp); return grp;
 }
 gantry(-3,'HUSTLE CITY DRAGWAY','#0096ff');
@@ -850,9 +934,10 @@ gantry(QUARTER_M,'FINISH — 1/4 MILE','#2bff6a');
   stand.position.set(13.8,0,30); scene.add(stand); }
 function parkedCar(color,x,z,rotY){
   const g=new THREE.Group();
-  const paint=new THREE.MeshStandardMaterial({color,roughness:0.35,metalness:0.4});
+  const paint=new THREE.MeshPhysicalMaterial({color,roughness:0.34,metalness:0.25,
+    clearcoat:0.85,clearcoatRoughness:0.10,envMapIntensity:0.95});
   const dark=new THREE.MeshStandardMaterial({color:0x0b0d11,roughness:0.7});
-  const body=new THREE.Mesh(new THREE.BoxGeometry(1.78,0.55,4.3),paint); body.position.y=0.55; g.add(body);
+  const body=new THREE.Mesh(new THREE.BoxGeometry(1.78,0.55,4.3),paint); body.position.y=0.55; body.castShadow=true; g.add(body);
   const cab=new THREE.Mesh(new THREE.BoxGeometry(1.6,0.5,2.1),dark); cab.position.set(0,1.05,-0.2); g.add(cab);
   const wg=new THREE.CylinderGeometry(0.34,0.34,0.24,12);
   [[-0.85,1.35],[0.85,1.35],[-0.85,-1.35],[0.85,-1.35]].forEach(([wx,wz])=>{
@@ -909,11 +994,15 @@ function treeAllOff(){ Object.keys(treeBulbs).forEach(k=>setTree(k,false)); }
 function buildCar(paintColor,opts){
   opts=opts||{};
   const car=new THREE.Group();
-  const paint=new THREE.MeshStandardMaterial({color:paintColor,roughness:0.26,metalness:0.3,envMapIntensity:0.85});
-  const carbon=new THREE.MeshStandardMaterial({color:0x11141a,roughness:0.5,metalness:0.35,envMapIntensity:0.7});
-  const chrome=new THREE.MeshStandardMaterial({color:0xd7e2ec,roughness:0.16,metalness:1.0,envMapIntensity:1.3});
+  /* GFX PASS: real clearcoat paint — a glossy second skin over the base
+     coat is the single biggest car upgrade on the page. Physical
+     material on the paint only; everything else stays standard. */
+  const paint=new THREE.MeshPhysicalMaterial({color:paintColor,roughness:0.30,metalness:0.25,
+    clearcoat:1.0,clearcoatRoughness:0.06,envMapIntensity:1.05});
+  const carbon=new THREE.MeshStandardMaterial({color:0x11141a,roughness:0.42,metalness:0.35,envMapIntensity:0.9});
+  const chrome=new THREE.MeshStandardMaterial({color:0xd7e2ec,roughness:0.10,metalness:1.0,envMapIntensity:1.55});
   const darkM=new THREE.MeshStandardMaterial({color:0x0a0c10,roughness:0.6,metalness:0.4});
-  const glass=new THREE.MeshStandardMaterial({color:0x0d1622,roughness:0.08,metalness:0.9,envMapIntensity:1.6});
+  const glass=new THREE.MeshStandardMaterial({color:0x0d1622,roughness:0.06,metalness:0.9,envMapIntensity:1.9});
   const wt=opts.carbon||0; // lightweight tier drives which panels are carbon
   const suspTier=opts.susp||0, exhTier=opts.exhaust||0, fuelTier=opts.fuel||0;
   const bodyG=new THREE.Group(); bodyG.rotation.x=0.022; car.add(bodyG); // raked stance
@@ -1028,10 +1117,21 @@ function buildCar(paintColor,opts){
   car.userData.wheels=[];
   [[-0.86,1.45,frontW,0.36],[0.86,1.45,frontW,0.36],[-0.86,-1.45,rearW,0.40],[0.86,-1.45,rearW,0.40]].forEach(([x,z,w,r])=>{
     const wg=new THREE.Group();
-    const t=new THREE.Mesh(new THREE.CylinderGeometry(r,r,w,20),tireM);
+    const t=new THREE.Mesh(new THREE.CylinderGeometry(r,r,w,24),tireM);
     t.rotation.z=Math.PI/2; t.castShadow=true; wg.add(t);
-    const rm=new THREE.Mesh(new THREE.CylinderGeometry(r*0.58,r*0.58,w+0.02,12),rimM);
+    const rm=new THREE.Mesh(new THREE.CylinderGeometry(r*0.58,r*0.58,w+0.02,18),rimM);
     rm.rotation.z=Math.PI/2; wg.add(rm);
+    /* GFX PASS: wheel detail — a raised sidewall ring so the tire stops
+       reading as a black disc, a chrome trim ring and a center cap on
+       the outboard face */
+    const out=Math.sign(x)*(w/2+0.006);
+    const sw=new THREE.Mesh(new THREE.TorusGeometry(r*0.80,0.018,8,28),
+      new THREE.MeshStandardMaterial({color:0x17181d,roughness:0.85}));
+    sw.rotation.y=Math.PI/2; sw.position.x=out; wg.add(sw);
+    const tr=new THREE.Mesh(new THREE.TorusGeometry(r*0.58,0.012,8,28),rimM);
+    tr.rotation.y=Math.PI/2; tr.position.x=out; wg.add(tr);
+    const cap=new THREE.Mesh(new THREE.CylinderGeometry(r*0.17,r*0.17,0.03,12),darkM);
+    cap.rotation.z=Math.PI/2; cap.position.x=out; wg.add(cap);
     wg.position.set(x,r,z); car.add(wg); car.userData.wheels.push(wg);
   });
   /* wheelie bars — the boss runs them, and so does a tier-2+ suspension
@@ -1045,8 +1145,14 @@ function buildCar(paintColor,opts){
     });
     if(opts.wheelie) add(box(0.52,0.4,0.18,darkM),0,0.82,-2.52); // chute: Scotty only
   }
+  /* GFX PASS: neon underglow in the car's halo color — pure street.
+     The blob shadow softens a touch because the moon shadow is real now. */
+  const ug=new THREE.Mesh(new THREE.PlaneGeometry(2.9,5.6),
+    new THREE.MeshBasicMaterial({map:glowTex,color:opts.halo||0x66c8ff,transparent:true,opacity:0.15,
+      blending:THREE.AdditiveBlending,depthWrite:false}));
+  ug.rotation.x=-Math.PI/2; ug.position.y=0.025; car.add(ug);
   const shadow=new THREE.Mesh(new THREE.PlaneGeometry(2.5,5.2),
-    new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:0.42,depthWrite:false}));
+    new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:0.30,depthWrite:false}));
   shadow.rotation.x=-Math.PI/2; shadow.position.y=0.02; car.add(shadow);
   return car;
 }
@@ -1069,10 +1175,10 @@ for(let i=0;i<SMOKE_N;i++){ smokeDat.push({life:0,max:1,x:0,y:-9,z:0,vx:0,vy:0,v
 const smokeGeo=new THREE.BufferGeometry();
 smokeGeo.setAttribute('position',new THREE.BufferAttribute(smokePos,3));
 const smokeTex=canvasTex(64,64,(g,w,h)=>{ const gr=g.createRadialGradient(32,32,2,32,32,30);
-  gr.addColorStop(0,'rgba(235,242,250,0.55)'); gr.addColorStop(1,'rgba(235,242,250,0)');
+  gr.addColorStop(0,'rgba(235,242,250,0.62)'); gr.addColorStop(1,'rgba(235,242,250,0)');
   g.fillStyle=gr; g.fillRect(0,0,w,h); });
-const smoke=new THREE.Points(smokeGeo,new THREE.PointsMaterial({size:2.6,map:smokeTex,transparent:true,
-  depthWrite:false,opacity:0.5,sizeAttenuation:true}));
+const smoke=new THREE.Points(smokeGeo,new THREE.PointsMaterial({size:3.2,map:smokeTex,transparent:true,
+  depthWrite:false,opacity:0.52,sizeAttenuation:true}));
 smoke.frustumCulled=false; scene.add(smoke);
 let smokeIdx=0;
 function puff(x,y,z,n,spread,up){
@@ -1507,7 +1613,8 @@ function drawTach(rpm,gear){
     tach.fillText(r/1000+'',x,y); }
   const na=ang(rpm);
   tach.beginPath(); tach.moveTo(cx,cy); tach.lineTo(cx+Math.cos(na)*(R-8),cy+Math.sin(na)*(R-8));
-  tach.strokeStyle='#F4F9FF'; tach.lineWidth=5; tach.stroke();
+  tach.strokeStyle='#F4F9FF'; tach.lineWidth=5;
+  tach.shadowColor='rgba(190,225,255,0.9)'; tach.shadowBlur=7; tach.stroke(); tach.shadowBlur=0;
   tach.beginPath(); tach.arc(cx,cy,11,0,7); tach.fillStyle='#2A3C52'; tach.fill();
   tach.fillStyle='#EAF2FA'; tach.font='900 25px Arial';
   tach.fillText(Math.round(rpm/100)*100+'',cx,cy-24);
@@ -1705,6 +1812,7 @@ function animate(){
   crowd.forEach(m=>{ const ex=S.crowdEx||0;
     m.position.y=0.92+Math.sin(now*1.8+m.userData.ph)*(0.03+0.05*ex)+(ex>0?Math.abs(Math.sin(now*8+m.userData.ph))*0.13*ex:0); });
   lampGlowMat.opacity=0.30+Math.sin(now*47)*0.02+Math.sin(now*13.7)*0.015; /* mains hum */
+  lampGlowMatWarm.opacity=lampGlowMat.opacity;
   if(typeof neonMats!=='undefined'&&neonMats.length&&Math.random()<dt*0.8){
     const m=neonMats[(Math.random()*neonMats.length)|0]; m.opacity=0.25;
     setTimeout(()=>{ m.opacity=1; },80); } /* one sign buzzes, somewhere down the street */
@@ -1762,6 +1870,11 @@ function animate(){
   }
   rim.position.set(playerCar.position.x-4,9,playerCar.position.z-6);
   rim.target.position.set(0,0.5,playerCar.position.z+4); rim.target.updateMatrixWorld();
+  /* GFX PASS: the shadow-casting moon rides with the player car so its
+     tight shadow box is always where the action is */
+  moon.position.set(playerCar.position.x-26,46,playerCar.position.z-30);
+  moon.target.position.set(playerCar.position.x,0,playerCar.position.z+6);
+  moon.target.updateMatrixWorld();
   renderer.render(scene,camera);
 }
 addEventListener('resize',()=>{
