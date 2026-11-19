@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Funny Maps — New Voices — Digital Dollar Store</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #07090d; color: #e8edf4; font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; padding: 18px 14px 40px; }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  h1 { font-size: 26px; letter-spacing: .5px; background: linear-gradient(180deg,#ffffff 0%,#c9d4e2 45%,#7f8ea3 55%,#dfe8f2 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .sub { color: #9fb4cc; font-size: 15px; line-height: 1.45; margin: 8px 0 6px; }
+  .note { color: #e8edf4; font-size: 15px; line-height: 1.45; margin: 6px 0 22px; padding: 12px 14px; background: #0d1118; border: 1px solid #1d2a3a; border-radius: 10px; }
+  .note b { color: #0096FF; }
+  .card { display: flex; align-items: center; gap: 14px; width: 100%; background: linear-gradient(180deg,#141a23,#0d1118); border: 1px solid #263449; border-radius: 12px; padding: 14px 16px; margin: 0 0 10px; }
+  .card.playing { border-color: #0096FF; box-shadow: 0 0 12px rgba(0,150,255,.35); }
+  .face { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid #263449; flex: none; background: #0d1118; }
+  .meta { flex: 1; min-width: 0; }
+  .name { font-size: 19px; font-weight: 700; color: #f2f6fb; }
+  .desc { color: #93a7c0; font-size: 14px; margin-top: 3px; line-height: 1.4; }
+  .says { color: #c9d6e8; font-size: 13px; margin-top: 5px; line-height: 1.4; font-style: italic; }
+  button.play { flex: none; background: #0d1118; border: 1px solid #0096FF; color: #0096FF; font-size: 14px; font-weight: 700; letter-spacing: 1px; border-radius: 10px; padding: 12px 14px; min-height: 48px; cursor: pointer; font-family: inherit; }
+  button.play:active { background: rgba(0,150,255,.25); }
+  #status { color: #9fb4cc; font-size: 14px; min-height: 20px; margin: 4px 0 14px; }
+  .foot { color: #9fb4cc; font-size: 14px; line-height: 1.5; margin-top: 20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🗺️ FUNNY MAPS — NEW VOICES</h1>
+  <p class="sub">The whole Funny Maps crew got new voices — and they finally say their own names right. Tap <b>PLAY</b> on each rider and listen.</p>
+  <p class="note"><b>How this works:</b> these voices come from your phone's own built-in speaker, same as the app itself — so what you hear here is exactly what you'll hear in the car. Each rider introduces himself (or herself), then calls one turn, just like on a real drive.</p>
+  <p id="status"></p>
+
+  <div class="card" data-k="bubba">
+    <img class="face" src="../../apps/funny-maps/characters/thumbs/bubba-04.webp" alt="Bubba">
+    <div class="meta"><div class="name">Bubba</div>
+      <div class="desc">Deepest voice in the car, slowed way down — a real country drawl.</div>
+      <div class="says">“Hi, I'm Bubba…”</div></div>
+    <button class="play" data-k="bubba">▶ PLAY</button>
+  </div>
+
+  <div class="card" data-k="dre">
+    <img class="face" src="../../apps/funny-maps/characters/thumbs/dre-07.webp" alt="Dre">
+    <div class="meta"><div class="name">Dre</div>
+      <div class="desc">A completely different voice — smooth, cool, easy pace. And he says his name right now: “Dray.”</div>
+      <div class="says">“Hi, I'm Dray…”</div></div>
+    <button class="play" data-k="dre">▶ PLAY</button>
+  </div>
+
+  <div class="card" data-k="hurt">
+    <img class="face" src="../../apps/funny-maps/characters/thumbs/major-hurt-04.webp" alt="Major Hurt">
+    <div class="meta"><div class="name">Major “Hurt”</div>
+      <div class="desc">Low, fast, and barking — every line is an order.</div>
+      <div class="says">“Hi, I'm Major Hurt…”</div></div>
+    <button class="play" data-k="hurt">▶ PLAY</button>
+  </div>
+
+  <div class="card" data-k="doright">
+    <img class="face" src="../../apps/funny-maps/characters/thumbs/officer-doright-05.webp" alt="Officer Doright">
+    <div class="meta"><div class="name">Officer Doright</div>
+      <div class="desc">Crisp and proper, slow and by the book. His name finally comes out “Do-right.”</div>
+      <div class="says">“Hi, I'm Officer Do-right…”</div></div>
+    <button class="play" data-k="doright">▶ PLAY</button>
+  </div>
+
+  <div class="card" data-k="steve">
+    <img class="face" src="../../apps/funny-maps/characters/thumbs/stoner-steve-01.webp" alt="Stoner Steve">
+    <div class="meta"><div class="name">Stoner Steve</div>
+      <div class="desc">The slowest talker of the bunch — spaced out, mellow, in no hurry at all.</div>
+      <div class="says">“Hi, I'm Stoner Steve…”</div></div>
+    <button class="play" data-k="steve">▶ PLAY</button>
+  </div>
+
+  <div class="card" data-k="nora">
+    <img class="face" src="../../apps/funny-maps/characters/thumbs/nagging-nora-20.webp" alt="Nagging Nora">
+    <div class="meta"><div class="name">Nagging Nora</div>
+      <div class="desc">The only lady in the car — high, brisk, and talking fast, itinerary in hand.</div>
+      <div class="says">“Hi, I'm Nagging Nora…”</div></div>
+    <button class="play" data-k="nora">▶ PLAY</button>
+  </div>
+
+  <p class="foot">Listen to all six, then say the word — the ones you like go into the app just like this. If one still sounds wrong, say which one and what it sounds like, and it goes back to the shop.</p>
+</div>
+
+<script>
+"use strict";
+/* Funny Maps NEW voice settings — identical to what ships in the app.
+   Spoken names are phonetic on purpose (display names keep the real
+   spelling): Dre says "Dray", Doright says "Do-right", and Major Hurt
+   drops the quotation marks some speakers read out loud. */
+const VOICES = {
+  bubba:  { say:"Bubba",          pitch:0.60, rate:0.84,
+            voiceNames:["David","Daniel","Google US English","Google UK English Male","en-US"],
+            intro:"Alright… let's roll. I got shotgun, and I got the directions — you just drive, partner.",
+            nav:"Hang a left up here, smooth as butter." },
+  dre:    { say:"Dray",           pitch:0.92, rate:0.94,
+            voiceNames:["Mark","Google UK English Male","Daniel","Google US English","David"],
+            intro:"Aight, I got you. Sit back — I know these streets like I drew 'em.",
+            nav:"Left right here — smooth, like that." },
+  hurt:   { say:"Major Hurt",     pitch:0.48, rate:1.16,
+            voiceNames:["Guy","Alex","Google UK English Male","Daniel","David","Google US English"],
+            intro:"MOVE OUT! I will call every turn. You WILL arrive on time. That is NOT a request.",
+            nav:"LEFT TURN! Execute! Execute!" },
+  doright:{ say:"Officer Do-right", pitch:1.10, rate:0.86,
+            voiceNames:["Daniel","Google US English","David","Google UK English Male"],
+            intro:"Seatbelts fastened. Mirrors adjusted. Hands at nine and three. We may proceed.",
+            nav:"Left turn. Signal on — a full three seconds before the turn, per regulation." },
+  steve:  { say:"Stoner Steve",   pitch:1.00, rate:0.64,
+            voiceNames:["Fred","English (United States)","Google US English","David","Daniel"],
+            intro:"Alright… we're rollin'. No tolls… no highways… no hurry. The long way's the good way, man.",
+            nav:"Left up here, man. Easy does it. Everything's easy." },
+  nora:   { say:"Nagging Nora",   pitch:1.32, rate:1.14,
+            voiceNames:["Zira","Samantha","Google UK English Female","Aria","Jenny","Female","Google US English"],
+            intro:"Itinerary's printed and highlighted. We were supposed to leave at nine — but we're leaving together, and that's what counts.",
+            nav:"Left here — and good news, this turn was already highlighted. I love when the plan works." }
+};
+const NAV_INSTRUCTION = "In 500 feet, turn left onto Main Street.";
+const statusEl = document.getElementById('status');
+
+function pickVoice(ch){
+  try {
+    const vs = speechSynthesis.getVoices().filter(v => /^en/i.test(v.lang));
+    if (!vs.length) return null;
+    for (const hint of ch.voiceNames){ const v = vs.find(v => v.name.includes(hint)); if (v) return v; }
+    return vs[0];
+  } catch(e){ return null; }
+}
+if ('speechSynthesis' in window) speechSynthesis.onvoiceschanged = () => {};
+window.addEventListener('pointerdown', () => { try { if ('speechSynthesis' in window) speechSynthesis.resume(); } catch(e){} }, { passive: true });
+
+function clearPlaying(){ document.querySelectorAll('.card.playing').forEach(c => c.classList.remove('playing')); }
+
+function play(k){
+  if (!('speechSynthesis' in window)){ statusEl.textContent = "This browser has no voice built in — try it on the phone."; return; }
+  const ch = VOICES[k]; if (!ch) return;
+  try { speechSynthesis.cancel(); speechSynthesis.resume(); } catch(e){}
+  clearPlaying();
+  const card = document.querySelector('.card[data-k="' + k + '"]');
+  if (card) card.classList.add('playing');
+  const lines = ["Hi, I'm " + ch.say + ". " + ch.intro, NAV_INSTRUCTION, ch.nav];
+  let left = lines.length;
+  lines.forEach(text => {
+    const u = new SpeechSynthesisUtterance(text);
+    u.pitch = ch.pitch; u.rate = ch.rate;
+    const v = pickVoice(ch); if (v) u.voice = v;
+    const done = () => { if (--left <= 0){ clearPlaying(); statusEl.textContent = ""; } };
+    u.onend = done;
+    u.onerror = e => { if (e && e.error !== 'interrupted' && e.error !== 'canceled') statusEl.textContent = "The voice hit a snag (" + e.error + "). Check the volume and tap again."; done(); };
+    speechSynthesis.speak(u);
+  });
+  statusEl.textContent = "Playing… listen for the name at the start.";
+}
+document.querySelectorAll('button.play').forEach(b => b.addEventListener('click', () => play(b.dataset.k)));
+</script>
+</body>
+</html>
