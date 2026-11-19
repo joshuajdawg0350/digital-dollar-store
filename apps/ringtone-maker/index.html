@@ -8,6 +8,13 @@
          lives outside the artifact's routes and 404s. -->
     <link rel="icon" href="data:," />
     <title>J-Dawgs Ringtone &amp; Alert Maker</title>
+<meta name="theme-color" content="#04060A">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ringtone Maker">
     <style>
       :root{
         --bg:#121418;
@@ -390,7 +397,14 @@
           transition-duration:.001s !important;
         }
       }
-    </style>
+    
+  /* ---------- install bar (home-screen icon) ---------- */
+  #installBar{flex:0 0 auto;background:linear-gradient(180deg,#0d2f4d,#081c30);border-bottom:2px solid #0096FF;padding:8px 10px;z-index:45;position:relative}
+  #installBtn{width:100%;min-height:48px;border:1px solid #66ccff;border-radius:12px;background:linear-gradient(180deg,#00b0ff,#0077cc);color:#fff;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 0 12px rgba(0,150,255,.5);font-family:inherit}
+  #installBtn:active{transform:scale(.98)}
+  #installSteps{display:none;margin-top:8px;background:#04060A;border:1px solid #263449;border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.55;color:#E8EDF2;text-align:left}
+  #installSteps b{color:#6FC3FF}
+</style>
   </head>
   <body>
     <main class="wrap">
@@ -398,6 +412,14 @@
         <p class="brand">J-Dawgs Industries</p>
         <h1>Ringtone &amp; Alert Maker<span class="tm">™</span></h1>
       </header>
+<div id="installBar">
+  <button id="installBtn" type="button">📲 Put this on your home screen</button>
+  <div id="installSteps">
+    <p id="stepsAndroid"><b>Android:</b> Tap the ⋮ menu at the top right, then tap "Add to Home screen."</p>
+    <p id="stepsIos"><b>iPhone:</b> Tap the Share button, then "Add to Home Screen."</p>
+  </div>
+</div>
+
 
       <div class="hud" aria-label="Current state at a glance">
         <div class="huditem wide"><span class="hk">Source</span><span class="hv" id="hudFile">No file yet</span></div>
@@ -1935,5 +1957,38 @@ a.length>D&&(D=a.length,p=0|1.25*D+7200,r=new Int8Array(p));a=u.lame_encode_buff
     updateHud();
     fitCanvas();
     </script>
-  </body>
+  
+<script>
+(function () {
+  'use strict';
+  var bar = document.getElementById('installBar');
+  if (!bar) return;
+  var btn = document.getElementById('installBtn');
+  var steps = document.getElementById('installSteps');
+  var deferred = null;
+  var standalone = false;
+  try { standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true; } catch (e) {}
+  if (standalone) { bar.style.display = 'none'; return; }
+  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); deferred = e; });
+  window.addEventListener('appinstalled', function () { bar.style.display = 'none'; });
+  btn.addEventListener('click', function () {
+    if (deferred) {
+      var d = deferred; deferred = null;
+      d.prompt();
+      if (d.userChoice) { d.userChoice.then(function () {}, function () {}); }
+      return;
+    }
+    var ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    document.getElementById('stepsAndroid').style.display = ios ? 'none' : 'block';
+    document.getElementById('stepsIos').style.display = ios ? 'block' : 'none';
+    steps.style.display = (steps.style.display === 'block') ? 'none' : 'block';
+  });
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    });
+  }
+})();
+</script>
+</body>
 </html>

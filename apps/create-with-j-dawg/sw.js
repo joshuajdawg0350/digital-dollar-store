@@ -27,7 +27,7 @@ self.addEventListener('fetch', function (e) {
     caches.match(e.request).then(function (hit) {
       if (hit) return hit;
       return fetch(e.request).then(function (res) {
-        if (res && res.ok && res.type === 'basic') {
+        if (res && res.status === 200 && res.type === 'basic') {
           var copy = res.clone();
           caches.open(CACHE).then(function (c) { c.put(e.request, copy); });
         }

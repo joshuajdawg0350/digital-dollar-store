@@ -1,0 +1,31 @@
+{
+  "name": "Droppin Beats Studio",
+  "short_name": "Droppin Beats Studio",
+  "description": "J-Dawgs Droppin Beats Studio \u2014 make the music you want to hear anytime, anywhere. Beats, keys, voice, samples, mix and finish, right on your phone.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#04060A",
+  "theme_color": "#0096FF",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
