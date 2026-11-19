@@ -105,8 +105,12 @@
     color:#7cc4ff; background:linear-gradient(180deg,#03060a,#0a141f); border:1px solid #1e3a52; font-variant-numeric:tabular-nums;
     text-shadow:0 0 9px rgba(0,150,255,.85); box-shadow:inset 0 1px 5px rgba(0,0,0,.9), 0 0 12px rgba(0,150,255,.18); }
   .street{ text-align:center; font-size:.74rem; letter-spacing:2px; color:var(--blue-hi); font-weight:800; min-height:1.1em; text-transform:uppercase; text-shadow:0 0 9px rgba(0,150,255,.55); }
-  .status{ min-height:2.6em; display:flex; align-items:center; justify-content:center; text-align:center; font-size:.98rem; padding:6px 4px 2px; }
+  .status{ min-height:2.6em; display:block; text-align:center; font-size:.98rem; line-height:1.45; padding:6px 4px 2px; }
   .status b{ color:var(--gold); }
+  .status .amt{ display:inline-block; padding:0 8px 1px; border-radius:6px; font-weight:900; color:#7cc4ff; white-space:nowrap;
+    background:linear-gradient(180deg,#03060a,#0a141f); border:1px solid #1e3a52; font-variant-numeric:tabular-nums;
+    text-shadow:0 0 8px rgba(0,150,255,.8); box-shadow:inset 0 1px 5px rgba(0,0,0,.9), 0 0 10px rgba(0,150,255,.14); }
+  .status .allhands{ display:block; margin-top:5px; color:var(--gold); font-weight:800; }
   .actions{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:6px; }
   .actions .wide{ grid-column:1 / -1; }
   button.act{ appearance:none; border-radius:12px; padding:14px 8px; font-size:1.05rem; font-weight:800; cursor:pointer; min-height:54px; letter-spacing:.3px; color:#10151c;
@@ -647,20 +651,20 @@ function endHand(){
   if(handFlags.pfr) S.pfr++;
   var r = hand.results, msg;
   if(r.foldOut){
-    msg = r.winner === 0 ? "Midas folds — the pot is yours: <b>" + fmt(r.amt) + " chips</b>." : "You fold — Midas takes the " + fmt(r.amt) + "-chip pot.";
+    msg = r.winner === 0 ? "Midas folds — the pot is yours: <b class=\"amt\">" + fmt(r.amt) + " chips</b>." : "You fold — Midas takes the " + fmt(r.amt) + "-chip pot.";
     if(r.winner === 0) S.biggestPotWon = Math.max(S.biggestPotWon, r.amt);
   } else {
     S.showdowns++;
     var yourScore = r.scores[0], midasScore = r.scores[1];
     if(r.winners.indexOf(0) >= 0){ S.showdownsWon++; S.biggestPotWon = Math.max(S.biggestPotWon, Math.floor(r.amt / r.winners.length)); }
-    if(r.winner === 0) msg = "Showdown — your " + describeScore(yourScore) + " beats Midas's " + describeScore(midasScore) + ". You take <b>" + fmt(r.amt) + "</b>.";
-    else if(r.winner === 1) msg = "Showdown — Midas shows " + describeScore(midasScore) + " against your " + describeScore(yourScore) + ". He takes <b>" + fmt(r.amt) + "</b>.";
+    if(r.winner === 0) msg = "Showdown — your " + describeScore(yourScore) + " beats Midas's " + describeScore(midasScore) + ". You take <b class=\"amt\">" + fmt(r.amt) + "</b>.";
+    else if(r.winner === 1) msg = "Showdown — Midas shows " + describeScore(midasScore) + " against your " + describeScore(yourScore) + ". He takes <b class=\"amt\">" + fmt(r.amt) + "</b>.";
     else msg = "Showdown — dead even: " + describeScore(yourScore) + " apiece. The " + fmt(r.amt) + "-chip pot splits.";
   }
   render(true);
   if(handNo >= TOTAL_HANDS){
     matchOver = true;
-    setStatus(msg + "<br><b>That's all 10 hands.</b>");
+    setStatus(msg + '<span class="allhands">That\'s all 10 hands.</span>');
     var next = $("btnNext"); setActions("next"); next.textContent = "See Midas's Read on you →";
   } else {
     setStatus(msg);
