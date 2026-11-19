@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Crosswords — Digital Dollar Store</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;display:flex;flex-direction:column;height:100dvh;overflow:hidden}
+body[data-skin="house"]{--bg:#05080E;--panel:#10141c;--panel2:#161c28;--ink:#e8eef7;--muted:#8fa3bd;--line:#3d4b63;--cell:#12161f;--cellink:#f2f6fc;--accent:#0096FF;--accentink:#ffffff;--hl:#123a5f;--hl2:#1d5c96;--bad:#ff5470;--good:#39d98a;--keybg:#1a2231;--keyink:#e8eef7;--chrome:linear-gradient(180deg,#f4f7fb,#9fb2c8 45%,#e6edf6 55%,#7e93ad)}
+body[data-skin="classic"]{--bg:#f3ead3;--panel:#efe3c2;--panel2:#e9dcB4;--ink:#2a2118;--muted:#6d5c3d;--line:#8a7648;--cell:#fdf6dd;--cellink:#241a0c;--accent:#8a6d1f;--accentink:#fff8e1;--hl:#e8cf8f;--hl2:#d9b95c;--bad:#c22e2e;--good:#2e7d32;--keybg:#e7d9ae;--keyink:#2a2118;--chrome:linear-gradient(180deg,#fff8e1,#c9a94e 45%,#f7ead0 55%,#a8842f)}
+body[data-skin="trend"]{--bg:#0d0620;--panel:#180b38;--panel2:#20104a;--ink:#f2eaff;--muted:#a58fd6;--line:#4b2a8f;--cell:#170a33;--cellink:#ffffff;--accent:#00e5ff;--accentink:#0d0620;--hl:#3d1470;--hl2:#7b1e6e;--bad:#ff4d6d;--good:#3dff9e;--keybg:#22104d;--keyink:#f2eaff;--chrome:linear-gradient(180deg,#ffe3fb,#ff5fd2 45%,#b18cff 55%,#00e5ff)}
+body{background:var(--bg);color:var(--ink)}
+button{font-family:inherit;cursor:pointer}
+header{display:flex;align-items:center;gap:5px;padding:7px 8px;background:var(--panel);border-bottom:2px solid var(--line)}
+.logo{font-weight:bold;font-size:15px;letter-spacing:.3px;white-space:nowrap;overflow:hidden;background:var(--chrome);-webkit-background-clip:text;background-clip:text;color:transparent}
+header .sp{flex:1}
+.hbtn{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:12px;flex-shrink:0}
+.hbtn.on{border-color:var(--accent);color:var(--accent);font-weight:bold}
+#picker{flex:1;overflow-y:auto;padding:12px}
+#picker h2{margin:2px 0 4px;font-size:17px}
+#picker p.sub{margin:0 0 12px;color:var(--muted);font-size:13px}
+.pcard{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px;margin-bottom:10px;color:var(--ink)}
+.pcard .t{font-size:16px;font-weight:bold}
+.pcard .m{font-size:13px;color:var(--muted);margin-top:2px}
+.pcard .pct{margin-left:auto;font-size:15px;font-weight:bold;color:var(--accent);white-space:nowrap}
+.badge{background:var(--good);color:#06130b;border-radius:6px;padding:2px 7px;font-size:12px;font-weight:bold}
+#play{flex:1;display:none;flex-direction:column;min-height:0}
+#cluebar{display:flex;gap:8px;align-items:center;background:var(--panel2);border-bottom:1px solid var(--line);padding:8px 10px;min-height:44px}
+#cluebar .cn{font-weight:bold;color:var(--accent);white-space:nowrap;font-size:14px}
+#cluebar .ct{font-size:14px;line-height:1.25}
+#gridwrap{display:flex;justify-content:center;padding:8px 6px 4px}
+#grid{display:grid;gap:1px;background:var(--line);border:2px solid var(--line);border-radius:4px;touch-action:manipulation}
+.cell{position:relative;background:var(--cell);color:var(--cellink);display:flex;align-items:center;justify-content:center;font-weight:bold;text-transform:uppercase;user-select:none}
+.cell.block{background:transparent}
+.cell .num{position:absolute;top:0;left:2px;font-size:9px;font-weight:normal;color:var(--muted)}
+.cell.inword{background:var(--hl)}
+.cell.sel{background:var(--hl2);outline:2px solid var(--accent);z-index:1}
+.cell.wrong{color:var(--bad)}
+.cell.wrong::after{content:"";position:absolute;inset:0;background:var(--bad);opacity:.18}
+.cell.revealed{color:var(--accent)}
+#toolbar{display:flex;gap:6px;padding:6px 8px;flex-wrap:wrap}
+#toolbar button{flex:1;background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:9px 2px;font-size:13px;min-width:70px}
+#kb{padding:4px 6px 8px;background:var(--panel);border-top:1px solid var(--line)}
+.krow{display:flex;gap:5px;justify-content:center;margin-bottom:5px}
+.key{flex:1;max-width:38px;height:48px;background:var(--keybg);color:var(--keyink);border:1px solid var(--line);border-radius:8px;font-size:17px;font-weight:bold;padding:0}
+.key.wide{max-width:58px;flex:1.5;font-size:15px}
+.key:active{background:var(--hl2)}
+#clues{flex:1;min-height:86px;overflow-y:auto;display:flex;gap:0;border-top:1px solid var(--line);background:var(--panel)}
+.clist{flex:1;overflow-y:auto;padding:6px 8px}
+.clist h3{margin:2px 0 6px;font-size:13px;color:var(--accent)}
+.clue{font-size:13.5px;line-height:1.35;padding:6px 6px;border-radius:6px;cursor:pointer}
+.clue b{color:var(--accent)}
+.clue.on{background:var(--hl)}
+#winbanner{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);z-index:50}
+#wincard{background:var(--panel);border:2px solid var(--accent);border-radius:16px;padding:22px;width:min(88vw,340px);text-align:center;position:relative;overflow:hidden}
+#wincard h2{margin:0 0 8px;font-size:22px}
+#wincard p{font-size:14px;color:var(--muted);margin:4px 0 14px}
+#wincard button{background:var(--accent);color:var(--accentink);border:none;border-radius:10px;padding:11px 16px;font-size:15px;font-weight:bold;margin:3px}
+#wincard button.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+.confetti{position:absolute;top:-10px;width:8px;height:14px;opacity:.9;animation:fall 1.6s ease-in forwards}
+@keyframes fall{to{transform:translateY(340px) rotate(560deg);opacity:0}}
+footer{padding:6px;text-align:center;font-size:12px;color:var(--muted);background:var(--panel);border-top:1px solid var(--line)}
+@media (max-width:380px){ .logo{font-size:13px} .hbtn{padding:5px 6px;font-size:11px}
+  #toolbar button{font-size:12px;min-width:60px;padding:7px 2px} }
+@media (max-height:780px){ .key{height:42px} #clues{min-height:64px} }
+/* ---- Upgrade pass 2026-11-18: one-product polish ---- */
+button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+body[data-skin="house"] .hbtn{background:linear-gradient(180deg,#22314C,#161C28);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
+body[data-skin="house"] #toolbar button{background:linear-gradient(180deg,#22314C,#161C28);box-shadow:inset 0 1px 0 rgba(255,255,255,.10)}
+body[data-skin="house"] .key{background:linear-gradient(180deg,#232F47,#1A2231);box-shadow:inset 0 1px 0 rgba(255,255,255,.10)}
+body[data-skin="house"] .pcard{background:linear-gradient(165deg,#141E30,#10141C 65%);box-shadow:0 6px 16px rgba(0,0,0,.40)}
+</style>
+</head>
+<body data-skin="house">
+<header>
+  <div class="logo">✚ CROSSWORDS</div>
+  <div class="sp"></div>
+  <button class="hbtn skinbtn" data-set-skin="house">House</button>
+  <button class="hbtn skinbtn" data-set-skin="classic">Classic</button>
+  <button class="hbtn skinbtn" data-set-skin="trend">Neon</button>
+  <button class="hbtn" id="mutebtn" aria-label="Mute">🔊</button>
+</header>
+
+<div id="picker">
+  <h2>Pick a puzzle</h2>
+  <p class="sub">Real crosswords, hand-built word by word. No ads, no account — progress saves on this device.</p>
+  <div id="plist"></div>
+</div>
+
+<div id="play">
+  <div id="cluebar"><span class="cn" id="cbnum">—</span><span class="ct" id="cbtext">Tap a square to start.</span></div>
+  <div id="gridwrap"><div id="grid"></div></div>
+  <div id="toolbar">
+    <button id="btnback">‹ Puzzles</button>
+    <button id="btncheckletter">Check Letter</button>
+    <button id="btncheckword">Check Word</button>
+    <button id="btncheckpuzzle">Check Puzzle</button>
+    <button id="btnreveal">Reveal Letter</button>
+  </div>
+  <div id="kb"></div>
+  <div id="clues">
+    <div class="clist" id="acrosslist"><h3>ACROSS</h3></div>
+    <div class="clist" id="downlist"><h3>DOWN</h3></div>
+  </div>
+</div>
+
+<div id="winbanner"><div id="wincard">
+  <h2 id="wintitle">Solved!</h2>
+  <p id="wintext"></p>
+  <button id="winagain">Play Again</button>
+  <button id="winback" class="ghost">All Puzzles</button>
+</div></div>
+
+<footer>© 2026 J-Dawgs Industries · Digital Dollar Store</footer>
+<script>
+"use strict";
+const PUZZLES = [
+ {
+  "id": "morning",
+  "title": "Morning",
+  "theme": "Coffee, sunrise and a fresh start",
+  "grid": [
+   "CAUSE#LISTS",
+   "ALPHA#IDEAL",
+   "UPPER#SENSE",
+   "SHELL#TASTE",
+   "EARLY#SLEEP",
+   "###########",
+   "OLD#PAN#GET",
+   "TEA#AGO#ASH",
+   "HAT#SAT#USE",
+   "EVE#TIE#GAS",
+   "RED#END#EYE"
+  ],
+  "clues": {
+   "A1": "Make something happen, or a reason for it",
+   "D1": "Make something happen, or a reason for it",
+   "D2": "First letter of the Greek alphabet",
+   "D3": "Higher one, like the top bunk",
+   "D4": "Hard outer case of an egg or a snail",
+   "D5": "Before the usual time",
+   "A6": "Written rows of names or things",
+   "D6": "Written rows of names or things",
+   "D7": "Perfect; the best possible",
+   "D8": "Sight, hearing, touch, taste or smell \u2014 or good judgement",
+   "D9": "Flavour on your tongue, or a small sample",
+   "D10": "Rest with your eyes closed at night",
+   "A11": "First letter of the Greek alphabet",
+   "A12": "Perfect; the best possible",
+   "A13": "Higher one, like the top bunk",
+   "A14": "Sight, hearing, touch, taste or smell \u2014 or good judgement",
+   "A15": "Hard outer case of an egg or a snail",
+   "A16": "Flavour on your tongue, or a small sample",
+   "A17": "Before the usual time",
+   "A18": "Rest with your eyes closed at night",
+   "A19": "Not young, or not new",
+   "D19": "Different one, as in 'the ___ side'",
+   "D20": "Go away, or permission to be away",
+   "D21": "Went out with someone, or has a date printed on it",
+   "A22": "Flat pot for frying eggs",
+   "D22": "Glue, or a thick soft spread",
+   "D23": "Once more",
+   "D24": "Famous, or wrote down",
+   "A25": "Fetch, receive or understand",
+   "D25": "Meter that measures pressure or fuel",
+   "D26": "Short piece of writing on one topic",
+   "D27": "'___ are the days' \u2014 pointing at ones nearby",
+   "A28": "Hot drink made from leaves",
+   "A29": "Back in time, as in 'long ___'",
+   "A30": "Grey powder left by a fire",
+   "A31": "It covers your head",
+   "A32": "Took a seat",
+   "A33": "Put to work; employ",
+   "A34": "The evening before, as in 'Christmas ___'",
+   "A35": "Neckwear with a suit, or an even score",
+   "A36": "Fuel for a stove or car, or what fills a balloon",
+   "A37": "Colour of a stop sign",
+   "A38": "The finish line of a thing",
+   "A39": "You see with it"
+  }
+ },
+ {
+  "id": "beach",
+  "title": "At the Beach",
+  "theme": "Sand, sea and a slow afternoon",
+  "grid": [
+   "NOBLE#YARDS",
+   "OCEAN#ALARM",
+   "BEAST#RADIO",
+   "LASER#DRINK",
+   "ENTRY#SMOKE",
+   "###########",
+   "CAR#BAD#WAR",
+   "ARE#ERA#ARE",
+   "SEA#LET#TEA",
+   "END#ONE#END",
+   "SAY#WAS#RAY"
+  ],
+  "clues": {
+   "A1": "Honourable, or born into a titled family",
+   "D1": "Honourable, or born into a titled family",
+   "D2": "The deep salt water covering most of Earth",
+   "D3": "Wild animal",
+   "D4": "Focused beam of light used in pointers and surgery",
+   "D5": "A way in, or an item in a diary",
+   "A6": "Garden spaces behind houses, or units of three feet",
+   "D6": "Garden spaces behind houses, or units of three feet",
+   "D7": "It warns you or wakes you up",
+   "D8": "It plays music and talk without pictures",
+   "D9": "Sip a beverage, or the beverage itself",
+   "D10": "Grey cloud from a fire, or what a cigarette makes",
+   "A11": "The deep salt water covering most of Earth",
+   "A12": "It warns you or wakes you up",
+   "A13": "Wild animal",
+   "A14": "It plays music and talk without pictures",
+   "A15": "Focused beam of light used in pointers and surgery",
+   "A16": "Sip a beverage, or the beverage itself",
+   "A17": "A way in, or an item in a diary",
+   "A18": "Grey cloud from a fire, or what a cigarette makes",
+   "A19": "Four-wheeled ride to work",
+   "D19": "Boxes for carrying things, or court matters",
+   "D20": "Stadium for sports or concerts",
+   "D21": "All set to go",
+   "A22": "Not good",
+   "D22": "Underneath",
+   "D23": "Stadium for sports or concerts",
+   "D24": "Sweet fruits, or days on a calendar",
+   "A25": "Armed fighting between nations",
+   "D25": "You drink it and swim in it",
+   "D26": "Stadium for sports or concerts",
+   "D27": "All set to go",
+   "A28": "Word in 'we ___ family'",
+   "A29": "Long stretch of history",
+   "A30": "Word in 'we ___ family'",
+   "A31": "Smaller than an ocean; sailors cross it",
+   "A32": "Allow, as in '___ me help'",
+   "A33": "Hot drink made from leaves",
+   "A34": "The finish line of a thing",
+   "A35": "The loneliest number, in the song",
+   "A36": "The finish line of a thing",
+   "A37": "Speak words out loud",
+   "A38": "'He ___ there yesterday'",
+   "A39": "Beam of sunlight"
+  }
+ },
+ {
+  "id": "house",
+  "title": "Around the House",
+  "theme": "Everyday rooms and everyday things",
+  "grid": [
+   "SPLIT#PARTS",
+   "PLANE#ALERT",
+   "LAMPS#RELAY",
+   "INPUT#TRAIL",
+   "TESTS#STYLE",
+   "###########",
+   "POLE##RIDGE",
+   "UPON##UNION",
+   "READ##STAND",
+   "ENDS##HOLES"
+  ],
+  "clues": {
+   "A1": "Break apart, or a banana dessert",
+   "D1": "Break apart, or a banana dessert",
+   "D2": "It flies, or a flat surface",
+   "D3": "They light a room from a table",
+   "D4": "Data typed in, or your say in a matter",
+   "D5": "Exams, or tries something out",
+   "A6": "Pieces of a whole, or what an actor plays",
+   "D6": "Pieces of a whole, or what an actor plays",
+   "D7": "Wide awake and watching",
+   "D8": "Race where runners pass a baton, or pass a message on",
+   "D9": "Path through the woods, or follow behind",
+   "D10": "A way of doing or dressing",
+   "A11": "It flies, or a flat surface",
+   "A12": "Wide awake and watching",
+   "A13": "They light a room from a table",
+   "A14": "Race where runners pass a baton, or pass a message on",
+   "A15": "Data typed in, or your say in a matter",
+   "A16": "Path through the woods, or follow behind",
+   "A17": "Exams, or tries something out",
+   "A18": "A way of doing or dressing",
+   "A19": "Long stick, or the top of the Earth",
+   "D19": "Clean and unmixed",
+   "D20": "Not shut; unlock and swing wide",
+   "D21": "Cargo, or a heavy burden",
+   "D22": "Finishes, or the two tips of a rope",
+   "A23": "Long narrow top of a hill or roof",
+   "D23": "Hurry, or a sudden surge",
+   "D24": "Inside, as in 'walked ___ the room'",
+   "D25": "Clock face, or punch in a phone number",
+   "D26": "No longer here; left",
+   "D27": "Finishes, or the two tips of a rope",
+   "A28": "On top of, as in 'once ___ a time'",
+   "A29": "Workers' organisation, or states joined as one",
+   "A30": "Look at words and understand them",
+   "A31": "Be on your feet, or a small table by a stall",
+   "A32": "Finishes, or the two tips of a rope",
+   "A33": "Gaps you can fall into or peek through"
+  }
+ },
+ {
+  "id": "animals",
+  "title": "Animals",
+  "theme": "Feathers, fur and farmyard neighbours",
+  "grid": [
+   "STAFF#BRASS",
+   "TIGER#RIGHT",
+   "AGREE#AGREE",
+   "FEEDS#SHEEP",
+   "FRESH#STEPS",
+   "###########",
+   "DEER##VITAL",
+   "EDGE##ADOBE",
+   "EGGS##SELLS",
+   "REST##TALES"
+  ],
+  "clues": {
+   "A1": "Team of workers, or a long stick",
+   "D1": "Team of workers, or a long stick",
+   "D2": "Big striped wild cat",
+   "D3": "See eye to eye; say yes",
+   "D4": "Gives food to",
+   "D5": "Newly made, not stale",
+   "A6": "Golden metal used for horns and bells",
+   "D6": "Golden metal used for horns and bells",
+   "D7": "Correct, or the opposite of left",
+   "D8": "See eye to eye; say yes",
+   "D9": "Woolly farm animals",
+   "D10": "Stairs, or stages in a plan",
+   "A11": "Big striped wild cat",
+   "A12": "Correct, or the opposite of left",
+   "A13": "See eye to eye; say yes",
+   "A14": "See eye to eye; say yes",
+   "A15": "Gives food to",
+   "A16": "Woolly farm animals",
+   "A17": "Newly made, not stale",
+   "A18": "Stairs, or stages in a plan",
+   "A19": "Forest animal with antlers",
+   "D19": "Forest animal with antlers",
+   "D20": "The rim or border of something",
+   "D21": "Breakfast food laid by hens",
+   "D22": "Take a break and recover, or what is left over",
+   "A23": "Absolutely necessary, or full of life",
+   "D23": "Huge, stretching far",
+   "D24": "A thought or plan",
+   "D25": "Fee to use a road or bridge, or a bell's deep ring",
+   "D26": "Capable of doing the job",
+   "D27": "Not as much",
+   "A28": "The rim or border of something",
+   "A29": "Sun-dried mud brick",
+   "A30": "Breakfast food laid by hens",
+   "A31": "Trades goods for money",
+   "A32": "Take a break and recover, or what is left over",
+   "A33": "Stories, true or made up"
+  }
+ },
+ {
+  "id": "roadtrip",
+  "title": "Road Trip",
+  "theme": "Windows down, map out, snacks ready",
+  "grid": [
+   "SURE##CHILD",
+   "UPON##AUDIO",
+   "ROAD##PRESS",
+   "ENDS##STATE",
+   "###########",
+   "WATER#BELOW",
+   "ARENA#ARENA",
+   "READY#DATES",
+   "###########",
+   "SHE#WEB#WAY",
+   "PAN#ARE#AGE",
+   "ADD#SAT#YET"
+  ],
+  "clues": {
+   "A1": "Certain; without doubt",
+   "D1": "Certain; without doubt",
+   "D2": "On top of, as in 'once ___ a time'",
+   "D3": "Cars drive on it between towns",
+   "D4": "Finishes, or the two tips of a rope",
+   "A5": "Young boy or girl",
+   "D5": "Bottle tops, or hats with brims",
+   "D6": "In pain, or injured",
+   "D7": "A thought or plan",
+   "D8": "Written row of names or things",
+   "D9": "Measured amount of medicine",
+   "A10": "On top of, as in 'once ___ a time'",
+   "A11": "The sound part of a video",
+   "A12": "Cars drive on it between towns",
+   "A13": "Push down firmly, or iron a shirt",
+   "A14": "Finishes, or the two tips of a rope",
+   "A15": "Say out loud, or a region like Ohio",
+   "A16": "You drink it and swim in it",
+   "D16": "Armed fighting between nations",
+   "D17": "Word in 'we ___ family'",
+   "D18": "Hot drink made from leaves",
+   "D19": "The finish line of a thing",
+   "D20": "Beam of sunlight",
+   "A21": "Underneath",
+   "D21": "Not good",
+   "D22": "Long stretch of history",
+   "D23": "Allow, as in '___ me help'",
+   "D24": "The loneliest number, in the song",
+   "D25": "'He ___ there yesterday'",
+   "A26": "Stadium for sports or concerts",
+   "A27": "Stadium for sports or concerts",
+   "A28": "All set to go",
+   "A29": "Sweet fruits, or days on a calendar",
+   "A30": "'___ sells seashells'",
+   "D30": "Place for massages and mineral baths",
+   "D31": "Owned in the past, as in 'she ___ a car'",
+   "D32": "The finish line of a thing",
+   "A33": "A spider spins it, or the internet, loosely",
+   "D33": "'He ___ there yesterday'",
+   "D34": "Long stretch of history",
+   "D35": "Wager, or the money risked on one",
+   "A36": "Road or method, as in 'this ___ out'",
+   "D36": "Road or method, as in 'this ___ out'",
+   "D37": "How old someone is",
+   "D38": "So far, as in 'not ___'",
+   "A39": "Flat pot for frying eggs",
+   "A40": "Word in 'we ___ family'",
+   "A41": "How old someone is",
+   "A42": "Put in more, or sum up",
+   "A43": "Took a seat",
+   "A44": "So far, as in 'not ___'"
+  }
+ },
+ {
+  "id": "kitchen",
+  "title": "In the Kitchen",
+  "theme": "Something good is always cooking",
+  "grid": [
+   "HEAD##STRAP",
+   "ELSE##PRICE",
+   "ASKS##AUDIT",
+   "DESK##NEEDS",
+   "###########",
+   "BASS#STAY##",
+   "ECHO#PIPE##",
+   "TEEN#APPS##",
+   "###########",
+   "WAS#JAM#GUY",
+   "ASH#ARE#USE",
+   "SHE#MEN#NET"
+  ],
+  "clues": {
+   "A1": "Top of the body, or the boss",
+   "D1": "Top of the body, or the boss",
+   "D2": "Other, as in 'anyone ___'",
+   "D3": "Poses questions",
+   "D4": "Table you work or study at",
+   "A5": "Strip of leather or webbing that fastens things",
+   "D5": "Full reach from end to end, or a bridge's crossing",
+   "D6": "Correct and factual",
+   "D7": "Trip in a car, or travel on a horse",
+   "D8": "Sour liquid that can burn skin",
+   "D9": "Dogs, cats and other animal companions",
+   "A10": "Other, as in 'anyone ___'",
+   "A11": "What something costs",
+   "A12": "Poses questions",
+   "A13": "Careful official check of the accounts",
+   "A14": "Table you work or study at",
+   "A15": "Things you must have",
+   "A16": "Deep, low guitar in a band",
+   "D16": "Wager, or the money risked on one",
+   "D17": "Highest playing card",
+   "D18": "'___ sells seashells'",
+   "D19": "A boy in relation to his parents",
+   "A20": "Remain in one place",
+   "D20": "Place for massages and mineral baths",
+   "D21": "End of a finger, helpful hint, or extra money for service",
+   "D22": "Program on your phone",
+   "D23": "The affirmative answer",
+   "A24": "Sound that bounces back to you",
+   "A25": "Tube that carries water or smoke",
+   "A26": "Person aged thirteen to nineteen",
+   "A27": "Programs on your phone",
+   "A28": "'He ___ there yesterday'",
+   "D28": "'He ___ there yesterday'",
+   "D29": "Grey powder left by a fire",
+   "D30": "'___ sells seashells'",
+   "A31": "Sweet spread for toast, or a traffic tie-up",
+   "D31": "Sweet spread for toast, or a traffic tie-up",
+   "D32": "Word in 'we ___ family'",
+   "D33": "Grown males",
+   "A34": "A man, informally",
+   "D34": "It shoots bullets",
+   "D35": "Put to work; employ",
+   "D36": "So far, as in 'not ___'",
+   "A37": "Grey powder left by a fire",
+   "A38": "Word in 'we ___ family'",
+   "A39": "Put to work; employ",
+   "A40": "'___ sells seashells'",
+   "A41": "Grown males",
+   "A42": "It catches fish or a goalie guards it"
+  }
+ }
+];
+// ---------- derive entries (standard crossword numbering) ----------
+function derive(p){
+  const R=p.grid.length, C=p.grid[0].length, num=Array.from({length:R},()=>Array(C).fill(0));
+  const entries=[]; let n=0;
+  const white=(r,c)=> r>=0&&r<R&&c>=0&&c<C&&p.grid[r][c]!=="#";
+  for(let r=0;r<R;r++)for(let c=0;c<C;c++){
+    if(!white(r,c)) continue;
+    const sA=!white(r,c-1)&&white(r,c+1), sD=!white(r-1,c)&&white(r+1,c);
+    if(sA||sD){ n++; num[r][c]=n;
+      if(sA){ let len=0; while(white(r,c+len))len++; entries.push(mk(p,"A",n,r,c,len)); }
+      if(sD){ let len=0; while(white(r+len,c))len++; entries.push(mk(p,"D",n,r,c,len)); }
+    }
+  }
+  function mk(p,dir,n,r,c,len){ let ans=""; const cells=[];
+    for(let i=0;i<len;i++){ const rr=dir==="A"?r:r+i, cc=dir==="A"?c+i:c; ans+=p.grid[rr][cc]; cells.push([rr,cc]); }
+    return {num:n,dir,row:r,col:c,len,answer:ans,cells,clue:p.clues[dir+n]||""};
+  }
+  return {rows:R,cols:C,num,entries};
+}
+PUZZLES.forEach(p=>{ const d=derive(p); p.rows=d.rows; p.cols=d.cols; p.numGrid=d.num; p.entries=d.entries;
+  p.totalCells=p.entries.filter(e=>e.dir==="A").reduce((s,e)=>s+e.len,0); });
+// ---------- persistent state ----------
+const LS_PROG="dds-xw-progress-v1", LS_SKIN="dds-xw-skin", LS_MUTE="dds-xw-mute";
+let prog={}; try{ prog=JSON.parse(localStorage.getItem(LS_PROG)||"{}"); }catch(e){ prog={}; }
+function pstate(id){ if(!prog[id]) prog[id]={letters:{},solved:false,assisted:0}; return prog[id]; }
+function saveProg(){ try{ localStorage.setItem(LS_PROG,JSON.stringify(prog)); }catch(e){} }
+// ---------- audio ----------
+let AC=null, muted=localStorage.getItem(LS_MUTE)==="1";
+function beep(f,d,type,g){ if(muted) return; try{ AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+  const o=AC.createOscillator(), gn=AC.createGain(); o.type=type||"square"; o.frequency.value=f;
+  gn.gain.setValueAtTime(g||0.05,AC.currentTime); gn.gain.exponentialRampToValueAtTime(0.0001,AC.currentTime+(d||0.07));
+  o.connect(gn); gn.connect(AC.destination); o.start(); o.stop(AC.currentTime+(d||0.07)); }catch(e){} }
+const sndKey=()=>beep(660,0.05,"square",0.03), sndBad=()=>beep(160,0.12,"sawtooth",0.05),
+      sndWin=()=>{ [523,659,784,1046].forEach((f,i)=>setTimeout(()=>beep(f,0.16,"triangle",0.07),i*110)); };
+// ---------- session state ----------
+let cur=null, sel=null, dir="A", wrong=new Set(), revealed=new Set(), wasComplete=false;
+const $=id=>document.getElementById(id);
+const key2=(r,c)=>r+","+c;
+// ---------- helpers ----------
+function entryAt(r,c,d){ if(!cur) return null;
+  return cur.entries.find(e=>e.dir===d&&e.cells.some(([rr,cc])=>rr===r&&cc===c))||null; }
+function curEntry(){ return sel? entryAt(sel[0],sel[1],dir):null; }
+function filledCount(p){ const st=pstate(p.id); return Object.keys(st.letters).filter(k=>st.letters[k]).length; }
+function correctCount(p){ const st=pstate(p.id); let n=0;
+  for(let r=0;r<p.rows;r++)for(let c=0;c<p.cols;c++){ if(p.grid[r][c]==="#")continue;
+    if(st.letters[key2(r,c)]===p.grid[r][c]) n++; } return n; }
+// ---------- picker ----------
+function renderPicker(){ const el=$("plist"); el.innerHTML="";
+  PUZZLES.forEach(p=>{ const st=pstate(p.id), pct=p.totalCells?Math.round(100*filledCount(p)/p.totalCells):0;
+    const b=document.createElement("button"); b.className="pcard"; b.dataset.pid=p.id;
+    b.innerHTML=`<span><span class="t">${p.title}</span><br><span class="m">${p.theme} · ${p.rows}×${p.cols} · ${p.entries.length} clues</span></span>`+
+      `<span class="pct">${st.solved?'<span class="badge">SOLVED ✓</span> ':''}${pct}%</span>`;
+    b.onclick=()=>openPuzzle(p.id); el.appendChild(b); });
+}
+// ---------- open / render play ----------
+function openPuzzle(id){ cur=PUZZLES.find(p=>p.id===id); wrong=new Set(); revealed=new Set();
+  const st=pstate(id); Object.keys(st.letters); // touch
+  sel=null; dir="A";
+  // select first across entry start
+  const first=cur.entries.find(e=>e.dir==="A"); if(first){ sel=[first.row,first.col]; }
+  wasComplete = correctCount(cur)===cur.totalCells;
+  $("picker").style.display="none"; $("play").style.display="flex"; $("winbanner").style.display="none";
+  buildGrid(); buildClues(); buildKeyboard(); refresh(); }
+function buildGrid(){ const g=$("grid"); g.innerHTML="";
+  const w=Math.min(window.innerWidth-12, 430); let cs=Math.floor(w/cur.cols)-1;
+  const csH=Math.floor((window.innerHeight-452)/cur.rows); if(csH>0) cs=Math.min(cs,csH);
+  cs=Math.max(19,cs);
+  g.style.gridTemplateColumns=`repeat(${cur.cols}, ${cs}px)`;
+  for(let r=0;r<cur.rows;r++)for(let c=0;c<cur.cols;c++){
+    const d=document.createElement("div"); d.className="cell"+(cur.grid[r][c]==="#"?" block":"");
+    d.dataset.r=r; d.dataset.c=c; d.style.width=cs+"px"; d.style.height=cs+"px"; d.style.fontSize=Math.max(12,cs*0.52)+"px";
+    if(cur.grid[r][c]!=="#"){ if(cur.numGrid[r][c]){ const s=document.createElement("span"); s.className="num"; s.textContent=cur.numGrid[r][c]; d.appendChild(s); }
+      const lt=document.createElement("span"); lt.className="lt"; d.appendChild(lt);
+      d.addEventListener("pointerdown",ev=>{ ev.preventDefault(); tapCell(r,c); }); }
+    g.appendChild(d); } }
+function buildClues(){ [["A","acrosslist"],["D","downlist"]].forEach(([d,id])=>{ const el=$(id);
+    el.querySelectorAll(".clue").forEach(n=>n.remove());
+    cur.entries.filter(e=>e.dir===d).forEach(e=>{ const div=document.createElement("div"); div.className="clue";
+      div.dataset.num=e.num; div.dataset.dir=d; div.innerHTML=`<b>${e.num}.</b> ${e.clue}`;
+      div.onclick=()=>{ dir=d; sel=[e.row,e.col]; refresh(); }; el.appendChild(div); }); }); }
+function buildKeyboard(){ const kb=$("kb"); kb.innerHTML="";
+  ["QWERTYUIOP","ASDFGHJKL","ZXCVBNM"].forEach((row,ri)=>{ const rd=document.createElement("div"); rd.className="krow";
+    [...row].forEach(ch=>{ const k=document.createElement("button"); k.className="key"; k.textContent=ch; k.dataset.key=ch;
+      k.addEventListener("pointerdown",ev=>{ ev.preventDefault(); typeLetter(ch); }); rd.appendChild(k); });
+    if(ri===2){ const bk=document.createElement("button"); bk.className="key wide"; bk.textContent="⌫"; bk.dataset.key="BACKSPACE";
+      bk.addEventListener("pointerdown",ev=>{ ev.preventDefault(); backspace(); }); rd.appendChild(bk); }
+    kb.appendChild(rd); }); }
+function refresh(){ if(!cur) return; const st=pstate(cur.id), e=curEntry();
+  document.querySelectorAll("#grid .cell").forEach(d=>{ if(d.classList.contains("block"))return;
+    const r=+d.dataset.r, c=+d.dataset.c, k=key2(r,c);
+    d.querySelector(".lt").textContent=st.letters[k]||"";
+    d.classList.toggle("inword", !!e&&e.cells.some(([rr,cc])=>rr===r&&cc===c));
+    d.classList.toggle("sel", !!sel&&sel[0]===r&&sel[1]===c);
+    d.classList.toggle("wrong", wrong.has(k));
+    d.classList.toggle("revealed", revealed.has(k)); });
+  document.querySelectorAll(".clue").forEach(n=>{ n.classList.toggle("on", !!e&&+n.dataset.num===e.num&&n.dataset.dir===e.dir); });
+  if(e){ $("cbnum").textContent=e.num+(e.dir==="A"?" Across":" Down"); $("cbtext").textContent=e.clue; }
+  else { $("cbnum").textContent="—"; $("cbtext").textContent="Tap a square to start."; } }
+// ---------- input ----------
+function tapCell(r,c){ if(sel&&sel[0]===r&&sel[1]===c){ const other=dir==="A"?"D":"A";
+    if(entryAt(r,c,other)) dir=other; }
+  else { sel=[r,c]; if(!entryAt(r,c,dir)){ const o=dir==="A"?"D":"A"; if(entryAt(r,c,o)) dir=o; } }
+  refresh(); }
+function typeLetter(ch){ if(!cur||!sel) return; const st=pstate(cur.id), k=key2(sel[0],sel[1]);
+  st.letters[k]=ch; wrong.delete(k); saveProg(); sndKey();
+  const e=curEntry(); if(e){ const i=e.cells.findIndex(([r,c])=>r===sel[0]&&c===sel[1]);
+    if(i>=0&&i<e.cells.length-1) sel=e.cells[i+1]; }
+  refresh(); checkWin(); }
+function backspace(){ if(!cur||!sel) return; const st=pstate(cur.id), k=key2(sel[0],sel[1]);
+  if(st.letters[k]){ delete st.letters[k]; wrong.delete(k); }
+  else { const e=curEntry(); if(e){ const i=e.cells.findIndex(([r,c])=>r===sel[0]&&c===sel[1]);
+    if(i>0){ sel=e.cells[i-1]; const k2=key2(sel[0],sel[1]); delete st.letters[k2]; wrong.delete(k2); } } }
+  saveProg(); refresh(); }
+document.addEventListener("keydown",ev=>{ if(!cur||$("play").style.display==="none") return;
+  if(/^[a-zA-Z]$/.test(ev.key)) typeLetter(ev.key.toUpperCase());
+  else if(ev.key==="Backspace"){ ev.preventDefault(); backspace(); }
+  else if(ev.key.startsWith("Arrow")){ ev.preventDefault(); if(!sel) return;
+    const d={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]}[ev.key];
+    let r=sel[0]+d[0], c=sel[1]+d[1];
+    while(r>=0&&r<cur.rows&&c>=0&&c<cur.cols&&cur.grid[r][c]==="#"){ r+=d[0]; c+=d[1]; }
+    if(r>=0&&r<cur.rows&&c>=0&&c<cur.cols){ sel=[r,c];
+      if(ev.key==="ArrowLeft"||ev.key==="ArrowRight") dir="A"; if(ev.key==="ArrowUp"||ev.key==="ArrowDown") dir="D";
+      if(!entryAt(r,c,dir)){ const o=dir==="A"?"D":"A"; if(entryAt(r,c,o)) dir=o; } refresh(); } } });
+// ---------- help actions ----------
+function flagWrong(cells){ const st=pstate(cur.id); let n=0;
+  cells.forEach(([r,c])=>{ const k=key2(r,c); if(st.letters[k]!==cur.grid[r][c]){ wrong.add(k); n++; } else wrong.delete(k); });
+  return n; }
+function bumpAssist(n){ if(n>0){ const st=pstate(cur.id); st.assisted+=1; saveProg(); } }
+$("btncheckletter").onclick=()=>{ if(!sel)return; const n=flagWrong([sel]); bumpAssist(n); if(n)sndBad(); refresh(); };
+$("btncheckword").onclick=()=>{ const e=curEntry(); if(!e)return; const n=flagWrong(e.cells); bumpAssist(n); if(n)sndBad(); refresh(); };
+$("btncheckpuzzle").onclick=()=>{ const st=pstate(cur.id); let cells=[];
+  for(let r=0;r<cur.rows;r++)for(let c=0;c<cur.cols;c++) if(cur.grid[r][c]!=="#") cells.push([r,c]);
+  const n=flagWrong(cells); bumpAssist(n); if(n)sndBad(); refresh(); checkWin(); };
+$("btnreveal").onclick=()=>{ if(!sel)return; const st=pstate(cur.id), k=key2(sel[0],sel[1]);
+  st.letters[k]=cur.grid[sel[0]][sel[1]]; wrong.delete(k); revealed.add(k); st.assisted+=1; saveProg(); sndKey(); refresh(); checkWin(); };
+$("btnback").onclick=()=>{ cur=null; $("play").style.display="none"; $("picker").style.display="block"; renderPicker(); };
+// ---------- win ----------
+function checkWin(){ if(!cur) return; const st=pstate(cur.id);
+  const complete=correctCount(cur)===cur.totalCells&&cur.totalCells>0;
+  if(complete&&wasComplete){ return; }
+  wasComplete=complete;
+  if(complete){ if(!st.solved){ st.solved=true; saveProg(); }
+    $("wintitle").textContent="Solved! 🎉";
+    $("wintext").textContent= st.assisted===0? "Solved clean — no reveals, no checks. Pure crossword brain." :
+      `Solved with ${st.assisted} assist${st.assisted===1?"":"s"} (reveals / checks that found mistakes). Clean solves earn bragging rights.`;
+    $("winbanner").style.display="flex"; sndWin(); confetti(); } }
+function confetti(){ const card=$("wincard"); card.querySelectorAll(".confetti").forEach(n=>n.remove());
+  const cols=["#2e9bff","#39d98a","#ffd23f","#ff5fd2","#00e5ff"];
+  for(let i=0;i<26;i++){ const s=document.createElement("span"); s.className="confetti";
+    s.style.left=(Math.random()*96)+"%"; s.style.background=cols[i%cols.length]; s.style.animationDelay=(Math.random()*0.5)+"s"; card.appendChild(s); } }
+$("winback").onclick=()=>{ $("winbanner").style.display="none"; $("btnback").onclick(); };
+$("winagain").onclick=()=>{ const id=cur.id; const st=pstate(id); st.letters={}; st.solved=false; st.assisted=0; saveProg();
+  $("winbanner").style.display="none"; openPuzzle(id); };
+// ---------- skins / mute ----------
+function setSkin(s){ document.body.dataset.skin=s; try{ localStorage.setItem(LS_SKIN,s); }catch(e){}
+  document.querySelectorAll(".skinbtn").forEach(b=>b.classList.toggle("on",b.dataset.setSkin===s)); }
+document.querySelectorAll(".skinbtn").forEach(b=>b.onclick=()=>setSkin(b.dataset.setSkin));
+setSkin(localStorage.getItem(LS_SKIN)||"house");
+function setMuteBtn(){ $("mutebtn").textContent=muted?"🔇":"🔊"; }
+$("mutebtn").onclick=()=>{ muted=!muted; try{ localStorage.setItem(LS_MUTE,muted?"1":"0"); }catch(e){} setMuteBtn(); };
+setMuteBtn();
+window.addEventListener("resize",()=>{ if(cur) buildGrid(), refresh(); });
+renderPicker();
+// ---------- QA API ----------
+window.CROSSWORDS_API={
+  puzzles(){ return PUZZLES.map(p=>({id:p.id,title:p.title,rows:p.rows,cols:p.cols,
+    entries:p.entries.map(e=>({num:e.num,dir:e.dir,row:e.row,col:e.col,len:e.len,answer:e.answer,clue:e.clue}))})); },
+  state(){ if(!cur) return {puzzleId:null,grid:[],correct:0,total:0,solved:false,assisted:0};
+    const st=pstate(cur.id); const grid=[];
+    for(let r=0;r<cur.rows;r++){ let row=""; for(let c=0;c<cur.cols;c++){ row+= cur.grid[r][c]==="#"?"#":(st.letters[key2(r,c)]||" "); } grid.push(row); }
+    return {puzzleId:cur.id,grid,correct:correctCount(cur),total:cur.totalCells,solved:!!st.solved,assisted:st.assisted,
+      sel:sel?{r:sel[0],c:sel[1]}:null,dir}; },
+  solution(id){ const p=PUZZLES.find(x=>x.id===id); return p? p.grid.slice(): null; }
+};
+</script>
+</body>
+</html>

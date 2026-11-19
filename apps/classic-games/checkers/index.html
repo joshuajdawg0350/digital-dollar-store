@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Checkers — J-Dawgs Digital Dollar Store</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    background: #05080E radial-gradient(1200px 700px at 50% -10%, #101A2E 0%, #05080E 60%);
+    color: #e8ecf4; font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+    min-height: 100dvh; display: flex; flex-direction: column; align-items: center;
+    overflow-x: hidden; user-select: none; -webkit-user-select: none;
+  }
+  #app { width: 100%; max-width: 430px; padding: 10px 12px 8px; display: flex; flex-direction: column; align-items: center; }
+
+  header.topbar { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 2px 2px 8px; }
+  .brand { font-weight: 900; letter-spacing: 2px; font-size: 15px; color: #9fb4d8; }
+  .brand b { color: #0096FF; }
+  .topbtns { display: flex; gap: 8px; }
+  button {
+    font-family: inherit; cursor: pointer; border: 1px solid #39445f; color: #e8ecf4;
+    background: linear-gradient(180deg, #31435F, #141F33); border-radius: 10px;
+    padding: 9px 14px; font-size: 15px; font-weight: 700; letter-spacing: .4px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.12);
+  }
+  button:active { transform: translateY(1px); }
+  button:disabled { opacity: .38; cursor: default; }
+  button.blue { background: linear-gradient(180deg, #33A6FF, #0072CE); border-color: #0096FF; color: #fff; box-shadow: 0 4px 14px rgba(0,150,255,.35), inset 0 1px 0 rgba(255,255,255,.35); }
+
+  #status {
+    width: 100%; text-align: center; font-size: 17px; font-weight: 800; letter-spacing: .4px;
+    padding: 8px 6px; min-height: 40px; display: flex; align-items: center; justify-content: center; gap: 9px;
+  }
+  .dot { width: 15px; height: 15px; border-radius: 50%; display: inline-block; box-shadow: inset 0 -2px 4px rgba(0,0,0,.5), 0 1px 3px rgba(0,0,0,.6); flex: none; }
+  .dot.b { background: radial-gradient(circle at 35% 30%, #fff, #aab4c8 45%, #59637a); }
+  .dot.r { background: radial-gradient(circle at 35% 30%, #bfe3ff, #0096FF 45%, #0a2f7a); }
+
+  #boardWrap {
+    width: min(94vw, 396px); padding: 10px; border-radius: 14px;
+    background: linear-gradient(160deg, #1a2033, #0a0d16 70%);
+    border: 1px solid #39445f;
+    box-shadow: 0 14px 34px rgba(0,0,0,.65), inset 0 1px 0 rgba(255,255,255,.09);
+  }
+  body[data-skin="classic"] #boardWrap { background: linear-gradient(160deg, #4a2f14, #241304 70%); border-color: #8a5f24; }
+  body[data-skin="dragon"]  #boardWrap { background: linear-gradient(160deg, #2a1245, #0d0518 70%); border-color: #5e2a9e; }
+
+  #board { position: relative; width: 100%; aspect-ratio: 1 / 1; display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); border-radius: 6px; overflow: hidden; touch-action: manipulation; }
+  .sq { position: relative; }
+  body[data-skin="house"]   .sq.L { background: linear-gradient(145deg, #2b3448, #222a3d); }
+  body[data-skin="house"]   .sq.D { background: linear-gradient(145deg, #10141f, #0a0d14); }
+  body[data-skin="classic"] .sq.L { background: linear-gradient(145deg, #c99a5b, #b3813f); }
+  body[data-skin="classic"] .sq.D { background: linear-gradient(145deg, #7a4a1e, #5e3713); }
+  body[data-skin="dragon"]  .sq.L { background: linear-gradient(145deg, #472a6e, #38205a); }
+  body[data-skin="dragon"]  .sq.D { background: linear-gradient(145deg, #180b2a, #10061d); }
+  .sq.last { box-shadow: inset 0 0 0 3px rgba(255, 215, 90, .55); }
+  .sq.capflash { animation: capflash .45s ease-out; }
+  @keyframes capflash { 0% { box-shadow: inset 0 0 0 60px rgba(255,80,60,.55); } 100% { box-shadow: inset 0 0 0 60px rgba(255,80,60,0); } }
+
+  #fxLayer, #pieceLayer { position: absolute; inset: 0; pointer-events: none; }
+  .hl { position: absolute; width: 12.5%; height: 12.5%; left: 0; top: 0; }
+  .hl::after { content: ''; position: absolute; inset: 31%; border-radius: 50%; background: rgba(90, 220, 130, .85); box-shadow: 0 0 10px rgba(90,220,130,.9), inset 0 0 0 2px rgba(255,255,255,.5); }
+  .hl.cap::after { inset: 6%; background: transparent; border: 4px solid rgba(255, 92, 72, .92); box-shadow: 0 0 12px rgba(255,92,72,.8); border-radius: 14px; }
+
+  .piece { position: absolute; width: 12.5%; height: 12.5%; left: 0; top: 0; transition: transform .19s ease-in-out; will-change: transform; }
+  .disc {
+    position: absolute; inset: 6.5%; border-radius: 50%;
+    box-shadow: 0 5px 9px rgba(0,0,0,.62), inset 0 -5px 9px rgba(0,0,0,.5), inset 0 4px 7px rgba(255,255,255,.4);
+  }
+  .disc::before { content: ''; position: absolute; inset: 10%; border-radius: 50%; border: 2px solid rgba(255,255,255,.30); box-shadow: inset 0 3px 7px rgba(0,0,0,.38), inset 0 -2px 4px rgba(255,255,255,.18); }
+  .disc::after { content: ''; position: absolute; left: 16%; top: 7%; width: 46%; height: 30%; border-radius: 50%; background: radial-gradient(ellipse at center, rgba(255,255,255,.85), rgba(255,255,255,0) 70%); transform: rotate(-18deg); }
+  /* HOUSE CHROME — bottom side (r) = electric-blue chrome, top side (b) = silver chrome */
+  body[data-skin="house"] .piece.s-r .disc { background: radial-gradient(circle at 34% 28%, #cfeaff, #0096FF 34%, #1663d9 66%, #082c6e 100%); }
+  body[data-skin="house"] .piece.s-b .disc { background: radial-gradient(circle at 34% 28%, #ffffff, #d3dae8 34%, #8b96ab 68%, #454e63 100%); }
+  /* CLASSIC WOOD & BRASS — bottom = brass, top = dark iron */
+  body[data-skin="classic"] .piece.s-r .disc { background: radial-gradient(circle at 34% 28%, #ffedb0, #dfae45 36%, #9a6b14 70%, #573c07 100%); }
+  body[data-skin="classic"] .piece.s-b .disc { background: radial-gradient(circle at 34% 28%, #a7adb8, #585d66 40%, #2b2e34 76%, #121317 100%); }
+  /* PURPLE DRAGON — bottom = violet, top = obsidian */
+  body[data-skin="dragon"] .piece.s-r .disc { background: radial-gradient(circle at 34% 28%, #f3cdff, #a750e6 36%, #5e1a9e 70%, #27083f 100%); }
+  body[data-skin="dragon"] .piece.s-b .disc { background: radial-gradient(circle at 34% 28%, #767d99, #2e3142 44%, #0f0f18 80%, #040409 100%); box-shadow: 0 5px 9px rgba(0,0,0,.7), inset 0 -5px 9px rgba(0,0,0,.6), inset 0 4px 7px rgba(190,120,255,.35), 0 0 7px rgba(120,40,220,.45); }
+  .piece.sel .disc { box-shadow: 0 0 0 3px #ffd75a, 0 0 18px rgba(255,215,90,.85), 0 5px 9px rgba(0,0,0,.6), inset 0 -5px 9px rgba(0,0,0,.5), inset 0 4px 7px rgba(255,255,255,.4); }
+  .piece.kinged { animation: kingpop .5s ease-out; }
+  @keyframes kingpop { 0% { transform: scale(1); } 40% { transform: scale(1.22); } 100% { transform: scale(1); } }
+  .crown { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; pointer-events: none; }
+  .piece.king .crown { display: flex; }
+  .crown svg { width: 58%; height: 58%; filter: drop-shadow(0 1px 1px rgba(0,0,0,.55)); }
+  body[data-skin="house"] .piece.s-r .crown { color: #eaf6ff; }
+  body[data-skin="house"] .piece.s-b .crown { color: #17479e; }
+  body[data-skin="classic"] .piece.s-r .crown { color: #43300a; }
+  body[data-skin="classic"] .piece.s-b .crown { color: #e9c46a; }
+  body[data-skin="dragon"] .piece.s-r .crown { color: #ffe9a8; }
+  body[data-skin="dragon"] .piece.s-b .crown { color: #c77dff; }
+
+  #controls { width: 100%; display: flex; gap: 8px; justify-content: center; padding: 12px 0 4px; flex-wrap: wrap; }
+  #skinRow { width: 100%; display: flex; gap: 8px; justify-content: center; align-items: center; padding: 8px 0 2px; flex-wrap: wrap; }
+  .skinLabel { font-size: 13px; font-weight: 800; letter-spacing: 1.4px; color: #8fa2c4; width: 100%; text-align: center; }
+  .chip { padding: 8px 12px; font-size: 14px; border-radius: 999px; }
+  .chip.on { background: linear-gradient(180deg, #33A6FF, #0072CE); border-color: #6FC3FF; color: #fff; box-shadow: 0 0 10px rgba(0,150,255,.5); }
+
+  #historyWrap { width: 100%; margin-top: 10px; background: rgba(255,255,255,.04); border: 1px solid #262f47; border-radius: 10px; padding: 8px 12px; }
+  #historyTitle { font-size: 13px; font-weight: 800; letter-spacing: 1.6px; color: #8fa2c4; margin-bottom: 5px; }
+  #history { font-size: 14px; line-height: 1.65; max-height: 108px; overflow-y: auto; color: #c9d4ea; font-variant-numeric: tabular-nums; }
+  #history .mv { display: inline-block; min-width: 118px; }
+  #history .n { color: #66779c; font-weight: 700; }
+
+  footer { padding: 12px 0 4px; font-size: 13px; color: #66779c; text-align: center; letter-spacing: .3px; }
+  #counts { font-size: 14px; color: #9fb4d8; font-weight: 700; padding-top: 6px; }
+
+  /* ---------- Title screen ---------- */
+  #title {
+    position: fixed; inset: 0; z-index: 40; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: radial-gradient(900px 600px at 50% 18%, #16263F 0%, #05080E 62%); padding: 22px; text-align: center;
+  }
+  #title.hidden { display: none; }
+  .mark { font-size: 14px; font-weight: 900; letter-spacing: 4px; color: #0096FF; margin-bottom: 6px; }
+  h1.gameTitle {
+    font-size: 58px; font-weight: 900; letter-spacing: 3px; line-height: 1;
+    background: linear-gradient(180deg, #ffffff 12%, #aebdd6 38%, #f4f8ff 52%, #5f718f 78%, #dbe6f7 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    text-shadow: 0 4px 22px rgba(0,150,255,.22);
+  }
+  .tagline { margin-top: 8px; font-size: 16px; color: #9fb4d8; font-weight: 600; }
+  .demoRow { display: flex; gap: 14px; margin: 22px 0 4px; }
+  .demoPiece { width: 62px; height: 62px; border-radius: 50%; position: relative;
+    box-shadow: 0 7px 14px rgba(0,0,0,.65), inset 0 -6px 10px rgba(0,0,0,.5), inset 0 5px 8px rgba(255,255,255,.4); }
+  .demoPiece::after { content: ''; position: absolute; left: 16%; top: 7%; width: 46%; height: 30%; border-radius: 50%; background: radial-gradient(ellipse at center, rgba(255,255,255,.85), rgba(255,255,255,0) 70%); transform: rotate(-18deg); }
+  .demoPiece.blue { background: radial-gradient(circle at 34% 28%, #cfeaff, #0096FF 34%, #1663d9 66%, #082c6e 100%); }
+  .demoPiece.silver { background: radial-gradient(circle at 34% 28%, #ffffff, #d3dae8 34%, #8b96ab 68%, #454e63 100%); display: flex; align-items: center; justify-content: center; color: #17479e; }
+  .demoPiece.silver svg { width: 58%; height: 58%; }
+  #modeChips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 18px 0 6px; max-width: 360px; }
+  #playBtn { font-size: 21px; padding: 14px 46px; border-radius: 14px; margin-top: 14px; }
+  .rules { margin-top: 18px; font-size: 13.5px; line-height: 1.55; color: #7d90b5; max-width: 350px; }
+  .titleSkin { margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+
+  /* ---------- Result overlay ---------- */
+  #result {
+    position: fixed; inset: 0; z-index: 30; display: none; flex-direction: column; align-items: center; justify-content: center;
+    background: rgba(4,5,9,.78); text-align: center; padding: 24px;
+  }
+  #result.show { display: flex; }
+  #resultText { font-size: 40px; font-weight: 900; letter-spacing: 1px; margin-bottom: 8px; }
+  #resultSub { font-size: 16px; color: #9fb4d8; margin-bottom: 22px; }
+  #result .row { display: flex; gap: 10px; }
+  /* ---- Upgrade pass 2026-11-18: one-product polish ---- */
+  button:focus-visible { outline: 2px solid #0096FF; outline-offset: 2px; }
+  #boardWrap { box-shadow: 0 14px 34px rgba(0,0,0,.65), 0 0 18px rgba(0,150,255,.14), inset 0 1px 0 rgba(255,255,255,.09); }
+</style>
+</head>
+<body data-skin="house">
+<div id="app">
+  <header class="topbar">
+    <div class="brand">J-DAWGS <b>·</b> CHECKERS</div>
+    <div class="topbtns">
+      <button id="muteBtn" aria-label="Sound on or off">🔊</button>
+      <button id="homeBtn">Title</button>
+    </div>
+  </header>
+
+  <div id="status"><span class="dot b"></span><span id="statusText">Black to move</span></div>
+
+  <div id="boardWrap">
+    <div id="board">
+      <div id="fxLayer"></div>
+      <div id="pieceLayer"></div>
+    </div>
+  </div>
+
+  <div id="counts">Black 12 · Red 12</div>
+
+  <div id="controls">
+    <button id="undoBtn">↩ Undo</button>
+    <button id="newBtn" class="blue">New Game</button>
+  </div>
+
+  <div id="skinRow">
+    <div class="skinLabel">BOARD STYLE</div>
+    <button class="chip skinChip" data-skin="house">House Chrome</button>
+    <button class="chip skinChip" data-skin="classic">Classic Wood</button>
+    <button class="chip skinChip" data-skin="dragon">Purple Dragon</button>
+  </div>
+
+  <div id="historyWrap">
+    <div id="historyTitle">MOVES</div>
+    <div id="history">No moves yet.</div>
+  </div>
+
+  <footer>© 2026 J-Dawgs Industries · Digital Dollar Store</footer>
+</div>
+
+<div id="title">
+  <div class="mark">J-DAWGS INDUSTRIES</div>
+  <h1 class="gameTitle">CHECKERS</h1>
+  <div class="tagline">The classic game. No ads. No account. Just checkers.</div>
+  <div class="demoRow">
+    <div class="demoPiece silver"><svg viewBox="0 0 50 50" fill="currentColor"><path d="M8 40 L5 15 L17 27 L25 9 L33 27 L45 15 L42 40 Z"/><rect x="8" y="41" width="34" height="4" rx="2"/></svg></div>
+    <div class="demoPiece blue"></div>
+  </div>
+  <div id="modeChips">
+    <button class="chip modeChip" data-mode="easy">vs Computer · Easy</button>
+    <button class="chip modeChip" data-mode="medium">vs Computer · Medium</button>
+    <button class="chip modeChip" data-mode="hard">vs Computer · Hard</button>
+    <button class="chip modeChip" data-mode="2p">2 Players · Pass &amp; Play</button>
+    <button class="chip modeChip" data-mode="aivai">Watch · Computer vs Computer</button>
+  </div>
+  <button id="playBtn" class="blue">▶ PLAY</button>
+  <div class="titleSkin">
+    <button class="chip skinChip" data-skin="house">House Chrome</button>
+    <button class="chip skinChip" data-skin="classic">Classic Wood</button>
+    <button class="chip skinChip" data-skin="dragon">Purple Dragon</button>
+  </div>
+  <div class="rules">American rules: captures are forced, jump chains must be finished, men move and capture forward only, kings move one square any diagonal. Reach the far row to be crowned.</div>
+</div>
+
+<div id="result">
+  <div id="resultText">Red Wins!</div>
+  <div id="resultSub"></div>
+  <div class="row">
+    <button id="againBtn" class="blue">Play Again</button>
+    <button id="resultHomeBtn">Title</button>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* ============================================================
+   DDS CHECKERS — American / English draughts, full rules.
+   Board cells: null | { s:'b'|'r', k:bool, id:int }
+   Sides: 'b' = top side (moves first, moves down, +row),
+          'r' = bottom side (moves up, -row).
+   Men move & capture diagonally FORWARD only. Kings move &
+   capture ONE square in any diagonal direction (no flying
+   kings). Captures are forced. A jump chain must be completed
+   with the same piece. A man that reaches the far row BY A
+   JUMP is crowned and the turn ends immediately.
+   ============================================================ */
+const DIRS4 = [[-1,-1],[-1,1],[1,-1],[1,1]];
+const other = s => s === 'b' ? 'r' : 'b';
+const inB = (r,c) => r >= 0 && r < 8 && c >= 0 && c < 8;
+let nextId = 1;
+function mkPiece(s, k) { return { s, k: !!k, id: nextId++ }; }
+function cloneBoard(bd) { return bd.map(row => row.map(cell => cell ? { s: cell.s, k: cell.k, id: cell.id } : null)); }
+function dirsFor(cell) {
+  if (cell.k) return DIRS4;
+  return cell.s === 'b' ? [[1,-1],[1,1]] : [[-1,-1],[-1,1]];
+}
+/* All maximal capture paths starting with the piece at (r,c). Path = [[r,c],...] */
+function capturePathsFrom(bd, r, c) {
+  const cell = bd[r][c]; if (!cell) return [];
+  const side = cell.s, dirs = dirsFor(cell), out = [];
+  (function dfs(b, cr, cc, path) {
+    let extended = false;
+    for (const [dr, dc] of dirs) {
+      const mr = cr + dr, mc = cc + dc, lr = cr + 2*dr, lc = cc + 2*dc;
+      if (!inB(lr, lc)) continue;
+      const mid = b[mr][mc];
+      if (mid && mid.s !== side && !b[lr][lc]) {
+        extended = true;
+        const nb = cloneBoard(b); const pc = nb[cr][cc];
+        nb[lr][lc] = pc; nb[cr][cc] = null; nb[mr][mc] = null;
+        if (!pc.k && (lr === 0 || lr === 7)) out.push([...path, [lr, lc]]); /* crowned by jump: path ends */
+        else dfs(nb, lr, lc, [...path, [lr, lc]]);
+      }
+    }
+    if (!extended && path.length > 1) out.push(path);
+  })(bd, r, c, [[r, c]]);
+  return out;
+}
+function quietPathsFrom(bd, r, c) {
+  const cell = bd[r][c]; if (!cell) return [];
+  const out = [];
+  for (const [dr, dc] of dirsFor(cell)) {
+    const nr = r + dr, nc = c + dc;
+    if (inB(nr, nc) && !bd[nr][nc]) out.push([[r, c], [nr, nc]]);
+  }
+  return out;
+}
+/* Legal moves for a side: captures are forced when any exist. Returns [{path}] */
+function legalMovesFor(bd, side) {
+  const caps = [];
+  for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
+    const cell = bd[r][c];
+    if (cell && cell.s === side) caps.push(...capturePathsFrom(bd, r, c));
+  }
+  if (caps.length) return caps.map(path => ({ path }));
+  const quiet = [];
+  for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
+    const cell = bd[r][c];
+    if (cell && cell.s === side) quiet.push(...quietPathsFrom(bd, r, c));
+  }
+  return quiet.map(path => ({ path }));
+}
+function applyPath(bd, path) {
+  const nb = cloneBoard(bd);
+  let [r, c] = path[0]; const pc = nb[r][c];
+  for (let i = 1; i < path.length; i++) {
+    const [nr, nc] = path[i];
+    if (Math.abs(nr - r) === 2) nb[(r + nr) / 2][(c + nc) / 2] = null;
+    nb[nr][nc] = pc; nb[r][c] = null; r = nr; c = nc;
+  }
+  if (pc && !pc.k && (r === 0 || r === 7)) pc.k = true;
+  return nb;
+}
+function countPieces(bd, side) { let n = 0; for (const row of bd) for (const cell of row) if (cell && cell.s === side) n++; return n; }
+function sqNum(r, c) { const idx = (r % 2 === 0) ? (c - 1) / 2 : c / 2; return r * 4 + idx + 1; }
+
+/* ---------------- AI: negamax + alpha-beta ---------------- */
+function evaluate(bd) { /* score from Black's perspective */
+  let s = 0;
+  for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
+    const cell = bd[r][c]; if (!cell) continue;
+    let v;
+    if (cell.k) { v = 300 + ((r >= 2 && r <= 5 && c >= 2 && c <= 5) ? 6 : 0); }
+    else {
+      const adv = cell.s === 'b' ? r : 7 - r;
+      v = 100 + adv * 6;
+      if ((cell.s === 'b' && r === 0) || (cell.s === 'r' && r === 7)) v += 12; /* back-rank guard */
+      if (r >= 2 && r <= 5 && c >= 2 && c <= 5) v += 8;                        /* center */
+      if (c === 0 || c === 7) v += 3;                                          /* edge safety */
+    }
+    s += cell.s === 'b' ? v : -v;
+  }
+  return s;
+}
+const isCapPath = p => Math.abs(p[1][0] - p[0][0]) === 2;
+function negamax(bd, side, depth, alpha, beta, ply) {
+  const moves = legalMovesFor(bd, side);
+  if (!moves.length) return -100000 + ply * 10;
+  if (depth === 0) { const e = evaluate(bd); return side === 'b' ? e : -e; }
+  moves.sort((a, b) => (isCapPath(b.path) ? 1 : 0) - (isCapPath(a.path) ? 1 : 0));
+  let best = -Infinity;
+  for (const m of moves) {
+    const sc = -negamax(applyPath(bd, m.path), other(side), depth - 1, -beta, -alpha, ply + 1);
+    if (sc > best) best = sc;
+    if (best > alpha) alpha = best;
+    if (alpha >= beta) break;
+  }
+  return best;
+}
+const AI_DEPTH = { easy: 2, medium: 4, hard: 6, aivai: 4 };
+function aiChoose(bd, side, level) {
+  const moves = legalMovesFor(bd, side);
+  if (!moves.length) return null;
+  if (level === 'easy' && Math.random() < 0.3) return moves[Math.floor(Math.random() * moves.length)].path;
+  const depth = AI_DEPTH[level] || 4;
+  let best = -Infinity, bestMoves = [];
+  const ordered = [...moves].sort((a, b) => (isCapPath(b.path) ? 1 : 0) - (isCapPath(a.path) ? 1 : 0));
+  for (const m of ordered) {
+    const sc = -negamax(applyPath(bd, m.path), other(side), depth - 1, -Infinity, Infinity, 1);
+    if (sc > best + 0.001) { best = sc; bestMoves = [m.path]; }
+    else if (Math.abs(sc - best) <= 0.001) bestMoves.push(m.path);
+  }
+  if (level === 'easy') return bestMoves[Math.floor(Math.random() * bestMoves.length)];
+  return bestMoves[0];
+}
+
+/* ---------------- Audio (WebAudio blips, no files) ---------------- */
+let audioCtx = null, muted = localStorage.getItem('ddsCheckersMuted') === '1';
+function beep(freq, t0, dur, type, gain) {
+  if (muted) return;
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const t = audioCtx.currentTime + t0;
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = type || 'sine'; o.frequency.setValueAtTime(freq, t);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(gain || 0.16, t + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(audioCtx.destination); o.start(t); o.stop(t + dur + 0.05);
+  } catch (e) { /* audio unavailable */ }
+}
+const sfx = {
+  select() { beep(660, 0, 0.05, 'sine', 0.07); },
+  move()   { beep(280, 0, 0.09, 'triangle', 0.18); beep(190, 0.01, 0.08, 'sine', 0.1); },
+  capture(){ beep(160, 0, 0.1, 'sawtooth', 0.14); beep(420, 0.05, 0.09, 'triangle', 0.16); beep(240, 0.1, 0.1, 'triangle', 0.12); },
+  king()   { [523, 659, 784].forEach((f, i) => beep(f, i * 0.07, 0.14, 'triangle', 0.15)); },
+  win()    { [392, 523, 659, 784, 1046].forEach((f, i) => beep(f, i * 0.1, 0.2, 'triangle', 0.15)); },
+  lose()   { [440, 349, 262].forEach((f, i) => beep(f, i * 0.12, 0.2, 'sine', 0.13)); },
+  illegal(){ beep(120, 0, 0.08, 'square', 0.06); }
+};
+</script>
+<script>
+'use strict';
+/* ---------------- Game state & UI ---------------- */
+const $ = id => document.getElementById(id);
+const boardEl = $('board'), pieceLayer = $('pieceLayer'), fxLayer = $('fxLayer');
+const CROWN_SVG = '<svg viewBox="0 0 50 50" fill="currentColor"><path d="M8 40 L5 15 L17 27 L25 9 L33 27 L45 15 L42 40 Z"/><rect x="8" y="41" width="34" height="4" rx="2"/></svg>';
+const EYE_SVG = '<svg viewBox="0 0 50 50"><ellipse cx="25" cy="25" rx="20" ry="12.5" fill="none" stroke="currentColor" stroke-width="3.4"/><ellipse cx="25" cy="25" rx="8.5" ry="11" fill="currentColor"/><circle cx="28.5" cy="19" r="2.6" fill="#fff" opacity="0.9"/></svg>';
+
+let skin = localStorage.getItem('ddsCheckersSkin') || 'house';
+if (!['house', 'classic', 'dragon'].includes(skin)) skin = 'house';
+let mode = localStorage.getItem('ddsCheckersMode') || 'medium';
+if (!['easy', 'medium', 'hard', '2p', 'aivai'].includes(mode)) mode = 'medium';
+
+const G = {
+  board: null, turn: 'b', status: 'playing', chain: null, selected: null,
+  noProgress: 0, halfmoves: 0, history: [], snapshots: [],
+  turnCapture: false, turnManMove: false, curNotation: '', lastMove: null,
+  busy: false, started: false, lastAiMs: 0, kingedId: 0
+};
+const HUMAN = 'r'; /* in vs-computer modes the human plays the bottom side */
+
+function initialBoard() {
+  const bd = Array.from({ length: 8 }, () => Array(8).fill(null));
+  for (let r = 0; r < 3; r++) for (let c = 0; c < 8; c++) if ((r + c) % 2 === 1) bd[r][c] = mkPiece('b');
+  for (let r = 5; r < 8; r++) for (let c = 0; c < 8; c++) if ((r + c) % 2 === 1) bd[r][c] = mkPiece('r');
+  return bd;
+}
+function parseSetup(str) {
+  if (!str || str.length !== 64) return null;
+  const bd = Array.from({ length: 8 }, () => Array(8).fill(null));
+  for (let i = 0; i < 64; i++) {
+    const r = Math.floor(i / 8), c = i % 8, ch = str[i];
+    if (ch === 'b') bd[r][c] = mkPiece('b');
+    else if (ch === 'B') bd[r][c] = mkPiece('b', true);
+    else if (ch === 'r') bd[r][c] = mkPiece('r');
+    else if (ch === 'R') bd[r][c] = mkPiece('r', true);
+    else if (ch !== '.') return null;
+  }
+  return bd;
+}
+function boardToNumbers(bd) {
+  return bd.map(row => row.map(cell => !cell ? 0 : cell.s === 'b' ? (cell.k ? 2 : 1) : (cell.k ? 4 : 3)));
+}
+function currentLegal() {
+  if (G.status !== 'playing') return [];
+  if (G.chain) return capturePathsFrom(G.board, G.chain.r, G.chain.c).map(path => ({ path }));
+  return legalMovesFor(G.board, G.turn);
+}
+function computeStatus() {
+  if (countPieces(G.board, G.turn) === 0 || legalMovesFor(G.board, G.turn).length === 0)
+    return G.turn === 'b' ? 'red-wins' : 'black-wins';
+  if (G.noProgress >= 80) return 'draw';
+  return 'playing';
+}
+function pushSnapshot() {
+  G.snapshots.push({ board: cloneBoard(G.board), turn: G.turn, noProgress: G.noProgress, halfmoves: G.halfmoves, histLen: G.history.length });
+}
+function newGame(board, turn) {
+  G.board = board || initialBoard();
+  G.turn = turn || 'b';
+  G.chain = null; G.selected = null; G.noProgress = 0; G.halfmoves = 0;
+  G.history = []; G.snapshots = []; G.turnCapture = false; G.turnManMove = false;
+  G.curNotation = ''; G.lastMove = null; G.busy = false; G.started = true; G.kingedId = 0;
+  G.status = computeStatus();
+  pushSnapshot();
+  $('result').classList.remove('show');
+  render();
+  maybeRunAI();
+}
+
+/* Execute ONE step of a move. Returns 'done' | 'chain' | 'illegal'. */
+function doStep(fr, fc, tr, tc) {
+  const moves = currentLegal();
+  const ok = moves.some(m => m.path[0][0] === fr && m.path[0][1] === fc && m.path[1][0] === tr && m.path[1][1] === tc);
+  if (!ok) return 'illegal';
+  const piece = G.board[fr][fc];
+  const isCap = Math.abs(tr - fr) === 2;
+  if (!G.curNotation) { G.curNotation = sqNum(fr, fc); G.turnManMove = !piece.k; }
+  if (isCap) { G.board[(fr + tr) / 2][(fc + tc) / 2] = null; G.turnCapture = true; }
+  G.board[tr][tc] = piece; G.board[fr][fc] = null;
+  G.curNotation += (isCap ? 'x' : '-') + sqNum(tr, tc);
+  G.lastMove = [[fr, fc], [tr, tc]];
+  let kinged = false;
+  if (!piece.k && (tr === 0 || tr === 7)) { piece.k = true; kinged = true; G.kingedId = piece.id; }
+  if (isCap && !kinged) {
+    const cont = capturePathsFrom(G.board, tr, tc);
+    if (cont.length) {
+      G.chain = { r: tr, c: tc }; G.selected = [tr, tc];
+      sfx.capture(); render(); return 'chain';
+    }
+  }
+  if (kinged) sfx.king(); else if (isCap) sfx.capture(); else sfx.move();
+  endTurn();
+  return 'done';
+}
+function endTurn() {
+  G.history.push(G.curNotation); G.curNotation = '';
+  if (G.turnCapture || G.turnManMove) G.noProgress = 0; else G.noProgress++;
+  G.halfmoves++;
+  G.turnCapture = false; G.turnManMove = false;
+  G.chain = null; G.selected = null;
+  G.turn = other(G.turn);
+  G.status = computeStatus();
+  pushSnapshot();
+  render();
+  if (G.status !== 'playing') { showResult(); return; }
+  maybeRunAI();
+}
+
+/* ---------------- AI driver ---------------- */
+function isAiTurn() {
+  if (G.status !== 'playing' || !G.started) return false;
+  if (mode === 'aivai') return true;
+  if (mode === '2p') return false;
+  return G.turn !== HUMAN;
+}
+let titleUp = true; /* no AI moves while the title screen is up */
+function maybeRunAI() {
+  if (titleUp || !isAiTurn() || G.busy) return;
+  G.busy = true; render();
+  setTimeout(() => {
+    if (titleUp || G.status !== 'playing') { G.busy = false; render(); return; }
+    const level = mode === 'aivai' ? 'aivai' : mode;
+    const t0 = performance.now();
+    const path = aiChoose(G.board, G.turn, level);
+    G.lastAiMs = Math.round(performance.now() - t0);
+    if (!path) { G.busy = false; G.status = computeStatus(); render(); if (G.status !== 'playing') showResult(); return; }
+    let i = 0;
+    const stepOnce = () => {
+      if (i >= path.length - 1) { G.busy = false; render(); return; }
+      const [fr, fc] = path[i], [tr, tc] = path[i + 1]; i++;
+      doStep(fr, fc, tr, tc);
+      if (G.chain) setTimeout(stepOnce, 240);
+      else { G.busy = false; render(); maybeRunAI(); /* endTurn's call saw busy=true; re-check for AI-vs-AI */ }
+    };
+    stepOnce();
+  }, mode === 'aivai' ? 420 : 380);
+}
+
+/* ---------------- Rendering ---------------- */
+const sqEls = [];
+(function buildSquares() {
+  for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
+    const d = document.createElement('div');
+    d.className = 'sq ' + (((r + c) % 2 === 0) ? 'L' : 'D');
+    boardEl.insertBefore(d, fxLayer);
+    sqEls.push(d);
+  }
+})();
+const pieceEls = new Map();
+function render() {
+  document.body.dataset.skin = skin;
+  /* squares: last-move tint */
+  sqEls.forEach(el => el.classList.remove('last'));
+  if (G.lastMove) for (const [r, c] of G.lastMove) sqEls[r * 8 + c].classList.add('last');
+  /* pieces */
+  const seen = new Set();
+  if (G.board) {
+    for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
+      const cell = G.board[r][c]; if (!cell) continue;
+      seen.add(cell.id);
+      let el = pieceEls.get(cell.id);
+      if (!el) {
+        el = document.createElement('div');
+        el.innerHTML = '<div class="disc"></div><div class="crown"></div>';
+        pieceLayer.appendChild(el); pieceEls.set(cell.id, el);
+      }
+      el.className = 'piece s-' + cell.s + (cell.k ? ' king' : '') +
+        (G.selected && G.selected[0] === r && G.selected[1] === c ? ' sel' : '') +
+        (G.kingedId === cell.id ? ' kinged' : '');
+      el.style.transform = 'translate(' + (c * 100) + '%,' + (r * 100) + '%)';
+      el.querySelector('.crown').innerHTML = skin === 'dragon' ? EYE_SVG : CROWN_SVG;
+    }
+  }
+  for (const [id, el] of pieceEls) if (!seen.has(id)) { el.remove(); pieceEls.delete(id); }
+  if (G.kingedId) setTimeout(() => { G.kingedId = 0; }, 520);
+  /* highlights */
+  fxLayer.innerHTML = '';
+  if (G.selected && G.status === 'playing' && !G.busy) {
+    for (const m of currentLegal()) {
+      if (m.path[0][0] === G.selected[0] && m.path[0][1] === G.selected[1]) {
+        const [tr, tc] = m.path[1];
+        const h = document.createElement('div');
+        h.className = 'hl' + (Math.abs(tr - m.path[0][0]) === 2 ? ' cap' : '');
+        h.style.transform = 'translate(' + (tc * 100) + '%,' + (tr * 100) + '%)';
+        fxLayer.appendChild(h);
+      }
+    }
+  }
+  /* status */
+  const st = $('statusText'), dot = document.querySelector('#status .dot');
+  if (G.status === 'red-wins') st.textContent = 'Red wins!';
+  else if (G.status === 'black-wins') st.textContent = 'Black wins!';
+  else if (G.status === 'draw') st.textContent = 'Draw — 80 quiet king moves';
+  else if (G.chain) st.textContent = (G.turn === 'b' ? 'Black' : 'Red') + ' must jump again!';
+  else st.textContent = (G.turn === 'b' ? 'Black' : 'Red') + ' to move' + (G.busy ? ' — thinking…' : '');
+  dot.className = 'dot ' + (G.status === 'red-wins' ? 'r' : G.status === 'black-wins' ? 'b' : G.turn);
+  $('counts').textContent = G.board ? ('Black ' + countPieces(G.board, 'b') + ' · Red ' + countPieces(G.board, 'r')) : '';
+  /* history */
+  const h = $('history');
+  if (!G.history.length) h.textContent = 'No moves yet.';
+  else {
+    let html = '';
+    for (let i = 0; i < G.history.length; i += 2) {
+      html += '<span class="mv"><span class="n">' + (i / 2 + 1) + '.</span> ' + G.history[i] + (G.history[i + 1] ? ' &nbsp; ' + G.history[i + 1] : '') + '</span>';
+    }
+    h.innerHTML = html; h.scrollTop = h.scrollHeight;
+  }
+  $('undoBtn').disabled = G.busy || G.snapshots.length <= 1 && !G.chain;
+  document.querySelectorAll('.skinChip').forEach(ch => ch.classList.toggle('on', ch.dataset.skin === skin));
+  document.querySelectorAll('.modeChip').forEach(ch => ch.classList.toggle('on', ch.dataset.mode === mode));
+  $('muteBtn').textContent = muted ? '🔇' : '🔊';
+}
+function showResult() {
+  const t = $('resultText'), s = $('resultSub');
+  if (G.status === 'red-wins') { t.textContent = '🔴 Red Wins!'; sfx.win(); }
+  else if (G.status === 'black-wins') { t.textContent = '⚫ Black Wins!'; sfx.win(); }
+  else { t.textContent = '🤝 Draw'; }
+  s.textContent = 'Finished in ' + G.halfmoves + ' halfmoves · Black ' + countPieces(G.board, 'b') + ' — Red ' + countPieces(G.board, 'r');
+  setTimeout(() => $('result').classList.add('show'), 650);
+}
+
+/* ---------------- Input: real taps on squares ---------------- */
+let lastTap = { r: -1, c: -1, t: 0 };
+boardEl.addEventListener('pointerdown', ev => {
+  if (!G.started || G.busy || G.status !== 'playing' || isAiTurn()) return;
+  const rect = boardEl.getBoundingClientRect();
+  const c = Math.floor((ev.clientX - rect.left) / rect.width * 8);
+  const r = Math.floor((ev.clientY - rect.top) / rect.height * 8);
+  if (!inB(r, c)) return;
+  const now = Date.now();
+  if (lastTap.r === r && lastTap.c === c && now - lastTap.t < 300) return;
+  lastTap = { r, c, t: now };
+  handleTap(r, c);
+});
+function handleTap(r, c) {
+  const cell = G.board[r][c];
+  if (G.chain) {
+    if (G.selected && doStep(G.selected[0], G.selected[1], r, c) === 'illegal') sfx.illegal();
+    return;
+  }
+  if (G.selected) {
+    const [sr, sc] = G.selected;
+    if (sr === r && sc === c) { G.selected = null; render(); return; }
+    if (doStep(sr, sc, r, c) !== 'illegal') return;
+  }
+  if (cell && cell.s === G.turn) {
+    const has = currentLegal().some(m => m.path[0][0] === r && m.path[0][1] === c);
+    if (has) { G.selected = [r, c]; sfx.select(); render(); return; }
+  }
+  if (G.selected) { G.selected = null; render(); }
+  else sfx.illegal();
+}
+
+/* ---------------- Controls ---------------- */
+function setSkin(s) { skin = s; localStorage.setItem('ddsCheckersSkin', s); render(); }
+document.querySelectorAll('.skinChip').forEach(ch => ch.addEventListener('pointerdown', ev => { ev.preventDefault(); setSkin(ch.dataset.skin); }));
+document.querySelectorAll('.modeChip').forEach(ch => ch.addEventListener('pointerdown', ev => {
+  ev.preventDefault(); mode = ch.dataset.mode; localStorage.setItem('ddsCheckersMode', mode); render();
+}));
+$('playBtn').addEventListener('pointerdown', ev => { ev.preventDefault(); titleUp = false; $('title').classList.add('hidden'); newGame(); });
+$('homeBtn').addEventListener('pointerdown', ev => { ev.preventDefault(); titleUp = true; $('result').classList.remove('show'); $('title').classList.remove('hidden'); });
+$('resultHomeBtn').addEventListener('pointerdown', ev => { ev.preventDefault(); titleUp = true; $('result').classList.remove('show'); $('title').classList.remove('hidden'); });
+$('againBtn').addEventListener('pointerdown', ev => { ev.preventDefault(); $('result').classList.remove('show'); newGame(); });
+$('newBtn').addEventListener('pointerdown', ev => { ev.preventDefault(); if (!G.busy) { $('result').classList.remove('show'); newGame(); } });
+$('muteBtn').addEventListener('pointerdown', ev => { ev.preventDefault(); muted = !muted; localStorage.setItem('ddsCheckersMuted', muted ? '1' : '0'); render(); if (!muted) sfx.select(); });
+$('undoBtn').addEventListener('pointerdown', ev => {
+  ev.preventDefault();
+  if (G.busy) return;
+  if (G.chain) { /* cancel the in-progress chain: restore start-of-turn snapshot */
+    const snap = G.snapshots[G.snapshots.length - 1];
+    restoreSnap(snap); return;
+  }
+  let steps = (mode !== '2p' && mode !== 'aivai') ? 2 : 1;
+  steps = Math.min(steps, G.snapshots.length - 1);
+  if (steps <= 0) return;
+  for (let i = 0; i < steps; i++) G.snapshots.pop();
+  restoreSnap(G.snapshots[G.snapshots.length - 1]);
+});
+function restoreSnap(snap) {
+  G.board = cloneBoard(snap.board); G.turn = snap.turn;
+  G.noProgress = snap.noProgress; G.halfmoves = snap.halfmoves;
+  G.history.length = snap.histLen;
+  G.chain = null; G.selected = null; G.curNotation = ''; G.turnCapture = false; G.turnManMove = false;
+  G.status = 'playing'; $('result').classList.remove('show');
+  render();
+}
+
+/* ---------------- QA API (assertions only — moves happen by taps) ---------------- */
+window.CHECKERS_API = {
+  state() {
+    return {
+      board: boardToNumbers(G.board), turn: G.turn, status: G.status,
+      mode, skin, halfmoves: G.halfmoves, noProgress: G.noProgress,
+      history: [...G.history], chain: G.chain ? [G.chain.r, G.chain.c] : null,
+      selected: G.selected ? [...G.selected] : null, busy: G.busy,
+      counts: { b: countPieces(G.board, 'b'), r: countPieces(G.board, 'r') },
+      lastAiMs: G.lastAiMs
+    };
+  },
+  legalMoves() { return currentLegal().map(m => ({ path: m.path.map(p => [...p]) })); }
+};
+
+/* ---------------- Boot ---------------- */
+(function boot() {
+  const q = new URLSearchParams(location.search);
+  const setupStr = q.get('setup');
+  const setupBoard = setupStr ? parseSetup(setupStr) : null;
+  if (setupStr && setupBoard) {
+    mode = '2p'; /* setup positions load as Pass & Play for rule tests */
+    titleUp = false;
+    $('title').classList.add('hidden');
+    newGame(setupBoard, q.get('turn') === 'r' ? 'r' : 'b');
+  } else {
+    newGame(); /* board visible behind the title screen */
+    G.started = false; /* not started until Play is tapped */
+  }
+  render();
+})();
+</script>
+</body>
+</html>

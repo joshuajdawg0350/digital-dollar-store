@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Classic Games Pack — Chess · Checkers · Solitaire · Crosswords</title>
+<meta name="description" content="Four classic games in one pack: Chess, Checkers, Solitaire (Klondike) and Crosswords. Tap a game and it plays right in your browser — no download needed. No ads, no accounts, no subscriptions.">
+<style>
+  :root{
+    --bg:#05080E; --panel:#0C1420; --panel2:#111D2E; --line:#22344D; --line-strong:#33496B;
+    --text:#EAF2FB; --muted:#9DB2C9; --eb:#0096FF; --eb-bright:#6FC3FF; --eb-deep:#0077D6;
+    --green:#4FE38A;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;padding:1.4rem 1rem 2.2rem;max-width:560px;margin:0 auto}
+  .chrome-text{font-weight:800;letter-spacing:-.01em;line-height:1.02;text-transform:uppercase;
+    font-size:clamp(2rem,10vw,2.9rem);text-align:center;
+    background:linear-gradient(180deg,#FDFEFF 0%,#E6EEF7 30%,#8FA5BD 49%,#EEF4FB 52%,#AEBFD4 72%,#F4F8FC 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 3px 12px rgba(63,169,245,.30))}
+  .sub{text-align:center;color:var(--eb-bright);font-weight:700;font-size:1.02rem;margin-top:.45rem;letter-spacing:.02em}
+  .promises{display:flex;flex-wrap:wrap;gap:.4rem .9rem;justify-content:center;margin:1rem 0 1.4rem}
+  .promises span{border:1px solid var(--line-strong);border-radius:999px;padding:.4rem .85rem;
+    font-size:.82rem;font-weight:700;color:var(--text);background:var(--panel)}
+  .promises .g{color:var(--green);border-color:rgba(79,227,138,.5)}
+  .game{display:flex;align-items:center;gap:1rem;width:100%;text-decoration:none;color:var(--text);
+    background:linear-gradient(165deg,var(--panel2),var(--panel) 65%);
+    border:1px solid var(--line-strong);border-radius:14px;
+    padding:1.05rem 1.1rem;margin-top:.85rem;min-height:96px;
+    -webkit-tap-highlight-color:transparent}
+  .game:active{border-color:var(--eb);background:linear-gradient(165deg,#152740,var(--panel) 65%)}
+  .glyph{flex:none;width:64px;height:64px;border-radius:14px;display:flex;align-items:center;justify-content:center;
+    font-size:2rem;background:linear-gradient(160deg,#1B2A42,#05080E 70%);border:1px solid var(--line-strong);color:#fff;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 0 14px rgba(0,150,255,.18)}
+  .g-main{flex:1;min-width:0}
+  .g-main h2{font-size:1.28rem;font-weight:800;line-height:1.2}
+  .g-main p{font-size:.92rem;color:var(--muted);margin-top:.2rem;line-height:1.45}
+  .go{flex:none;font-weight:800;color:#04101F;font-size:.95rem;border-radius:10px;
+    background:linear-gradient(180deg,var(--eb-bright),var(--eb-deep));
+    border:1px solid rgba(111,195,255,.65);padding:.8rem 1rem;min-height:52px;
+    display:inline-flex;align-items:center}
+  .howto{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:1.15rem 1.25rem;margin-top:1.6rem}
+  .howto h2{font-size:1.1rem;margin-bottom:.5rem}
+  .howto p,.howto li{font-size:.95rem;line-height:1.55;color:var(--text)}
+  .howto ul{padding-left:1.25rem;margin-top:.35rem}
+  .howto li{margin:.3rem 0}
+  .howto .dim{color:var(--muted)}
+  footer{margin-top:1.8rem;text-align:center;color:var(--muted);font-size:.88rem;line-height:1.6}
+  footer b{color:var(--text)}
+  /* ---- Upgrade pass 2026-11-18: one-product polish ---- */
+  .game{box-shadow:0 8px 22px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.06);transition:border-color .15s ease,box-shadow .15s ease}
+  @media (hover:hover){ .game:hover{border-color:var(--eb);box-shadow:0 10px 26px rgba(0,0,0,.5),0 0 16px rgba(0,150,255,.22)} }
+  .game:focus-visible{outline:2px solid var(--eb);outline-offset:2px}
+  .go{box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 4px 12px rgba(0,150,255,.30)}
+</style>
+</head>
+<body>
+
+  <h1 class="chrome-text">Classic Games Pack</h1>
+  <p class="sub">Chess · Checkers · Solitaire · Crosswords</p>
+
+  <div class="promises">
+    <span>Plays right in your browser</span>
+    <span class="g">No ads. Ever.</span>
+    <span>No accounts</span>
+    <span>We never sell your information</span>
+  </div>
+
+  <a class="game" href="chess/index.html">
+    <span class="glyph" aria-hidden="true">♞</span>
+    <span class="g-main">
+      <h2>Chess</h2>
+      <p>Full rules — castling, en passant, promotion. Play the computer (Easy, Medium, Hard) or pass &amp; play with a friend. Three board styles.</p>
+    </span>
+    <span class="go">Play →</span>
+  </a>
+
+  <a class="game" href="checkers/index.html">
+    <span class="glyph" aria-hidden="true">⛂</span>
+    <span class="g-main">
+      <h2>Checkers</h2>
+      <p>Real American rules — jumps are forced, chains count, kings crown on the back row. Three computer levels, pass &amp; play, or watch the computer play itself.</p>
+    </span>
+    <span class="go">Play →</span>
+  </a>
+
+  <a class="game" href="solitaire/index.html">
+    <span class="glyph" aria-hidden="true">♠</span>
+    <span class="g-main">
+      <h2>Solitaire</h2>
+      <p>Klondike, the classic one-player card game. Draw 1 or Draw 3, hints, undo, and an auto-finish button when you're nearly home. Tap to move cards.</p>
+    </span>
+    <span class="go">Play →</span>
+  </a>
+
+  <a class="game" href="crosswords/index.html">
+    <span class="glyph" aria-hidden="true">▦</span>
+    <span class="g-main">
+      <h2>Crosswords</h2>
+      <p>Six hand-built puzzles with everyday words and plain clues — Morning, At the Beach, Around the House, Animals, Road Trip, In the Kitchen.</p>
+    </span>
+    <span class="go">Play →</span>
+  </a>
+
+  <div class="howto">
+    <h2>How to play</h2>
+    <p>Tap a game above and it starts — everything runs right here in your browser, on your phone or computer. <strong>Nothing to download, nothing to install.</strong></p>
+    <ul>
+      <li><strong>Chess &amp; Checkers:</strong> tap one of your pieces, then tap where it should go. Legal spots light up.</li>
+      <li><strong>Solitaire:</strong> tap a card to pick it up, tap where it goes. Double-tap a card to send it to a foundation pile. (Cards move by tapping — there is no dragging.)</li>
+      <li><strong>Crosswords:</strong> tap a square, type the letter. Tap the same square again to switch between Across and Down.</li>
+      <li><strong>Make it yours:</strong> every game has three looks (skins) — tap the skin button in the game to switch. Your pick is remembered.</li>
+      <li><strong>Your progress is saved</strong> on this device automatically.</li>
+    </ul>
+    <p class="dim" style="margin-top:.6rem">Plain truth: not every Solitaire deal can be won — that's how Klondike is, and always has been. If a deal beats you, deal a fresh one.</p>
+  </div>
+
+  <div class="howto">
+    <h2>Want the offline copy too?</h2>
+    <p>The same four games also come in one small file you can keep and play with no internet at all — on a plane, out in the country, anywhere.</p>
+    <p style="margin-top:.8rem"><a class="go" style="text-decoration:none" href="https://digitaldollarstore.org/downloads/classic-games-pack.zip" download>⬇ Download the pack (zip · 52 KB)</a></p>
+  </div>
+
+  <footer>
+    <p><b>No fancy logos. Just quality products.</b></p>
+    <p>Classic Games Pack — a Digital Dollar Store product.<br>
+    Something not working? That's the Fix-It Guarantee: tell us once and we fix it free.</p>
+  </footer>
+
+</body>
+</html>
