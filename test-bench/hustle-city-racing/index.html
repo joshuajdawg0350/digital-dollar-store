@@ -66,6 +66,14 @@
   #danger.show.hot{font-size:24px;animation-duration:.22s}
   @keyframes dng{50%{opacity:.25}}
   /* v0.3: blown-motor video overlay */
+  #res-record{margin:10px 0;padding:12px 14px;border:2px solid #FFD75E;border-radius:10px;background:rgba(255,215,94,.08);color:#FFD75E;font-weight:800;line-height:1.5;text-align:center}
+  .recboard{border:1px solid #2A3C52;border-radius:10px;padding:10px 12px;margin:0 0 6px;background:rgba(10,16,26,.55)}
+  .recboard .rec{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px dashed #22344c}
+  .recboard .rec:last-child{border-bottom:none}
+  .recboard .rn{font-weight:800;color:#DCE9F6}
+  .recboard .rm{color:#8FA9C4;font-size:12px}
+  .recboard .rs{font-weight:900;color:#FFD75E;white-space:nowrap}
+  .recboard .rs.standing{color:#8FA9C4}
   #blownwrap{position:fixed;inset:0;background:#000;z-index:60;display:none}
   #blownwrap.show{display:block}
   #blownvid{width:100%;height:100%;object-fit:cover}
@@ -174,7 +182,9 @@
   #btn-nitro.used{filter:grayscale(.8) brightness(.6)}
   #btn-nitro .sub{color:#CFEAFF}
   .rightpedals{display:flex;flex-direction:column;gap:10px;align-items:flex-end}
-  #btn-shift{width:132px;height:74px;font-size:19px;border-color:#9FD8FF}
+  #btn-shift{width:150px;height:84px;font-size:19px;border-color:#9FD8FF}
+  .pedal{position:relative;touch-action:none;-webkit-tap-highlight-color:transparent}
+  .pedal::after{content:'';position:absolute;inset:-16px;border-radius:24px}
   #btn-gas{width:150px;height:104px;font-size:24px;border-color:#7E97AE}
   #btn-gas .sub{font-size:11px}
   .racebtns{display:flex;gap:8px}
@@ -232,7 +242,7 @@
       <button id="btn-reset" class="smallbtn">Reset game</button>
     </div>
     <div class="title-stats" id="title-stats"></div>
-    <div class="legal">© 2026 Joshua Dawson / J-Dawgs Industries · Hustle City Drag Racing™ · v0.3 — The Ladder</div>
+    <div class="legal">© 2026 Joshua Dawson / J-Dawgs Industries · Hustle City Drag Racing™ · v0.4 — Land Speed</div>
   </div>
 </section>
 
@@ -248,6 +258,8 @@
     <div class="best" id="g-best">No runs yet. Set a time.</div>
     <div class="build" id="g-build"></div>
   </div>
+  <div class="secttl" style="margin-top:16px">Record board — the marks that matter</div>
+  <div id="record-board"></div>
   <div class="secttl">Pick your rival</div>
   <div id="rival-list"></div>
   <div class="secttl" style="margin-top:16px">Parts shop — beef up your car</div>
@@ -256,7 +268,7 @@
     <button id="btn-back-garage" class="smallbtn">← Title</button>
     <button id="btn-how-garage" class="smallbtn">How to race</button>
   </div>
-  <div class="foot">Win races to earn street points. Spend them on parts — every part makes the car measurably faster, and you can watch it grow on the car behind this panel. Twelve racers on the ladder, four levels deep — beat one to unlock the next. BIG BODY SCOTTY sits on top, and he only falls to a perfect run in a fully built car.</div>
+  <div class="foot">Win races to earn street points. Spend them on parts — every part makes the car measurably faster, and you can watch it grow on the car behind this panel. Sixteen racers — beat one to unlock the next. BIG BODY SCOTTY tops the ladder holding the DRAG RACING RECORD at 346.95 mph: beat him with a perfect run in a drag-spec build and the record is yours. Past him the RECORD CHASE opens on the salt at Bonneville — tech inspection demands a parachute, the payouts get serious, and the marks get historic: 503, 633.47, and the outright land speed record, 763.035 mph.</div>
 </section>
 
 <!-- RACE -->
@@ -314,6 +326,7 @@
     <div class="res-row"><span class="k">Street points</span><span class="v" id="res-cash">—</span></div>
     <div class="res-row" id="res-gain-row" style="display:none"><span class="k">New parts</span><span class="v" id="res-gain">—</span></div>
   </div>
+  <div id="res-record" style="display:none"></div>
   <div id="res-note"></div>
   <button id="btn-rematch" class="bigbtn blue">Rematch</button>
   <div class="rowbtns">
@@ -333,7 +346,7 @@
   <p><span class="num">4.</span> Keep GAS held down the whole run. Watch the tach needle. When it sweeps into the <b>green zone</b> up top, tap <b>SHIFT</b>. Shift in the green for a perfect shift — too early bogs the motor. <b>Hold it past the redline too long and you will BLOW THE MOTOR</b> — the tach flashes and the motor starts screaming; keep holding and it lets go: DNF, no payout. <b>A perfect start and perfect shifts win every race the car is built for.</b></p>
   <p><span class="num">5.</span> The blue bar at the top shows both cars — <b>blue is you, red is the rival</b> — so you always know who's ahead from the seat. Split times flash as you pass each marker.</p>
   <p><span class="num">6.</span> Tap <b>NITRO</b> once for a huge shove of speed — that's the 180 mph button. One bottle per race; it hits hardest in the top half of the track.</p>
-  <p><span class="num">7.</span> Win to earn <b>street points</b>, then spend them in the Garage parts shop — eight parts, three tiers each: blower, slicks, gears, nitro, lightweight panels, headers &amp; exhaust, suspension, and a race-fuel tune. Maxing the whole car costs $14,050 — a full ladder chase, not a few wins. Every part shows its promised gain in seconds before you buy, and your first slip on new parts shows the gain you actually got. Climb the ladder rung by rung — the top of it is BIG BODY SCOTTY, and stock and sloppy won't take his crown.</p>
+  <p><span class="num">7.</span> Win to earn <b>street points</b>, then spend them in the Garage parts shop — seventeen parts now, 79 tiers deep: the street catalog (blower, slicks, gears, nitro, lightweight panels, headers &amp; exhaust, suspension, race-fuel tune) runs five tiers each, and past it the Bonneville catalog opens — twin turbos, intercooler, a race ECU, methanol injection, a built drivetrain, a tube chassis, a streamliner aero kit, and a parachute (tech inspection requires one on the salt). Maxing the whole car costs $179,250. First summit: the drag racing record, <b>346.95 MPH</b>, held by Scotty. Past him, the record chase runs to the outright land speed record: <b>763 MPH</b>. The very last part in the shop is the <b>WHEELIE BAR</b> — at full power the car stands its front end up on the launch without it, and the run is gone. Every part shows its promised gain in seconds before you buy, and your first slip on new parts shows the gain you actually got. Climb the ladder, then the salt — the top of it all is BIG BODY SCOTTY, already built all the way up, and stock and sloppy won't take his crown.</p>
   <p>Keyboard (on a computer): hold <b>Space</b> for gas, <b>↑</b> to shift, <b>N</b> for nitro.</p>
   <button id="btn-how-back" class="bigbtn" style="align-self:flex-start">Got it</button>
   <div class="foot">Hustle City Drag Racing™ · Play chips only. Nobody’s real money rides on this.</div>
@@ -344,7 +357,7 @@
 import * as THREE from 'three';
 
 /* =====================================================================
-   HUSTLE City Drag Racing™ v0.3 — THE LADDER. Vault build, unreleased.
+   HUSTLE City Drag Racing™ v0.4 — LAND SPEED. Vault build, unreleased.
    © 2026 Joshua Dawson / J-Dawgs Industries.
    Benchmark: CSR Racing 2 / Nitro Nation drag presentation — PBR-look
    car paint, dynamic headlight beams, particle tire smoke, FOV speed
@@ -361,99 +374,177 @@ const QUARTER_M = 402.336;
 
 /* ---------------- SAVE + PROGRESSION ---------------- */
 const SAVE_KEY='hcr_save_v1';
-/* THE LADDER (v0.3) — 12 racers, 4 levels + the boss. Beat a racer to
+/* THE LADDER (v0.4) — 16 racers. TWO SUMMITS (Joshua, 2026-11-19):
+   Scotty tops the ladder holding the DRAG RACING RECORD (346.95 mph
+   trim); past him, THE RECORD CHASE — BONNEVILLE opens (tech
+   inspection: a parachute is required on the salt), where the marks
+   are 503, 633.47 and the outright record, 763.035. Beat a racer to
    unlock the next. Balance law (Joshua, 2026-11-18): every rung below
    Scotty is beatable by a GOOD run (RT .25, shifts at 6300) in the
    stage-appropriate build, with the rival's total sitting ~0.2-0.4s
    behind that good run; margins tighten up the ladder. Scotty is the
    exception: he falls only to a PERFECT run in a FULLY built car.
    Numbers proven in qa-v0.3 (replica of this exact math). */
+/* THE RECORD BOARD (v0.4): the marks that matter, in trap mph. The
+   drag record is Scotty's — you take it by beating him. The salt
+   marks fall to any finished run that traps past them. */
+const RECORDS=[
+  {id:'drag', mark:346.95, name:'THE DRAG RACING RECORD', holder:'BIG BODY SCOTTY', sub:'the Top Fuel speed record — take it off Scotty'},
+  {id:'w503', mark:503, name:'FASTEST WHEEL-DRIVEN CAR', holder:'Turbinator II', sub:'the fastest wheel-driven mark on Earth'},
+  {id:'t633', mark:633.47, name:'THE THRUST2 MARK', holder:'Richard Noble · Thrust2, 1983', sub:'the record before the record'},
+  {id:'lsr', mark:763.035, name:'THE LAND SPEED RECORD', holder:'Andy Green · Thrust SSC, 1997', sub:'the outright record — first supersonic car'},
+];
 const RIVALS=[
   {id:'rick', name:'Slick Rick',  car:'’72 Rustbucket GT', color:0x8a3324, face:'#8a3324', etBase:10.3, rtBase:0.36, rtVar:0.20, power:0.84, shiftRpm:6700, blower:1, pay:250, diff:'EASY',   dcls:'d1', shape:'even', lvl:'LEVEL 1 — STREET', line:'Talks big. Launches bigger.'},
   {id:'vee',  name:'Vandal Vee',  car:'’85 Neon Fox',      color:0x7a1fa2, face:'#7a1fa2', etBase:9.8,  rtBase:0.30, rtVar:0.16, power:0.875, shiftRpm:6950, blower:2, pay:450, diff:'REAL RACE', dcls:'d2', shape:'launch', lvl:'LEVEL 1 — STREET', line:'The whole strip is her canvas — including your pride.'},
   {id:'cole', name:'Kingpin Cole',car:'’70 Black Crown',   color:0x15161c, face:'#2b2f3a', etBase:8.9,  rtBase:0.22, rtVar:0.14, power:1.161, shiftRpm:7300, blower:3, pay:850, diff:'KINGPIN', dcls:'d3', shape:'charge', lvl:'LEVEL 1 — STREET', line:'Runs the money end of the strip. Beating him was never supposed to happen.'},
-  {id:'wanda', name:'Wanda “Wrench” Kowalski', car:'’69 Ironback', color:0xc0a062, face:'#c0a062', etBase:8.8, rtBase:0.26, rtVar:0.12, power:1.205, shiftRpm:7350, blower:2, pay:1100, diff:'PRO STREET', dcls:'d2', shape:'even', lvl:'LEVEL 2 — PRO STREET', line:'Built her car with her own hands. Built half the cars that beat you, too.'},
-  {id:'marcus', name:'Marcus “Nine Lives” Reed', car:'’71 Alley Cat', color:0x2e7d6b, face:'#2e7d6b', etBase:8.6, rtBase:0.28, rtVar:0.12, power:1.228, shiftRpm:7400, blower:2, pay:1350, diff:'PRO STREET', dcls:'d2', shape:'launch', lvl:'LEVEL 2 — PRO STREET', line:'Walked away from nine wrecks. Drives like the tenth is already paid for.'},
-  {id:'delia', name:'Delia “Duchess” Vane', car:'’67 Velvet Hammer', color:0x8e244d, face:'#8e244d', etBase:8.6, rtBase:0.26, rtVar:0.11, power:1.319, shiftRpm:7425, blower:3, pay:1600, diff:'PRO STREET', dcls:'d2', shape:'charge', lvl:'LEVEL 2 — PRO STREET', line:'Never raises her voice. Never lifts. Never loses twice to the same driver.'},
-  {id:'tommy', name:'Tommy “Torque” Tran', car:'’70 Sidewinder', color:0xd97b16, face:'#d97b16', etBase:8.2, rtBase:0.26, rtVar:0.11, power:1.4229, shiftRpm:7425, blower:3, pay:1950, diff:'OUTLAW', dcls:'d3', shape:'launch', lvl:'LEVEL 3 — OUTLAW', line:'Counts his money in eighth-miles.'},
-  {id:'rosa', name:'Rosa “Redline” Delgado', car:'’73 Redline Special', color:0xc01828, face:'#c01828', etBase:8.2, rtBase:0.26, rtVar:0.10, power:1.5131, shiftRpm:7450, blower:3, pay:2300, diff:'OUTLAW', dcls:'d3', shape:'charge', lvl:'LEVEL 3 — OUTLAW', line:'Her tach has no red zone. She took it out.'},
-  {id:'hank', name:'Hank “Hammer” Oduya', car:'’68 Sledge', color:0x4a5568, face:'#4a5568', etBase:8.2, rtBase:0.24, rtVar:0.10, power:1.4516, shiftRpm:7450, blower:3, pay:2700, diff:'OUTLAW', dcls:'d3', shape:'even', lvl:'LEVEL 3 — OUTLAW', line:'Subtle is a word he can’t spell. Fast is a word he can prove.'},
-  {id:'vivian', name:'Vivian “Viper” Cross', car:'’72 Night Viper', color:0x1f6f43, face:'#1f6f43', etBase:8.3, rtBase:0.22, rtVar:0.09, power:1.421, shiftRpm:7450, blower:3, pay:3200, diff:'KINGS ROW', dcls:'d3', shape:'launch', lvl:'LEVEL 4 — KINGS ROW', line:'By the time you hear her blower whine, the race is already over.'},
-  {id:'eddie', name:'Eddie “Eight-Ball” Ferro', car:'’69 Eight-Ball', color:0x191b20, face:'#3a3f4a', etBase:8.2, rtBase:0.20, rtVar:0.08, power:1.495, shiftRpm:7450, blower:3, pay:3800, diff:'KINGS ROW', dcls:'d3', shape:'charge', lvl:'LEVEL 4 — KINGS ROW', line:'Luck is just preparation wearing better paint.'},
-  {id:'scotty', name:'BIG BODY SCOTTY', car:'’70 Heavy Crown', color:0x0d0d10, face:'#101216', etBase:7.4, rtBase:0.18, rtVar:0.06, power:1.9632, shiftRpm:7450, blower:3, pay:5000, diff:'FINAL BOSS', dcls:'d3', shape:'even', lvl:'THE BOSS', line:'The boss of Hustle City. Beat him and the whole city says your name.', wheelie:true},
+  {id:'wanda', name:'Wanda “Wrench” Kowalski', car:'’69 Ironback', color:0xc0a062, face:'#c0a062', etBase:8.8, rtBase:0.26, rtVar:0.12, power:1.205, shiftRpm:7350, blower:2, pay:1800, diff:'PRO STREET', dcls:'d2', shape:'even', lvl:'LEVEL 2 — PRO STREET', line:'Built her car with her own hands. Built half the cars that beat you, too.'},
+  {id:'marcus', name:'Marcus “Nine Lives” Reed', car:'’71 Alley Cat', color:0x2e7d6b, face:'#2e7d6b', etBase:8.6, rtBase:0.28, rtVar:0.12, power:1.228, shiftRpm:7400, blower:2, pay:2200, diff:'PRO STREET', dcls:'d2', shape:'launch', lvl:'LEVEL 2 — PRO STREET', line:'Walked away from nine wrecks. Drives like the tenth is already paid for.'},
+  {id:'delia', name:'Delia “Duchess” Vane', car:'’67 Velvet Hammer', color:0x8e244d, face:'#8e244d', etBase:8.6, rtBase:0.26, rtVar:0.11, power:1.319, shiftRpm:7425, blower:3, pay:2600, diff:'PRO STREET', dcls:'d2', shape:'charge', lvl:'LEVEL 2 — PRO STREET', line:'Never raises her voice. Never lifts. Never loses twice to the same driver.'},
+  {id:'tommy', name:'Tommy “Torque” Tran', car:'’70 Sidewinder', color:0xd97b16, face:'#d97b16', etBase:8.2, rtBase:0.26, rtVar:0.11, power:1.4229, shiftRpm:7425, blower:3, pay:3400, diff:'OUTLAW', dcls:'d3', shape:'launch', lvl:'LEVEL 3 — OUTLAW', line:'Counts his money in eighth-miles.'},
+  {id:'rosa', name:'Rosa “Redline” Delgado', car:'’73 Redline Special', color:0xc01828, face:'#c01828', etBase:8.2, rtBase:0.26, rtVar:0.10, power:1.5131, shiftRpm:7450, blower:3, pay:4000, diff:'OUTLAW', dcls:'d3', shape:'charge', lvl:'LEVEL 3 — OUTLAW', line:'Her tach has no red zone. She took it out.'},
+  {id:'hank', name:'Hank “Hammer” Oduya', car:'’68 Sledge', color:0x4a5568, face:'#4a5568', etBase:8.2, rtBase:0.24, rtVar:0.10, power:1.4516, shiftRpm:7450, blower:3, pay:4600, diff:'OUTLAW', dcls:'d3', shape:'even', lvl:'LEVEL 3 — OUTLAW', line:'Subtle is a word he can’t spell. Fast is a word he can prove.'},
+  {id:'vivian', name:'Vivian “Viper” Cross', car:'’72 Night Viper', color:0x1f6f43, face:'#1f6f43', etBase:8.3, rtBase:0.22, rtVar:0.09, power:1.421, shiftRpm:7450, blower:3, pay:5600, diff:'KINGS ROW', dcls:'d3', shape:'launch', lvl:'LEVEL 4 — KINGS ROW', line:'By the time you hear her blower whine, the race is already over.'},
+  {id:'eddie', name:'Eddie “Eight-Ball” Ferro', car:'’69 Eight-Ball', color:0x191b20, face:'#3a3f4a', etBase:8.2, rtBase:0.20, rtVar:0.08, power:1.495, shiftRpm:7450, blower:3, pay:6800, diff:'KINGS ROW', dcls:'d3', shape:'charge', lvl:'LEVEL 4 — KINGS ROW', line:'Luck is just preparation wearing better paint.'},
+  {id:'scotty', name:'BIG BODY SCOTTY', car:'’70 Heavy Crown', color:0x0d0d10, face:'#101216', etBase:5.4, rtBase:0.12, rtVar:0.05, power:0.9284, shiftRpm:7450, blower:3, pay:8000, diff:'FINAL BOSS', dcls:'d3', shape:'even', lvl:'THE BOSS', line:'The boss of Hustle City — and he holds the DRAG RACING RECORD: 346.95 mph. Take it off him.', wheelie:true, aero:3, turbo:2, chute:2, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:2,intercooler:2,ecu:3,fuelsys:2,drivetrain:2,chassis:2,aero:3,chute:0,wheeliebar:0}},
+  {id:'nils', name:'Nils “Needle” Bergström', car:'’68 Needleback', color:0xd8dde3, face:'#d8dde3', etBase:4.6, rtBase:0.22, rtVar:0.08, power:1.4641, shiftRpm:7450, blower:3, pay:9000, diff:'SALT FLATS', dcls:'d3', shape:'even', lvl:'THE RECORD CHASE — BONNEVILLE', line:'Came from the salt with a needle-nose streamliner and no fear at all.', wheelie:true, aero:3, turbo:3, chute:1, needChute:true, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:2,intercooler:2,ecu:3,fuelsys:2,drivetrain:2,chassis:2,aero:3,chute:1,wheeliebar:0}},
+  {id:'dot', name:'Dot “Duster” Callahan', car:'’71 Dust Devil', color:0xb08968, face:'#b08968', etBase:4.0, rtBase:0.21, rtVar:0.08, power:0.8274, shiftRpm:7450, blower:3, pay:13000, diff:'SALT FLATS', dcls:'d3', shape:'charge', lvl:'THE RECORD CHASE — BONNEVILLE', line:'She tunes by ear, at dawn, alone. The salt respects that.', wheelie:true, aero:4, turbo:4, chute:2, needChute:true, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:4,intercooler:4,ecu:5,fuelsys:4,drivetrain:4,chassis:4,aero:4,chute:2,wheeliebar:1}},
+  {id:'kenji', name:'Kenji “Comet” Sato', car:'’70 Comet Tail', color:0x3a6ea5, face:'#3a6ea5', etBase:3.1, rtBase:0.20, rtVar:0.07, power:1.2474, shiftRpm:7450, blower:3, pay:18000, diff:'SALT FLATS', dcls:'d3', shape:'launch', lvl:'THE RECORD CHASE — BONNEVILLE', line:'His tail cone is longer than your whole car. So is his shadow.', wheelie:true, aero:4, turbo:4, chute:3, needChute:true, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:4,intercooler:5,ecu:5,fuelsys:5,drivetrain:5,chassis:5,aero:4,chute:3,wheeliebar:1}},
+  {id:'ruth', name:'Ruth “Big Mama” Okafor', car:'’69 Queen of the Salt', color:0x6d28a8, face:'#6d28a8', etBase:2.9, rtBase:0.19, rtVar:0.07, power:1.00, shiftRpm:7450, blower:3, pay:26000, diff:'SALT QUEEN', dcls:'d3', shape:'even', lvl:'THE RECORD CHASE — BONNEVILLE', line:'Twenty years on the salt. She has buried faster men than you — and she guards the big records.', wheelie:true, aero:5, turbo:5, chute:3, needChute:true, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:6,intercooler:6,ecu:6,fuelsys:6,drivetrain:6,chassis:6,aero:6,chute:4,wheeliebar:1}},
 ];
-/* Parts shop — 8 parts x 3 tiers (v0.3 deepened garage: Joshua's
-   live-play note was that 5x3 maxed out too fast). Every tier has a
-   real, measurable effect in the physics (see upParams) and a visible
-   change on the car where one honestly exists. Prices in street
-   points; the three pro parts cost more per tier — a full build is
-   $14,050, a whole-ladder chase instead of a few wins. */
+/* Parts shop — v0.4: 17 parts, 79 tiers. The original 8 run five tiers
+   deep now (their first three tiers are byte-for-byte the v0.3 parts),
+   nine more parts carry the build from street to Bonneville, and the
+   WHEELIE BAR sits last in the shop — the final purchase, and the one
+   the max build cannot launch without. Every tier has a real,
+   measurable effect in the physics (see upParams) and a visible change
+   on the car where one honestly exists. Prices in street points; the
+   full record build is $179,250 — a whole campaign, earned on the
+   ladder and the salt. */
 const PARTS=[
-  {id:'engine', name:'Blower — engine build', prices:[200,400,650],
-   eff:['Roots blower, mild cam. On its own: ≈8.84s perfect pass (stock 9.01s)','Bigger blower, forged internals. On its own: ≈8.82s (stock 9.01s)','Full race build, max boost — the big scoop costs a little top-end drag, worth it. On its own: ≈8.80s (stock 9.01s)'],
+  {id:'engine', name:'Blower — engine build', prices:[200,400,650,1100,1800],
+   eff:['Roots blower, mild cam. On its own: ≈8.84s perfect pass (stock 9.01s)','Bigger blower, forged internals. On its own: ≈8.82s (stock 9.01s)','Full race build, max boost — the big scoop costs a little top-end drag, worth it. On its own: ≈8.80s (stock 9.01s)','Billet everything, stroker crank — a motor built to be fed turbos next. On its own: ≈8.750s','The LAND SPEED build: destroked, cross-bolted, built to live at full song for miles. On its own: ≈8.692s'],
    vis:'The blower on the hood grows with every tier — and it whines louder, too.'},
-  {id:'tires', name:'Slicks — rear tires', prices:[200,400,650],
-   eff:['Wider rear slicks — launch slip 1.15s → 0.82s, and they hold more power off the line. On its own: ≈8.80s','Full wrinkle-walls — slip 0.56s, harder bite. On its own: ≈8.68s','Steamrollers so wide they hold a long, violent launch at near-full grip. On its own: ≈8.68s'],
+  {id:'tires', name:'Slicks — rear tires', prices:[200,400,650,1100,1800],
+   eff:['Wider rear slicks — launch slip 1.15s → 0.82s, and they hold more power off the line. On its own: ≈8.80s','Full wrinkle-walls — slip 0.56s, harder bite. On its own: ≈8.68s','Steamrollers so wide they hold a long, violent launch at near-full grip. On its own: ≈8.68s','Salt-rated steamrollers — taller, harder, built to bite at speeds slicks were never meant to see. On its own: ≈8.633s','Land-speed specials: the tallest, hardest tires in the shop. At 700+ mph the contact patch is a rumor — these make it a fact. On its own: ≈8.592s'],
    vis:'The rear tires get visibly wider; fronts go skinny at tier 2.'},
-  {id:'gears', name:'Gears — rear end & shift kit', prices:[200,400,650],
-   eff:['Steep launch gear + shift kit — shifts keep 55% power, cuts shrink. On its own: ≈8.80s','Closer kit + built driveline (less power lost on the way). On its own: ≈8.73s','Full flat-shift setup — 85% power carried through every shift. On its own: ≈8.68s'],
+  {id:'gears', name:'Gears — rear end & shift kit', prices:[200,400,650,1100,1800],
+   eff:['Steep launch gear + shift kit — shifts keep 55% power, cuts shrink. On its own: ≈8.80s','Closer kit + built driveline (less power lost on the way). On its own: ≈8.73s','Full flat-shift setup — 85% power carried through every shift. On its own: ≈8.68s','Salt gears: a tall top cog so the motor is still pulling at 400 mph instead of screaming at the limiter. On its own: ≈8.817s','The 763 gear set: top gear so tall the stripe arrives before the redline does. This is the gear the record lives in. On its own: ≈8.850s'],
    vis:'Under the car — you feel this one in the seat, not the mirror.'},
-  {id:'nitro', name:'Nitro — bigger shot', prices:[200,400,650],
-   eff:['Shot ×3.05 for 3.8s. On its own: ≈8.84s','Shot ×3.15 for 4.0s. On its own: ≈8.83s','Shot ×3.28 for 4.6s — the full send. On its own: ≈8.80s'],
+  {id:'nitro', name:'Nitro — bigger shot', prices:[200,400,650,1100,1800],
+   eff:['Shot ×3.05 for 3.8s. On its own: ≈8.84s','Shot ×3.15 for 4.0s. On its own: ≈8.83s','Shot ×3.28 for 4.6s — the full send. On its own: ≈8.80s','Shot ×3.45 for 5.2s — a second bottle plumbed in parallel. On its own: ≈8.775s','Shot ×3.62 for 5.8s — the whole trunk is bottles now. On its own: ≈8.750s'],
    vis:'The exhaust flame gets bigger and burns longer. Even the stock shot alone is worth 0.43s and +36 mph — this is the 180 button, and a built car on the big shot traps past 200.'},
-  {id:'weight', name:'Lightweight — panels & glass', prices:[200,400,650],
-   eff:['Carbon hood — more shove, less drag. On its own: ≈8.84s','Carbon roof & deck too. On its own: ≈8.80s','Full carbon & lexan glass — the slippery shape pays off big at 200 mph. On its own: ≈8.73s'],
+  {id:'weight', name:'Lightweight — panels & glass', prices:[200,400,650,1100,1800],
+   eff:['Carbon hood — more shove, less drag. On its own: ≈8.84s','Carbon roof & deck too. On its own: ≈8.80s','Full carbon & lexan glass — the slippery shape pays off big at 200 mph. On its own: ≈8.73s','Titanium fasteners, magnesium everything — the car is a rumor with a motor. On its own: ≈8.667s','Full composite monocoque under the muscle shape — the lightest this car can honestly get. On its own: ≈8.608s'],
    vis:'Hood, roof and deck turn carbon black, tier by tier.'},
-  {id:'exhaust', name:'Headers & Exhaust — free-flow system', prices:[400,800,1400],
-   eff:['Tuned headers — the motor breathes out. On its own: ≈8.84s (stock 9.01s)','Full free-flow system, scavenging primaries. On its own: ≈8.81s','Open race exhaust — max flow at the top end. On its own: ≈8.71s'],
+  {id:'exhaust', name:'Headers & Exhaust — free-flow system', prices:[400,800,1400,2400,4000],
+   eff:['Tuned headers — the motor breathes out. On its own: ≈8.84s (stock 9.01s)','Full free-flow system, scavenging primaries. On its own: ≈8.81s','Open race exhaust — max flow at the top end. On its own: ≈8.71s','Zoomies — four open pipes per side, tuned for the turbo era. On its own: ≈8.575s','Full Inconel system — the metal they make jet pipes from, because at this power normal steel glows and gives up. On its own: ≈8.442s'],
    vis:'The exhaust tips grow with every tier, and chrome headers show through the front wheel wells.'},
-  {id:'susp', name:'Suspension — traction bars & shocks', prices:[400,800,1400],
-   eff:['Traction bars — the rear plants instead of hopping. On its own: ≈8.82s (stock 9.01s)','Bars + drag shocks. On its own: ≈8.76s','Full launch setup — bars, shocks and wheelie bars; the car leaves like it was shot. On its own: ≈8.73s'],
-   vis:'Traction bars under the rear from tier 1, the stance drops a little each tier, and wheelie bars bolt on at tier 2.'},
-  {id:'fuel', name:'Race Fuel & Tune — Moon tank setup', prices:[400,800,1400],
-   eff:['Race fuel + a real tune — shifts carry 55% power instead of dying between gears. On its own: ≈8.84s (stock 9.01s)','Bigger Moon tank, hotter tune — shifts carry 65%. On its own: ≈8.80s','Full race tune — shifts carry 72% and the whole combo wakes up. On its own: ≈8.76s'],
+  {id:'susp', name:'Suspension — traction bars & shocks', prices:[400,800,1400,2400,4000],
+   eff:['Traction bars — the rear plants instead of hopping. On its own: ≈8.82s (stock 9.01s)','Bars + drag shocks. On its own: ≈8.76s','Full launch setup — bars and shocks; the car leaves like it was shot. On its own: ≈8.73s','Four-link rear with coilovers — the launch is adjustable to the tenth. On its own: ≈8.700s','The full salt setup: four-link, coilovers, and a rear wing’s worth of downforce tuning in the shocks. On its own: ≈8.658s'],
+   vis:'Traction bars under the rear from tier 1, and the stance drops a little each tier.'},
+  {id:'fuel', name:'Race Fuel & Tune — Moon tank setup', prices:[400,800,1400,2400,4000],
+   eff:['Race fuel + a real tune — shifts carry 55% power instead of dying between gears. On its own: ≈8.84s (stock 9.01s)','Bigger Moon tank, hotter tune — shifts carry 65%. On its own: ≈8.80s','Full race tune — shifts carry 72% and the whole combo wakes up. On its own: ≈8.76s','Nitromethane blend + a tune written for it — shifts carry 78%. On its own: ≈8.692s','The record tune: full nitro blend, mapped on a dyno until the graph scared the dyno man. Shifts carry 83%. On its own: ≈8.625s'],
    vis:'The polished Moon fuel tank on the nose grows with every tier.'},
+  /* ---- v0.4 LAND SPEED catalog: the street-to-Bonneville arc. Every
+     field is neutral at tier 0, so a v0.3 save (or the old full build)
+     runs byte-identical physics until the player buys in. ---- */
+  {id:'turbo', name:'Twin Turbo — compound turbos', prices:[600,1200,2200,3800,6500,10500],
+   eff:['One turbo feeding the blower — the shove roughly doubles at the top end. On its own: ≈8.300s','Twin turbos, staged — the second one wakes up as the speed climbs. On its own: ≈7.800s','Full compound setup — blower for the launch, turbos for the horizon. On its own: ≈7.342s','Salt-spec twins with water-cooled housings — boost that does not quit at mile one. On its own: ≈6.908s','The record turbos: two of the biggest snails that fit, and they barely fit. On its own: ≈6.442s','The salt turbo: one enormous snail built for a full mile of boost. On its own: ≈6.225s'],
+   vis:'A front-mount intercooler fills the grille and the turbo plumbing shows at the hood sides — bigger every tier.'},
+  {id:'intercooler', name:'Intercooler — front-mount', prices:[300,600,1100,1900,3200,5200],
+   eff:['Cooler charge air = denser air = more power everywhere. On its own: ≈8.825s','Bigger core, shorter pipes — the turbos answer faster. On its own: ≈8.658s','Full race core with ice-box plumbing. On its own: ≈8.467s','Dual cores, one per turbo. On its own: ≈8.167s','The salt core: sized for a full mile at full boost without heat-soak. On its own: ≈7.967s','An ice-water box the size of a suitcase — charge air at salt temperature. On its own: ≈7.800s'],
+   vis:'The intercooler core behind the grille gets wider and brighter every tier.'},
+  {id:'ecu', name:'ECU — race computer', prices:[350,700,1300,2200,3600,5800],
+   eff:['A real ECU: the limiter rises and shifts carry power instead of dying. On its own: ≈8.808s','Launch control maps + a higher ceiling. On its own: ≈8.675s','Full motorsport ECU — every gear mapped on its own curve. On its own: ≈8.525s','The limiter climbs past 9,500 and the shifts stay flat. On its own: ≈8.383s','The record brain: limiter past 10,500 rpm, shift-keep 88% — the motor never stops pulling, not even between gears. On its own: ≈8.225s','The record tune: the limiter climbs to the moon and every gear runs its own map. On its own: ≈8.075s'],
+   vis:'Under the dash — you hear this one in how the motor refuses to quit.'},
+  {id:'fuelsys', name:'Fuel System — methanol injection', prices:[400,800,1500,2600,4400,7200],
+   eff:['Methanol sprays with the nitro — the shot hits harder. On its own: ≈8.958s','Bigger pumps, bigger lines — the shot lasts longer too. On its own: ≈8.900s','Full methanol system: the nitro shot becomes a second engine. On its own: ≈8.842s','Dual-stage methanol — it feeds the whole top half of the run. On its own: ≈8.792s','The salt system: enough methanol flow to keep the record run fed to the stripe. On its own: ≈8.742s','The flood system: methanol by the gallon, enough to feed the whole mile. On its own: ≈8.708s'],
+   vis:'A methanol bottle appears on the rear deck and grows every tier.'},
+  {id:'drivetrain', name:'Drivetrain — built trans & axles', prices:[450,900,1700,2900,4800,7800],
+   eff:['Built shafts and axles — less power lost between the motor and the road. On its own: ≈8.858s','A trans that shifts like it means it, every gear. On its own: ≈8.708s','Full race driveline — the power you paid for actually arrives. On its own: ≈8.550s','Salt driveline: overbuilt everything, because 700 mph finds the weak link. On its own: ≈8.375s','The record driveline — unbreakable is a promise nobody makes; this is the closest the shop sells. On its own: ≈8.192s','The record driveline: built to hold the full shove past 700. On its own: ≈8.025s'],
+   vis:'Under the car — you feel this one in how nothing twists or gives.'},
+  {id:'chassis', name:'Chassis — tube frame & cage', prices:[400,850,1600,2700,4500,7300],
+   eff:['Stiffer frame — the launch goes forward instead of twisting. On its own: ≈8.875s','Cage + frame ties: the whole car becomes one piece. On its own: ≈8.750s','Full tube chassis under the muscle shape. On its own: ≈8.592s','Salt chassis: longer, lower, built for a mile of full throttle. On its own: ≈8.450s','The record chassis — the car is a dart now, and the road is the target. On its own: ≈8.300s','The full streamliner chassis — the car is a dart and the salt is the target. On its own: ≈8.150s'],
+   vis:'A roll cage shows through the glass from tier 2, and the car sits lower and meaner.'},
+  {id:'aero', name:'Aero — streamliner kit', prices:[500,1000,1900,3300,5500,8900],
+   eff:['A front splitter and smooth belly — the air starts sliding instead of shoving. On its own: ≈8.983s','Side skirts + a rear diffuser: the drag keeps falling. On its own: ≈8.950s','The tail cone begins — the car starts looking like what it is becoming. On its own: ≈8.925s','Full streamliner tail: at 500 mph the air barely knows you passed. On its own: ≈8.883s','The 763 shape: full tail, full belly, mirrors deleted. Drag is a rumor now. On its own: ≈8.833s','The final shape: nothing left sticking into the wind at all. On its own: ≈8.808s'],
+   vis:'Splitter at tier 2, a streamliner tail cone from tier 3 — at tier 5 the car is visibly a land-speed machine.'},
+  {id:'chute', name:'Parachute — twin-chute pack', prices:[250,500,900,1400],
+   eff:['TECH INSPECTION: Bonneville racers will not line up without a chute — and your shutdown braking gets real.','Twin chutes, bigger canopy — the roll-out after a 500 mph pass stops being a prayer.','The record pack: dual twins, sized to haul down a 763 mph car. The salt crews nod when they see it.','The quad pack: four canopies — stopping from 700+ takes everything you have.'],
+   vis:'A chute pack bolts onto the rear panel and grows every tier.'},
+  {id:'wheeliebar', name:'Wheelie Bar — THE LAST ONE', prices:[3500],
+   eff:['THE FINAL PART IN THE SHOP. At drag spec the car still launches clean — but deep in the record chase, past 8× the stock shove, the front end comes UP on the launch and the run is gone before it starts. This bar plants the launch. Without it, the record build cannot leave clean — Ruth knows it, and so will you.'],
+   vis:'Two long chrome bars with little wheels, reaching behind the rear bumper. When they are on the car, the car means it.'},
 ];
 function upParams(up){
   /* v0.3 tune — every tier proven ≥0.15s solo in the replica table
      (qa-v0.3). Index 0 is stock and is byte-for-byte the v0.2 tune:
-     the stock car did not change, the parts finally did. */
-  return {
-    powerMult:[1,1.055,1.065,1.08][up.engine],
-    blowerDrag:[1,1,1.02,1.13][up.engine], /* the bigger scoop catches air — costs top-end drag, honestly */
-    slipT:[1.15,0.82,0.56,1.15][up.tires],
-    slipGrip:[0.76,0.865,0.935,0.96][up.tires],
-    biteMult:[1,1.07,1.13,1.13][up.tires],
-    cutP:[0.07,0.040,0.030,0.020][up.gears],
-    cutN:[0.14,0.088,0.062,0.042][up.gears],
-    cutKeep:[0,0.55,0.70,0.85][up.gears],
-    launchMult:[1,1.06,1.10,1.14][up.gears],
-    driveMult:[1,1.02,1.04,1.045][up.gears],
-    topMult:[1,1,0.96,0.96][up.gears],
-    nitroMult:[2.30,3.05,3.15,3.28][up.nitro],
-    nitroDur:[3.8,3.8,4.0,4.6][up.nitro],
-    forceMult:[1,1.05,1.06,1.075][up.weight],
-    dragMult:[1,0.94,0.885,0.82][up.weight],
+     the stock car did not change, the parts finally did.
+     v0.4 LAND SPEED: tiers 4-5 extend every original array (indices
+     0-3 untouched, so stock and the old full build are byte-identical),
+     and the Bonneville parts add fields that are all NEUTRAL at tier 0
+     (mult 1, drag 1, grip 0, bar off) — an unmodified v0.3 save runs
+     the exact same physics until the player buys into the new catalog. */
+  const P={
+    powerMult:[1,1.055,1.065,1.08,1.10,1.125][up.engine],
+    blowerDrag:[1,1,1.02,1.13,1.15,1.20][up.engine], /* the bigger scoop catches air — costs top-end drag, honestly */
+    slipT:[1.15,0.82,0.56,1.15,1.15,1.15][up.tires],
+    slipGrip:[0.76,0.865,0.935,0.96,0.972,0.982][up.tires],
+    biteMult:[1,1.07,1.13,1.13,1.17,1.21][up.tires],
+    cutP:[0.07,0.040,0.030,0.020,0.016,0.012][up.gears],
+    cutN:[0.14,0.088,0.062,0.042,0.034,0.026][up.gears],
+    cutKeep:[0,0.55,0.70,0.85,0.88,0.91][up.gears],
+    launchMult:[1,1.06,1.10,1.14,1.18,1.22][up.gears],
+    driveMult:[1,1.02,1.04,1.045,1.055,1.065][up.gears],
+    topMult:[1,1,0.96,0.96,0.62,0.3547][up.gears], /* tiers 4-5: salt gears — top gear gets TALL, that is where 763 lives */
+    nitroMult:[2.30,3.05,3.15,3.28,3.45,3.62][up.nitro],
+    nitroDur:[3.8,3.8,4.0,4.6,5.2,5.8][up.nitro],
+    forceMult:[1,1.05,1.06,1.075,1.09,1.105][up.weight],
+    dragMult:[1,0.94,0.885,0.82,0.71,0.64][up.weight],
     /* the deepened garage (v0.3): three pro parts. The FULL 8-part
        build lands 7.38s @ 204 — deeper in the sevens than the old
        5-part sketch (~7.7-7.9) because eight honest parts out-pull
        five; no tier was faked down to hit the sketch number. Every
        tier of every part proves >=0.15s solo and every part is
        strictly stronger tier over tier in the replica table. */
-    exhMult:[1,1.055,1.065,1.10][up.exhaust||0],
-    suspMult:[1,1.13,1.17,1.18][up.susp||0],
-    suspGrip:[0,0.035,0.055,0.075][up.susp||0],
-    tuneKeep:[0,0.55,0.65,0.72][up.fuel||0],
-    tuneDur:[1,1.08,1.12,1.0][up.fuel||0],
-    tuneMult:[1,1.03,1.04,1.05][up.fuel||0],
+    exhMult:[1,1.055,1.065,1.10,1.15,1.20][up.exhaust||0],
+    suspMult:[1,1.13,1.17,1.18,1.20,1.22][up.susp||0],
+    suspGrip:[0,0.035,0.055,0.075,0.09,0.105][up.susp||0],
+    tuneKeep:[0,0.55,0.65,0.72,0.78,0.83][up.fuel||0],
+    tuneDur:[1,1.08,1.12,1.0,1.06,1.12][up.fuel||0],
+    tuneMult:[1,1.03,1.04,1.05,1.07,1.09][up.fuel||0],
     /* combo heat: past 10 total tiers the whole combo runs hotter and
        bleeds a little force — 0.4% per extra tier, capped at 8%. It is
        deliberately GENTLE: the ladder table proves every stage build
        is still strictly faster than the one below it (B3 > B2.5 > B2),
        so no purchase ever makes the car slower. It exists so a full
-       24-piece build lands deep in the sevens instead of the sixes. */
+       24-piece build lands deep in the sevens instead of the sixes.
+       (v0.4: still counts ONLY the original 8 parts — a v0.3 build's
+       number cannot move.) */
     stackMult:1-Math.min(0.08,0.004*Math.max(0,((up.engine||0)+(up.tires||0)+(up.gears||0)+(up.nitro||0)+(up.weight||0)+(up.exhaust||0)+(up.susp||0)+(up.fuel||0))-10)),
+    /* ---- v0.4 Bonneville fields — neutral at tier 0 ---- */
+    turboMult:[1,1.26,1.52,1.85,2.30,3.05,3.55][up.turbo||0],
+    icMult:[1,1.06,1.12,1.19,1.32,1.42,1.52][up.intercooler||0],
+    ecuMult:[1,1.04,1.08,1.13,1.18,1.24,1.30][up.ecu||0],
+    limMult:[1,1.06,1.12,1.20,1.28,1.35,1.382][up.ecu||0],   /* the ECU raises the limiter the force gate reads */
+    ecuKeep:[0,0.55,0.65,0.75,0.82,0.88,0.92][up.ecu||0],
+    methMult:[1,1.10,1.20,1.32,1.45,1.60,1.74][up.fuelsys||0], /* multiplies the nitro shot while it burns */
+    methDur:[1,1.05,1.12,1.20,1.30,1.42,1.54][up.fuelsys||0],
+    drive2Mult:[1,1.05,1.10,1.16,1.23,1.31,1.39][up.drivetrain||0],
+    chassisMult:[1,1.04,1.08,1.13,1.18,1.24,1.30][up.chassis||0],
+    chassisGrip:[0,0.01,0.02,0.03,0.04,0.05,0.06][up.chassis||0],
+    aeroDrag:[1,0.88,0.77,0.66,0.50,0.33,0.22][up.aero||0],
+    chuteBrake:[0,1.6,3.2,5.0,6.8][up.chute||0],           /* roll-out braking only — never touches ET/trap */
+    wheelieBar:(up.wheeliebar||0)>0,
   };
+  /* launch shove: the product of every force multiplier that acts at
+     the hit. Stock is 1.00, the old full build 1.27, a drag-record
+     build about 5.1. Past 8.0 the front end comes
+     up on the launch and stays up for the first 30 m — unless the
+     WHEELIE BAR (last part in the shop) is fitted. */
+  P.launchPower=P.powerMult*P.forceMult*P.exhMult*P.tuneMult*P.turboMult*P.icMult*P.ecuMult*P.chassisMult*P.drive2Mult*P.stackMult;
+  return P;
 }
 let save;
 function loadSave(){
@@ -462,6 +553,9 @@ function loadSave(){
   if(!save) save={cash:250,bestET:null,bestTrap:null,wins:0,losses:0,beaten:{},races:0,champion:false,gainPending:false,up:{engine:0,tires:0,gears:0,nitro:0,weight:0}};
   if(!save.up) save.up={engine:0,tires:0,gears:0,nitro:0,weight:0};
   PARTS.forEach(p=>{ if(typeof save.up[p.id]!=='number') save.up[p.id]=0; });
+  if(!save.records||typeof save.records!=='object') save.records={};
+  if(save.beaten&&save.beaten.scotty&&!save.records.drag)
+    save.records.drag=(save.bestTrap&&save.bestTrap*2.23694>346.95)?+(save.bestTrap*2.23694).toFixed(1):346.95; /* a v0.3 champion already took it */
   return save;
 }
 function storeSave(){ try{ localStorage.setItem(SAVE_KEY,JSON.stringify(save)); }catch(e){} }
@@ -1136,14 +1230,51 @@ function buildCar(paintColor,opts){
   });
   /* wheelie bars — the boss runs them, and so does a tier-2+ suspension
      build; the chute pack stays the boss's signature */
-  if(opts.wheelie||suspTier>=2){
+  if(opts.wheelie||opts.wheelieBar||suspTier>=2){
     [-0.5,0.5].forEach(x=>{
       const bar=new THREE.Mesh(new THREE.BoxGeometry(0.06,0.06,1.35),chrome);
       add(bar,x,0.24,-2.95);
       const ww=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.09,0.05,10),tireM);
       ww.rotation.z=Math.PI/2; add(ww,x,0.09,-3.62);
     });
-    if(opts.wheelie) add(box(0.52,0.4,0.18,darkM),0,0.82,-2.52); // chute: Scotty only
+    if(opts.wheelie&&!(opts.chute>0)) add(box(0.52,0.4,0.18,darkM),0,0.82,-2.52); // boss chute pack (when no tiered pack)
+  }
+  /* v0.4 Bonneville hardware — cheap primitives in the house materials,
+     so a built car visibly becomes a land-speed machine */
+  const turboTier=opts.turbo||0;
+  if(turboTier>=1){ /* front-mount intercooler + charge pipes */
+    add(box(1.15+0.09*turboTier,0.26,0.09,new THREE.MeshStandardMaterial({color:0xb9c9d8,roughness:0.35,metalness:0.9,envMapIntensity:1.2})),0,0.44,2.52);
+    [-0.62,0.62].forEach(x=>{ const pipe=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.85,8),chrome);
+      pipe.rotation.x=0.5; add(pipe,x,0.62,2.2); });
+  }
+  const fsTier=opts.fuelsys||0;
+  if(fsTier>=1){ /* methanol bottle on the rear deck */
+    const br=[0,0.075,0.09,0.105,0.12,0.135][fsTier];
+    const bot=new THREE.Mesh(new THREE.CylinderGeometry(br,br,0.62,12),chrome);
+    bot.rotation.x=Math.PI/2; bot.castShadow=true; add(bot,0.45,0.98,-1.95);
+  }
+  const chTier=opts.chassis||0;
+  if(chTier>=2){ /* roll cage showing through the glass */
+    [-0.5,0.5].forEach(x=>{ const post=add(box(0.05,0.5,0.05,darkM),x,1.02,-0.15); post.rotation.x=0.35; });
+    add(box(1.05,0.05,0.05,darkM),0,1.24,-0.28);
+  }
+  const aeroTier=opts.aero||0;
+  if(aeroTier>=2) add(box(2.0,0.045,0.5,carbon),0,0.15,2.6); /* front splitter */
+  /* the spoiler grows with the aero tier (Joshua, 2026-11-19) */
+  if(aeroTier>=1) add(box(1.66,0.05,0.30,carbon),0,0.99,-2.26); /* deck lip */
+  if(aeroTier>=3){ [-0.7,0.7].forEach(x=>add(box(0.06,0.24,0.06,carbon),x,1.10,-2.30));
+    add(box(1.95,0.05,0.42,carbon),0,1.25,-2.30); } /* the wing */
+  if(aeroTier>=5){ [-0.99,0.99].forEach(x=>add(box(0.05,0.32,0.46,carbon),x,1.25,-2.30)); } /* endplates */
+  if(aeroTier>=3){ /* streamliner tail cone + fin */
+    const tl=[0,0,0,1.15,1.5,1.9,2.25][aeroTier];
+    add(box(1.15,0.30,tl,carbon),0,0.60,-2.42-tl/2);
+    add(box(0.05,0.34,tl*0.8,carbon),0,0.88,-2.42-tl/2);
+  }
+  const chuteTier=opts.chute||0;
+  if(chuteTier>=1){ /* the tiered chute pack — grows with the tier */
+    const cs=[0,0.46,0.54,0.64,0.72][chuteTier];
+    add(box(cs,cs*0.8,0.18,darkM),0,0.82,-2.52);
+    add(box(cs*0.7,0.07,0.07,chrome),0,0.82+cs*0.45,-2.52);
   }
   /* GFX PASS: neon underglow in the car's halo color — pure street.
      The blob shadow softens a touch because the moon shadow is real now. */
@@ -1161,12 +1292,49 @@ function buildPlayerCar(){
   if(playerCar) scene.remove(playerCar);
   playerCar=buildCar(0x0b0d12,{halo:0x66c8ff,realBeams:true,
     blower:save.up.engine,tireTier:save.up.tires,carbon:save.up.weight,
-    exhaust:save.up.exhaust||0,susp:save.up.susp||0,fuel:save.up.fuel||0});
+    exhaust:save.up.exhaust||0,susp:save.up.susp||0,fuel:save.up.fuel||0,
+    turbo:save.up.turbo||0,fuelsys:save.up.fuelsys||0,chassis:save.up.chassis||0,
+    aero:save.up.aero||0,chute:save.up.chute||0,wheelieBar:(save.up.wheeliebar||0)>0});
   playerCar.position.set(-2.05,0,0); scene.add(playerCar);
 }
 buildPlayerCar();
 rivalCar=buildCar(0x8a3324,{halo:0xffd9a0,blower:1,tireTier:1});
 rivalCar.position.set(2.05,0,0); scene.add(rivalCar);
+
+/* --- SALT VENUE (v0.4): record-chase races run on the Bonneville
+   salt — white ground, pale sky, distance boards — a different league
+   from the night street. Pure presentation: fog/background/material
+   swaps + a props toggle, restored on street races. --- */
+let skyDomeMesh=null, hemiLight=null, saltGroup=null;
+function buildSaltProps(){
+  if(saltGroup) return; saltGroup=new THREE.Group();
+  const postM=new THREE.MeshStandardMaterial({color:0x8a2f23,roughness:0.85});
+  const boardM=new THREE.MeshBasicMaterial({color:0xf2ede2,side:THREE.DoubleSide});
+  for(let d=100;d<=400;d+=100){ [-9.5,9.5].forEach(x=>{
+    const p=new THREE.Mesh(new THREE.BoxGeometry(0.12,1.1,0.12),postM);
+    p.position.set(x,0.55,d); p.userData.salt=1; saltGroup.add(p);
+    const b=new THREE.Mesh(new THREE.PlaneGeometry(1.5,0.8),boardM);
+    b.position.set(x,1.25,d); b.rotation.y=x>0?-0.35:0.35; b.userData.salt=1; saltGroup.add(b);
+  }); }
+  saltGroup.visible=false; scene.add(saltGroup);
+}
+function applyVenue(salt){
+  buildSaltProps(); saltGroup.visible=salt;
+  if(!skyDomeMesh){ scene.traverse(o=>{ if(o.geometry&&o.geometry.type==='SphereGeometry') skyDomeMesh=o;
+    if(o.isHemisphereLight) hemiLight=o; }); }
+  if(skyDomeMesh) skyDomeMesh.visible=!salt;
+  scene.background.set(salt?0xb9c9d8:0x04060d);
+  scene.fog.color.set(salt?0xc3d0db:0x060a12); scene.fog.density=salt?0.00085:0.0013;
+  ground.material.color.set(salt?0xd9d5c9:0x05070a);
+  road.material.color.set(salt?0xe6e1d4:0xffffff); road.material.roughness=salt?0.95:0.24;
+  if(hemiLight){ hemiLight.intensity=salt?2.0:1.2; hemiLight.color.set(salt?0xd6e6ff:0x3a5a8c); }
+  scene.traverse(o=>{ if(o.userData&&o.userData.salt) return;
+    if(o.isSprite&&Math.abs(o.position.x)>8.4){ o.visible=!salt; return; }
+    if(!o.isMesh||o===ground||o===road||o===skyDomeMesh) return;
+    if(Math.abs(o.position.x)>8.4&&o.position.y>0.4) o.visible=!salt;
+    if(o.position.z===640) o.visible=!salt; /* the skyline plane */
+  });
+}
 
 /* tire smoke particles */
 const SMOKE_N=260;
@@ -1230,7 +1398,10 @@ const STOCK_UP=upParams({engine:0,tires:0,gears:0,nitro:0,weight:0});
 function rpmFor(v,gear){ return v/WHEEL_C*RATIOS[gear]*FINAL_D*60; }
 /* per-car effective rpm: gears parts steepen the launch gear and, at
    tier 2+, swap in a taller overdrive top so a built car is never
-   strangled by the limiter at the stripe */
+   strangled by the limiter at the stripe. v0.4: at gears tier 5 the
+   top cog is a true salt gear (rpm reads 0.34x) but the built final
+   drive keeps real shove — stepCar floors the gear-4 FORCE factor at
+   0.55. Tiers 0-3 read 1 / 0.96 under both rules: no old number moves. */
 function rpmForC(c,gear){ return rpmFor(c.v,gear)*(gear===0?c.launchMult:(gear===4?c.topMult:1)); }
 function torqueFactor(rpm){ return clamp(1.22-Math.abs(rpm-5600)/12000, 0.78, 1.14); }
 function newCarState(power,up){
@@ -1238,13 +1409,19 @@ function newCarState(power,up){
   return {v:0,dist:0,gear:0,throttle:0,power:power,nitroT:0,nitroLeft:1,shiftCut:0,
           launched:false,launchT:0,finishTotal:null,trapV:0,slip:0,shifts:[],splits:{},
           splitIdx:0,rpmDisp:900,
-          powerMult:up.powerMult,forceMult:up.forceMult,dragMult:up.dragMult*(up.blowerDrag||1),
+          powerMult:up.powerMult,forceMult:up.forceMult,dragMult:up.dragMult*(up.blowerDrag||1)*(up.aeroDrag||1),
           slipT:up.slipT,slipGrip:up.slipGrip,cutP:up.cutP,cutN:up.cutN,
-          nitroMult:up.nitroMult,nitroDur:up.nitroDur*(up.tuneDur||1),cutKeep:up.cutKeep||0,
+          nitroMult:up.nitroMult,nitroDur:up.nitroDur*(up.tuneDur||1)*(up.methDur||1),cutKeep:up.cutKeep||0,
           launchMult:up.launchMult||1,driveMult:up.driveMult||1,topMult:up.topMult||1,
           biteMult:up.biteMult||1,exhMult:up.exhMult||1,suspMult:up.suspMult||1,
           suspGrip:up.suspGrip||0,tuneKeep:up.tuneKeep||0,tuneMult:up.tuneMult||1,
-          stackMult:up.stackMult||1};
+          stackMult:up.stackMult||1,
+          /* v0.4: Bonneville fields ride along (neutral on stock params) */
+          turboMult:up.turboMult||1,icMult:up.icMult||1,ecuMult:up.ecuMult||1,
+          limMult:up.limMult||1,ecuKeep:up.ecuKeep||0,methMult:up.methMult||1,
+          drive2Mult:up.drive2Mult||1,chassisMult:up.chassisMult||1,
+          chassisGrip:up.chassisGrip||0,chuteBrake:up.chuteBrake||0,
+          wheelieBar:!!up.wheelieBar,launchPower:up.launchPower||1,wheelieNow:false};
 }
 const SPLIT_MARKS=[[18.288,'60ft'],[100.584,'330ft'],[201.168,'1/8mi'],[304.8,'1000ft'],[QUARTER_M,'1/4mi']];
 /* rival pace shapes (v0.3): some launch hard and fade, some sleep off
@@ -1263,7 +1440,7 @@ function stepCar(c,dt,now){
        engine all wind down together because they read this same v. */
     c.throttle=0;
     if(c.nitroT>0) c.nitroT-=dt;
-    const a=-DRAG_C*c.dragMult*c.v*c.v-(c.v>0.01?ROLL_R:0)-3.4;
+    const a=-DRAG_C*c.dragMult*c.v*c.v-(c.v>0.01?ROLL_R:0)-3.4-(c.chuteBrake||0); /* the chute hauls the roll-out down — post-finish only */
     c.v=Math.max(0,c.v+a*dt);
     c.dist+=c.v*dt;
     let rpm=rpmForC(c,c.gear);
@@ -1274,19 +1451,26 @@ function stepCar(c,dt,now){
   const gear=c.gear, rpmC=rpmForC(c,gear);
   let force=0;
   if(c.throttle>0){
-    if(rpmC<LIMITER){
-      force=c.throttle*c.power*c.powerMult*c.forceMult*FORCE_K*RATIOS[gear]*(gear===0?c.launchMult:(gear===4?c.topMult:1))*c.driveMult*torqueFactor(Math.max(rpmC,c.slip>0?4300:0))*c.exhMult*c.tuneMult*c.stackMult;
-      if(c.nitroT>0) force*=c.nitroMult;
-      if(c.shiftCut>0) force*=Math.max(c.cutKeep,c.tuneKeep||0);   /* flat-shift / tune: power carried through the shift */
+    if(rpmC<LIMITER*(c.limMult||1)){
+      force=c.throttle*c.power*c.powerMult*c.forceMult*FORCE_K*RATIOS[gear]*(gear===0?c.launchMult:(gear===4?Math.max(c.topMult,0.80):1))*c.driveMult*torqueFactor(Math.max(rpmC,c.slip>0?4300:0))*c.exhMult*c.tuneMult*c.stackMult*(c.turboMult||1)*(c.icMult||1)*(c.ecuMult||1)*(c.drive2Mult||1)*(c.chassisMult||1);
+      if(c.nitroT>0) force*=c.nitroMult*(c.methMult||1);   /* methanol makes the shot hit harder */
+      if(c.shiftCut>0) force*=Math.max(c.cutKeep,c.tuneKeep||0,c.ecuKeep||0);   /* flat-shift / tune / ECU: power carried through the shift */
       if(gear===0) force*=c.biteMult;      /* slicks: grip is what lets the launch use power */
       if(gear===0) force*=c.suspMult;      /* suspension: weight transfer plants the rear */
       else if(gear===1) force*=1+((c.suspMult||1)-1)*0.5;
     }
   }
+  /* THE WHEELIE (v0.4): past launchPower 8.0 — deep in the record
+     chase, far past drag spec — an unbarred car stands the front end up for
+     the first 45 m and throws the launch away (10% force, nose in the
+     air). The WHEELIE BAR, last part in the shop, is the only cure.
+     Stock and every v0.3 build sit far under the threshold. */
+  c.wheelieNow=false;
+  if(gear===0&&c.throttle>0&&!c.wheelieBar&&(c.launchPower||1)>8.0&&c.dist<45){ force*=0.10; c.wheelieNow=true; }
   if(c.shiftCut>0) c.shiftCut-=dt;
   if(c.nitroT>0) c.nitroT-=dt;
   let a=force-DRAG_C*c.dragMult*c.v*c.v-(c.v>0.01?ROLL_R:0);
-  if(c.slip>0){ a*=Math.min(0.995,c.slipGrip+(c.suspGrip||0)); c.slip-=dt; }
+  if(c.slip>0){ a*=Math.min(0.995,c.slipGrip+(c.suspGrip||0)+(c.chassisGrip||0)); c.slip-=dt; }
   c.v=Math.max(0,c.v+a*dt);
   c.dist+=c.v*dt;
   /* display rpm: coupled to speed, with launch slip flare */
@@ -1324,6 +1508,7 @@ function showScreen(name){
   ['title','garage','race','result','how'].forEach(n=>$('scr-'+n).classList.toggle('on',n===name));
   if(name==='garage') renderGarage();
   if(name==='title') renderTitleStats();
+  if(name==='title'||name==='garage') applyVenue(false); /* the street is home */
 }
 function banner(txt,cls,ms){
   const b=$('banner'); b.textContent=txt; b.className='show '+(cls||'');
@@ -1341,18 +1526,22 @@ function setPovHide(hidden){
 }
 function startRollin(){ if(S.phase!=='burnout') return; S.phase='rollin'; S.rollT=0; }
 function startRace(rival){
+  if(rival.needChute&&!(save.up.chute>0)){ showScreen('garage');
+    $('g-best').innerHTML='<b style="color:#FFB300">TECH INSPECTION:</b> Bonneville racers need a parachute fitted first — the twin-chute pack is in the parts shop below.';
+    return; }
   S.raceSeq=(S.raceSeq||0)+1;
   S.rival=rival; S.phase='burnout'; S.burnT=0; S.rollT=0; S.carBack=7; S.simTime=0; S.treeT=0; S.greenTime=null; S.rt=null;
   S.gasHeld=false; S.gasPressT=null; S.resultShown=false; treeFired={};
-  S.blown=false; S.overRev=0; S.nitroKick=0; S.crowdEx=0; S._finFaded=false; S.prevBest=save.bestET;
+  S.blown=false; S.overRev=0; S.nitroKick=0; S.crowdEx=0; S._finFaded=false; S.prevBest=save.bestET; S._wheelieWarned=false;
   S.camMode='burnout'; S.playerFinishAt=null; S.aiFinishAt=null; S.lastSplitIdx=0; S.accounted=false;
   camera.position.set(-5.0,1.5,-12.6); /* composed on the burnout box from frame one */
   S.player=newCarState(1.0, upParams(save.up));
-  S.ai=newCarState(rival.power*(0.988+Math.random()*0.024));
+  S.ai=newCarState(rival.power*(0.988+Math.random()*0.024), rival.up?upParams(rival.up):undefined); /* salt rivals run their own build specs — Scotty's is the drag-record build */
   S.aiRT=rival.rtBase+Math.random()*rival.rtVar; S.aiLaunchAt=null;
   /* rival car in its colors, with its own street mods */
   scene.remove(rivalCar); rivalCar=buildCar(rival.color,{halo:0xffd9a0,
-    blower:rival.blower, tireTier:rival.blower, wheelie:!!rival.wheelie||rival.id==='cole'});
+    blower:rival.blower, tireTier:rival.blower, wheelie:!!rival.wheelie||rival.id==='cole',
+    aero:rival.aero||0, turbo:rival.turbo||0, chute:rival.chute||0});
   rivalCar.position.set(2.05,0,-7); scene.add(rivalCar);
   playerCar.position.set(-2.05,0,-7); playerCar.rotation.set(0,0,0);
   setPovHide(false);
@@ -1360,6 +1549,7 @@ function startRace(rival){
   $('hud-rt').textContent='—.——'; $('hud-et').innerHTML='0.00<small>s</small>';
   $('gr-num').textContent='1'; banner('BURNOUT — TAP GAS TO SKIP','',0);
   $('prog-me').style.left='0%'; $('prog-opp').style.left='0%';
+  applyVenue(!!rival.needChute); /* the record chase runs on the salt */
   AudioX.init(); showScreen('race');
 }
 function fireTree(name){
@@ -1460,7 +1650,7 @@ function showResult(win,foul){
         ('<span style="color:#2BFF6A">+$25</span> show-up · $'+save.cash);
   $('res-note').textContent=S.blown?'You held it past the redline and the motor let go. DNF — no payout. Shift in the green and the motor lives.':
     foul?'You stomped the gas before green. The tree does not forgive.':
-    win?(r.id==='scotty'?'You beat BIG BODY SCOTTY. LADDER CHAMPION — the whole city says your name now.':(r.id==='cole'?'You beat the Kingpin. You run this town now.':'Clean win. The points are yours — the parts shop is open.')):
+    win?(r.id==='scotty'?'You beat BIG BODY SCOTTY — LADDER CHAMPION, and the drag racing record is yours. But out on the salt, bigger records are still standing. The chase is open.':(r.id==='cole'?'You beat the Kingpin. You run this town now.':'Clean win. The points are yours — the parts shop is open.')):
         'He got you by '+Math.abs((S.rt+p.finishTotal)-(S.aiRT+a.finishTotal)).toFixed(3)+'s. +25 show-up points. Beef the car up and run it back.';
   /* shop honesty, second half: the slip proves (or honestly denies)
      the gain the shop promised — measured against your previous best */
@@ -1474,6 +1664,19 @@ function showResult(win,foul){
     gr.style.display='';
     save.gainPending=false; storeSave();
   } else gr.style.display='none';
+  /* RECORD BROKEN check — a record is a speed, not a win: any clean
+     finished run that traps past a standing salt mark breaks it. The
+     drag record is the exception: it is Scotty's, taken by beating him. */
+  const rr=$('res-record'); let brokeTxt='';
+  if(!foul&&!S.blown&&p.finishTotal!==null){
+    const trapMph=p.trapV*2.23694;
+    if(win&&r.id==='scotty'&&!save.records.drag){ save.records.drag=+trapMph.toFixed(1);
+      brokeTxt='★ RECORD TAKEN — THE DRAG RACING RECORD (346.95 MPH) is yours. Scotty held it; now the board says your name.'; }
+    RECORDS.slice(1).forEach(rec=>{ if(!save.records[rec.id]&&trapMph>rec.mark){ save.records[rec.id]=+trapMph.toFixed(1);
+      brokeTxt+=(brokeTxt?'<br>':'')+'★ RECORD BROKEN — '+rec.name+': '+rec.mark+' MPH ('+rec.holder+') FALLS. Your new number: '+trapMph.toFixed(1)+' MPH.'; } });
+    if(brokeTxt) storeSave();
+  }
+  if(brokeTxt){ rr.style.display=''; rr.innerHTML=brokeTxt; } else rr.style.display='none';
   const idx=RIVALS.indexOf(r), nxt=RIVALS[idx+1];
   $('btn-next').style.display=(!foul&&win&&nxt)?'':'none';
   if(nxt) $('btn-next').textContent='Next: '+nxt.name+' →';
@@ -1486,10 +1689,11 @@ function showResult(win,foul){
 function renderTitleStats(){
   $('title-stats').innerHTML='Street points <b>$'+save.cash+'</b> · Record <b>'+save.wins+'W – '+save.losses+'L</b>'+
     (save.bestET?' · Best ET <b>'+save.bestET.toFixed(3)+'s</b>':'')+
-    (save.champion?' · <b style="color:#FFD75E">★ LADDER CHAMPION</b>':'');
+    (save.champion?' · <b style="color:#FFD75E">★ LADDER CHAMPION</b>':'')+
+    (save.records&&save.records.lsr?' · <b style="color:#FFD75E">★ LAND SPEED RECORD HOLDER</b>':(save.records&&save.records.drag?' · <b style="color:#FFD75E">★ DRAG RACING RECORD HOLDER</b>':''));
 }
-function pips(tier){
-  let s=''; for(let i=0;i<3;i++) s+= i<tier?'●':'<span class="off">●</span>';
+function pips(tier,max){
+  let s=''; for(let i=0;i<max;i++) s+= i<tier?'●':'<span class="off">●</span>';
   return s;
 }
 function renderGarage(){
@@ -1501,35 +1705,45 @@ function renderGarage(){
   $('g-build').innerHTML=(save.champion?'<b style="color:#FFD75E">★ LADDER CHAMPION</b> — ':'')+'YOUR BUILD — ' + PARTS.map(p=>{
     const t=save.up[p.id];
     return p.name.split(' — ')[0]+' <b>'+(t===0?'stock':'tier '+t)+'</b>'; }).join(' · ');
+  const rb=$('record-board');
+  rb.innerHTML='<div class="recboard">'+RECORDS.map(rec=>{
+    const mine=save.records[rec.id];
+    return '<div class="rec"><div><span class="rn">'+rec.name+'</span><br><span class="rm">'+rec.mark+' MPH — '+rec.sub+'</span></div>'+
+      (mine? '<div class="rs">★ YOURS — '+mine+' MPH</div>' : '<div class="rs standing">STANDING — '+rec.holder+'</div>')+'</div>';
+  }).join('')+'</div>';
   const list=$('rival-list'); list.innerHTML='';
   let lastLvl=null;
   RIVALS.forEach((r,idx)=>{
     if(r.lvl!==lastLvl){ lastLvl=r.lvl;
       const h=document.createElement('div'); h.className='lvlhdr'; h.textContent=r.lvl; list.appendChild(h); }
     const locked=idx>0&&!save.beaten[RIVALS[idx-1].id];
+    const chuteLock=!locked&&!!r.needChute&&!(save.up.chute>0);
     const b=document.createElement('button'); b.className='rival'+(save.beaten[r.id]?' beaten':'')+(locked?' locked':'');
     b.innerHTML='<div class="face" style="background:'+r.face+'">'+r.name[0]+'</div>'+
       '<div class="info"><div class="nm">'+r.name+' '+(save.beaten[r.id]?'<span class="beatentag">✓ BEATEN</span>':'')+
       '</div><div class="car">'+r.car+' · runs about '+r.etBase.toFixed(1)+'s</div><div class="rline">“'+r.line+'”</div></div>'+
       (locked? '<div class="pay"><b>🔒</b><span>BEAT '+RIVALS[idx-1].name.split(' ')[0].toUpperCase()+' FIRST</span><div class="diff '+r.dcls+'">'+r.diff+'</div></div>'
+             : chuteLock? '<div class="pay"><b>🔒</b><span>NEEDS TWIN CHUTE — TECH INSPECTION (IN THE SHOP)</span><div class="diff '+r.dcls+'">'+r.diff+'</div></div>'
              : '<div class="pay"><b>$'+r.pay+'</b><span>TO WINNER</span><div class="diff '+r.dcls+'">'+r.diff+'</div></div>');
-    if(locked){ b.disabled=true; }
+    if(locked||chuteLock){ b.disabled=true; }
     else b.addEventListener('click',()=>{ AudioX.init(); startRace(r); });
     list.appendChild(b);
   });
   const shop=$('shop-list'); shop.innerHTML='';
   PARTS.forEach(p=>{
-    const tier=save.up[p.id], maxed=tier>=3, price=maxed?null:p.prices[tier];
+    const tier=save.up[p.id], maxed=tier>=p.prices.length, price=maxed?null:p.prices[tier];
     const row=document.createElement('div'); row.className='part';
     row.innerHTML='<div class="pinfo"><div class="pnm">'+p.name+'</div>'+
-      '<div class="pips">'+pips(tier)+'</div>'+
-      '<div class="peff">'+(maxed?'MAXED OUT — '+p.eff[2]:'Next: '+p.eff[tier])+'<br>'+p.vis+'</div></div>';
+      '<div class="pips">'+pips(tier,p.prices.length)+'</div>'+
+      '<div class="peff">'+(maxed?'MAXED OUT — '+p.eff[p.eff.length-1]:(lockFor(p,tier+1)?'<span style="color:#FFD75E;font-weight:800">'+lockFor(p,tier+1)+'</span><br>Next: '+p.eff[tier]:'Next: '+p.eff[tier]))+'<br>'+p.vis+'</div></div>';
     const btn=document.createElement('button'); btn.className='buybtn';
     if(maxed){ btn.textContent='MAXED'; btn.disabled=true; }
+    else if(lockFor(p,tier+1)){ btn.textContent='🔒 LOCKED'; btn.disabled=true; }
     else { btn.textContent='BUY $'+price;
       if(save.cash<price){ btn.disabled=true; btn.textContent='NEED $'+price; }
       btn.addEventListener('click',()=>{
-        if(save.up[p.id]>=3||save.cash<p.prices[save.up[p.id]]) return;
+        if(lockFor(p,save.up[p.id]+1)) return; /* locked tiers refuse, even by script */
+        if(save.up[p.id]>=p.prices.length||save.cash<p.prices[save.up[p.id]]) return;
         save.cash-=p.prices[save.up[p.id]]; save.up[p.id]++; save.gainPending=true; storeSave();
         buildPlayerCar(); /* the mod appears on the car, live */
         AudioX.buy(); renderGarage();
@@ -1539,26 +1753,75 @@ function renderGarage(){
   });
 }
 
+/* ---------------- LOCKS (v0.4, Joshua 2026-11-19) ----------------
+   The grind has gates: parts and top tiers open as the ladder falls.
+   lockFor(part, tierBeingBought) returns the unlock condition text or
+   null. Owned tiers are grandfathered — a lock never takes a part
+   away, it only gates the next purchase. */
+const ORIG8_IDS=['engine','tires','gears','nitro','weight','exhaust','susp','fuel'];
+function lockFor(p,tier){
+  const b=(save&&save.beaten)||{}, rec=(save&&save.records)||{};
+  const beat=(id,label)=> b[id]?null:label;
+  if(p.id==='wheeliebar') return beat('scotty','🔒 LOCKED — beat BIG BODY SCOTTY to open the record chase');
+  if(p.id==='chute'){ if(tier===1) return beat('eddie','🔒 LOCKED — beat EDDIE “THE LEDGER” VOSS');
+    if(tier>=3) return beat('scotty','🔒 LOCKED — beat BIG BODY SCOTTY'); return null; }
+  if(tier===1){
+    if(p.id==='turbo'||p.id==='intercooler') return beat('cole','🔒 LOCKED — beat COLE “MATCHBOOK” REYES');
+    if(p.id==='ecu'||p.id==='fuelsys') return beat('delia','🔒 LOCKED — beat DELIA “DUCHESS” CROSS');
+    if(p.id==='drivetrain'||p.id==='chassis') return beat('rosa','🔒 LOCKED — beat ROSA “REDLINE” IBARRA');
+    if(p.id==='aero') return beat('vivian','🔒 LOCKED — beat VIVIAN “VELVET” KAINE');
+  }
+  if(ORIG8_IDS.includes(p.id)){
+    if(tier===4) return beat('hank','🔒 TIER 4 LOCKED — beat HANK “THE ANVIL” MARLOWE');
+    if(tier===5) return beat('eddie','🔒 TIER 5 LOCKED — beat EDDIE “THE LEDGER” VOSS');
+    return null;
+  }
+  /* the Bonneville parts, tiers 4-6 */
+  if(tier===4||tier===5) return beat('scotty','🔒 SUMMIT TWO GEAR — beat BIG BODY SCOTTY');
+  if(tier===6) return rec.w503?null:'🔒 LOCKED — break the 503 MPH record (fastest wheel-driven car)';
+  return null;
+}
+
 /* ---------------- INPUT — native touch first (the HC3 lesson) ---------------- */
 function bindHold(el,down,up){
-  let active=false;
-  const start=e=>{ e.preventDefault(); if(active) return; active=true; el.classList.add('held');
+  /* FORGIVING HOLD (Joshua, 2026-11-19): the hold is tracked by touch
+     identifier at the DOCUMENT level — the finger can drift anywhere,
+     slide off the pedal, stumble for a beat; throttle cuts only on a
+     clear release of that same touch (plus a 150 ms grace so a tiny
+     lift mid-run is not a cut). No mouseleave kill. */
+  let active=false, touchId=null, grace=null;
+  const start=e=>{ if(e.cancelable) e.preventDefault();
+    if(grace){ clearTimeout(grace); grace=null; }
+    if(active) return; active=true; el.classList.add('held');
+    if(e.changedTouches&&e.changedTouches[0]) touchId=e.changedTouches[0].identifier;
     (S.inputLog=S.inputLog||[]).push({el:el.id,via:e.type,phase:S.phase,simTime:S.simTime,seq:S.raceSeq||0}); down(); };
-  const end=e=>{ e.preventDefault(); if(!active) return; active=false; el.classList.remove('held'); if(up) up(); };
+  const release=()=>{ if(!active) return;
+    if(grace) clearTimeout(grace);
+    grace=setTimeout(()=>{ grace=null; active=false; touchId=null; el.classList.remove('held'); if(up) up(); },150); };
   el.addEventListener('touchstart',start,{passive:false});
-  el.addEventListener('touchend',end,{passive:false});
-  el.addEventListener('touchcancel',end,{passive:false});
   el.addEventListener('mousedown',start);
-  el.addEventListener('mouseup',end);
-  el.addEventListener('mouseleave',end);
+  const docEnd=e=>{ if(touchId===null) return;
+    for(const t of (e.changedTouches||[])) if(t.identifier===touchId) release(); };
+  document.addEventListener('touchend',docEnd,{passive:true});
+  document.addEventListener('touchcancel',docEnd,{passive:true});
+  document.addEventListener('mouseup',()=>{ if(touchId===null) release(); });
   el.addEventListener('contextmenu',e=>e.preventDefault());
 }
 function bindTap(el,fn){
-  el.addEventListener('touchstart',e=>{ e.preventDefault(); el.classList.add('held');
-    (S.inputLog=S.inputLog||[]).push({el:el.id,via:'touchstart',phase:S.phase,simTime:S.simTime,seq:S.raceSeq||0}); fn(); },{passive:false});
+  /* SENSITIVE TAP (Joshua, 2026-11-19): fires on touchstart AND
+     pointerdown AND mousedown — whichever lands first — with a 280 ms
+     dedupe so one physical tap can never fire twice (a double SHIFT
+     would skip a gear). The timing JUDGMENT is untouched; only the
+     registration got eager. */
+  let last=0;
+  const fire=via=>{ const now=performance.now(); if(now-last<280) return; last=now;
+    el.classList.add('held');
+    (S.inputLog=S.inputLog||[]).push({el:el.id,via:via,phase:S.phase,simTime:S.simTime,seq:S.raceSeq||0}); fn(); };
+  el.addEventListener('touchstart',e=>{ e.preventDefault(); fire('touchstart'); },{passive:false});
+  el.addEventListener('pointerdown',()=>fire('pointerdown'));
+  el.addEventListener('mousedown',()=>fire('mousedown'));
   el.addEventListener('touchend',e=>{ e.preventDefault(); el.classList.remove('held'); },{passive:false});
-  el.addEventListener('mousedown',e=>{ el.classList.add('held');
-    (S.inputLog=S.inputLog||[]).push({el:el.id,via:'mousedown',phase:S.phase,simTime:S.simTime,seq:S.raceSeq||0}); fn(); });
+  el.addEventListener('pointerup',()=>el.classList.remove('held'));
   el.addEventListener('mouseup',()=>el.classList.remove('held'));
   el.addEventListener('contextmenu',e=>e.preventDefault());
 }
@@ -1726,6 +1989,7 @@ function animate(){
             const arpm=rpmFor(a.v,a.gear);
             if(arpm>=S.rival.shiftRpm&&a.gear<4&&a.shiftCut<=0) doShiftCar(a,nowI);
           }
+          if(S.rival.up&&a.nitroLeft>0&&a.dist>=200&&a.finishTotal===null){ a.nitroLeft--; a.nitroT=a.nitroDur; } /* build-spec rivals (Bonneville + Scotty) fire their bottle at 200 m, like you do */
           a.forceMult=rivalShapeAt(S.rival.shape,a.dist);
           stepCar(a,sdt,nowI);
         }
@@ -1743,6 +2007,8 @@ function animate(){
           if(S._wisp<=0){ S._wisp=0.12; puff(playerCar.position.x,0.85,playerCar.position.z+0.9,2,0.5,0.9); } }
         if(S.overRev>=1.6) blowMotor();
       }
+      if(p.wheelieNow&&!S._wheelieWarned){ S._wheelieWarned=true;
+        banner('WHEELIE! FRONT END UP — the WHEELIE BAR (last part in the shop) plants this launch','foul',2200); }
       /* live HUD */
       if(p.launched&&p.finishTotal===null)
         $('hud-et').innerHTML=(S.simTime-p.launchT).toFixed(2)+'<small>s</small>';
@@ -1788,7 +2054,7 @@ function animate(){
     const c=i===0?pp:S.ai, dist=inRace?(c?c.dist:0):0;
     const last=car.userData.lastDist||0, dd=dist-last; car.userData.lastDist=dist;
     if(Math.abs(dd)<5) car.userData.wheels.forEach(w=>{ w.rotation.x+=dd/0.38; });
-    const target=(c&&c.launched&&c.throttle>0&&c.finishTotal===null)?-0.008-((c.nitroT>0)?0.016:0):0;
+    const target=(c&&c.wheelieNow)?-0.34:((c&&c.launched&&c.throttle>0&&c.finishTotal===null)?-0.008-((c.nitroT>0)?0.016:0):0); /* wheelieNow: the nose stands UP */
     car.rotation.x+=(target-car.rotation.x)*Math.min(1,dt*6);
     car.position.z=dist-((S.screen==='race')?(S.carBack||0):0);
     stepFlames(car,c,dt);
