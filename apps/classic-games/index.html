@@ -56,6 +56,22 @@
   @media (hover:hover){ .game:hover{border-color:var(--eb);box-shadow:0 10px 26px rgba(0,0,0,.5),0 0 16px rgba(0,150,255,.22)} }
   .game:focus-visible{outline:2px solid var(--eb);outline-offset:2px}
   .go{box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 4px 12px rgba(0,150,255,.30)}
+  /* ---- No-scroll pass 2026-11-19: all four games + the pack download
+     reachable on the first screen; the How-to and offline panels below
+     are reading content, not controls. ---- */
+  body{padding-top:.7rem}
+  .chrome-text{font-size:clamp(1.55rem,8vw,2.2rem)}
+  .sub{margin-top:.25rem;font-size:.92rem}
+  .promises{margin:.55rem 0 .75rem;gap:.35rem .5rem}
+  .promises span{padding:.3rem .62rem;font-size:.78rem}
+  .game{gap:.8rem;padding:.68rem .8rem;margin-top:.6rem;min-height:0}
+  .glyph{width:52px;height:52px;font-size:1.6rem;border-radius:12px}
+  .g-main h2{font-size:1.13rem}
+  .g-main p{font-size:.87rem;line-height:1.35;margin-top:.12rem;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .go{padding:.62rem .8rem;min-height:46px;font-size:.9rem}
+  .dlbar{display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;
+    margin-top:.6rem;text-decoration:none}
 </style>
 </head>
 <body>
@@ -105,6 +121,8 @@
     </span>
     <span class="go">Play →</span>
   </a>
+
+  <a class="go dlbar" href="https://digitaldollarstore.org/downloads/classic-games-pack.zip" download>⬇ Download the pack (zip · 52 KB) — play offline</a>
 
   <div class="howto">
     <h2>How to play</h2>
