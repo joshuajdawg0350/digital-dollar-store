@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Funny Maps — Right directions. Funny voices.</title>
 <link rel="stylesheet" href="vendor/leaflet.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0096FF">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Funny Maps">
 <style>
   :root{
     --bg:#04060a; --panel:rgba(8,13,20,.96); --panel2:rgba(13,20,30,.94);
@@ -2056,6 +2065,16 @@ if (isQA){
     });
   }
 })();
+</script>
+<script>
+/* PWA: register the app-shell service worker (this folder only). The app
+   works fully without it — this just lets Funny Maps install like a real
+   app and reopen offline. */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js').catch(function () { /* no worker, no problem */ });
+  });
+}
 </script>
 </body>
 </html>
