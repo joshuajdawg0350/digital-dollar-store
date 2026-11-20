@@ -42,19 +42,22 @@
   /* ---------- the table ---------- */
   .table{ position:relative; border:1px solid #000; border-radius:20px; padding:13px 13px 15px;
     background:
-      radial-gradient(115% 95% at 50% -5%, rgba(0,150,255,.16) 0%, rgba(0,150,255,0) 52%),
-      radial-gradient(75% 60% at 50% 47%, rgba(0,110,220,.13) 0%, rgba(0,110,220,0) 70%),
-      repeating-linear-gradient(0deg, rgba(255,255,255,.014) 0 2px, rgba(0,0,0,.014) 2px 4px),
-      radial-gradient(125% 135% at 50% 0%, #132c47 0%, #0a1a2c 55%, #060d16 100%);
+      radial-gradient(58% 40% at 50% -4%, rgba(96,165,255,.26) 0%, rgba(96,165,255,0) 62%),
+      radial-gradient(36% 15% at 22% 10%, rgba(190,215,245,.09) 0%, rgba(190,215,245,0) 70%),
+      radial-gradient(32% 13% at 79% 16%, rgba(190,215,245,.07) 0%, rgba(190,215,245,0) 70%),
+      radial-gradient(46% 18% at 58% 30%, rgba(170,200,240,.05) 0%, rgba(170,200,240,0) 70%),
+      repeating-linear-gradient(0deg, rgba(255,255,255,.014) 0 2px, rgba(0,0,0,.016) 2px 4px),
+      linear-gradient(180deg, rgba(0,0,0,0) 52%, rgba(0,0,0,.42) 100%),
+      radial-gradient(120% 105% at 50% 18%, #1d4f34 0%, #0e3520 40%, #062315 68%, #010b04 100%);
     box-shadow:
-      inset 0 0 0 2px rgba(195,204,214,.22),
-      inset 0 0 48px rgba(0,0,0,.62),
-      0 0 0 4px #11161d,
-      0 0 0 6px #7e8a99,
-      0 0 0 8px #39424e,
-      0 0 0 9px #98a4b3,
-      0 12px 34px rgba(0,0,0,.65),
-      0 0 46px rgba(0,150,255,.15); }
+      inset 0 0 0 2px rgba(0,0,0,.55),
+      inset 0 0 80px rgba(0,0,0,.88),
+      inset 0 18px 34px rgba(0,0,0,.55),
+      0 0 0 5px #2a1a10,
+      0 0 0 7px #97a3b2,
+      0 0 0 9px #120b06,
+      0 14px 38px rgba(0,0,0,.75),
+      0 0 52px rgba(0,120,255,.13); }
   .hud{ display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:.86rem; color:var(--muted); margin-bottom:10px; padding-bottom:7px; border-bottom:1px solid rgba(195,204,214,.13); }
   .hud .handno{ font-weight:800; color:#e6eef7; letter-spacing:.5px; text-shadow:0 0 10px rgba(0,150,255,.35); }
   .hud .blinds{ white-space:nowrap; }
@@ -73,31 +76,39 @@
   .avatar.big{ width:66px; height:66px; flex:0 0 66px; }
   .cards{ display:flex; gap:6px; margin-left:auto; }
   @keyframes dealIn{ from{ opacity:0; transform:translateY(-7px) scale(.93); } to{ opacity:1; transform:translateY(0) scale(1); } }
-  .card{ width:47px; height:66px; border-radius:8px; background:linear-gradient(165deg,#ffffff 0%,#eef2f7 58%,#ccd7e3 100%); color:#131a24; position:relative; flex:0 0 auto;
-    box-shadow:inset 0 0 0 1px #9fb0c2, inset 0 0 0 3px #ffffff, inset 0 0 0 4px rgba(23,43,69,.16), 0 3px 8px rgba(0,0,0,.62);
+  .card{ width:47px; height:66px; border-radius:8px; background:linear-gradient(165deg,#fffef9 0%,#faf3e1 55%,#eadfc6 100%); color:#1b2431; position:relative; flex:0 0 auto;
+    box-shadow:inset 0 0 0 1px #b7a77f, inset 0 0 0 3px #fffdf4, inset 0 0 0 4px rgba(90,70,30,.18), 0 4px 10px rgba(0,0,0,.75);
     font-weight:800; animation:dealIn .22s ease-out; }
   .card .cnr{ position:absolute; top:3px; left:4px; display:flex; flex-direction:column; align-items:center; line-height:.92; }
   .card .cnr .r{ font-size:.98rem; font-weight:900; }
   .card .cnr .s{ font-size:.78rem; }
   .card .cnr.br{ top:auto; left:auto; bottom:3px; right:4px; transform:rotate(180deg); }
-  .card .pip{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:1.5rem; }
-  .card .pip.ace{ font-size:2.15rem; }
-  .card .court{ position:absolute; top:14px; bottom:14px; left:8px; right:8px; border:1.5px solid currentColor; border-radius:5px;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    background:linear-gradient(180deg, rgba(0,150,255,.12), rgba(0,0,0,.04) 60%); box-shadow:inset 0 0 0 2px rgba(255,255,255,.65); }
-  .card .courtR{ font-family:Georgia,'Times New Roman',serif; font-size:1.28rem; font-weight:700; line-height:1; }
-  .card .courtS{ font-size:.8rem; line-height:1; margin-top:1px; }
-  .card.red{ color:#c81e2b; }
-  .card.red .court{ background:linear-gradient(180deg, rgba(200,30,43,.10), rgba(0,0,0,.03) 60%); }
-  .card.back{ background:repeating-linear-gradient(45deg,#0e3157 0 5px,#081c33 5px 10px); border:2px solid #c3ccd6;
-    box-shadow:inset 0 0 0 2px #05080e, inset 0 0 0 4px rgba(195,204,214,.45), 0 3px 8px rgba(0,0,0,.62);
+  .card .pips{ position:absolute; inset:0; }
+  .card .pips i{ position:absolute; transform:translate(-50%,-50%); font-style:normal; font-size:.95rem; line-height:1; }
+  .card .pips i.fl{ transform:translate(-50%,-50%) rotate(180deg); }
+  .card .acewrap{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+  .card .acewrap:before{ content:''; position:absolute; width:33px; height:33px; border:1.5px solid currentColor; border-radius:50%; opacity:.45; }
+  .card .acewrap:after{ content:''; position:absolute; width:39px; height:39px; border:1px solid currentColor; border-radius:50%; opacity:.22; }
+  .card .acepip{ font-size:2.2rem; position:relative; line-height:1; }
+  .card .court{ position:absolute; top:12px; bottom:12px; left:6px; right:6px; border-radius:5px; overflow:hidden; background:#f7ecd2;
+    box-shadow:inset 0 0 0 1.5px #b08a3e, inset 0 0 0 3px rgba(255,253,244,.65); }
+  .card .court svg{ width:100%; height:100%; display:block; }
+  .card.red{ color:#a5121f; }
+  .card.back{ background:
+      radial-gradient(90% 70% at 50% 28%, rgba(70,130,200,.20) 0%, rgba(0,0,0,0) 60%),
+      repeating-linear-gradient(45deg, rgba(168,198,232,.13) 0 1.5px, rgba(0,0,0,0) 1.5px 8px),
+      repeating-linear-gradient(-45deg, rgba(168,198,232,.13) 0 1.5px, rgba(0,0,0,0) 1.5px 8px),
+      linear-gradient(160deg,#16283f 0%,#0a1626 55%,#050b14 100%);
+    border:2px solid #c3ccd6;
+    box-shadow:inset 0 0 0 2px #04080f, inset 0 0 0 4px rgba(195,204,214,.45), inset 0 0 18px rgba(0,0,0,.6), 0 4px 10px rgba(0,0,0,.75);
     display:flex; align-items:center; justify-content:center; }
-  .card.back .emblem{ width:27px; height:27px; border-radius:50%; border:1.5px solid #d7dee7; flex:0 0 27px;
-    background:radial-gradient(circle at 50% 35%, #123c68, #050d18 78%); color:#eaf3ff;
-    display:flex; align-items:center; justify-content:center; font-size:.95rem; text-shadow:0 0 7px rgba(0,150,255,.95); box-shadow:0 0 9px rgba(0,150,255,.4); }
+  .card.back .emblem{ width:25px; height:25px; transform:rotate(45deg); border:1.5px solid #d7dee7; flex:0 0 25px;
+    background:radial-gradient(circle at 50% 35%, #173d66, #050d18 80%);
+    display:flex; align-items:center; justify-content:center; box-shadow:0 0 10px rgba(0,150,255,.45); }
+  .card.back .emblem i{ transform:rotate(-45deg); font-style:normal; color:#dceeff; font-size:.92rem; line-height:1; text-shadow:0 0 7px rgba(0,150,255,.95); }
   .card.empty{ background:rgba(255,255,255,.03); border:1.5px dashed #33506e; box-shadow:inset 0 0 14px rgba(0,0,0,.35); animation:none; }
   .boardrow{ display:flex; align-items:center; gap:6px; margin:12px 0 4px; padding:3px 2px; border-radius:12px;
-    background:radial-gradient(65% 140% at 40% 50%, rgba(0,150,255,.10), rgba(0,150,255,0) 72%); }
+    background:radial-gradient(68% 150% at 42% 50%, rgba(0,0,0,.34), rgba(0,0,0,0) 72%); }
   .board{ display:flex; gap:6px; }
   .potbox{ margin-left:auto; text-align:right; }
   .potbox .potlab{ font-size:.7rem; letter-spacing:1.5px; color:var(--blue-hi); font-weight:700; }
@@ -169,6 +180,27 @@
     .seat .who{ min-width:76px; }
     h1{ font-size:1.65rem; }
   }
+
+  /* ---------- round 2 scene: Joshua's poker-room photo ---------- */
+  body{ position:relative; }
+  body::before{ content:''; position:fixed; inset:0; z-index:-1;
+    background:
+      linear-gradient(180deg, rgba(3,6,10,.40) 0%, rgba(3,6,10,.64) 46%, rgba(3,6,10,.88) 100%),
+      url('backdrop.webp') center 22% / cover no-repeat #04070b; }
+  h1, .sub, footer{ text-shadow:0 1px 8px rgba(0,0,0,.85), 0 0 2px rgba(0,0,0,.9); }
+  h1{ filter:drop-shadow(0 2px 5px rgba(0,0,0,.95)); }
+  .howto{ background:rgba(13,18,25,.94); }
+  .stackart{ flex:0 0 auto; filter:drop-shadow(0 3px 4px rgba(0,0,0,.55)); }
+  .stackart.tall{ width:46px; height:66px; }
+  .stackart.mid{ width:40px; height:44px; }
+  .stackart.pot{ width:38px; height:31px; display:block; margin:0 0 2px auto; }
+  @media (max-width:380px){
+    .stackart.tall{ width:38px; height:54px; }
+    .stackart.mid{ width:33px; height:36px; }
+    .stackart.pot{ width:33px; height:27px; }
+    .card .court{ top:10px; bottom:10px; left:5px; right:5px; }
+    .card .acepip{ font-size:1.95rem; }
+  }
 </style>
 </head>
 <body>
@@ -198,6 +230,46 @@
   <rect x="9.5" y="20" width="45" height="4.8" rx="2.4" fill="url(#botChrome)" stroke="#2c333d" stroke-width=".7"/>
   <circle cx="32" cy="7.6" r="2.3" fill="#0096FF" stroke="#dff2ff" stroke-width=".7"/>
 </symbol>
+<linearGradient id="chromeSide" x1="0" y1="0" x2="1" y2="0">
+  <stop offset="0" stop-color="#59626e"/><stop offset=".18" stop-color="#d7dee7"/><stop offset=".42" stop-color="#79858f"/><stop offset=".62" stop-color="#eef2f7"/><stop offset=".82" stop-color="#6a7582"/><stop offset="1" stop-color="#333b45"/>
+</linearGradient>
+<radialGradient id="chipTopG" cx=".5" cy=".38" r=".85">
+  <stop offset="0" stop-color="#54687f"/><stop offset=".7" stop-color="#22314a"/><stop offset="1" stop-color="#101a29"/>
+</radialGradient>
+<pattern id="chipRidge" width="4" height="4" patternUnits="userSpaceOnUse">
+  <rect width="4" height="1.6" fill="rgba(255,255,255,.30)"/>
+  <rect y="2" width="4" height="2" fill="rgba(0,0,0,.34)"/>
+</pattern>
+<symbol id="stackTall" viewBox="0 0 64 92">
+  <ellipse cx="32" cy="85" rx="25" ry="6" fill="rgba(0,0,0,.5)"/>
+  <ellipse cx="32" cy="80" rx="24" ry="7.5" fill="#454f5a"/>
+  <rect x="8" y="14" width="48" height="66" fill="url(#chromeSide)"/>
+  <rect x="8" y="14" width="48" height="66" fill="url(#chipRidge)"/>
+  <ellipse cx="32" cy="14" rx="24" ry="8" fill="url(#chipTopG)"/>
+  <ellipse cx="32" cy="14" rx="24" ry="8" fill="none" stroke="#e6edf5" stroke-width="3.4" stroke-dasharray="6.5 4.6"/>
+  <ellipse cx="32" cy="14" rx="12.5" ry="4.4" fill="#0b1523" stroke="rgba(140,180,230,.45)" stroke-width=".8"/>
+  <circle cx="32" cy="14" r="2.1" fill="#5db9ff"/>
+</symbol>
+<symbol id="stackMid" viewBox="0 0 64 70">
+  <ellipse cx="32" cy="63" rx="25" ry="6" fill="rgba(0,0,0,.5)"/>
+  <ellipse cx="32" cy="58" rx="24" ry="7.5" fill="#454f5a"/>
+  <rect x="8" y="14" width="48" height="44" fill="url(#chromeSide)"/>
+  <rect x="8" y="14" width="48" height="44" fill="url(#chipRidge)"/>
+  <ellipse cx="32" cy="14" rx="24" ry="8" fill="url(#chipTopG)"/>
+  <ellipse cx="32" cy="14" rx="24" ry="8" fill="none" stroke="#e6edf5" stroke-width="3.4" stroke-dasharray="6.5 4.6"/>
+  <ellipse cx="32" cy="14" rx="12.5" ry="4.4" fill="#0b1523" stroke="rgba(140,180,230,.45)" stroke-width=".8"/>
+  <circle cx="32" cy="14" r="2.1" fill="#5db9ff"/>
+</symbol>
+<symbol id="stackPot" viewBox="0 0 64 52">
+  <ellipse cx="32" cy="45" rx="25" ry="6" fill="rgba(0,0,0,.5)"/>
+  <ellipse cx="32" cy="40" rx="24" ry="7.5" fill="#454f5a"/>
+  <rect x="8" y="14" width="48" height="26" fill="url(#chromeSide)"/>
+  <rect x="8" y="14" width="48" height="26" fill="url(#chipRidge)"/>
+  <ellipse cx="32" cy="14" rx="24" ry="8" fill="url(#chipTopG)"/>
+  <ellipse cx="32" cy="14" rx="24" ry="8" fill="none" stroke="#e6edf5" stroke-width="3.4" stroke-dasharray="6.5 4.6"/>
+  <ellipse cx="32" cy="14" rx="12.5" ry="4.4" fill="#0b1523" stroke="rgba(140,180,230,.45)" stroke-width=".8"/>
+  <circle cx="32" cy="14" r="2.1" fill="#5db9ff"/>
+</symbol>
 </defs></svg>
 <div class="wrap">
   <div class="topbar">
@@ -225,18 +297,20 @@
     <div class="seat">
       <div class="avatar" aria-hidden="true"><svg viewBox="5 3 54 54"><use href="#midasBot"/></svg></div>
       <div class="who"><div class="name"><span class="chrome">Midas</span> <span class="tag">HOUSE</span></div><div class="stack" id="midasStack">1,000</div></div>
+      <svg class="stackart tall" viewBox="0 0 64 92" aria-hidden="true"><use href="#stackTall"/></svg>
       <div class="cards" id="midasCards"></div>
     </div>
 
     <div class="boardrow">
       <div class="board" id="board"></div>
-      <div class="potbox"><div class="potlab">POT</div><div class="pot" id="pot">0</div></div>
+      <div class="potbox"><svg class="stackart pot" viewBox="0 0 64 52" aria-hidden="true"><use href="#stackPot"/></svg><div class="potlab">POT</div><div class="pot" id="pot">0</div></div>
     </div>
     <div class="street" id="street"></div>
 
     <div class="seat" style="margin-top:6px">
       <div class="avatar you" aria-hidden="true">♠</div>
       <div class="who" style="min-width:86px"><div class="name">You <span class="tag" id="btnTag" hidden>BUTTON</span></div><div class="stack" id="yourStack">1,000</div></div>
+      <svg class="stackart mid" viewBox="0 0 64 70" aria-hidden="true"><use href="#stackMid"/></svg>
       <div class="cards" id="yourCards"></div>
     </div>
 
@@ -521,13 +595,62 @@ function fmt(n){ return n.toLocaleString("en-US"); }
 /* ---------------- rendering ---------------- */
 function $(id){ return document.getElementById(id); }
 function cardHTML(c, faceDown){
-  if(faceDown) return '<div class="card back" aria-label="face down"><span class="emblem">♠</span></div>';
+  if(faceDown) return '<div class="card back" aria-label="face down"><span class="emblem"><i>\u2660</i></span></div>';
   if(!c) return '<div class="card empty"></div>';
   var red = (c.s===1 || c.s===2) ? " red" : "";
   var suit = SUIT_CH[c.s], center;
-  if(c.r === 14) center = '<span class="pip ace">' + suit + '</span>';
-  else if(c.r >= 11) center = '<span class="court"><span class="courtR">' + rankName(c.r) + '</span><span class="courtS">' + suit + '</span></span>';
-  else center = '<span class="pip">' + suit + '</span>';
+  if(c.r === 14){
+    center = '<span class="acewrap"><span class="acepip">' + suit + '</span></span>';
+  } else if(c.r >= 11){
+    var robe = red ? '#a31621' : '#1d3a5f', robe2 = red ? '#670d16' : '#101f36';
+    var gold = '#d9a441', goldD = '#8a6d1f', skin = '#f0c48f';
+    var uid = 'ct' + c.r + 'x' + c.s, t = '';
+    t += '<path d="M30,72 L36,46 Q50,38 64,46 L70,72 Z" fill="' + robe + '"/>';
+    t += '<path d="M38,45 Q50,52 62,45 L62,50.5 Q50,57.5 38,50.5 Z" fill="' + gold + '" opacity=".9"/>';
+    t += '<path d="M50,41 L50,72" stroke="' + gold + '" stroke-width="2"/>';
+    t += '<text x="50" y="66.5" font-size="16" text-anchor="middle" fill="#f5d98b" font-family="Georgia,serif">' + suit + '</text>';
+    t += '<rect x="46.4" y="30" width="7.2" height="10" fill="' + skin + '"/>';
+    if(c.r === 12) t += '<ellipse cx="50" cy="26" rx="13.6" ry="13.5" fill="#8a5a22"/>';
+    t += '<ellipse cx="50" cy="25.5" rx="10" ry="11.5" fill="' + skin + '"/>';
+    t += '<circle cx="46.2" cy="24.5" r="1.15" fill="#232830"/><circle cx="53.8" cy="24.5" r="1.15" fill="#232830"/>';
+    t += '<path d="M46.8,32 Q50,34.2 53.2,32" stroke="#9c5a34" stroke-width="1.1" fill="none"/>';
+    if(c.r === 13){
+      t += '<path d="M39.5,29 Q41,44 50,45.5 Q59,44 60.5,29 Q57,37.5 50,38.2 Q43,37.5 39.5,29 Z" fill="#ddd6c4"/>';
+      t += '<path d="M35,15 L37.5,3.5 L44,9.5 L50,1.5 L56,9.5 L62.5,3.5 L65,15 Z" fill="' + gold + '" stroke="' + goldD + '" stroke-width=".8"/>';
+      t += '<rect x="35" y="15" width="30" height="3.4" fill="#c1912f"/>';
+      t += '<circle cx="50" cy="11.5" r="1.8" fill="' + (red ? '#a31621' : '#1d3a5f') + '"/>';
+      t += '<rect x="85" y="8" width="3.2" height="35" fill="#ccd6e2" stroke="#7e8a99" stroke-width=".6"/>';
+      t += '<path d="M85,8 L86.6,2.5 L88.2,8 Z" fill="#ccd6e2"/>';
+      t += '<rect x="81.4" y="42.5" width="10.4" height="3" rx="1.4" fill="#c1912f"/>';
+    } else if(c.r === 12){
+      t += '<circle cx="37.6" cy="35" r="3" fill="#8a5a22"/><circle cx="62.4" cy="35" r="3" fill="#8a5a22"/>';
+      t += '<rect x="38" y="11.5" width="24" height="4.6" rx="2.3" fill="' + gold + '" stroke="' + goldD + '" stroke-width=".7"/>';
+      t += '<circle cx="41" cy="9" r="2.5" fill="' + gold + '" stroke="' + goldD + '" stroke-width=".6"/><circle cx="50" cy="7" r="2.7" fill="' + gold + '" stroke="' + goldD + '" stroke-width=".6"/><circle cx="59" cy="9" r="2.5" fill="' + gold + '" stroke="' + goldD + '" stroke-width=".6"/>';
+      t += '<path d="M85,44 L83,28" stroke="#3f7a3a" stroke-width="1.8"/>';
+      t += '<circle cx="83" cy="17.6" r="2.5" fill="#d96a85"/><circle cx="87.2" cy="20.6" r="2.5" fill="#d96a85"/><circle cx="85.6" cy="25.6" r="2.5" fill="#d96a85"/><circle cx="80.4" cy="25.6" r="2.5" fill="#d96a85"/><circle cx="78.8" cy="20.6" r="2.5" fill="#d96a85"/>';
+      t += '<circle cx="83" cy="21.6" r="1.7" fill="' + gold + '"/>';
+    } else {
+      t += '<rect x="38.8" y="19" width="3.4" height="11" fill="#5a3a1a"/><rect x="57.8" y="19" width="3.4" height="11" fill="#5a3a1a"/>';
+      t += '<path d="M36,16.5 Q38,4 50,4 Q62,4 64,16.5 L64,19.5 L36,19.5 Z" fill="' + robe2 + '"/>';
+      t += '<rect x="36" y="16.5" width="28" height="3" fill="' + gold + '"/>';
+      t += '<path d="M62,9 Q70,2.5 72.5,4.5 Q68.5,10.5 63.5,12.5 Z" fill="' + gold + '"/>';
+      t += '<path d="M84,45 L77,11" stroke="#7a5a28" stroke-width="2.2"/>';
+      t += '<path d="M77,11 L84.5,4.5 L83.5,15.5 L76.5,16.5 Z" fill="#ccd6e2" stroke="#7e8a99" stroke-width=".6"/>';
+    }
+    center = '<span class="court"><svg viewBox="0 0 100 144" aria-hidden="true">'
+      + '<rect x="1.5" y="1.5" width="97" height="141" rx="7" fill="#f7ecd2"/>'
+      + '<rect x="4.5" y="4.5" width="91" height="135" rx="5" fill="none" stroke="#b08a3e" stroke-width="1.4"/>'
+      + '<g transform="translate(-12.5 -18) scale(1.25)"><g id="' + uid + '">' + t + '</g>'
+      + '<use href="#' + uid + '" transform="matrix(1 0 0 -1 0 144)"/></g>'
+      + '</svg></span>';
+  } else {
+    var PIPS = {2:[[50,15],[50,85]],3:[[50,15],[50,50],[50,85]],4:[[20,15],[80,15],[20,85],[80,85]],5:[[20,15],[80,15],[50,50],[20,85],[80,85]],6:[[20,15],[80,15],[20,50],[80,50],[20,85],[80,85]],7:[[20,15],[80,15],[50,32],[20,50],[80,50],[20,85],[80,85]],8:[[20,15],[80,15],[50,32],[20,50],[80,50],[50,68],[20,85],[80,85]],9:[[20,15],[80,15],[20,38],[80,38],[50,50],[20,62],[80,62],[20,85],[80,85]],10:[[20,15],[80,15],[50,26],[20,38],[80,38],[20,62],[80,62],[50,74],[20,85],[80,85]]};
+    var pts = PIPS[c.r], ps = '';
+    for(var pi=0; pi<pts.length; pi++){
+      ps += '<i class="pp' + (pts[pi][1] > 50 ? ' fl' : '') + '" style="left:' + pts[pi][0] + '%;top:' + pts[pi][1] + '%">' + suit + '</i>';
+    }
+    center = '<span class="pips">' + ps + '</span>';
+  }
   var cnr = '<span class="cnr"><span class="r">' + rankName(c.r) + '</span><span class="s">' + suit + '</span></span>';
   return '<div class="card'+red+'" data-r="'+c.r+'" data-s="'+c.s+'">' + cnr + center + '<span class="cnr br"><span class="r">' + rankName(c.r) + '</span><span class="s">' + suit + '</span></span></div>';
 }
