@@ -152,7 +152,7 @@
   /* ---------- location pill / denied card / scroll fx ---------- */
   #locPill{position:absolute; top:10px; right:10px; z-index:950; background:var(--panel); border:1.5px solid var(--line);
     color:var(--txt); border-radius:999px; padding:9px 13px; font-size:13.5px; font-weight:700; cursor:pointer; max-width:78vw;}
-  body.navigating #locPill{top:224px;}
+  body.navigating #locPill{top:250px;} /* static fallback only — placePill() sets the exact offset under the banner while navigating */
   #locPill .dot{display:inline-block; width:9px; height:9px; border-radius:50%; background:var(--good); margin-right:6px;}
   #locPill.stale .dot{background:var(--warn);}
   #locPill.off .dot{background:#e5484d;}
@@ -804,6 +804,33 @@ function speakRecalc(firstInstr){
   if (funny && !isRegular()){ const g = pickLine(charKey, 'recalc'); if (g) speak(g, 'garnish'); }
 }
 
+/* ---------- character stings (map-select music) ----------
+   Selecting a character's map plays that character's short genre
+   clip (~5 seconds, original music). One slot per character; a
+   character with no entry stays silent — a pick is never guessed.
+   Dray's hip-hop sting is APPROVED by Joshua (2026-11-20). Bubba's
+   country pick (takes A/B/C) is still Joshua's call, so his slot is
+   deliberately EMPTY until he chooses. The Voice toggle mutes the
+   whole car, music included. A blocked or offline play attempt is
+   silence, never an error. */
+const STINGS = {
+  dre: 'audio/dray-hiphop-sting.mp3'
+};
+window.__stingLog = [];
+let stingAudio = null;
+function playSting(k){
+  const src = STINGS[k];
+  if (!src || !soundOn) return;
+  try {
+    if (!stingAudio) stingAudio = new Audio();
+    if (stingAudio.src !== new URL(src, location.href).href) stingAudio.src = src;
+    stingAudio.currentTime = 0;
+    const p = stingAudio.play();
+    if (p && p.catch) p.catch(() => {});
+    window.__stingLog.push({ char: k, src: src });
+  } catch(e) {}
+}
+
 /* ---------- routing ---------- */
 function buildEvents(steps){
   const evs = []; let acc = 0;
@@ -1058,6 +1085,7 @@ function endNav(){
   nav = null;
   $('banner').classList.remove('show'); $('sheet').classList.remove('hidden');
   document.body.classList.remove('navigating');
+  placePill();
 }
 function pointAt(dRoute){
   const target = (dRoute / route.distance) * route.geomTotal, cum = route.cum, cs = route.coords;
@@ -1085,6 +1113,7 @@ function updateBanner(){
   const remain = Math.max(0, route.distance - nav.traveled);
   const eta = route.duration * (remain / route.distance);
   $('etaLine').textContent = fmtDistShort(remain) + ' left · about ' + fmtDur(eta);
+  placePill();
 }
 function checkEvents(){
   if (!nav || !route) return;
@@ -1239,6 +1268,21 @@ function renderPos(latlng, heading, forceFollow){
 function setPill(state, txt){
   const p = $('locPill'); p.classList.remove('stale', 'off'); if (state !== 'live') p.classList.add(state);
   $('locPillTxt').textContent = txt;
+}
+/* While navigating, the location pill must sit BELOW the guidance
+   banner — never on top of it. The banner's height is not fixed (the
+   character chips wrap on narrow phones and the instruction line
+   wraps with long text; measured 247px at 390 wide, 267px at 360),
+   so a fixed CSS offset overlaps the banner's bottom row — at 360
+   wide it covered the End button's center and ate the tap. The pill
+   is placed from the banner's real height instead, every update. */
+function placePill(){
+  const pill = $('locPill'); if (!pill) return;
+  if (document.body.classList.contains('navigating') && $('banner').classList.contains('show')){
+    pill.style.top = ($('banner').offsetHeight + 10) + 'px';
+  } else {
+    pill.style.top = '';
+  }
 }
 function ingestPosition(pos){
   const c = pos.coords || pos;
@@ -1654,7 +1698,7 @@ function syncFunnyTog(){
 }
 async function setChar(k){
   if (!CHARS[k]) return;
-  charKey = k; renderPicker(); applyStyle(k);
+  charKey = k; playSting(k); renderPicker(); applyStyle(k);
   try { localStorage.setItem('fm-char', k); } catch(e) {}
   if ('speechSynthesis' in window){ speechSynthesis.cancel(); speechQ.length = 0; speaking = false; speechToken++; }
   if (route && !nav){ await fetchRoute(); }  /* Steve changes the route itself */
