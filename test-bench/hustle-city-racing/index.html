@@ -53,7 +53,7 @@
   .title-stats b{color:#fff}
   .legal{margin-top:10px;font-size:10.5px;color:#5F748C;letter-spacing:.05em}
   /* v0.3: HUD christmas tree — big, unmissable, readable from the seat */
-  #hudtree{position:absolute;top:292px;left:50%;transform:translateX(-50%) scale(.9);display:flex;flex-direction:column;gap:5px;align-items:center;background:linear-gradient(180deg,rgba(16,28,44,.88),rgba(4,7,12,.86));border:1px solid #2A435F;border-radius:14px;padding:9px 12px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:6;box-shadow:inset 0 1px 0 rgba(160,200,240,.18),0 10px 24px rgba(0,0,0,.5)}
+  #hudtree{position:absolute;top:70px;left:50%;transform:translateX(-50%) scale(.9);display:flex;flex-direction:column;gap:5px;align-items:center;background:linear-gradient(180deg,rgba(16,28,44,.88),rgba(4,7,12,.86));border:1px solid #2A435F;border-radius:14px;padding:9px 12px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:6;box-shadow:inset 0 1px 0 rgba(160,200,240,.18),0 10px 24px rgba(0,0,0,.5)}
   #hudtree.show{opacity:1}
   .ht-bulb{width:29px;height:29px;border-radius:50%;background:#12181f;border:2px solid #2a3644}
   .ht-bulb.stage.lit{background:#fff2b0;border-color:#fff2b0;box-shadow:0 0 20px #fff2b0}
@@ -180,7 +180,7 @@
   #splitflash{position:absolute;top:27%;left:0;right:0;text-align:center;font-size:clamp(17px,5.4vw,24px);font-weight:900;
     letter-spacing:.14em;color:var(--blue-hi);text-shadow:0 0 14px rgba(0,150,255,.8),0 2px 0 #000;opacity:0;transition:opacity .15s}
   #splitflash.show{opacity:1}
-  .hud-mid{display:flex;justify-content:center;margin-top:auto}
+  .hud-mid{display:flex;justify-content:flex-start;margin-top:auto;padding-left:12px}
   #tachwrap{pointer-events:none;width:min(54vw,264px);background:linear-gradient(180deg,rgba(24,39,60,.92),rgba(6,11,19,.95));border:1px solid #3A5A7E;border-radius:16px;padding:8px 12px 6px;
     box-shadow:inset 0 1px 0 rgba(170,205,245,.20),inset 0 0 24px rgba(0,0,0,.5),inset 0 0 18px rgba(0,150,255,.05),0 10px 24px rgba(0,0,0,.55)}
   #tach{width:100%;height:76px;display:block}
@@ -438,7 +438,7 @@ const RIVALS=[
   {id:'hank', name:'Hank “Hammer” Oduya', car:'’68 Sledge', color:0x4a5568, face:'#4a5568', etBase:8.2, rtBase:0.24, rtVar:0.10, power:1.4516, shiftRpm:7450, blower:3, pay:4600, diff:'OUTLAW', dcls:'d3', shape:'even', lvl:'LEVEL 3 — OUTLAW', line:'Subtle is a word he can’t spell. Fast is a word he can prove.'},
   {id:'vivian', name:'Vivian “Viper” Cross', car:'’72 Night Viper', color:0x1f6f43, face:'#1f6f43', etBase:8.3, rtBase:0.22, rtVar:0.09, power:1.421, shiftRpm:7450, blower:3, pay:5600, diff:'KINGS ROW', dcls:'d3', shape:'launch', lvl:'LEVEL 4 — KINGS ROW', line:'By the time you hear her blower whine, the race is already over.'},
   {id:'eddie', name:'Eddie “Eight-Ball” Ferro', car:'’69 Eight-Ball', color:0x191b20, face:'#3a3f4a', etBase:8.2, rtBase:0.20, rtVar:0.08, power:1.495, shiftRpm:7450, blower:3, pay:6800, diff:'KINGS ROW', dcls:'d3', shape:'charge', lvl:'LEVEL 4 — KINGS ROW', line:'Luck is just preparation wearing better paint.'},
-  {id:'scotty', name:'BIG BODY SCOTTY', car:'’70 Heavy Crown', color:0x0d0d10, face:'#101216', etBase:5.4, rtBase:0.12, rtVar:0.05, power:0.9284, shiftRpm:7450, blower:3, pay:8000, diff:'FINAL BOSS', dcls:'d3', shape:'even', lvl:'THE BOSS', line:'The boss of Hustle City — and he holds the DRAG RACING RECORD: 346.95 mph. Take it off him.', wheelie:true, aero:3, turbo:2, chute:2, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:2,intercooler:2,ecu:3,fuelsys:2,drivetrain:2,chassis:2,aero:3,chute:0,wheeliebar:0}},
+  {id:'scotty', name:'BIG BODY SCOTTY', car:'’70 Heavy Crown', color:0x0d0d10, face:'#101216', etBase:5.4, rtBase:0.15, rtVar:0.05, power:0.9284, shiftRpm:7250 /* v0.4.2 calibration: matched machinery — his edge is the best RT in the game (0.15) + the tightest shift window, not a higher shift point than a perfect player can use; measured in the ladder proof: PERFECT wins at every build, GOOD loses narrowly */, blower:3, pay:8000, diff:'FINAL BOSS', dcls:'d3', shape:'even', lvl:'THE BOSS', line:'The boss of Hustle City — and he holds the DRAG RACING RECORD: 346.95 mph. Take it off him.', wheelie:true, aero:3, turbo:2, chute:2, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:2,intercooler:2,ecu:3,fuelsys:2,drivetrain:2,chassis:2,aero:3,chute:0,wheeliebar:0}},
   {id:'nils', name:'Nils “Needle” Bergström', car:'’68 Needleback', color:0xd8dde3, face:'#d8dde3', etBase:4.6, rtBase:0.22, rtVar:0.08, power:1.4641, shiftRpm:7450, blower:3, pay:9000, diff:'SALT FLATS', dcls:'d3', shape:'even', lvl:'THE RECORD CHASE — BONNEVILLE', line:'Came from the salt with a needle-nose streamliner and no fear at all.', wheelie:true, aero:3, turbo:3, chute:1, needChute:true, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:2,intercooler:2,ecu:3,fuelsys:2,drivetrain:2,chassis:2,aero:3,chute:1,wheeliebar:0}},
   {id:'dot', name:'Dot “Duster” Callahan', car:'’71 Dust Devil', color:0xb08968, face:'#b08968', etBase:4.0, rtBase:0.21, rtVar:0.08, power:0.8274, shiftRpm:7450, blower:3, pay:13000, diff:'SALT FLATS', dcls:'d3', shape:'charge', lvl:'THE RECORD CHASE — BONNEVILLE', line:'She tunes by ear, at dawn, alone. The salt respects that.', wheelie:true, aero:4, turbo:4, chute:2, needChute:true, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:4,intercooler:4,ecu:5,fuelsys:4,drivetrain:4,chassis:4,aero:4,chute:2,wheeliebar:1}},
   {id:'kenji', name:'Kenji “Comet” Sato', car:'’70 Comet Tail', color:0x3a6ea5, face:'#3a6ea5', etBase:3.1, rtBase:0.20, rtVar:0.07, power:1.2474, shiftRpm:7450, blower:3, pay:18000, diff:'SALT FLATS', dcls:'d3', shape:'launch', lvl:'THE RECORD CHASE — BONNEVILLE', line:'His tail cone is longer than your whole car. So is his shadow.', wheelie:true, aero:4, turbo:4, chute:3, needChute:true, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:4,intercooler:5,ecu:5,fuelsys:5,drivetrain:5,chassis:5,aero:4,chute:3,wheeliebar:1}},
@@ -737,7 +737,7 @@ const rim=new THREE.DirectionalLight(0x66b8ff,1.25); scene.add(rim); scene.add(r
   es.background=new THREE.Color(0x05070c);
   const add=(c,x,y,z,w,h)=>{ const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),
     new THREE.MeshBasicMaterial({color:c,side:THREE.DoubleSide})); m.position.set(x,y,z); m.lookAt(0,2,0); es.add(m); };
-  add(0x0096ff,-18,7,0,26,7); add(0x66d9ff,18,6,-6,20,5); add(0xff2fb3,0,9,-20,16,4);
+  add(0x0096ff,-18,7,0,26,7); add(0x66d9ff,18,6,-6,20,5); add(0x2f7bff,0,9,-20,16,4); /* v0.4.2 COLOR FIX: this panel was 0xff2fb3 hot pink — every clearcoat/chrome/paint reflection in the game picked it up, so a black car burned out pale and the rusty-red rival read bubblegum pink (Joshua: "a black car burns out and a pink car shows up"). Same panel, same place, house electric blue: reflections stay neon, car colors read true. */
   add(0xffffff,0,16,6,10,3); add(0x223a55,0,1,16,30,2);
   const pm=new THREE.PMREMGenerator(renderer);
   scene.environment=pm.fromScene(es,0.04).texture; pm.dispose();
@@ -1678,13 +1678,26 @@ function rpmFor(v,gear){ return v/WHEEL_C*RATIOS[gear]*FINAL_D*60; }
    drive keeps real shove — stepCar floors the gear-4 FORCE factor at
    0.55. Tiers 0-3 read 1 / 0.96 under both rules: no old number moves. */
 function rpmForC(c,gear){ return rpmFor(c.v,gear)*(gear===0?c.launchMult:(gear===4?c.topMult:1)); }
+/* v0.4.2 FIFTH-GEAR DISPLAY FIX (Joshua 18:05: "in fifth gear is
+   not working right"): the tach, the cockpit needle and the engine
+   note all read rpmDisp, which stepCar feeds from rpmForC — and in
+   5th, rpmForC multiplies by the RAW salt coupling (topMult 0.3547
+   at gears T5), so the needle collapsed to ~1,700 rpm at the 4->5
+   shift and sat near idle while the car pulled past 200 mph, even
+   though the force model drives 5th with max(topMult, 0.80).
+   rpmShow is what the DRIVER sees: in 5th it reads the same
+   effective factor the force uses, so the tach sweeps alive
+   (about 3,800 -> 7,100 rpm on a gears-T5 build). Physics is
+   untouched — force, limiter and torque still run on rpmForC,
+   and every frozen benchmark stands. */
+function rpmShow(c,g){ if(g===4) return rpmFor(c.v,4)*Math.max(c.topMult==null?1:c.topMult,0.80); return rpmForC(c,g); }
 function torqueFactor(rpm){ return clamp(1.22-Math.abs(rpm-5600)/12000, 0.78, 1.14); }
 function newCarState(power,up){
   up=up||STOCK_UP;
   return {v:0,dist:0,gear:0,throttle:0,power:power,nitroT:0,nitroLeft:1,shiftCut:0,
           launched:false,launchT:0,finishTotal:null,trapV:0,slip:0,shifts:[],splits:{},
           splitIdx:0,rpmDisp:900,
-          powerMult:up.powerMult,forceMult:up.forceMult,dragMult:up.dragMult*(up.blowerDrag||1)*(up.aeroDrag||1),
+          powerMult:up.powerMult,forceMult:up.forceMult,forceBase:up.forceMult,dragMult:up.dragMult*(up.blowerDrag||1)*(up.aeroDrag||1),
           slipT:up.slipT,slipGrip:up.slipGrip,cutP:up.cutP,cutN:up.cutN,
           nitroMult:up.nitroMult,nitroDur:up.nitroDur*(up.tuneDur||1)*(up.methDur||1),cutKeep:up.cutKeep||0,
           launchMult:up.launchMult||1,driveMult:up.driveMult||1,topMult:up.topMult||1,
@@ -1718,7 +1731,7 @@ function stepCar(c,dt,now){
     const a=-DRAG_C*c.dragMult*c.v*c.v-(c.v>0.01?ROLL_R:0)-3.4-(c.chuteBrake||0); /* the chute hauls the roll-out down — post-finish only */
     c.v=Math.max(0,c.v+a*dt);
     c.dist+=c.v*dt;
-    let rpm=rpmForC(c,c.gear);
+    let rpm=rpmShow(c,c.gear);
     if(c.v<0.5) rpm=900;
     c.rpmDisp+=(rpm-c.rpmDisp)*Math.min(1,dt*10);
     return;
@@ -1749,7 +1762,7 @@ function stepCar(c,dt,now){
   c.v=Math.max(0,c.v+a*dt);
   c.dist+=c.v*dt;
   /* display rpm: coupled to speed, with launch slip flare */
-  let rpm=rpmForC(c,gear);
+  let rpm=rpmShow(c,gear);
   if(c.slip>0&&c.throttle>0) rpm=Math.max(rpm,4300+Math.sin(now*40)*120);
   if(c.throttle===0) rpm=Math.max(rpm,900);
   c.rpmDisp+=(rpm-c.rpmDisp)*Math.min(1,dt*18);
@@ -1804,23 +1817,27 @@ function setPovHide(hidden){
   playerCar.userData.povHide.forEach(m=>{ m.visible=!hidden; });
 }
 function startRollin(){ if(S.phase!=='burnout') return; S.phase='rollin'; S.rollT=0; }
-/* ---------------- COMPETITIVE LADDER (v0.4.1, Joshua 2026-11-19) ----
-   "After the third round I started blowing them away. Keep it
-   competitive." Ladder rivals (everyone before Scotty) now BUILD
-   ALONG WITH YOU: at race time an in-page replica sim measures YOUR
-   perfect run in your current build, and the rival runs YOUR build
-   spec with his power bisected so his ET lands on yours + a margin.
-   The margin GROWS with your build (upgrades still pay — a maxed car
-   gets a bigger cushion than a stocker) and SHRINKS up the ladder
-   (the top is supposed to be tight), and it never drops under 0.22s:
-   a perfect start + perfect shifts ALWAYS wins; sloppy driving can
-   still lose. Scotty and the salt racers are EXEMPT — they run their
-   own fixed build specs. Scotty stays the wall. */
+/* ---------------- MATCHED MACHINERY (v0.4.2, Joshua 2026-11-19) ----
+   "Have the cars match your car's ability but whoever drives the
+   best wins. Do a back and forth like I said." EVERY rival — Scotty
+   and the salt racers included — runs the player's EXACT build:
+   same parts, same power. The machinery is equal, so reaction time,
+   launch and shift timing decide the winner, and the rival's force
+   shape keeps the lead swapping down the track. A rival's driving
+   fingerprint is his shift point plus a per-gear jitter window:
+   wide for the early ladder (sloppy drivers), tight for the late
+   ones — Scotty pairs the best reaction time in the game (0.15)
+   with the tightest window (±200 around 7250), so he is still the
+   toughest, but a better-driven run beats him. (Supersedes the
+   v0.4.1 scaled-power ladder AND the fixed-spec exemption: under
+   the old fixed spec, Scotty's ~5.55 total could not be beaten by
+   ANY player build whose perfect total was slower — Joshua's
+   "raced perfect and still lost" report was correct in code.) */
 function simET(power,up,shiftRpm,shape,withNitro){
   const c=newCarState(power,up); c.launched=true; c.launchT=0; c.throttle=1; c.slip=c.slipT;
   const dt=1/120; let t=0, fired=false;
   while(t<30){
-    if(shape) c.forceMult=rivalShapeAt(shape,c.dist);
+    if(shape) c.forceMult=(c.forceBase||1)*rivalShapeAt(shape,c.dist); /* v0.4.2: shape multiplies the build force (see race loop) */
     stepCar(c,dt,t);
     if(c.finishTotal!==null) return c.finishTotal;
     /* shift on the COUPLED reading (rpmForC) — the same one the
@@ -1836,25 +1853,11 @@ function simET(power,up,shiftRpm,shape,withNitro){
 }
 let _ladderCache={sig:'',anchors:null,map:{}};
 function ladderInfo(rival){
-  if(rival.up||rival.needChute) return null; /* Scotty + salt: fixed spec */
-  const sig=PARTS.map(p=>save.up[p.id]||0).join(',');
-  if(_ladderCache.sig!==sig){
-    const up=upParams(save.up);
-    const pET=simET(1.0,up,7150,null,true);
-    const sET=simET(1.0,upParams(freshUp()),7150,null,true);
-    const maxSpec={}; PARTS.forEach(p=>{ maxSpec[p.id]=p.prices.length; });
-    const mET=simET(1.0,upParams(maxSpec),7150,null,true);
-    _ladderCache={sig,anchors:{pET,bf:clamp((sET-pET)/Math.max(0.001,(sET-mET)),0,1)},map:{}};
-  }
-  if(_ladderCache.map[rival.id]) return _ladderCache.map[rival.id];
-  const A=_ladderCache.anchors, idx=RIVALS.indexOf(rival);
-  const margin=Math.max(0.22,0.42-0.02*idx)+0.35*A.bf;
-  const target=A.pET+margin;
-  let lo=0.5, hi=1.5, pw=1;
-  for(let i=0;i<6;i++){ pw=(lo+hi)/2;
-    if(simET(pw,upParams(save.up),rival.shiftRpm,rival.shape,false)>target) lo=pw; else hi=pw; }
-  const info={playerET:A.pET,targetET:target,power:pw,margin,bf:A.bf};
-  _ladderCache.map[rival.id]=info; return info;
+  /* v0.4.2 matched machinery: every rival runs the player's exact
+     build, so the anchor is the player's own perfect ET in it
+     (garage pace display only — the race itself is equal cars). */
+  const pET=simET(1.0, upParams(save.up), rival.shiftRpm, rival.shape, true);
+  return {playerET:pET, targetET:pET, power:1, margin:0};
 }
 function freshUp(){ const u={}; PARTS.forEach(p=>{ u[p.id]=0; }); return u; }
 
@@ -1919,6 +1922,15 @@ function stopAudioBed(){
       bed.volume=Math.max(0,k); requestAnimationFrame(fade); };
     fade(); }catch(e){ try{ bed.pause(); }catch(e2){} }
 }
+/* v0.4.2: roll the AI's next shift target — his shift point ± his
+   jitter window, with a ~7% MISS: the target jumps to the limiter's
+   edge (7620–7660, always under the 7680 limiter so he can still
+   reach it and shift), costing him the buzz + the long cut. */
+function aiRollShiftT(rival){
+  const missP = rival.id==='scotty' ? 0.07 : 0.12;
+  if(Math.random()<missP) return 7620+Math.random()*40;
+  return rival.shiftRpm+(Math.random()*2-1)*(S.aiJit||120);
+}
 function startRace(rival){
   if(rival.needChute&&!(save.up.chute>0)){ showScreen('garage');
     $('g-best').innerHTML='<b style="color:#FFB300">TECH INSPECTION:</b> Bonneville racers need a parachute fitted first — the twin-chute pack is in the parts shop below.';
@@ -1930,14 +1942,26 @@ function startRace(rival){
   S.camMode='burnout'; S.playerFinishAt=null; S.aiFinishAt=null; S.lastSplitIdx=0; S.accounted=false;
   camera.position.set(-5.0,1.5,-12.6); /* composed on the burnout box from frame one */
   S.player=newCarState(1.0, upParams(save.up));
-  /* v0.4.1 competitive ladder: before Scotty, the rival runs YOUR
-     build spec with ladder-scaled power (see ladderInfo). Scotty and
-     the salt racers keep their own fixed build specs. */
+  /* v0.4.2 matched machinery (Joshua 17:55): EVERY rival runs the
+     player's exact build — same parts, same power. The cars are
+     equal; reaction time, launch and shift timing decide it. */
   const li=ladderInfo(rival);
-  if(li){ S.ai=newCarState(li.power*(0.988+Math.random()*0.024), upParams(save.up));
-    S.aiAnchor={playerET:li.playerET,targetET:li.targetET,margin:li.margin}; }
-  else { S.ai=newCarState(rival.power*(0.988+Math.random()*0.024), rival.up?upParams(rival.up):undefined);
-    S.aiAnchor=null; }
+  S.ai=newCarState(1.0, upParams(save.up));
+  S.aiAnchor={playerET:li.playerET,targetET:li.targetET,margin:0};
+  /* the rival's driving fingerprint: a per-gear shift window around
+     his shift point — early ladder rivals wander wide, the late
+     ones are tight. Re-rolled every shift. Scotty's window is the
+     tightest in the field (±200 rpm around 7450) but human: living
+     on the limiter's edge bites him often enough that a PERFECT run
+     beats him at every build — measured in the v0.4.2 ladder proof. */
+  const rIdx=Math.max(0,RIVALS.indexOf(rival));
+  S.aiJit = rival.id==='scotty' ? 200 : Math.max(55, 250-rIdx*13);
+  /* every driver can MISS a shift (v0.4.2): ~12% of gear changes the
+     target becomes the limiter's edge (Scotty, the pro, only ~7%) —
+     he buzzes it, takes the long
+     cut, and loses real ground he has to win back. That is the
+     mistake that makes matched races swap the lead. */
+  S.aiShiftT=aiRollShiftT(rival);
   S.aiRT=rival.rtBase+Math.random()*rival.rtVar; S.aiLaunchAt=null;
   /* rival car in its colors, with its own street mods */
   scene.remove(rivalCar); rivalCar=buildCar(rival.color,{halo:0xffd9a0,
@@ -2433,19 +2457,25 @@ function animate(){
         }
         if(a.launched){
           if(a.finishTotal===null){
-            /* v0.4.1: ladder-scaled rivals run the PLAYER's build — with
-               a steepened launch gear, raw rpmFor caps at
-               LIMITER/launchMult in first gear and can never reach the
-               shift point (the AI sat in first forever). Scaled rivals
-               therefore shift on the COUPLED reading (rpmForC), the one
-               the limiter gates. Fixed-spec rivals (Scotty, salt) keep
-               the original raw-rpmFor shift — their sealed numbers
-               (Scotty's 346.95 trap) were tuned on it. */
-            const arpm=S.aiAnchor?rpmForC(a,a.gear):rpmFor(a.v,a.gear);
-            if(arpm>=S.rival.shiftRpm&&a.gear<4&&a.shiftCut<=0) doShiftCar(a,nowI);
+            /* v0.4.2 matched machinery: the AI shifts on the COUPLED
+               reading (rpmForC — the one the limiter gates; raw rpmFor
+               caps under the steepened launch gear and the AI would
+               sit in first forever) against its own per-gear target:
+               the rival's shift point jittered by his driving window
+               (S.aiShiftT, re-rolled after every shift). Identical
+               machinery + human-grade variable shifting = the lead
+               swaps down the track and the best driving wins. */
+            const arpm=rpmForC(a,a.gear);
+            if(arpm>=S.aiShiftT&&a.gear<4&&a.shiftCut<=0){ doShiftCar(a,nowI);
+              S.aiShiftT=aiRollShiftT(S.rival); }
           }
-          if(S.rival.up&&a.nitroLeft>0&&a.dist>=200&&a.finishTotal===null){ a.nitroLeft--; a.nitroT=a.nitroDur; } /* build-spec rivals (Bonneville + Scotty) fire their bottle at 200 m, like you do */
-          a.forceMult=rivalShapeAt(S.rival.shape,a.dist);
+          if(a.nitroLeft>0&&a.dist>=200&&a.finishTotal===null){ a.nitroLeft--; a.nitroT=a.nitroDur; } /* v0.4.2: every rival fires its bottle at 200 m, like you do */
+          /* v0.4.2: the shape MULTIPLIES the build's forceMult — it
+             used to REPLACE it, silently stripping the AI of the
+             weight-tier force bonus the player keeps. Matched means
+             matched: same car, same force; the shape is only the
+             rival's track character on top. */
+          a.forceMult=(a.forceBase||1)*rivalShapeAt(S.rival.shape,a.dist);
           stepCar(a,sdt,nowI);
         }
         if(S.player.launched) stepCar(S.player,sdt,nowI);
