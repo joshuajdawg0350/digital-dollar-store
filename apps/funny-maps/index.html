@@ -900,6 +900,9 @@ async function fetchRoute(){
 
 /* ---------- destination & search ---------- */
 function setDestination(d){
+  /* Routes start from the driver's position by default: when GPS has a
+     fix, it — not a stale earlier origin — is the start of this trip. */
+  if (gpsPos && !nav) origin = { lat: gpsPos.lat, lng: gpsPos.lng, label: 'Your location' };
   destination = d;
   if (destMarker) map.removeLayer(destMarker);
   destMarker = L.marker([d.lat, d.lng], { icon: destIcon }).addTo(map);
@@ -908,19 +911,28 @@ function setDestination(d){
   route = null; $('startBtn').style.display = 'none'; $('routeSummary').style.display = 'none';
   fetchRoute();
 }
-/* Search runs on TWO independent geocoders. Nominatim goes first (it is
-   the reference OSM search), but it rate-limits shared IPs hard — HTTP
-   429 after a handful of searches from one address, and a phone on a
-   carrier network shares its address with thousands of people. When
-   Nominatim errors, rate-limits, or finds nothing, Photon (Komoot's OSM
-   geocoder, location-biased, no key, CORS-open) answers instead. A dead
-   search service must never read as "no such place". */
+/* Search runs on TWO independent geocoders, asked together: Nominatim
+   (the reference OSM search) and Photon (Komoot's OSM geocoder,
+   location-biased, no key, CORS-open). Nominatim rate-limits shared IPs
+   hard — HTTP 429 after a handful of searches from one address, and a
+   phone on a carrier network shares its address with thousands of
+   people — so neither service is trusted alone: the merged results are
+   ranked by distance from the driver, which keeps the list LOCAL (a
+   far-away place that merely shares the name never outranks the place
+   down the street), and a dead search service never reads as
+   "no such place". */
+/* The search bar is local to whoever's GPS is using it: bias results to
+   the driver's live fix whenever one exists. The route origin only stands
+   in when there is no fix yet (it IS the fix while planning; it is the
+   default address when location is off). */
+function searchAnchor(){ return gpsPos ? { lat: gpsPos.lat, lng: gpsPos.lng } : origin; }
 async function nominatimSearch(q){
   try {
     /* Bias results toward where the driver actually is (a ~55 km box around
-       the origin): without it, a chain's far-away store outranks the local
-       one. bounded=0 keeps it a preference, not a wall. */
-    const vb = [origin.lng - 0.55, origin.lat + 0.45, origin.lng + 0.55, origin.lat - 0.45].join(',');
+       the search anchor): without it, a chain's far-away store outranks the
+       local one. bounded=0 keeps it a preference, not a wall. */
+    const a = searchAnchor();
+    const vb = [a.lng - 0.55, a.lat + 0.45, a.lng + 0.55, a.lat - 0.45].join(',');
     const r = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=6&addressdetails=1&viewbox=' + vb + '&bounded=0&q=' + encodeURIComponent(q),
       { signal: AbortSignal.timeout ? AbortSignal.timeout(9000) : undefined });
     if (!r.ok) return null;                       /* 429 / 5xx — not an answer */
@@ -932,7 +944,8 @@ async function nominatimSearch(q){
 }
 async function photonSearch(q){
   try {
-    const r = await fetch('https://photon.komoot.io/api/?limit=6&lat=' + origin.lat + '&lon=' + origin.lng + '&q=' + encodeURIComponent(q),
+    const a = searchAnchor();
+    const r = await fetch('https://photon.komoot.io/api/?limit=6&lat=' + a.lat + '&lon=' + a.lng + '&q=' + encodeURIComponent(q),
       { signal: AbortSignal.timeout ? AbortSignal.timeout(9000) : undefined });
     if (!r.ok) return null;
     const j = await r.json();
@@ -949,15 +962,31 @@ async function doSearch(){
   const q = $('searchInput').value.trim(); if (!q) return;
   if (window.__searchInFlight) return;
   window.__searchInFlight = true;
+  /* Local to THEIR GPS: if no fix has landed yet, give location one short
+     chance to answer before searching — otherwise the results would be
+     biased to the default address instead of the person searching. */
+  if (!gpsPos && navigator.geolocation && !geoDenied && !isQA && QA.get('qa') !== 'search'){
+    setStatus('Finding you first — so the results are near YOU…');
+    await ensureFix(3500);
+  }
   setStatus('Searching…');
   const box = $('results');
   try {
-    let results = await nominatimSearch(q);
-    let answered = results !== null;
-    if (!results || !results.length){
-      const ph = await photonSearch(q);
-      if (ph !== null){ answered = true; if (ph.length) results = ph; }
-    }
+    /* Both geocoders answer; the merged list is ranked by distance from
+       the search anchor — the person holding the phone. Without the
+       ranking, a "Coffee County" three states away outranks the coffee
+       shop down the street on a bare name match. */
+    const [nz, ph] = await Promise.all([nominatimSearch(q), photonSearch(q)]);
+    let answered = nz !== null || ph !== null;
+    let results = [];
+    const seen = new Set();
+    [...(nz || []), ...(ph || [])].forEach(it => {
+      const k = it.name.toLowerCase() + '@' + it.lat.toFixed(3) + ',' + it.lon.toFixed(3);
+      if (!seen.has(k)){ seen.add(k); results.push(it); }
+    });
+    const a = searchAnchor();
+    results.sort((x, y) => hav([a.lat, a.lng], [x.lat, x.lon]) - hav([a.lat, a.lng], [y.lat, y.lon]));
+    results = results.slice(0, 6);
     window.__searchResults = (results || []).map(it => it.display);
     box.innerHTML = '';
     box.style.display = 'block';
@@ -1173,6 +1202,7 @@ function processPosition(latlng){
 
 /* ---------- LIVE LOCATION — requirement #1: always on, from first open ---------- */
 let follow = true, lastFixAt = 0, lastHeading = null, markerStale = false;
+let geoDenied = false;   /* a denial is remembered — never re-asked in a loop */
 const STALE_MS = Number(QA.get('staleMs')) || 10000;
 function renderPos(latlng, heading, forceFollow){
   const ll = Array.isArray(latlng) ? latlng : [latlng.lat, latlng.lng];
@@ -1191,20 +1221,42 @@ function setPill(state, txt){
 function ingestPosition(pos){
   const c = pos.coords || pos;
   const ll = { lat: c.latitude, lng: c.longitude };
+  const firstFix = !lastFixAt;
   lastFixAt = Date.now();
+  gpsPos = ll;   /* the live fix — search bias and route starts key off this */
   if (markerStale){ markerStale = false; const el = posMarker.getElement(); if (el){ const w = el.querySelector('.posWrap'); if (w) w.classList.remove('stale'); } }
   if (!destination && !nav) origin = { lat: ll.lat, lng: ll.lng, label: 'Your location' };
   renderPos(ll, (c.heading != null && !isNaN(c.heading)) ? c.heading : null, false);
+  /* First fix: put the driver on THEIR streets at a useful local zoom.
+     The map opens on the default address, but the moment GPS answers,
+     the whole map belongs to whoever is holding the phone. */
+  if (firstFix && follow && !destination && !nav) map.setView([ll.lat, ll.lng], 15);
   setPill('live', follow ? 'Live GPS — following you' : 'Live GPS — tap to re-center');
   if (nav && nav.mode === 'live') processPosition(ll);
 }
 function handleGeoError(err){
   if (err && err.code === 1){
+    geoDenied = true;
     setPill('off', 'Location off — tap for the fix');
     $('deniedCard').classList.add('show');
   } else if (!lastFixAt){
     setPill('stale', 'GPS signal weak — still looking…');
   }
+}
+/* One short, bounded chance to get a real fix before a search or a route
+   falls back to the default anchor. Runs only when no fix is on hand and
+   permission has NOT been denied. Resolves true if a fix is on hand. */
+function ensureFix(ms){
+  if (gpsPos) return Promise.resolve(true);
+  if (!navigator.geolocation || geoDenied || isQA || QA.get('qa') === 'search') return Promise.resolve(false);
+  return new Promise(res => {
+    let done = false;
+    const fin = ok => { if (!done){ done = true; res(ok); } };
+    try { navigator.geolocation.getCurrentPosition(p => { ingestPosition(p); fin(true); },
+      e => { handleGeoError(e); fin(false); }, { enableHighAccuracy: true, timeout: ms, maximumAge: 60000 }); }
+    catch(e){ fin(false); }
+    setTimeout(() => fin(!!gpsPos), ms + 500);
+  });
 }
 setInterval(() => {  /* the dot never freezes silently: it shows its age */
   if (!lastFixAt || markerStale && false) return;
@@ -1622,17 +1674,6 @@ if (isQA){
 }
 </script>
 <script>
-/* PWA: register the app-shell service worker (this folder only). The app
-   works fully without it — this just lets Funny Maps install like a real
-   app and reopen offline. */
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function () {
-    navigator.serviceWorker.register('sw.js').catch(function () { /* no worker, no problem */ });
-  });
-}
-</script>
-
-<script>
 (function () {
   'use strict';
   var bar = document.getElementById('installBar');
@@ -1663,6 +1704,16 @@ if ('serviceWorker' in navigator) {
     });
   }
 })();
+</script>
+<script>
+/* PWA: register the app-shell service worker (this folder only). The app
+   works fully without it — this just lets Funny Maps install like a real
+   app and reopen offline. */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js').catch(function () { /* no worker, no problem */ });
+  });
+}
 </script>
 </body>
 </html>
