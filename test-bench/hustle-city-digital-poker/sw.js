@@ -1,5 +1,5 @@
 "use strict";
-const CACHE = "hcdp-v1";
+const CACHE = "hcdp-v2";
 const ASSETS = [
   "./",
   "./index.html",
