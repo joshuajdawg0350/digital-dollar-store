@@ -12,8 +12,10 @@
    when there's service, cached page only when there isn't) — a cached
    shell can never serve a stale or stalled page again — and Leaflet
    ships inside the shell instead of loading from unpkg, whose stall
-   on second loads left the app dead with no error anywhere. */
-const SHELL_CACHE = 'funny-maps-shell-v2';
+   on second loads left the app dead with no error anywhere.
+   v3 (2026-11-20): character picker faces swapped to Joshua's picks
+   from the 2026-11-20 thumbnail board (all 8 characters). */
+const SHELL_CACHE = 'funny-maps-shell-v3';
 const SHELL = [
   './',
   './index.html',
@@ -24,12 +26,14 @@ const SHELL = [
   './icons/icon-maskable-512.png',
   './vendor/leaflet.js',
   './vendor/leaflet.css',
-  './characters/thumbs/bubba-04.webp',
-  './characters/thumbs/dre-07.webp',
-  './characters/thumbs/major-hurt-04.webp',
-  './characters/thumbs/officer-doright-05.webp',
-  './characters/thumbs/stoner-steve-01.webp',
-  './characters/thumbs/nagging-nora-20.webp'
+  './characters/thumbs/bubba-01.webp',
+  './characters/thumbs/jermaine-04.webp',
+  './characters/thumbs/major-hurt-05.webp',
+  './characters/thumbs/officer-doright-02.webp',
+  './characters/thumbs/stoner-steve-02.webp',
+  './characters/thumbs/nagging-nora-02.webp',
+  './characters/thumbs/smiri-05.webp',
+  './characters/thumbs/dislexa-02.webp'
 ];
 const SHELL_ABS = SHELL.map(p => new URL(p, self.registration.scope).href);
 const INDEX_ABS = new URL('./index.html', self.registration.scope).href;

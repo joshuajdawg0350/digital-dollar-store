@@ -1823,19 +1823,20 @@ if (TESTHOOKS){
 }
 
 /* ---------- UI: picker, chips, toggles ---------- */
-/* Faces — Joshua's picks (2026-11-17): Bubba #4, Jermaine #7, Major "Hurt" #4,
-   Officer Doright #5, Stoner Steve #1; Nagging Nora #20 (2026-11-18).
-   Thumbnails ride in the picker; full portraits live in characters/
-   as the masters. */
+/* Faces — Joshua's picks from the 2026-11-20 board (supersedes the
+   2026-11-17/18 picks): Bubba #1, Jermaine #4, Major "Hurt" #5,
+   Officer Doright #2, Stoner Steve #2, Nagging Nora #2, Smiri #5,
+   Dislexa #2. Masters: goals/funny-maps/thumbnails-2026-11-20/,
+   vaulted in j-dawgs-vault/funny-maps-characters-ip/. */
 const FACES = {
-  bubba: 'characters/thumbs/bubba-04.webp',
-  jermaine: 'characters/thumbs/jermaine-07.webp',
-  hurt: 'characters/thumbs/major-hurt-04.webp',
-  doright: 'characters/thumbs/officer-doright-05.webp',
-  steve: 'characters/thumbs/stoner-steve-01.webp',
-  nora: 'characters/thumbs/nagging-nora-20.webp',
-  smiri: 'characters/thumbs/smiri-01.webp',
-  dislexa: 'characters/thumbs/dislexa-01.webp'
+  bubba: 'characters/thumbs/bubba-01.webp',
+  jermaine: 'characters/thumbs/jermaine-04.webp',
+  hurt: 'characters/thumbs/major-hurt-05.webp',
+  doright: 'characters/thumbs/officer-doright-02.webp',
+  steve: 'characters/thumbs/stoner-steve-02.webp',
+  nora: 'characters/thumbs/nagging-nora-02.webp',
+  smiri: 'characters/thumbs/smiri-05.webp',
+  dislexa: 'characters/thumbs/dislexa-02.webp'
 };
 function avatarHTML(k){ return '<img class="avatar" src="' + FACES[k] + '" alt="' + CHARS[k].name + '">'; }
 /* Speaker test: hear the character BEFORE you drive. Runs inside the tap's
