@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proof — Hustle City Drag Racing — Digital Dollar Store</title>
+<meta name="description" content="The real test record for Hustle City Drag Racing v0.4.4: the measured build ladder, 100 seeded races per matchup across 16 rivals and 3 driving lines, layout checks at two phone sizes — hits and misses both, no invented numbers.">
+<link rel="canonical" href="https://digitaldollarstore.org/proof-hustle-city-drag-racing.html">
+<script>document.documentElement.className+=" js"</script>
+<link rel="stylesheet" href="assets/site.css">
+<link rel="icon" href="assets/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/arcade-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/arcade-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#05080E">
+<style>
+  :root{--eb:#39C2FF;--eb-bright:#6FC3FF;--eb-deep:#2B7FD4}
+  .arcade-band{padding:3.4rem 0;border-top:1px solid var(--line)}
+  .proof-head h1{font-size:clamp(2rem,7vw,3rem);font-weight:800;letter-spacing:-.01em;line-height:1.05;margin:.2rem 0 0}
+  .game-proof{background:var(--panel);border:1px solid var(--line-strong);border-radius:12px;
+    padding:1.4rem 1.5rem;margin-top:1.6rem;max-width:72ch}
+  .game-proof h2{font-size:1.3rem;font-weight:800;margin:0 0 .2rem}
+  .verdict{font-weight:800;color:#4FE38A;font-size:1.02rem;margin:.1rem 0 .6rem}
+  .game-proof p,.game-proof li{font-size:.97rem;line-height:1.55}
+  .game-proof ul{margin:.3rem 0 0;padding-left:1.35rem}
+  .game-proof li{margin:.32rem 0}
+  .game-proof table{width:100%;border-collapse:collapse;margin-top:.8rem}
+  .game-proof th,.game-proof td{border:1px solid var(--line-strong);padding:.5rem .7rem;text-align:left;font-size:.95rem}
+  .game-proof th{background:rgba(57,194,255,.08);font-weight:800}
+  .limits{background:rgba(57,194,255,.05);border:1px solid rgba(111,195,255,.35);border-radius:12px;
+    padding:1.3rem 1.5rem;margin-top:2rem;max-width:72ch}
+  .limits h2{font-size:1.2rem;margin:0 0 .5rem}
+  .limits p,.limits li{font-size:.97rem;line-height:1.55}
+  .limits ul{margin:.3rem 0 0;padding-left:1.35rem}
+  .limits li{margin:.32rem 0}
+  .arcade-foot{background:#030509;border-top:1px solid var(--line);padding:2.6rem 0 2.2rem;color:var(--muted);font-size:.93rem}
+  .arcade-foot .guarantee{color:var(--body);max-width:62ch}
+  .arcade-foot .tagline{font-size:1.02rem;margin-top:1.2rem}
+  .arcade-foot nav{display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:1.1rem}
+  .arcade-foot nav a{font-weight:600;display:inline-flex;align-items:center;min-height:36px}
+  .arcade-foot p a{display:inline-block;padding:.38em 0;margin:-.38em 0}
+  .backlink{display:inline-flex;align-items:center;min-height:44px;font-weight:600}
+  @media (max-width:700px){ .arcade-band{padding:2rem 0} }
+  main .arcade-band:first-child{padding-top:5.8rem}
+  @media (max-width:700px){ main .arcade-band:first-child{padding-top:4.8rem} }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Digital Dollar Store — home">
+      <img src="assets/paw-icon-192.png" alt="" width="38" height="38">
+      <span class="brand-name">J-Dawgs<span class="brand-sub">INDUSTRIES</span></span>
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav class="site-nav" id="site-nav" aria-label="Main">
+      <ul>
+        <li><a href="index.html#games">Games</a></li>
+        <li><a href="index.html#apps">Apps</a></li>
+        <li><a href="index.html#tools">Tools</a></li>
+        <li><a href="https://jdawgsindustries.com/games/sell.html">Sell on the Arcade</a></li>
+        <li><a href="https://jdawgsindustries.com/ai-tool-store.html">AI Tool Store</a></li>
+        <li><a href="https://jdawgsindustries.com/support.html">Support</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="arcade-band" style="border-top:none">
+    <div class="wrap">
+      <div class="sec-head proof-head" style="margin-bottom:0">
+        <p class="eyebrow">Proof, not promises</p>
+        <h1>How Hustle City Drag Racing was tested.</h1>
+        <p class="lead">Our rule: if it's for sale, it has to work — and there has to be proof it works. This is the real test record for the exact build on sale (v0.4.4, November 20, 2026): the measured build ladder, seeded race testing against every rival, layout checks at two phone sizes, and the owner's own hands on his own phone. Hits and misses both — where this build shows a seam, it says so below, in plain words.</p>
+      </div>
+
+      <div class="game-proof">
+        <h2>The build ladder — measured, not promised</h2>
+        <p class="verdict">✓ PASS — every build step measured on the shipped physics</p>
+        <table>
+          <tr><th>Build</th><th>Quarter mile</th><th>Trap speed</th></tr>
+          <tr><td>STOCK</td><td>12.250 sec</td><td>133.5 mph</td></tr>
+          <tr><td>8-part build</td><td>9.492 sec</td><td>169.8 mph</td></tr>
+          <tr><td>DRAG SPEC</td><td>5.500 sec</td><td>349.7 mph</td></tr>
+          <tr><td>MAX</td><td>2.517 sec</td><td>769.397 mph</td></tr>
+        </table>
+        <ul>
+          <li><strong>The top end is real:</strong> MAX runs exactly 2.517 seconds at 769.397 mph — past the Thrust SSC land speed record of 763.035 mph. The full descent was measured unbroken: 12.250 → 9.492 → 8.425 → 5.500 → 4.625 → 4.183 → 3.567 → 2.608 → 2.517 seconds.</li>
+          <li><strong>The upgrade path was audited step by step:</strong> of the 87 steps from STOCK to MAX, 82 make the car faster and <strong>zero steps make it slower</strong>. The 5 that buy no time at all are named in the honest limits below — we don't hide them.</li>
+          <li><strong>The wheelie bar is the last part for a reason:</strong> without it, the full build runs 4.792; with it, 2.517 — it buys 2.275 seconds.</li>
+        </ul>
+      </div>
+
+      <div class="game-proof">
+        <h2>The win-rate law — 100 seeded races per matchup</h2>
+        <p class="verdict">✓ PASS — 16 rivals × 4 builds × 3 driving lines, 100 races in every cell</p>
+        <ul>
+          <li><strong>GOOD driving vs the field</strong> (clean launches, shifts in the green) won at <strong>0.897 / 0.887 / 0.859 / 0.867</strong> across STOCK, 8-part, DRAG SPEC and MAX builds — good driving wins about 9 of 10 against matched rivals, at every level of build.</li>
+          <li><strong>PERFECT driving won 1.000 — every single race</strong> — against all 16 rivals at all 4 builds, Scotty included: <strong>6,400 seeded PERFECT races, never beaten once.</strong></li>
+          <li><strong>Scotty is the wall:</strong> GOOD driving against Scotty alone won only <strong>0.56 / 0.65 / 0.53 / 0.12</strong> by build — at MAX build he's nearly unbeatable unless your run is perfect. He is the hardest race at every build, by design and by measurement.</li>
+          <li><strong>SLOPPY driving won 0.000</strong> — every cell, every build. Mistakes lose. The game rewards driving, not luck.</li>
+        </ul>
+      </div>
+
+      <div class="game-proof">
+        <h2>Layout — checked at two real phone sizes</h2>
+        <p class="verdict">✓ PASS — 24 of 24 checks at 390×844, and 24 of 24 again at 360×740</p>
+        <ul>
+          <li>The gauge cluster sits directly above the NITRO button and the Christmas tree sits top-center — measured on screen at both sizes, not eyeballed.</li>
+          <li>The Garage is its own screen: <strong>30 of 30 checks</strong> — the Garage button is labeled and visible on the title screen, the garage opens at the top, its back button stays visible, and SAVE GAME is reachable without scrolling.</li>
+          <li>Zero console errors across the layout runs.</li>
+        </ul>
+      </div>
+
+      <div class="game-proof">
+        <h2>The owner's own hands</h2>
+        <p class="verdict">✓ PLAYED BY THE OWNER — on his own phone, before it went on sale</p>
+        <ul>
+          <li>Joshua, the owner of this store, played this build on his own phone. His words on November 19, 2026: <strong>"I love that drag racing game… it plays perfect… It's highly addictive, that's the one."</strong> After the final v0.4.4 fixes, on November 20, 2026: <strong>"it works good"</strong> — and he ordered it sold.</li>
+          <li>Scotty — the game's final boss — is a real person, the owner's boss and friend, and the game's record holder. Joshua's own verdict: he could never beat Scotty even racing perfect. (The seeded testing above says a perfect run does beat him — the owner's pride is noted, and the stopwatch stands.)</li>
+        </ul>
+      </div>
+
+      <div class="limits">
+        <h2>The honest limits — read these before you buy</h2>
+        <ul>
+          <li><strong>The shift cadence is proportional, not metronome-even.</strong> One shift rhythm runs through every build, with each gear taking a similar share of the run. That means at MAX build the whole run is 2.5 seconds, so the gears are short — gears 3 and 4 at the top end last about a quarter-second each (a 0.242-second floor in the tuning). It plays fast and smooth, but if you want every gear to last the same number of seconds at every build, that is not how this build works — the elapsed-time ladder above is what's guaranteed.</li>
+          <li><strong>5 of the 87 upgrade steps buy no time.</strong> Aero tier 2 and chute tiers 1–4 change nothing on the clock in the measured audit. The other 82 steps all improve the car, and no step makes it slower — but those five are flat, and they're named here because the audit found them.</li>
+          <li><strong>The races above were simulated, not played by humans.</strong> Scripted driving lines (GOOD, PERFECT, SLOPPY) ran the game's own physics with fixed seeds, so the numbers are repeatable and checkable. One artifact to know about: the scripted SLOPPY line held early gears longer than any human would, so its losing margins at the two slowest builds read larger than a real player's would. The result it proves — sloppy driving loses, 0.000 — is the part that reflects the game. The human check is the owner's play, above.</li>
+          <li><strong>Not yet checked: a purchase by a real buyer.</strong> We never fake a sale, so the first genuine checkout is the end-to-end proof of the payment step itself. Everything up to that step — this page, the game, the price — is published here, and the Fix-It Guarantee below covers the rest.</li>
+        </ul>
+        <p style="margin-top:.8rem">Verdict: <strong>TESTED AND MEASURED — PASS</strong>, November 20, 2026, on build v0.4.4 — the same build you get when you buy. If a future check finds something these tests missed, this page gets updated with what we found — including if it's bad news.</p>
+      </div>
+
+      <p style="margin-top:1.8rem"><a class="backlink" href="hustle-city-drag-racing.html">← Back to Hustle City Drag Racing</a></p>
+    </div>
+  </section>
+</main>
+
+<footer class="arcade-foot">
+  <div class="wrap">
+    <p class="guarantee"><strong>The Fix-It Guarantee:</strong> if anything we sold or gave you doesn't work, tell us once — we fix it free. No receipts, no runaround. If we can't fix it, we will refund you. <a href="https://jdawgsindustries.com/support.html">Report a problem</a></p>
+    <p class="tagline"><strong>No fancy logos. Just quality products.</strong> <strong>No ads.</strong> <strong>We never sell your information.</strong></p>
+    <nav aria-label="Footer">
+      <a href="https://jdawgsindustries.com/">J-Dawgs Industries</a>
+      <a href="https://jdawgsindustries.com/ai-tool-store.html">AI Tool Store</a>
+      <a href="https://jdawgsindustries.com/apps.html">Apps</a>
+      <a href="https://jdawgsindustries.com/support.html">Support</a>
+    </nav>
+    <p class="foot-note" style="margin-top:1.2rem">No ads. Nothing on this page tracks you. © 2026 J-Dawgs Industries · Springfield, MO.</p>
+  </div>
+</footer>
+
+<script src="assets/site.js" defer></script>
+<script src="jdawgs-chat.js" defer></script>
+</body>
+</html>
