@@ -262,6 +262,16 @@ footer p{margin:0 0 10px}
   .label-qr .qrtitle{font-family:var(--fd);font-weight:800;font-size:16px;letter-spacing:.05em;color:#111;margin-bottom:2px}
   .label-qr .qrnote{margin-top:4px;font-weight:700}
   @media print{ .label-qr{break-inside:avoid} .labelsheet{margin-bottom:18px} }
+  /* ---------- NO-SCROLL LAYOUT v3 — actions up top, words in Info ---------- */
+  .xact{margin-top:12px}
+  .xcap{font-size:13px;color:var(--muted);margin:5px 2px 0;line-height:1.35}
+  #viewAdd .panel{padding:12px 16px}
+  #viewAdd h2{margin-bottom:0}
+  #viewAdd label{margin:4px 0 3px}
+  #viewAdd input[type="text"],#viewAdd select{padding:7px 12px}
+  #viewAdd form .btn{padding:11px 14px}
+  #viewAdd .status{min-height:0;margin-top:4px}
+  #viewAdd .fileline{margin-top:2px}
 </style>
 </head>
 <body>
@@ -326,7 +336,6 @@ footer p{margin:0 0 10px}
 <div class="status" id="boxStatus" aria-live="polite"></div>
 <label for="boxPhoto">Photo of this box (optional, stays on this device)</label>
 <div class="fileline"><input type="file" id="boxPhoto" accept="image/*"></div>
-<p style="font-size:13px;color:var(--muted);margin-top:6px">Pick a photo of the sealed box or its label so you can spot it in a stack. It is kept only in this browser.</p>
 </form>
 </section>
 </div>
@@ -362,16 +371,12 @@ footer p{margin:0 0 10px}
 <div class="view" id="viewExport">
 <section class="panel" aria-label="Exports">
 <h2>Exports — always free</h2>
-<div class="btnrow" style="margin-top:0">
-<button type="button" class="btn" id="printBtn"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Show printable box list</button>
-<button type="button" class="btn secondary" id="csvBtn"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>Download CSV export</button>
-</div>
-<p style="color:var(--muted);margin-top:12px">Take your whole list with you. The printable list shows every box, its room, its current location, and everything inside it. The CSV file opens in any spreadsheet. Every box card also has a printable label — big box number, room, and contents — made to be read across a garage. Every label also carries a QR code: tape the label on the box, scan the code with any phone camera, and it reads out everything inside that box. The whole list is inside the code itself — no app, no account, nothing to look up.</p>
-<div class="btnrow"><button type="button" class="btn" id="labelsBtn"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Show printable box labels — with QR codes</button></div>
+<div class="xact"><button type="button" class="btn" id="printBtn"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Show printable box list</button><p class="xcap">Every box and its contents — on paper.</p></div>
+<div class="xact"><button type="button" class="btn" id="labelsBtn"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Show printable box labels — with QR codes</button><p class="xcap">Tape on the box — scan the QR to read it.</p></div>
+<div class="xact"><button type="button" class="btn secondary" id="csvBtn"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>Download CSV export</button><p class="xcap">Your whole move in a spreadsheet file.</p></div>
 <div class="btnrow" id="sampleTools" style="display:none">
 <button type="button" class="btn danger" id="removeSamplesBtn">Remove all samples</button>
 </div>
-<p style="font-size:13px;color:var(--muted);margin-top:10px">Removing samples clears only the SAMPLE move. Your real move stays exactly as you left it.</p>
 <div class="status" id="exportStatus" aria-live="polite"></div>
 <div id="printWrap"><div id="printArea"></div></div>
 </section>
@@ -382,6 +387,17 @@ footer p{margin:0 0 10px}
 <p class="sub">Write down what went into each box. On move day, type an item name and get back the box, the room it belongs in, and where that box is right now.</p>
 </header>
 
+
+<section class="panel" aria-label="How exports and labels work">
+<h2>Exports &amp; labels — how they work</h2>
+<p style="color:var(--muted)">Take your whole list with you. The printable list shows every box, its room, its current location, and everything inside it. The CSV file opens in any spreadsheet. Every box card also has a printable label — big box number, room, and contents — made to be read across a garage. Every label also carries a QR code: tape the label on the box, scan the code with any phone camera, and it reads out everything inside that box. The whole list is inside the code itself — no app, no account, nothing to look up.</p>
+<p style="color:var(--muted)">Removing samples clears only the SAMPLE move. Your real move stays exactly as you left it.</p>
+</section>
+
+<section class="panel" aria-label="About box photos">
+<h2>Box photos</h2>
+<p style="color:var(--muted)">Pick a photo of the sealed box or its label so you can spot it in a stack. It is kept only in this browser.</p>
+</section>
 
 <section class="panel limits" id="limits" aria-label="Honest limits">
 <h2><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>Honest limits — read this first</h2>

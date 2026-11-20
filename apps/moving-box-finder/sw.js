@@ -1,5 +1,5 @@
 'use strict';
-var CACHE = 'moving-box-finder-install-v2';
+var CACHE = 'moving-box-finder-install-v3';
 var ASSETS = [
   './',
   './index.html',
