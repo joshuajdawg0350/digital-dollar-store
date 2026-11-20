@@ -54,9 +54,26 @@
 
   /* ---------- Bottom sheet ---------- */
   #sheet{position:absolute; left:0; right:0; bottom:0; z-index:900; background:var(--panel);
-    border-top:2px solid var(--blue); border-radius:18px 18px 0 0; padding:12px 14px calc(12px + env(safe-area-inset-bottom));
-    max-height:72dvh; overflow-y:auto; box-shadow:0 -8px 30px rgba(0,0,0,.65);}
+    border-top:2px solid var(--blue); border-radius:18px 18px 0 0; padding:0;
+    height:var(--sheetH,42dvh); overflow:hidden; display:flex; flex-direction:column;
+    box-shadow:0 -8px 30px rgba(0,0,0,.65); transition:height .3s ease;}
+  #sheet.dragging{transition:none;}
   #sheet.hidden{display:none;}
+  /* drag handle (2026-11-20): drag DOWN and the panel collapses to just
+     this bar so the map fills the screen; drag UP to bring it back.
+     A tap toggles hide/show. Stops: full 72% / half 42% / collapsed. */
+  #sheetHandle{flex:0 0 auto; height:36px; display:flex; align-items:center; justify-content:center;
+    position:relative; cursor:grab; touch-action:none; -webkit-user-select:none; user-select:none;}
+  #sheetHandle:active{cursor:grabbing;}
+  #sheetHandle .grip{width:58px; height:6px; border-radius:3px;
+    background:linear-gradient(180deg,#fdfefe,#a9c4de 50%,#63798f);
+    box-shadow:0 0 9px rgba(0,150,255,.55), 0 1px 2px rgba(0,0,0,.6);}
+  #sheetHandle .hint{position:absolute; left:14px; top:50%; margin-top:-8px; font-size:10.5px;
+    letter-spacing:1.6px; color:var(--dim); font-weight:800;}
+  #sheetChev{position:absolute; right:14px; top:50%; margin-top:-11px; font-size:15px; line-height:1;
+    color:var(--blue2); transition:transform .3s ease;}
+  #sheet.collapsed #sheetChev{transform:rotate(180deg);}
+  #sheetBody{flex:1 1 auto; min-height:0; overflow-y:auto; padding:2px 14px calc(12px + env(safe-area-inset-bottom));}
   h1{margin:0; font-size:30px; font-weight:900; letter-spacing:1px; text-align:center;
     background:linear-gradient(180deg,#ffffff 20%,#9fc3e8 55%,#e8f3ff 80%); -webkit-background-clip:text; background-clip:text; color:transparent;}
   #tagline{text-align:center; color:var(--blue2); font-size:14.5px; margin:2px 0 10px; font-weight:600;}
@@ -174,6 +191,8 @@
     #sheet{ left:auto; right:0; top:0; bottom:0; width:var(--panelW); height:100dvh;
       max-height:none; border-radius:0; border-top:none; border-left:2px solid var(--blue);
       padding:14px 16px calc(14px + env(safe-area-inset-bottom)); }
+    #sheetHandle{ display:none; }
+    #sheetBody{ padding:0; overflow-y:auto; }
     h1{ font-size:27px; }
     #tagline{ margin:2px 0 8px; }
     #banner{ right:var(--panelW); }
@@ -231,6 +250,8 @@
 
 <!-- Bottom sheet (planning mode) -->
 <div id="sheet">
+  <div id="sheetHandle" role="button" aria-label="Drag down to see the whole map, drag up to bring the panel back. Tap to hide or show the panel."><span class="hint">PANEL</span><span class="grip"></span><span id="sheetChev">▾</span></div>
+  <div id="sheetBody">
   <h1>FUNNY MAPS</h1>
   <div id="tagline">Right directions. Funny voices. The turn always wins.</div>
 <div id="installBar">
@@ -270,6 +291,7 @@
     <div style="font-size:13.5px; color:var(--dim); line-height:1.45;">Paper-map backups that live on this phone. No service, no GPS, no routing — open a state and read it like the glovebox map. The first tap on a state downloads it while you have service; after that it opens offline, forever. Missouri comes pre-loaded.</div>
     <div id="emergGrid"></div>
     <div id="emergStatus" style="font-size:13px; color:var(--dim); margin-top:8px;"></div>
+  </div>
   </div>
 </div>
 
@@ -1672,6 +1694,89 @@ if (isQA){
   }
   setTimeout(() => { if (!window.__qaDone){ window.__qaDone = true; window.__qaTimeout = true; document.title = 'QA TIMEOUT'; } }, 150000);
 }
+</script>
+<script>
+/* ---------- Bottom sheet drag (Joshua, 2026-11-20) ----------
+   The panel under the map slides on its handle: drag DOWN and it
+   collapses to just the handle so the map fills the screen; drag UP
+   and it comes back. Three stops — full (72% of screen), half (42%),
+   collapsed (handle only) — with flick detection. A tap on the handle
+   toggles hide/show. Nothing is persisted: every fresh open starts
+   at HALF, so the map is the first thing you see, panel one drag away. */
+(function () {
+  'use strict';
+  var sheet = document.getElementById('sheet');
+  var handle = document.getElementById('sheetHandle');
+  if (!sheet || !handle) return;
+  var wide = window.matchMedia('(min-width: 900px)');
+  var FRAC = { full: 0.72, half: 0.42 };
+  var ORDER = ['collapsed', 'half', 'full'];
+  var snap = 'half', lastOpen = 'half', drag = null;
+
+  function vh() { return window.innerHeight || document.documentElement.clientHeight; }
+  function collapsedH() { return handle.offsetHeight + 2; } /* + the sheet's top border */
+  function snapPx(name) { return name === 'collapsed' ? collapsedH() : Math.round(FRAC[name] * vh()); }
+  function curH() { return sheet.getBoundingClientRect().height; }
+  function applySnap(name) {
+    snap = name;
+    if (name !== 'collapsed') lastOpen = name;
+    sheet.classList.toggle('collapsed', name === 'collapsed');
+    sheet.style.setProperty('--sheetH', snapPx(name) + 'px');
+  }
+  function nearest(h) {
+    var best = ORDER[0], bd = Infinity;
+    for (var i = 0; i < ORDER.length; i++) {
+      var d = Math.abs(snapPx(ORDER[i]) - h);
+      if (d < bd) { bd = d; best = ORDER[i]; }
+    }
+    return best;
+  }
+  function stepped(name, dir) {
+    var i = ORDER.indexOf(name) + dir;
+    return ORDER[Math.max(0, Math.min(ORDER.length - 1, i))];
+  }
+
+  handle.addEventListener('pointerdown', function (e) {
+    if (wide.matches || sheet.classList.contains('hidden')) return;
+    drag = { id: e.pointerId, startY: e.clientY, startH: curH(),
+             lastY: e.clientY, lastT: performance.now(), vel: 0, moved: 0 };
+    try { handle.setPointerCapture(e.pointerId); } catch (err) {}
+    sheet.classList.add('dragging');
+    e.preventDefault();
+  });
+  handle.addEventListener('pointermove', function (e) {
+    if (!drag || e.pointerId !== drag.id) return;
+    var now = performance.now(), dt = now - drag.lastT;
+    if (dt > 0) drag.vel = 0.7 * drag.vel + 0.3 * ((e.clientY - drag.lastY) / dt); /* px/ms, + = down */
+    drag.lastY = e.clientY; drag.lastT = now;
+    drag.moved = Math.max(drag.moved, Math.abs(e.clientY - drag.startY));
+    var h = drag.startH - (e.clientY - drag.startY); /* bottom-anchored: down = shorter */
+    h = Math.max(collapsedH(), Math.min(snapPx('full'), h));
+    sheet.style.setProperty('--sheetH', h + 'px');
+  });
+  function endDrag(e) {
+    if (!drag || (e && e.pointerId !== drag.id)) return;
+    var wasTap = drag.moved < 9, vel = drag.vel;
+    drag = null;
+    sheet.classList.remove('dragging');
+    if (wasTap) { applySnap(snap === 'collapsed' ? lastOpen : 'collapsed'); return; }
+    var target = nearest(curH());
+    if (vel > 0.45) target = stepped(target, -1);       /* flick down: one stop shorter */
+    else if (vel < -0.45) target = stepped(target, 1);  /* flick up: one stop taller */
+    applySnap(target);
+  }
+  handle.addEventListener('pointerup', endDrag);
+  handle.addEventListener('pointercancel', endDrag);
+
+  function onResize() {
+    if (drag) return;
+    if (wide.matches) { sheet.style.removeProperty('--sheetH'); sheet.classList.remove('dragging'); }
+    else applySnap(snap);
+  }
+  window.addEventListener('resize', onResize);
+  if (wide.addEventListener) wide.addEventListener('change', onResize);
+  onResize();
+})();
 </script>
 <script>
 (function () {
