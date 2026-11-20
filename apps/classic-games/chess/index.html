@@ -93,6 +93,21 @@ body[data-skin="dragon"] .sq.dark{background-image:radial-gradient(circle at 70%
 button:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
 .panel{box-shadow:0 8px 22px rgba(0,0,0,.40),inset 0 1px 0 rgba(255,255,255,.05)}
 #statusBar{box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+/* ---- No-scroll pass 2026-11-19: on phone-height screens the whole
+   title/menu (every setting + START GAME) fits on one screen. ---- */
+@media (max-height:860px){
+  #app{gap:8px;padding-bottom:10px}
+  #titleScreen{gap:9px;padding-top:2px}
+  .crest{width:64px;height:64px;border-radius:18px}
+  .crest svg{width:52px;height:52px}
+  h1.game-title{font-size:30px}
+  .tagline{font-size:13px;margin-top:-2px}
+  .panel{padding:10px;gap:8px}
+  .seg button{min-height:44px}
+  .skinbtn{min-height:46px}
+  #startBtn{min-height:54px;font-size:19px}
+  .feat{font-size:12.5px}
+}
 </style>
 </head>
 <body data-skin="house">
