@@ -272,7 +272,7 @@
     </div>
     <div id="title-saved"></div>
     <div class="title-stats" id="title-stats"></div>
-    <div class="legal">© 2026 Joshua Dawson / J-Dawgs Industries · Hustle City Drag Racing™ · v0.4.1 — Land Speed</div>
+    <div class="legal">© 2026 Joshua Dawson / J-Dawgs Industries · Hustle City Drag Racing™ · v0.4.3 — Land Speed</div>
   </div>
 </section>
 
@@ -375,7 +375,7 @@
   <p><span class="num">1.</span> Pick a rival in the Garage. First to the finish line — a quarter mile — wins the points.</p>
   <p><span class="num">2.</span> First, the <b>burnout</b>: both cars smoke their tires on the line — that's your actual car, mods and all. Tap GAS to skip it. Then you stage in the <b>outside view</b> and the big tree on screen counts down: stage bulb, three ambers… then <b>GREEN</b> — and the view cuts to the <b>driver's seat</b> for the run.</p>
   <p><span class="num">3.</span> The instant it turns green, <b>press and HOLD the GAS pedal</b>. Your reaction time is how fast you stomp it. <b>Stomp too early and you red-light — you lose on the spot.</b></p>
-  <p><span class="num">4.</span> Keep GAS held down the whole run. Watch the tach needle. When it sweeps into the <b>green zone</b> up top, tap <b>SHIFT</b>. Shift in the green for a perfect shift — too early bogs the motor. <b>Hold it past the redline too long and you will BLOW THE MOTOR</b> — the tach flashes and the motor starts screaming; keep holding and it lets go: DNF, no payout. <b>A perfect start and perfect shifts win every race the car is built for.</b></p>
+  <p><span class="num">4.</span> Keep GAS held down the whole run. Watch the tach needle. When it sweeps into the <b>green zone</b> up top, tap <b>SHIFT</b>. Shift in the green for a perfect shift — too early bogs the motor. <b>Hold it in the red for two full seconds and you will BLOW THE MOTOR</b> — a quick kiss of the red costs nothing, but camp there and the tach flashes, the motor screams, and at two seconds it lets go: DNF, no payout. <b>A perfect start and perfect shifts win every race the car is built for.</b></p>
   <p><span class="num">5.</span> The blue bar at the top shows both cars — <b>blue is you, red is the rival</b> — so you always know who's ahead from the seat. Split times flash as you pass each marker.</p>
   <p><span class="num">6.</span> Tap <b>NITRO</b> once for a huge shove of speed — that's the 180 mph button. One bottle per race; it hits hardest in the top half of the track.</p>
   <p><span class="num">7.</span> Win to earn <b>street points</b>, then spend them in the Garage parts shop — seventeen parts now, 79 tiers deep: the street catalog (blower, slicks, gears, nitro, lightweight panels, headers &amp; exhaust, suspension, race-fuel tune) runs five tiers each, and past it the Bonneville catalog opens — twin turbos, intercooler, a race ECU, methanol injection, a built drivetrain, a tube chassis, a streamliner aero kit, and a parachute (tech inspection requires one on the salt). Maxing the whole car costs $179,250. First summit: the drag racing record, <b>346.95 MPH</b>, held by Scotty. Past him, the record chase runs to the outright land speed record: <b>763 MPH</b>. The very last part in the shop is the <b>WHEELIE BAR</b> — at full power the car stands its front end up on the launch without it, and the run is gone. Every part shows its promised gain in seconds before you buy, and your first slip on new parts shows the gain you actually got. Climb the ladder, then the salt — the top of it all is BIG BODY SCOTTY, already built all the way up, and stock and sloppy won't take his crown.</p>
@@ -436,13 +436,13 @@ const RIVALS=[
   {id:'tommy', name:'Tommy “Torque” Tran', car:'’70 Sidewinder', color:0xd97b16, face:'#d97b16', etBase:8.2, rtBase:0.26, rtVar:0.11, power:1.4229, shiftRpm:7425, blower:3, pay:3400, diff:'OUTLAW', dcls:'d3', shape:'launch', lvl:'LEVEL 3 — OUTLAW', line:'Counts his money in eighth-miles.'},
   {id:'rosa', name:'Rosa “Redline” Delgado', car:'’73 Redline Special', color:0xc01828, face:'#c01828', etBase:8.2, rtBase:0.26, rtVar:0.10, power:1.5131, shiftRpm:7450, blower:3, pay:4000, diff:'OUTLAW', dcls:'d3', shape:'charge', lvl:'LEVEL 3 — OUTLAW', line:'Her tach has no red zone. She took it out.'},
   {id:'hank', name:'Hank “Hammer” Oduya', car:'’68 Sledge', color:0x4a5568, face:'#4a5568', etBase:8.2, rtBase:0.24, rtVar:0.10, power:1.4516, shiftRpm:7450, blower:3, pay:4600, diff:'OUTLAW', dcls:'d3', shape:'even', lvl:'LEVEL 3 — OUTLAW', line:'Subtle is a word he can’t spell. Fast is a word he can prove.'},
-  {id:'vivian', name:'Vivian “Viper” Cross', car:'’72 Night Viper', color:0x1f6f43, face:'#1f6f43', etBase:8.3, rtBase:0.22, rtVar:0.09, power:1.421, shiftRpm:7450, blower:3, pay:5600, diff:'KINGS ROW', dcls:'d3', shape:'launch', lvl:'LEVEL 4 — KINGS ROW', line:'By the time you hear her blower whine, the race is already over.'},
-  {id:'eddie', name:'Eddie “Eight-Ball” Ferro', car:'’69 Eight-Ball', color:0x191b20, face:'#3a3f4a', etBase:8.2, rtBase:0.20, rtVar:0.08, power:1.495, shiftRpm:7450, blower:3, pay:6800, diff:'KINGS ROW', dcls:'d3', shape:'charge', lvl:'LEVEL 4 — KINGS ROW', line:'Luck is just preparation wearing better paint.'},
-  {id:'scotty', name:'BIG BODY SCOTTY', car:'’70 Heavy Crown', color:0x0d0d10, face:'#101216', etBase:5.4, rtBase:0.15, rtVar:0.05, power:0.9284, shiftRpm:7250 /* v0.4.2 calibration: matched machinery — his edge is the best RT in the game (0.15) + the tightest shift window, not a higher shift point than a perfect player can use; measured in the ladder proof: PERFECT wins at every build, GOOD loses narrowly */, blower:3, pay:8000, diff:'FINAL BOSS', dcls:'d3', shape:'even', lvl:'THE BOSS', line:'The boss of Hustle City — and he holds the DRAG RACING RECORD: 346.95 mph. Take it off him.', wheelie:true, aero:3, turbo:2, chute:2, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:2,intercooler:2,ecu:3,fuelsys:2,drivetrain:2,chassis:2,aero:3,chute:0,wheeliebar:0}},
-  {id:'nils', name:'Nils “Needle” Bergström', car:'’68 Needleback', color:0xd8dde3, face:'#d8dde3', etBase:4.6, rtBase:0.22, rtVar:0.08, power:1.4641, shiftRpm:7450, blower:3, pay:9000, diff:'SALT FLATS', dcls:'d3', shape:'even', lvl:'THE RECORD CHASE — BONNEVILLE', line:'Came from the salt with a needle-nose streamliner and no fear at all.', wheelie:true, aero:3, turbo:3, chute:1, needChute:true, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:2,intercooler:2,ecu:3,fuelsys:2,drivetrain:2,chassis:2,aero:3,chute:1,wheeliebar:0}},
-  {id:'dot', name:'Dot “Duster” Callahan', car:'’71 Dust Devil', color:0xb08968, face:'#b08968', etBase:4.0, rtBase:0.21, rtVar:0.08, power:0.8274, shiftRpm:7450, blower:3, pay:13000, diff:'SALT FLATS', dcls:'d3', shape:'charge', lvl:'THE RECORD CHASE — BONNEVILLE', line:'She tunes by ear, at dawn, alone. The salt respects that.', wheelie:true, aero:4, turbo:4, chute:2, needChute:true, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:4,intercooler:4,ecu:5,fuelsys:4,drivetrain:4,chassis:4,aero:4,chute:2,wheeliebar:1}},
-  {id:'kenji', name:'Kenji “Comet” Sato', car:'’70 Comet Tail', color:0x3a6ea5, face:'#3a6ea5', etBase:3.1, rtBase:0.20, rtVar:0.07, power:1.2474, shiftRpm:7450, blower:3, pay:18000, diff:'SALT FLATS', dcls:'d3', shape:'launch', lvl:'THE RECORD CHASE — BONNEVILLE', line:'His tail cone is longer than your whole car. So is his shadow.', wheelie:true, aero:4, turbo:4, chute:3, needChute:true, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:4,intercooler:5,ecu:5,fuelsys:5,drivetrain:5,chassis:5,aero:4,chute:3,wheeliebar:1}},
-  {id:'ruth', name:'Ruth “Big Mama” Okafor', car:'’69 Queen of the Salt', color:0x6d28a8, face:'#6d28a8', etBase:2.9, rtBase:0.19, rtVar:0.07, power:1.00, shiftRpm:7450, blower:3, pay:26000, diff:'SALT QUEEN', dcls:'d3', shape:'even', lvl:'THE RECORD CHASE — BONNEVILLE', line:'Twenty years on the salt. She has buried faster men than you — and she guards the big records.', wheelie:true, aero:5, turbo:5, chute:3, needChute:true, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:6,intercooler:6,ecu:6,fuelsys:6,drivetrain:6,chassis:6,aero:6,chute:4,wheeliebar:1}},
+  {id:'vivian', name:'Vivian “Viper” Cross', car:'’72 Night Viper', color:0x1f6f43, face:'#1f6f43', etBase:8.3, rtBase:0.23, rtVar:0.09, power:1.421, shiftRpm:7450, blower:3, pay:5600, diff:'KINGS ROW', dcls:'d3', shape:'launch', lvl:'LEVEL 4 — KINGS ROW', line:'By the time you hear her blower whine, the race is already over.'},
+  {id:'eddie', name:'Eddie “Eight-Ball” Ferro', car:'’69 Eight-Ball', color:0x191b20, face:'#3a3f4a', etBase:8.2, rtBase:0.21, rtVar:0.08, power:1.495, shiftRpm:7450, blower:3, pay:6800, diff:'KINGS ROW', dcls:'d3', shape:'charge', lvl:'LEVEL 4 — KINGS ROW', line:'Luck is just preparation wearing better paint.'},
+  {id:'scotty', name:'BIG BODY SCOTTY', car:'’70 Heavy Crown', color:0x0d0d10, face:'#101216', etBase:5.4, rtBase:0.20, rtVar:0.05, power:0.9284, shiftRpm:7250 /* v0.4.3 calibration: matched machinery — his edge is the best RT in the game (0.20) + the tightest shift window, not a higher shift point than a perfect player can use; measured in the ladder proof: PERFECT beats him at every build (40/40, medians +0.07 to +0.12), GOOD runs him to a whisker at drag spec and max (medians 0.000 / +0.008) */, blower:3, pay:8000, diff:'FINAL BOSS', dcls:'d3', shape:'even', lvl:'THE BOSS', line:'The boss of Hustle City — and he holds the DRAG RACING RECORD: 346.95 mph. Take it off him.', wheelie:true, aero:3, turbo:2, chute:2, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:2,intercooler:2,ecu:3,fuelsys:2,drivetrain:2,chassis:2,aero:3,chute:0,wheeliebar:0}},
+  {id:'nils', name:'Nils “Needle” Bergström', car:'’68 Needleback', color:0xd8dde3, face:'#d8dde3', etBase:4.6, rtBase:0.23, rtVar:0.08, power:1.4641, shiftRpm:7450, blower:3, pay:9000, diff:'SALT FLATS', dcls:'d3', shape:'even', lvl:'THE RECORD CHASE — BONNEVILLE', line:'Came from the salt with a needle-nose streamliner and no fear at all.', wheelie:true, aero:3, turbo:3, chute:1, needChute:true, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:2,intercooler:2,ecu:3,fuelsys:2,drivetrain:2,chassis:2,aero:3,chute:1,wheeliebar:0}},
+  {id:'dot', name:'Dot “Duster” Callahan', car:'’71 Dust Devil', color:0xb08968, face:'#b08968', etBase:4.0, rtBase:0.22, rtVar:0.08, power:0.8274, shiftRpm:7450, blower:3, pay:13000, diff:'SALT FLATS', dcls:'d3', shape:'charge', lvl:'THE RECORD CHASE — BONNEVILLE', line:'She tunes by ear, at dawn, alone. The salt respects that.', wheelie:true, aero:4, turbo:4, chute:2, needChute:true, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:4,intercooler:4,ecu:5,fuelsys:4,drivetrain:4,chassis:4,aero:4,chute:2,wheeliebar:1}},
+  {id:'kenji', name:'Kenji “Comet” Sato', car:'’70 Comet Tail', color:0x3a6ea5, face:'#3a6ea5', etBase:3.1, rtBase:0.22, rtVar:0.07, power:1.2474, shiftRpm:7450, blower:3, pay:18000, diff:'SALT FLATS', dcls:'d3', shape:'launch', lvl:'THE RECORD CHASE — BONNEVILLE', line:'His tail cone is longer than your whole car. So is his shadow.', wheelie:true, aero:4, turbo:4, chute:3, needChute:true, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:4,intercooler:5,ecu:5,fuelsys:5,drivetrain:5,chassis:5,aero:4,chute:3,wheeliebar:1}},
+  {id:'ruth', name:'Ruth “Big Mama” Okafor', car:'’69 Queen of the Salt', color:0x6d28a8, face:'#6d28a8', etBase:2.9, rtBase:0.21, rtVar:0.07, power:1.00, shiftRpm:7450, blower:3, pay:26000, diff:'SALT QUEEN', dcls:'d3', shape:'even', lvl:'THE RECORD CHASE — BONNEVILLE', line:'Twenty years on the salt. She has buried faster men than you — and she guards the big records.', wheelie:true, aero:5, turbo:5, chute:3, needChute:true, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:6,intercooler:6,ecu:6,fuelsys:6,drivetrain:6,chassis:6,aero:6,chute:4,wheeliebar:1}},
 ];
 /* Parts shop — v0.4: 17 parts, 79 tiers. The original 8 run five tiers
    deep now (their first three tiers are byte-for-byte the v0.3 parts),
@@ -576,6 +576,18 @@ function upParams(up){
      up on the launch and stays up for the first 30 m — unless the
      WHEELIE BAR (last part in the shop) is fitted. */
   P.launchPower=P.powerMult*P.forceMult*P.exhMult*P.tuneMult*P.turboMult*P.icMult*P.ecuMult*P.chassisMult*P.drive2Mult*P.stackMult;
+  /* v0.4.3 PACE RESET (Joshua, 2026-11-19 20:11): "The cars are way
+     too fast to start — we're going to start at the 12s and work our
+     way down to whatever the records are." paceMult is a governor on
+     the car's shove, keyed to launchPower (how much car this is):
+     the stock car keeps 0.4495 of its force and runs 12.25s, the
+     full 8-part street build runs 9.50s, drag spec 5.50s — and the
+     governor lets go entirely at the top end (launchPower >= 12),
+     so the MAX record build runs the un-governed physics:
+     2.517 @ 769.397, identical to v0.4.2. Anchors bisected from the
+     shipped physics and proven in qa-v0.4/results-races-v043.json. */
+  const _L=P.launchPower;
+  P.paceMult=_L<=1?0.4495:_L<1.2659?0.4495+(_L-1)*0.1407:_L<3.4189?0.4869+(_L-1.2659)*0.1726:_L<12?0.8585+(_L-3.4189)*0.01649:1;
   return P;
 }
 let save;
@@ -1697,7 +1709,7 @@ function newCarState(power,up){
   return {v:0,dist:0,gear:0,throttle:0,power:power,nitroT:0,nitroLeft:1,shiftCut:0,
           launched:false,launchT:0,finishTotal:null,trapV:0,slip:0,shifts:[],splits:{},
           splitIdx:0,rpmDisp:900,
-          powerMult:up.powerMult,forceMult:up.forceMult,forceBase:up.forceMult,dragMult:up.dragMult*(up.blowerDrag||1)*(up.aeroDrag||1),
+          powerMult:up.powerMult,forceMult:up.forceMult,forceBase:up.forceMult,paceMult:up.paceMult||1,dragMult:up.dragMult*(up.blowerDrag||1)*(up.aeroDrag||1),
           slipT:up.slipT,slipGrip:up.slipGrip,cutP:up.cutP,cutN:up.cutN,
           nitroMult:up.nitroMult,nitroDur:up.nitroDur*(up.tuneDur||1)*(up.methDur||1),cutKeep:up.cutKeep||0,
           launchMult:up.launchMult||1,driveMult:up.driveMult||1,topMult:up.topMult||1,
@@ -1716,8 +1728,16 @@ const SPLIT_MARKS=[[18.288,'60ft'],[100.584,'330ft'],[201.168,'1/8mi'],[304.8,'1
    the line and charge the top end — the lead swaps during the run
    while the total stays on the tuned number */
 function rivalShapeAt(shape,dist){
-  if(shape==='launch'){ if(dist<100) return 1.06-0.06*(dist/100); if(dist<250) return 1; return 1-0.055*((dist-250)/152); }
-  if(shape==='charge'){ if(dist<100) return 0.945+0.055*(dist/100); if(dist<200) return 1; return 1+0.06*((dist-200)/202); }
+  /* v0.4.3: the lobes are HALF their v0.3 size (launch head +3%,
+     charge tail +3%). Under matched machinery the shape is track
+     character that swaps the lead — not a machinery edge: at the
+     v0.4.3 pace the old +6% launch head was worth free time the
+     player could never match, and PERFECT driving lost races to
+     launch-shape rivals at street builds. Halved, the shapes still
+     cross 1.0 mid-run (the back-and-forth stays) but the best
+     driving wins — measured in qa-v0.4/results-ladder-v043.json. */
+  if(shape==='launch'){ if(dist<100) return 1.03-0.03*(dist/100); if(dist<250) return 1; return 1-0.0275*((dist-250)/152); }
+  if(shape==='charge'){ if(dist<100) return 0.9725+0.0275*(dist/100); if(dist<200) return 1; return 1+0.03*((dist-200)/202); }
   return 1;
 }
 function stepCar(c,dt,now){
@@ -1740,7 +1760,7 @@ function stepCar(c,dt,now){
   let force=0;
   if(c.throttle>0){
     if(rpmC<LIMITER*(c.limMult||1)){
-      force=c.throttle*c.power*c.powerMult*c.forceMult*FORCE_K*RATIOS[gear]*(gear===0?c.launchMult:(gear===4?Math.max(c.topMult,0.80):1))*c.driveMult*torqueFactor(Math.max(rpmC,c.slip>0?4300:0))*c.exhMult*c.tuneMult*c.stackMult*(c.turboMult||1)*(c.icMult||1)*(c.ecuMult||1)*(c.drive2Mult||1)*(c.chassisMult||1);
+      force=c.throttle*c.power*c.powerMult*c.forceMult*(c.paceMult||1)*FORCE_K*RATIOS[gear]*(gear===0?c.launchMult:(gear===4?Math.max(c.topMult,0.80):1))*c.driveMult*torqueFactor(Math.max(rpmC,c.slip>0?4300:0))*c.exhMult*c.tuneMult*c.stackMult*(c.turboMult||1)*(c.icMult||1)*(c.ecuMult||1)*(c.drive2Mult||1)*(c.chassisMult||1);
       if(c.nitroT>0) force*=c.nitroMult*(c.methMult||1);   /* methanol makes the shot hit harder */
       if(c.shiftCut>0) force*=Math.max(c.cutKeep,c.tuneKeep||0,c.ecuKeep||0);   /* flat-shift / tune / ECU: power carried through the shift */
       if(gear===0) force*=c.biteMult;      /* slicks: grip is what lets the launch use power */
@@ -1923,11 +1943,13 @@ function stopAudioBed(){
     fade(); }catch(e){ try{ bed.pause(); }catch(e2){} }
 }
 /* v0.4.2: roll the AI's next shift target — his shift point ± his
-   jitter window, with a ~7% MISS: the target jumps to the limiter's
+   jitter window, with a MISS chance: the target jumps to the limiter's
    edge (7620–7660, always under the 7680 limiter so he can still
-   reach it and shift), costing him the buzz + the long cut. */
+   reach it and shift), costing him the buzz + the long cut.
+   v0.4.3: the miss chance rises a notch (field 12% -> 16%, Scotty
+   7% -> 12%) — one of the owner's "levels a little easier" levers. */
 function aiRollShiftT(rival){
-  const missP = rival.id==='scotty' ? 0.07 : 0.12;
+  const missP = rival.id==='scotty' ? 0.12 : 0.16;
   if(Math.random()<missP) return 7620+Math.random()*40;
   return rival.shiftRpm+(Math.random()*2-1)*(S.aiJit||120);
 }
@@ -1951,16 +1973,18 @@ function startRace(rival){
   /* the rival's driving fingerprint: a per-gear shift window around
      his shift point — early ladder rivals wander wide, the late
      ones are tight. Re-rolled every shift. Scotty's window is the
-     tightest in the field (±200 rpm around 7450) but human: living
+     tightest in the field (±280 rpm around 7250) but human: living
      on the limiter's edge bites him often enough that a PERFECT run
-     beats him at every build — measured in the v0.4.2 ladder proof. */
+     beats him at every build — measured in the ladder proof.
+     v0.4.3: every window widened a notch (owner: levels a little
+     easier) — field max(90, 320-idx*14), Scotty ±280. */
   const rIdx=Math.max(0,RIVALS.indexOf(rival));
-  S.aiJit = rival.id==='scotty' ? 200 : Math.max(55, 250-rIdx*13);
-  /* every driver can MISS a shift (v0.4.2): ~12% of gear changes the
-     target becomes the limiter's edge (Scotty, the pro, only ~7%) —
-     he buzzes it, takes the long
-     cut, and loses real ground he has to win back. That is the
-     mistake that makes matched races swap the lead. */
+  S.aiJit = rival.id==='scotty' ? 280 : Math.max(90, 320-rIdx*14);
+  /* every driver can MISS a shift (v0.4.2): 16% of gear changes the
+     target becomes the limiter's edge (Scotty, the pro, only 12%) —
+     he buzzes it, takes the long cut, and loses real ground he has
+     to win back. That is the mistake that makes matched races swap
+     the lead. (v0.4.3: rates raised from 12%/7% — easier levels.) */
   S.aiShiftT=aiRollShiftT(rival);
   S.aiRT=rival.rtBase+Math.random()*rival.rtVar; S.aiLaunchAt=null;
   /* rival car in its colors, with its own street mods */
@@ -2323,7 +2347,7 @@ function drawTach(rpm,gear){
   tach.shadowColor='#0096FF'; tach.shadowBlur=14; tach.stroke(); tach.shadowBlur=0;
   if(S.overRev>0.35){ /* the tach itself screams before the motor lets go */
     tach.beginPath(); tach.arc(cx,cy,R+14,ang(7500),a1);
-    tach.strokeStyle='rgba(255,51,85,'+(S.overRev>0.95?(0.6+0.4*Math.sin(performance.now()/40)):0.85)+')';
+    tach.strokeStyle='rgba(255,51,85,'+(S.overRev>1.4?(0.6+0.4*Math.sin(performance.now()/40)):0.85)+')';
     tach.lineWidth=6; tach.stroke(); }
   tach.fillStyle='#8FA9C4'; tach.font='700 19px Arial'; tach.textAlign='center';
   for(let r=0;r<=8000;r+=1000){ const a=ang(r),x=cx+Math.cos(a)*(R-26),y=cy+Math.sin(a)*(R-26)+7;
@@ -2351,7 +2375,7 @@ function engineAudio(rpm,thr,running,dt){
        (the moment the in-game smoking ends). */
     if(S.audioBed){ AudioX.engine(0,0,false,0,false,0); return; }
     if(S.blown){ AudioX.engine(0,0,false,0,false,0); return; } /* a blown motor stays dead */
-    const strain=S.overRev?clamp(S.overRev/1.6,0,1):0;
+    const strain=S.overRev?clamp(S.overRev/2.0,0,1):0;
     AudioX.engine(rpm,thr,running, save?save.up.engine:0, !!(S.player&&S.player.nitroT>0&&S.player.finishTotal===null), strain); }
 }
 /* REDLINE = BLOWN MOTOR (v0.3): the bang, the clip, the DNF */
@@ -2481,20 +2505,22 @@ function animate(){
         if(S.player.launched) stepCar(S.player,sdt,nowI);
       }
       const p=S.player, a=S.ai;
-      /* REDLINE = BLOWN MOTOR: sustained over-rev in a gear that still
-         has a shift left in it cooks the motor. Perfect shifts never
-         get near it; top gear is exempt — no shift left to take. */
+      /* REDLINE = BLOWN MOTOR: over-rev in a gear that still has a
+         shift left in it cooks the motor — but only SUSTAINED red
+         (v0.4.3, Joshua 2026-11-19 20:14: "You have to be in the red
+         for two seconds before your motor blows"). The timer counts
+         only while the needle is in the red and RESETS the moment
+         rpm drops out of it: a late shift that kisses the red costs
+         nothing; camping in it for two full seconds blows the motor.
+         Perfect shifts never get near it; top gear is exempt — no
+         shift left to take. */
       if(p.launched&&p.finishTotal===null&&!S.blown){
         const rNow=rpmForC(p,p.gear);
         if(p.gear<4&&p.throttle>0&&rNow>PERFECT_HI) S.overRev+=dt;
-        /* v0.4.1: forgiveness halved (was dt*1.5) — camping the redline
-           still blows in ~1.5s, and now repeated late shifts across a
-           run ADD UP toward a blow instead of wiping clean each gear.
-           One sloppy shift still forgives; a run of them cooks it. */
-        else S.overRev=Math.max(0,S.overRev-dt*0.75);
-        if(S.overRev>0.95){ S._wisp=(S._wisp||0)-dt;
+        else S.overRev=0;
+        if(S.overRev>1.4){ S._wisp=(S._wisp||0)-dt;
           if(S._wisp<=0){ S._wisp=0.12; puff(playerCar.position.x,0.85,playerCar.position.z+0.9,2,0.5,0.9); } }
-        if(S.overRev>=1.6) blowMotor();
+        if(S.overRev>=2.0) blowMotor();
       }
       if(p.wheelieNow&&!S._wheelieWarned){ S._wheelieWarned=true;
         banner('WHEELIE! FRONT END UP — the WHEELIE BAR (last part in the shop) plants this launch','foul',2200); }
@@ -2568,7 +2594,7 @@ function animate(){
     /* the big HUD tree rides the whole start sequence, then clears */
     $('hudtree').classList.toggle('show', S.phase==='burnout'||S.phase==='rollin'||S.phase==='staging'||S.phase==='foul'||(S.phase==='run'&&S.greenTime!==null&&S.simTime-S.greenTime<1.2));
     const dz=$('danger');
-    if(S.overRev>0.95){ dz.textContent='⚠ MOTOR DYING — SHIFT NOW ⚠'; dz.className='show hot'; }
+    if(S.overRev>1.4){ dz.textContent='⚠ MOTOR DYING — SHIFT NOW ⚠'; dz.className='show hot'; }
     else if(S.overRev>0.35){ dz.textContent='⚠ REDLINE — SHIFT! ⚠'; dz.className='show'; }
     else if(dz.className) dz.className='';
     if(S.nitroKick>0) S.nitroKick=Math.max(0,S.nitroKick-dt*1.7);
