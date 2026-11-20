@@ -163,6 +163,16 @@ footer nav a{color:#cfe0f2;font-weight:600;text-decoration:none;display:inline-f
 footer a{color:#6FC3FF}
 @media(max-width:760px){.cats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.feat{grid-template-columns:1fr}.doors{grid-template-columns:1fr}.freeband .btn{margin-left:0}.install{padding:1.2rem 1.1rem;gap:1rem}.install img{width:64px;height:64px}.hg-row img{width:104px;height:84px}}
 @media(max-width:560px){.brand{gap:9px}.brand img{height:40px}.brand-name{font-size:.84rem;letter-spacing:.02em}.nav-toggle{padding:8px 12px;font-size:.85rem}}
+
+/* ---------- shelf tabs (no-scroll rule, 2026-11-19) ---------- */
+.shelftabs{position:sticky;top:0;z-index:35;background:#05080e;border-bottom:1px solid rgba(0,150,255,.4);box-shadow:0 4px 14px rgba(5,8,14,.28)}
+.shelftabs .wrap{display:flex;gap:8px;overflow-x:auto;padding-top:8px;padding-bottom:8px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.shelftabs .wrap::-webkit-scrollbar{display:none}
+.shelftab{flex:0 0 auto;border:1px solid rgba(255,255,255,.35);background:transparent;color:#cfe0f2;font:inherit;font-weight:700;font-size:.9rem;border-radius:999px;padding:9px 16px;cursor:pointer;min-height:44px;white-space:nowrap}
+.shelftab[aria-selected="true"]{background:#0096FF;border-color:#0096FF;color:#fff}
+.shelftab:hover{border-color:#0096FF;color:#fff}
+[data-shelf][hidden]{display:none!important}
+main section{scroll-margin-top:76px}
 </style>
 </head>
 <body>
@@ -240,6 +250,16 @@ footer a{color:#6FC3FF}
   <span><a href="https://jdawgsindustries.com/refunds.html">Read the full policy →</a></span>
 </div></div>
 
+<div class="shelftabs" role="tablist" aria-label="Store shelves">
+  <div class="wrap">
+    <button class="shelftab" type="button" role="tab" data-tab="all" aria-selected="true">All Shelves</button>
+    <button class="shelftab" type="button" role="tab" data-tab="games" aria-selected="false">Games</button>
+    <button class="shelftab" type="button" role="tab" data-tab="apps" aria-selected="false">Apps</button>
+    <button class="shelftab" type="button" role="tab" data-tab="packs" aria-selected="false">Templates &amp; Packs</button>
+    <button class="shelftab" type="button" role="tab" data-tab="tools" aria-selected="false">Tools &amp; More</button>
+  </div>
+</div>
+
 <main class="wrap">
 
 <section><h2 class="sec">Shop by category</h2><p class="secsub">Four shelves. Everything on them is $1 — the one featured tool below is $2.99, marked plainly.</p>
@@ -251,7 +271,7 @@ footer a{color:#6FC3FF}
 </div></section>
 
 <!-- ================= FEATURED ================= -->
-<section id="featured" data-search-group><p class="eyebrow">Featured</p><h2 class="sec">Our best tool, up front.</h2><p class="secsub">One tool, priced plainly — it's the one thing in the store that isn't $1.</p>
+<section id="featured" data-search-group data-shelf="extra"><p class="eyebrow">Featured</p><h2 class="sec">Our best tool, up front.</h2><p class="secsub">One tool, priced plainly — it's the one thing in the store that isn't $1.</p>
 <div class="feat" data-search-item><div class="txt"><span class="tag">Featured tool</span><h3>Hustle City Prompt Generator</h3>
 <p>Tell it what you want in your own words — a picture, a video, an ad, a story, some code. It asks a few short questions, then writes a strong, detailed prompt for you, ready to paste into any AI tool. Good words in, better results out — no prompt know-how needed.</p>
 <div class="price">$2.99 <small>one-time</small></div><a class="btn" href="https://buy.stripe.com/cNi9AT8Kl0jO2tL5OZ3kt0N">Buy — $2.99</a>
@@ -259,7 +279,7 @@ footer a{color:#6FC3FF}
 <div class="art"><img src="assets/badge-1dollar.webp" alt="$1 store badge" width="1600" height="1600" loading="lazy"></div></div></section>
 
 <!-- ================= GAMES ================= -->
-<section id="games" data-search-group><p class="eyebrow">The games</p><h2 class="sec">Hustle City</h2><p class="secsub">Plays right in your browser — add it to your home screen like an app.</p>
+<section id="games" data-search-group data-shelf="games"><p class="eyebrow">The games</p><h2 class="sec">Hustle City</h2><p class="secsub">Plays right in your browser — add it to your home screen like an app.</p>
 <div class="grid">
 
 <article class="card" data-search-item>
@@ -319,7 +339,7 @@ footer a{color:#6FC3FF}
 </div></section>
 
 <!-- ================= HOW INSTALLING WORKS ================= -->
-<section id="how-install"><p class="eyebrow">Dead simple</p><h2 class="sec">How installing works</h2><p class="secsub">Buy → tap to pay → play. Tap to pay with Apple Pay, Google Pay, or Link — whichever your phone offers. No accounts — and no digging through your phone's settings.</p>
+<section id="how-install" data-shelf="extra"><p class="eyebrow">Dead simple</p><h2 class="sec">How installing works</h2><p class="secsub">Buy → tap to pay → play. Tap to pay with Apple Pay, Google Pay, or Link — whichever your phone offers. No accounts — and no digging through your phone's settings.</p>
 <div class="door-card">
   <h3>Installs like an app — no settings changes</h3>
   <p><b>1.</b> Your game page opens the second your payment lands — tap <b>Play</b> and the full game starts.<br>
@@ -331,7 +351,7 @@ footer a{color:#6FC3FF}
 </div></section>
 
 <!-- ================= APPS ================= -->
-<section id="apps" data-search-group><p class="eyebrow">The app shelf</p><h2 class="sec">Apps</h2><p class="secsub">Single-purpose apps that run right in your phone's browser. One payment each — no subscription, no account, no ads. Tap to pay with Apple Pay, Google Pay, or Link — whichever your phone offers.</p>
+<section id="apps" data-search-group data-shelf="apps"><p class="eyebrow">The app shelf</p><h2 class="sec">Apps</h2><p class="secsub">Single-purpose apps that run right in your phone's browser. One payment each — no subscription, no account, no ads. Tap to pay with Apple Pay, Google Pay, or Link — whichever your phone offers.</p>
 <div class="grid">
 
 <article class="card" data-search-item>
@@ -490,10 +510,10 @@ footer a{color:#6FC3FF}
 </div></section>
 
 <!-- ================= FREE WALLPAPERS ================= -->
-<section id="free-wallpapers"><div class="freeband"><div><h3>Free Wallpapers — 988 of them</h3><p>Hustle City art, futuristic cities, cyborgs, AI robots, NASA space photos, muscle cars, wolves and more. 100% free — no ads, no catch.</p></div><a class="btn" href="free-wallpapers.html">Get free wallpapers →</a></div></section>
+<section id="free-wallpapers" data-shelf="extra"><div class="freeband"><div><h3>Free Wallpapers — 988 of them</h3><p>Hustle City art, futuristic cities, cyborgs, AI robots, NASA space photos, muscle cars, wolves and more. 100% free — no ads, no catch.</p></div><a class="btn" href="free-wallpapers.html">Get free wallpapers →</a></div></section>
 
 <!-- ================= TEMPLATES & PACKS ================= -->
-<section id="packs" data-search-group><p class="eyebrow">Downloads</p><h2 class="sec">Templates &amp; packs</h2><p class="secsub">Downloads that work — instructions included in every folder.</p>
+<section id="packs" data-search-group data-shelf="packs"><p class="eyebrow">Downloads</p><h2 class="sec">Templates &amp; packs</h2><p class="secsub">Downloads that work — instructions included in every folder.</p>
 <div class="grid">
 
 <article class="card" data-search-item>
@@ -513,7 +533,7 @@ footer a{color:#6FC3FF}
 </div></section>
 
 <!-- ================= TOOLS ================= -->
-<section id="tools" data-search-group><p class="eyebrow">Tools</p><h2 class="sec">The tool shelf.</h2><p class="secsub">More doors from the same house.</p>
+<section id="tools" data-search-group data-shelf="tools"><p class="eyebrow">Tools</p><h2 class="sec">The tool shelf.</h2><p class="secsub">More doors from the same house.</p>
 <div class="doors">
 
 <div class="door-card" data-search-item>
@@ -535,7 +555,7 @@ footer a{color:#6FC3FF}
 </div></section>
 
 <!-- ================= FOR BUSINESS ================= -->
-<section><p class="eyebrow">For business</p><h2 class="sec">Q-Day Ledger™</h2><p class="secsub">For businesses: it lists the codes your systems rely on, shows which ones future super-computers could crack first, and gives you a step-by-step plan to replace them before the federal deadlines.</p>
+<section data-shelf="tools"><p class="eyebrow">For business</p><h2 class="sec">Q-Day Ledger™</h2><p class="secsub">For businesses: it lists the codes your systems rely on, shows which ones future super-computers could crack first, and gives you a step-by-step plan to replace them before the federal deadlines.</p>
 <div class="door-card">
   <h3>Q-Day Ledger™</h3>
   <div class="price">From $1,499 <small>one-time</small></div>
@@ -544,7 +564,7 @@ footer a{color:#6FC3FF}
 </div></section>
 
 <!-- ================= SELL ON THE ARCADE ================= -->
-<section id="sell"><p class="eyebrow">For developers</p><h2 class="sec">Sell on the Arcade</h2><p class="secsub">Made a game? Sell it here — one-time $19.99 · just 3% of sales. No ads in this store, and none in your game either. We test every game like it's our own before it lists; junk doesn't make the shelf.</p>
+<section id="sell" data-shelf="tools"><p class="eyebrow">For developers</p><h2 class="sec">Sell on the Arcade</h2><p class="secsub">Made a game? Sell it here — one-time $19.99 · just 3% of sales. No ads in this store, and none in your game either. We test every game like it's our own before it lists; junk doesn't make the shelf.</p>
 <div class="door-card">
   <h3>Your game. Our storefront.</h3>
   <p>You set your price and keep 97% of every sale — the big stores charge $25 to walk in and then take 15% of every sale forever. Here it's $19.99 at the door and just 3% after, and your players' information is never sold. By anyone.</p>
@@ -553,7 +573,7 @@ footer a{color:#6FC3FF}
 </div></section>
 
 <!-- ================= INSTALL ================= -->
-<section>
+<section data-shelf="extra">
   <div class="install">
     <img src="icons/arcade-192.png" alt="Digital Dollar Store home-screen icon — a chrome dollar sign" width="192" height="192">
     <div>
@@ -617,6 +637,48 @@ footer a{color:#6FC3FF}
   clearBtn.addEventListener('click',reset);
   emptyBtn.addEventListener('click',reset);
   apply();
+})();
+</script>
+<script>
+/* Shelf tabs — the no-scroll rule: one tap puts any shelf's products on
+   screen, no mile-long scroll. Default view keeps every shelf on the page. */
+(function(){
+  var tabs=Array.prototype.slice.call(document.querySelectorAll('.shelftab'));
+  if(!tabs.length) return;
+  var shelves=Array.prototype.slice.call(document.querySelectorAll('[data-shelf]')),
+      bar=document.querySelector('.shelftabs'),
+      current='all',
+      HASH2TAB={'#games':'games','#apps':'apps','#packs':'packs','#tools':'tools','#featured':'all','#how-install':'all','#sell':'tools'},
+      TAB2ID={games:'games',apps:'apps',packs:'packs',tools:'tools'};
+  function show(name){
+    current=name;
+    tabs.forEach(function(t){ t.setAttribute('aria-selected', String(t.getAttribute('data-tab')===name)); });
+    shelves.forEach(function(s){ s.hidden=!(name==='all'||s.getAttribute('data-shelf')===name); });
+  }
+  function clearSearch(){
+    var inp=document.getElementById('jd-search-input');
+    if(inp&&inp.value){ inp.value=''; inp.dispatchEvent(new Event('input',{bubbles:true})); }
+  }
+  function activate(name){
+    clearSearch(); show(name);
+    var el=name==='all'?null:document.getElementById(TAB2ID[name]);
+    if(el) el.scrollIntoView({block:"start",behavior:"instant"});
+    else if(bar) window.scrollTo({top:Math.max(0, bar.getBoundingClientRect().top+window.scrollY),behavior:"instant"});
+  }
+  tabs.forEach(function(t){ t.addEventListener('click', function(){ activate(t.getAttribute('data-tab')); }); });
+  function fromHash(){
+    var name=HASH2TAB[window.location.hash];
+    if(!name) return false;
+    show(name);
+    var el=document.querySelector(window.location.hash);
+    if(el) el.scrollIntoView({block:"start",behavior:"instant"});
+    return true;
+  }
+  window.addEventListener('hashchange', fromHash);
+  if(!fromHash()) show('all');
+  /* Typing in search always searches the whole store, not one shelf. */
+  var inp=document.getElementById('jd-search-input');
+  if(inp) inp.addEventListener('input', function(){ if(inp.value.trim()&&current!=='all') show('all'); });
 })();
 </script>
 <script src="jdawgs-chat.js" defer></script>

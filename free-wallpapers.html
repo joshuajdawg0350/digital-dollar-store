@@ -56,6 +56,13 @@
   .btn-dl{background:linear-gradient(180deg,var(--eb-bright),var(--eb-deep));color:#04101F;font-weight:800;
     border:1px solid rgba(111,195,255,.65);border-radius:10px;text-decoration:none;font-family:var(--font-display)}
   .credits{color:var(--muted);font-size:.85rem;max-width:70ch}
+  /* ---------- sticky shelf bar (no-scroll rule, 2026-11-19) ---------- */
+  .chipsbar{position:sticky;top:61px;z-index:45;background:rgba(5,8,14,.97);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--line-strong);padding:.55rem 0 .3rem}
+  .chipsbar .chips{flex-wrap:nowrap;overflow-x:auto;margin:0;padding-bottom:.4rem;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .chipsbar .chips::-webkit-scrollbar{display:none}
+  .chipsbar .chip{flex:0 0 auto}
+  .chipsbar .fw-count{margin:.1rem 0 .35rem}
+  #grid{scroll-margin-top:190px}
 </style>
 </head>
 <body>
@@ -85,8 +92,13 @@
     <h1 class="chrome-text">Free Wallpapers</h1>
     <p class="lead"><b>988 phone wallpapers. 100% free — no ads, no catch, no sign-up.</b>
     Hustle City art, futuristic cities, cyborgs, AI &amp; robots, real NASA space photos, muscle cars,
-    wolves, dragons, mountains and ocean, skulls, gothic whimsy and dark gothic art — made by us or pulled from public-domain and CC0 collections
-    we&rsquo;re allowed to share. Tap one, hit download, set it as your wallpaper. That&rsquo;s it.<br><b>New:</b> a whole Electric Solids section in our electric colors, fresh Aurora, Chrome &amp; Carbon, Geometry, Marble &amp; Ink and Hero art &mdash; and Muscle Cars &amp; Bikes fully restocked with new in-house pieces. <b>Just added:</b> a whole dark wing &mdash; Skulls, Gothic Whimsy and Dark &amp; Gothic, 229 brand-new in-house pieces.</p>
+    wolves, dragons, mountains and ocean, skulls, gothic whimsy and dark gothic art. Pick a shelf below, tap one, hit download, set it as your wallpaper. That&rsquo;s it.</p>
+  </div>
+</section>
+
+<main>
+  <div class="chipsbar">
+    <div class="wrap">
     <div class="chips" id="chips">
         <button class="chip on" data-cat="all">All · 988</button>
         <button class="chip" data-cat="solids">Electric Solids · 80</button>
@@ -112,13 +124,13 @@
         <button class="chip" data-cat="dark">Dark &amp; Gothic · 72</button>
     </div>
     <p class="fw-count" id="fw-count" role="status" aria-live="polite"></p>
+    </div>
   </div>
-</section>
-
-<main>
   <div class="wrap">
     <div class="grid" id="grid"></div>
     <button class="btn btn-primary more" id="more" type="button">Show more</button>
+
+    <p class="credits"><b>New:</b> a whole Electric Solids section in our electric colors, fresh Aurora, Chrome &amp; Carbon, Geometry, Marble &amp; Ink and Hero art &mdash; and Muscle Cars &amp; Bikes fully restocked with new in-house pieces. <b>Just added:</b> a whole dark wing &mdash; Skulls, Gothic Whimsy and Dark &amp; Gothic, 229 brand-new in-house pieces.</p>
 
     <div class="qr-band">
       <img src="assets/qr-free-wallpapers.png" alt="QR code for this free wallpapers page" width="118" height="118">
@@ -222,6 +234,15 @@ document.getElementById('lb-close').addEventListener('click', closeLb);
 lb.addEventListener('click', e => { if (e.target === lb) closeLb(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
 render();
+</script>
+<script>
+/* No-scroll rule: after picking a shelf, jump back to the top of the grid —
+   the sticky shelf bar stays in reach the whole time. */
+document.getElementById('chips').addEventListener('click', function(e){
+  if(e.target.closest('.chip')) setTimeout(function(){
+    document.getElementById('grid').scrollIntoView({block:"start",behavior:"instant"});
+  }, 60);
+});
 </script>
 </body>
 </html>

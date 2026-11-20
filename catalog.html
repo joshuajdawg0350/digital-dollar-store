@@ -166,6 +166,17 @@
 .wf-gallery img{width:100%;height:auto;border-radius:50%;display:block}
 .wf-gallery figcaption{font-size:.74rem;color:var(--muted);margin-top:.3rem;line-height:1.3}
 .wf-note{font-size:.78rem;color:var(--muted);margin:0;grid-column:1/-1}
+
+/* ---------- shelf tabs (no-scroll rule, 2026-11-19) ---------- */
+.shelftabs{position:sticky;top:61px;z-index:45;background:rgba(5,8,14,.97);border-top:1px solid rgba(111,195,255,.35);border-bottom:1px solid rgba(111,195,255,.45);padding:.5rem 0}
+.shelftabs .wrap{display:flex;gap:.5rem;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.shelftabs .wrap::-webkit-scrollbar{display:none}
+.shelftab{flex:0 0 auto;font-family:var(--font-display);font-weight:800;font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;color:var(--eb-bright);border:1px solid var(--eb);border-radius:999px;padding:.55rem 1.05rem;background:rgba(5,8,14,.62);cursor:pointer;min-height:44px;display:inline-flex;align-items:center}
+.shelftab[aria-selected="true"]{background:linear-gradient(180deg,var(--eb-bright),var(--eb-deep));color:#04101F}
+.shelftab:hover{color:#fff}
+.shelftab[aria-selected="true"]:hover{color:#04101F}
+[data-shelf][hidden]{display:none!important}
+main section{scroll-margin-top:150px}
 </style>
 <style>
 /* ===== fit pass 2026-11-17: first screen = store name, promises, start of the shelf ===== */
@@ -255,10 +266,22 @@
   </div>
 </section>
 
+<div class="shelftabs" role="tablist" aria-label="Catalog shelves">
+  <div class="wrap">
+    <button class="shelftab" type="button" role="tab" data-tab="all" aria-selected="true">All Shelves</button>
+    <button class="shelftab" type="button" role="tab" data-tab="games" aria-selected="false">Games</button>
+    <button class="shelftab" type="button" role="tab" data-tab="bundles" aria-selected="false">Bundles</button>
+    <button class="shelftab" type="button" role="tab" data-tab="apps" aria-selected="false">Apps</button>
+    <button class="shelftab" type="button" role="tab" data-tab="watch-faces" aria-selected="false">Watch Faces</button>
+    <button class="shelftab" type="button" role="tab" data-tab="tools" aria-selected="false">Tools</button>
+    <button class="shelftab" type="button" role="tab" data-tab="business" aria-selected="false">For Business</button>
+  </div>
+</div>
+
 <main>
 
-  <!-- ================= GAMES ================= -->
-  <section class="arcade-band" id="free-wallpapers" style="padding:2.2rem 0">
+  <!-- ================= FREE WALLPAPERS BAND ================= -->
+  <section class="arcade-band" id="free-wallpapers" data-shelf="extra" style="padding:2.2rem 0">
   <div class="wrap">
     <h2 style="font-size:clamp(1.6rem,5vw,2.2rem);text-transform:uppercase">Free Wallpapers</h2>
     <p style="max-width:56ch;color:#C3CEDD">988 phone wallpapers — Hustle City art, futuristic cities, cyborgs, AI robots, NASA space photos, muscle cars, wolves, skulls, gothic whimsy, dark gothic art and more. <b style="color:#fff">100% free — no ads, no catch.</b></p>
@@ -266,7 +289,7 @@
   </div>
 </section>
 
-<section class="arcade-band" id="games" style="padding-top:1.5rem">
+<section class="arcade-band" id="games" data-shelf="games" style="padding-top:1.5rem">
     <div class="wrap">
       <div class="sec-head" style="margin-bottom:0">
         <p class="eyebrow">The games</p>
@@ -346,7 +369,7 @@
   </section>
 
   <!-- ================= BUNDLES ================= -->
-  <section class="arcade-band" id="bundles">
+  <section class="arcade-band" id="bundles" data-shelf="bundles">
     <div class="wrap">
       <div class="sec-head" style="margin-bottom:0">
         <p class="eyebrow">Best deal</p>
@@ -375,7 +398,7 @@
   </section>
 
   <!-- ================= APPS ================= -->
-  <section class="arcade-band" id="apps">
+  <section class="arcade-band" id="apps" data-shelf="apps">
     <div class="wrap">
       <div class="sec-head" style="margin-bottom:0">
         <p class="eyebrow">The app shelf</p>
@@ -597,7 +620,7 @@
   </section>
 
   <!-- ================= WATCH FACES ================= -->
-  <section class="arcade-band" id="watch-faces">
+  <section class="arcade-band" id="watch-faces" data-shelf="watch-faces">
     <div class="wrap">
       <div class="sec-head" style="margin-bottom:0">
         <p class="eyebrow">For your wrist</p>
@@ -639,7 +662,7 @@
   </section>
 
   <!-- ================= TOOLS ================= -->
-  <section class="arcade-band" id="tools">
+  <section class="arcade-band" id="tools" data-shelf="tools">
     <div class="wrap">
       <div class="sec-head" style="margin-bottom:0">
         <p class="eyebrow">Tools</p>
@@ -672,7 +695,7 @@
   </section>
 
   <!-- ================= FOR BUSINESS ================= -->
-  <section class="arcade-band" id="business">
+  <section class="arcade-band" id="business" data-shelf="business">
     <div class="wrap">
       <div class="sec-head" style="margin-bottom:0">
         <p class="eyebrow">For business</p>
@@ -709,6 +732,39 @@
   </div>
 </footer>
 
+<script>
+/* Shelf tabs — the no-scroll rule: one tap puts any shelf's products on
+   screen, no mile-long scroll. Default view keeps every shelf on the page. */
+(function(){
+  var tabs=Array.prototype.slice.call(document.querySelectorAll('.shelftab'));
+  if(!tabs.length) return;
+  var shelves=Array.prototype.slice.call(document.querySelectorAll('[data-shelf]')),
+      bar=document.querySelector('.shelftabs'),
+      HASH2TAB={'#games':'games','#bundles':'bundles','#apps':'apps','#watch-faces':'watch-faces','#tools':'tools','#business':'business','#free-wallpapers':'all'},
+      TAB2ID={games:'games',bundles:'bundles',apps:'apps','watch-faces':'watch-faces',tools:'tools',business:'business'};
+  function show(name){
+    tabs.forEach(function(t){ t.setAttribute('aria-selected', String(t.getAttribute('data-tab')===name)); });
+    shelves.forEach(function(s){ s.hidden=!(name==='all'||s.getAttribute('data-shelf')===name); });
+  }
+  function activate(name){
+    show(name);
+    var el=name==='all'?null:document.getElementById(TAB2ID[name]);
+    if(el) el.scrollIntoView({block:"start",behavior:"instant"});
+    else if(bar) window.scrollTo({top:Math.max(0, bar.getBoundingClientRect().top+window.scrollY),behavior:"instant"});
+  }
+  tabs.forEach(function(t){ t.addEventListener('click', function(){ activate(t.getAttribute('data-tab')); }); });
+  function fromHash(){
+    var name=HASH2TAB[window.location.hash];
+    if(!name) return false;
+    show(name);
+    var el=document.querySelector(window.location.hash);
+    if(el) el.scrollIntoView({block:"start",behavior:"instant"});
+    return true;
+  }
+  window.addEventListener('hashchange', fromHash);
+  if(!fromHash()) show('all');
+})();
+</script>
 <script src="assets/site.js" defer></script>
 <script src="jdawgs-chat.js" defer></script>
 </body>
