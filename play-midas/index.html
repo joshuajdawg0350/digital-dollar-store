@@ -553,6 +553,7 @@ PokerHand.prototype.advance = function(){
   this.currentBet = 0; this.lastRaise = this.BB; this.acted = {};
   if(this.canActSeats().length === 0){ this.advance(); return; }
   this.actor = this.nextToAct(this.button); /* postflop: the non-button acts first */
+  if(this.actor === -1) this.actor = this.button; /* non-button is all-in: the button is the only player who can act, so the turn is his — without this the hand froze here (pump has no actor -1 case) */
 };
 PokerHand.prototype.settleFoldOut = function(){
   var w = this.activeSeats()[0], amt = this.pot();
@@ -641,7 +642,7 @@ function midasDecide(hand, stats){
 
 /* ---------------- match state + your tendencies ---------------- */
 var TOTAL_HANDS = 10, START_STACK = 1000;
-var players, handNo, button, hand, busy, lastStage, matchOver;
+var players, handNo, button, hand, busy, lastStage, matchOver, readShown, lastReadHTML;
 var S; /* your stats, this match */
 function blankStats(){
   return {
@@ -657,7 +658,7 @@ function blankStats(){
 var handFlags;
 function resetMatch(){
   players = [{name:"You", stack:START_STACK}, {name:"Midas", stack:START_STACK}];
-  handNo = 0; button = 0; hand = null; busy = false; lastStage = null; matchOver = false;
+  handNo = 0; button = 0; hand = null; busy = false; lastStage = null; matchOver = false; readShown = false; lastReadHTML = "";
   S = blankStats();
 }
 function fmt(n){ return n.toLocaleString("en-US"); }
@@ -956,10 +957,58 @@ function paginateRead(){
   });
   show(0);
 }
+/* Emergency path: if paging the read fails for any reason, the read must
+   still appear — one plain visible block beats a blank screen. Gathers
+   every read/invite node, wherever the failed paging left it (inside
+   half-built pages, or still in the original blocks), back into a single
+   read + invite in the original order; re-injects the read HTML if the
+   slot somehow ended up empty. */
+function showReadFallback(){
+  document.body.classList.remove("inplay");
+  document.body.classList.add("reading");
+  var slot = $("readSlot");
+  var readBox = document.createElement("div"); readBox.className = "read";
+  var inviteBox = document.createElement("div"); inviteBox.className = "invite";
+  function drain(node, box){ while (node && node.firstChild) box.appendChild(node.firstChild); }
+  Array.prototype.slice.call(slot.querySelectorAll(".rpage")).forEach(function(p){
+    var inner = p.firstChild;
+    drain(inner, (inner && inner.className === "invite") ? inviteBox : readBox);
+  });
+  Array.prototype.slice.call(slot.children).forEach(function(ch){
+    if (ch.classList.contains("read")) drain(ch, readBox);
+    else if (ch.classList.contains("invite")) drain(ch, inviteBox);
+  });
+  Array.prototype.slice.call(slot.querySelectorAll(".rpage, .rnav")).forEach(function(n){ n.remove(); });
+  Array.prototype.slice.call(slot.children).forEach(function(ch){
+    if (!ch.children.length && (ch.classList.contains("read") || ch.classList.contains("invite"))) ch.remove();
+  });
+  if (readBox.children.length) slot.appendChild(readBox);
+  if (inviteBox.children.length) slot.appendChild(inviteBox);
+  if (!slot.querySelector(".read") && lastReadHTML){
+    slot.innerHTML = lastReadHTML;
+    var ag = $("btnAgain");
+    if (ag) ag.addEventListener("click", playAgain);
+  }
+  var againBtn = $("btnAgain");
+  if (againBtn) againBtn.addEventListener("click", function(){
+    document.body.classList.remove("reading");
+    document.body.classList.remove("inplay");
+  });
+  window.scrollTo(0, 0);
+}
+function playAgain(){
+  document.body.classList.remove("reading");
+  document.body.classList.remove("inplay");
+  resetMatch();
+  $("readSlot").innerHTML = "";
+  render(false);
+  setActions("next");
+  $("btnNext").textContent = "Start hand 1";
+  setStatus("Fresh match. Tap <b>&nbsp;Start hand 1&nbsp;</b> when you're ready.");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
 function showRead(){
-  render(true);
-  setActions("none");
-  $("raiserow").hidden = true;
+  if (readShown) return;
   var html = '<div class="read" id="read">'
     + '<div class="readHead"><div class="avatar big" aria-hidden="true"><svg viewBox="4 2 56 58"><use href="#midasBot"/></svg></div>'
     + '<div><span class="stamp">FIRST IMPRESSION — 10 HANDS IS A SMALL SAMPLE</span>'
@@ -975,17 +1024,19 @@ function showRead(){
     + '<a class="door" href="https://www.youtube.com/channel/UCpHAfhpgW-CjOXNvgKjHp5g"><span class="dt">♦ The J-Dawgs Poker Channel →</span><span class="dd">The nightly game, live and in replays — with Midas\'s own clone calling the action. Watch the bounty hunt unfold.</span></a>'
     + '<button class="act blue again" id="btnAgain">Play another 10 hands</button>'
     + '</div>';
+  readShown = true;
+  lastReadHTML = html;
   $("readSlot").innerHTML = html;
-  $("btnAgain").addEventListener("click", function(){
-    resetMatch();
-    $("readSlot").innerHTML = "";
-    render(false);
-    setActions("next");
-    $("btnNext").textContent = "Start hand 1";
-    setStatus("Fresh match. Tap <b>&nbsp;Start hand 1&nbsp;</b> when you're ready.");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  });
-  paginateRead();
+  $("btnAgain").addEventListener("click", playAgain);
+  try {
+    render(true);
+    setActions("none");
+    $("raiserow").hidden = true;
+    paginateRead();
+    if (!document.querySelector(".rpage.on")) showReadFallback();
+  } catch(e) {
+    try { showReadFallback(); } catch(e2) {}
+  }
 }
 
 /* ---------------- wiring ---------------- */
