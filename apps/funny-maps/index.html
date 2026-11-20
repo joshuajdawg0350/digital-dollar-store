@@ -5,15 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Funny Maps — Right directions. Funny voices.</title>
 <link rel="stylesheet" href="vendor/leaflet.css">
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0096FF">
-<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
-<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Funny Maps">
 <style>
   :root{
     --bg:#04060a; --panel:rgba(8,13,20,.96); --panel2:rgba(13,20,30,.94);
@@ -172,10 +163,12 @@
   /* ---------- per-character tile treatments (polished 2026-11-18: same
      identities, professional grade — lighter washes, cleaner reads) ---------- */
   #map[data-style="bubba"] .leaflet-tile-pane{filter:sepia(.22) saturate(.92) brightness(1.01) contrast(1.0);}
-  #map[data-style="dre"] .leaflet-tile-pane{filter:invert(.9) hue-rotate(188deg) saturate(.55) brightness(.9) contrast(1.1);}
+  #map[data-style="jermaine"] .leaflet-tile-pane{filter:invert(.9) hue-rotate(188deg) saturate(.55) brightness(.9) contrast(1.1);}
   #map[data-style="hurt"] .leaflet-tile-pane{filter:sepia(.38) hue-rotate(36deg) saturate(.5) contrast(1.05) brightness(.96);}
   #map[data-style="steve"] .leaflet-tile-pane{filter:sepia(.5) saturate(.68) brightness(1.05) contrast(.95);}
   #map[data-style="nora"] .leaflet-tile-pane{filter:brightness(1.03) saturate(1.1) contrast(1.02);}
+  #map[data-style="smiri"] .leaflet-tile-pane{filter:brightness(1.07) saturate(.5) contrast(1.02);}
+  #map[data-style="dislexa"] .leaflet-tile-pane{filter:hue-rotate(14deg) saturate(1.18) brightness(1.02);}
   #qa-log{display:none;}
   /* ---------- wide screens: SIDE BY SIDE (Joshua's order, 2026-11-18) ----------
      On laptop/desktop widths the map and the people sit next to each
@@ -361,8 +354,8 @@ const CHARS = {
               "We have arrived, and in fine style too.",
               "Park 'er right there. Good drivin', partner."]
     }},
-  dre: { name:"Dre", emoji:"🎧", tag:"Streetwise. Coolest head in the car.",
-    pitch:0.92, rate:0.94, voiceNames:["Mark","Google UK English Male","Daniel","Google US English","David"], say:"Dray",
+  jermaine: { name:"Jermaine", emoji:"🎧", tag:"Streetwise. Coolest head in the car.",
+    pitch:0.92, rate:0.94, voiceNames:["Mark","Google UK English Male","Daniel","Google US English","David"], say:"Jermaine",
     lines:{
       depart:["Aight, I got you. Sit back — I know these streets like I drew 'em.",
               "We locked in. I'll call it out early so you never gotta guess."],
@@ -517,6 +510,89 @@ const CHARS = {
       arrive:["Arrived! And the itinerary is complete — every stop, checked off. I could frame this page.",
               "We're here! Slightly off the original schedule, entirely on the revised one. That counts. That absolutely counts."]
     }},
+  /* SMIRI — the smug assistant parody (Joshua, 2026-11-20). Her GARNISH
+     book is below; her wrong DIRECTIONS are not lines at all — the
+     inversion layer (smiriWrong, below) flips the real instruction
+     before it is spoken: left<->right, opposite compass, a wrong street
+     name, inflated distances, one premature arrival. The map, banner,
+     route line and GPS dot stay TRUE — her voice is the only liar. */
+  smiri: { name:"Smiri", emoji:"📱", tag:"Smug assistant. Gives you all the wrong directions — on purpose.",
+    pitch:1.15, rate:1.02, voiceNames:["Samantha","Google UK English Female","Zira","Aria","Jenny","Female","Google US English"], say:"Smiri", wrong:true,
+    lines:{
+      depart:["Of course. I found the fastest route. I find it every time. You're welcome.",
+              "Certainly. Routing you now — with complete confidence and partial information.",
+              "Here's what I found: the way there. Probably. Let's begin."],
+      left:["That was a left. I said left. The recording will confirm whichever of us is right.",
+            "Turning left — my favorite direction. I never miss it. Except statistically.",
+            "Left, exactly as planned. I plan all my turns retroactively."],
+      right:["Right. Of course right. I don't do wrong turns; I do alternate rights.",
+             "That right turn was brought to you by me. No refunds.",
+             "A flawless right. If it felt like a left, the road is showing off."],
+      slightLeft:["A gentle left. Subtle. Like my corrections.",
+                  "Slight left. I barely had to be wrong about that one."],
+      slightRight:["A gentle right. I contain multitudes of directions.",
+                   "Slight right. Precision is my middle name. I have several."],
+      sharpLeft:["Sharp left. Dramatic. I support it. I may even have meant it.",
+                 "That was the sharp one. Nailed it, give or take a compass."],
+      sharpRight:["Sharp right. I rehearsed that one. In my head. Just now.",
+                  "A bold right. Boldness is accuracy's confident cousin."],
+      uturn:["A U-turn. That was a scenic confirmation, and I scheduled it.",
+             "We're turning around. I call that a premium feature.",
+             "Reversing course — not because we were wrong, but because the view deserved a second look."],
+      roundabout:["The roundabout. Take an exit — any exit has potential. One of them is even correct.",
+                  "Circling is just turning with confidence and options."],
+      merge:["Merge now. Smoothly. Into whichever lane feels most like destiny.",
+             "Merging — I have alerted the highway. It has not responded, but I remain confident."],
+      straight:["Continue straight. Even I can't improve on straight. I have tried.",
+                "Straight ahead. This is the part where I'm most reliable. Enjoy it."],
+      recalc:["Recalculating. Not because I was wrong — because thoroughness is my brand.",
+              "New route. The road moved. I have updated my expectations of the road.",
+              "That was a test. You passed. The new route was the plan all along."],
+      arrive:["You have arrived. Again. I said it earlier as a preview. You're welcome.",
+              "Arrival confirmed — by me, the authority on arrivals.",
+              "And here we are. Wrong turns, right destination. That's not luck, that's Smiri."]
+    }},
+  /* DISLEXA — the backwards assistant parody (Joshua, 2026-11-20).
+     When she is active the route itself is reversed (see reverseRoute):
+     polyline destination->start, maneuvers in reverse order with
+     left<->right swapped, and street names spelled backwards in her
+     spoken instructions and her banner. The GPS dot stays true. */
+  dislexa: { name:"Dislexa", emoji:"🔀", tag:"Cheerful. Her map runs backwards — routes, turns, even the street names.",
+    pitch:1.22, rate:0.97, voiceNames:["Aria","Jenny","Samantha","Google UK English Female","Zira","Female","Google US English"], say:"Dislexa", backwards:true,
+    lines:{
+      depart:["Good news! We begin at the destination. Spoilers! Now let's drive to where we already are.",
+              "Okay! Route loaded — backwards, obviously. End first, start last, fun throughout.",
+              "Here's the thing: forwards is just backwards that hasn't turned around yet. Let's go!"],
+      left:["Left! Which I said as right, because on my map it is. You're welcome.",
+            "That was a left wearing a right's name tag. We honor it anyway.",
+            "Turn left — mirror rules. Everything's the same, just facing the fun way."],
+      right:["Right! Spoken as left, shown as right, driven as intended. Perfect system.",
+             "A right turn, backwards-approved. The sign agreed — it said POT S, which is basically applause.",
+             "Right here. Or left here. The map and I have an understanding."],
+      slightLeft:["A slight left. Barely a turn — more of a rumor of one.",
+                  "Ease left. In backwards, that's 'tsae tfel.' I say it beautifully."],
+      slightRight:["A slight right. Gentle, like a compliment in reverse.",
+                   "Ease right. Small turn, big energy. Backwards energy."],
+      sharpLeft:["Sharp left! The dramatic one. I saved it for the backwards route, where it belongs.",
+                 "Hard left — mirrored, maximized, magnificent."],
+      sharpRight:["Sharp right! Hold onto your snacks; the route is showing off.",
+                  "Hard right — in reverse order, this is nearly the first thing we do. Time is a suggestion."],
+      uturn:["A U-turn! My favorite turn. The whole route is a U-turn with extra steps.",
+             "Turning around — finally, a maneuver that speaks my language.",
+             "Flip it! Backwards recognizes backwards. Beautiful."],
+      roundabout:["Roundabout! We go around and come out in reverse order. Exits are just entrances that waited.",
+                  "Circle time. Pick the exit I called — I called it from the other side."],
+      merge:["Merge! Backwards into the flow, like a salmon with a driver's license.",
+             "Sliding in. On my map the highway joins *us*."],
+      straight:["Straight ahead — the one direction that's spelled the same backwards in my heart.",
+                "Keep going straight. Even backwards routes need a breather."],
+      recalc:["Recalculating — backwards, obviously. New end, same start. Or is it the other way? Yes.",
+              "New route! I flipped it before I even read it. Efficiency.",
+              "That turn went forwards on us. Rude. Reversing the plan until it behaves."],
+      arrive:["We have arrived — at the beginning! Which was the destination all along. I planned that.",
+              "Arrival! The start line says hello. It missed us. It told me so, backwards.",
+              "And we're here, which is where we started, which is exactly where we were going. Perfect loop. Perfect day."]
+    }},
   /* REGULAR MAPS — plain mode. Not a character: no face, no lines.
      The empty line book means no garnish can ever be picked for it,
      and speakGuidance/speakRecalc additionally refuse garnish outright
@@ -525,9 +601,11 @@ const CHARS = {
     pitch:1.0, rate:1.0, voiceNames:["Google US English","en-US"],
     lines:{} }
 };
-const CHAR_ORDER = ["bubba","dre","hurt","doright","steve","nora"];
+const CHAR_ORDER = ["bubba","jermaine","hurt","doright","steve","nora","smiri","dislexa"];
 const REGULAR_KEY = 'regular';
 function isRegular(){ return charKey === REGULAR_KEY; }
+function isSmiri(){ return charKey === 'smiri'; }
+function isDislexa(){ return charKey === 'dislexa'; }
 </script>
 <script>
 /* ================= ENGINE ================= */
@@ -538,6 +616,8 @@ window.__spoken = []; window.__qaDone = false; window.__routeSteps = null; windo
 
 let storedChar = null;
 try { storedChar = localStorage.getItem('fm-char'); } catch(e) {}
+/* Rename migration (2026-11-20): the character key 'dre' became 'jermaine' when Joshua renamed him; carry saved picks over. */
+if (storedChar === 'dre'){ storedChar = 'jermaine'; try { localStorage.setItem('fm-char', 'jermaine'); } catch(e) {} }
 let charKey = CHARS[QA.get('char')] ? QA.get('char') : (CHARS[storedChar] ? storedChar : 'bubba');
 let funny = true, soundOn = true;
 let origin = { lat:37.2279530, lng:-93.2966431, label:'1639 N Main Ave, Springfield' };
@@ -591,7 +671,7 @@ const ATTR_ESRI = 'Esri, HERE, Garmin, &copy; <a href="https://www.openstreetmap
 const OSM_TILES = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 const ESRI_TILES = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}';
 const STYLES = {
-  dre:    { tiles:OSM_TILES, maxZoom:19, attrib:ATTR_OSM,
+  jermaine:    { tiles:OSM_TILES, maxZoom:19, attrib:ATTR_OSM,
             route:'#22c8ff', casing:'#eaf7ff', accent:'#0096FF', accent2:'#4db2ff' },
   bubba:  { tiles:'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', maxZoom:17, attrib:ATTR_TOPO,
             route:'#ff8c2e', casing:'#fff3df', accent:'#e07b24', accent2:'#ffb35c' },
@@ -606,6 +686,15 @@ const STYLES = {
      route line on a paper-white casing, planner-amber accents. */
   nora:   { tiles:ESRI_TILES, maxZoom:18, attrib:ATTR_ESRI, bg:'#e9e6dd',
             route:'#ffb300', casing:'#fffbe6', accent:'#e09e00', accent2:'#ffcf4d' },
+  /* Smiri: sterile tech-assistant look — clean professional streets
+     (Esri) washed pale by her tile treatment, violet route line,
+     assistant-glass accents. */
+  smiri:  { tiles:ESRI_TILES, maxZoom:18, attrib:ATTR_ESRI, bg:'#eceaf2',
+            route:'#8b5cf6', casing:'#f4f1ff', accent:'#8b5cf6', accent2:'#b79aff' },
+  /* Dislexa: playful backwards world — standard streets with a warm
+     hue twist, hot-pink route line, bubblegum accents. */
+  dislexa:{ tiles:OSM_TILES, maxZoom:19, attrib:ATTR_OSM,
+            route:'#ff5da2', casing:'#ffe3f1', accent:'#ff5da2', accent2:'#ff8fc0' },
   /* Regular Maps: the standard OpenStreetMap look, untouched — no tile
      filter is defined for [data-style="regular"], no overlay, plain blue
      route line. Just regular maps. */
@@ -719,6 +808,87 @@ function instrWithDist(ev, d){
   return 'In ' + fmtDist(d) + ', ' + actionPhrase(ev.step) + '.';
 }
 
+/* ---------- Smiri's wrongness + Dislexa's backwards text ----------
+   These two flavor the SPOKEN instruction only. The route, the map,
+   the banner (except Dislexa's street-name gag, which is display
+   comedy over true tiles) and the GPS dot stay true. Smiri: flip
+   left<->right, flip the compass, swap the street name for a wrong
+   one, inflate the distance. Dislexa: spell the street name
+   backwards — her turns are already swapped by reverseRoute. */
+const WRONG_STREETS = ['Peachtree Boulevard','Victory Lane','Sunset Boulevard','Miracle Mile','Destiny Drive','Easy Street','Bubblegum Lane','Confidence Way'];
+function wrongStreetFor(step){
+  const s = (step && (step.name || step.ref)) || 'route';
+  let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  let w = WRONG_STREETS[h % WRONG_STREETS.length];
+  if (w === s) w = WRONG_STREETS[(h + 1) % WRONG_STREETS.length];
+  return w;
+}
+function swapLR(t){
+  return t.replace(/\bleft\b/g, '\u0001').replace(/\bright\b/g, 'left').replace(/\u0001/g, 'right')
+          .replace(/\bLeft\b/g, '\u0002').replace(/\bRight\b/g, 'Left').replace(/\u0002/g, 'Right');
+}
+const COMPASS_FLIP = { north:'south', south:'north', east:'west', west:'east',
+  northeast:'southwest', southwest:'northeast', northwest:'southeast', southeast:'northwest' };
+function flipCompass(t){
+  return t.replace(/\b(northeast|northwest|southeast|southwest|north|south|east|west)\b/g, m => COMPASS_FLIP[m]);
+}
+function smiriWrong(text, step, distM){
+  let t = text;
+  if (distM != null) t = t.replace(/^In [^,]+,/, 'In ' + fmtDist(distM * 1.8 + 120) + ',');
+  if (step && step.name && t.includes(step.name)) t = t.split(step.name).join(wrongStreetFor(step));
+  return flipCompass(swapLR(t));
+}
+function revText(s){ return s.split('').reverse().join(''); }
+function dislexaText(text, step){
+  let t = text;
+  if (step && step.name && t.includes(step.name)) t = t.split(step.name).join(revText(step.name));
+  return t;
+}
+function flavorInstruction(text, step, distM){
+  if (isSmiri()) return smiriWrong(text, step, distM);
+  if (isDislexa()) return dislexaText(text, step);
+  return text;
+}
+/* ---------- Dislexa's backwards route ----------
+   Reverse the real OSRM route end to end: geometry flipped, maneuver
+   list flipped, each maneuver's left/right swapped (the correct
+   mirror for travelling the same streets destination-first), event
+   distances rebuilt so calls fire in the reversed order. The total
+   distance is the route's own — nothing is invented. */
+function swapMod(mod){
+  return (mod || '').replace(/left/g, '\u0001').replace(/right/g, 'left').replace(/\u0001/g, 'right');
+}
+function reverseRoute(rt){
+  const steps = rt.steps, D = rt.distance;
+  const pos = [0];
+  for (let i = 0; i < steps.length; i++) pos.push(pos[i] + (steps[i].distance || 0));
+  const coords = rt.coords.slice().reverse();
+  const mans = [];
+  for (let i = steps.length - 1; i >= 1; i--){
+    const s = steps[i];
+    if (s.maneuver.type === 'arrive') continue;
+    mans.push({ src: s, at: Math.max(0, D - pos[i]) });
+  }
+  mans.sort((a, b) => a.at - b.at);
+  const tail = steps[steps.length - 1], prev = steps[steps.length - 2];
+  const depName = (tail && tail.name) || (prev && prev.name) || '';
+  const newSteps = [];
+  newSteps.push({ name: depName, ref: '', distance: mans.length ? mans[0].at : D, duration: 0,
+    maneuver: { type: 'depart', modifier: '', location: rt.coords[rt.coords.length - 1] } });
+  mans.forEach((m, k) => {
+    const nextAt = (k + 1 < mans.length) ? mans[k + 1].at : D;
+    const s = m.src;
+    newSteps.push({ name: s.name, ref: s.ref, distance: Math.max(0, nextAt - m.at),
+      duration: s.duration,
+      maneuver: { type: s.maneuver.type, modifier: swapMod(s.maneuver.modifier || ''),
+        exit: s.maneuver.exit, location: s.maneuver.location, bearing_after: s.maneuver.bearing_after } });
+  });
+  newSteps.push({ name: '', ref: '', distance: 0, duration: 0,
+    maneuver: { type: 'arrive', modifier: '', location: rt.coords[0] } });
+  const built = buildEvents(newSteps);
+  return { coords: coords, steps: newSteps, evs: built.evs };
+}
+
 /* ---------- speech: instruction first, garnish after ---------- */
 const speechQ = []; let speaking = false, speechToken = 0;
 const lastLineIdx = {};
@@ -794,13 +964,13 @@ function pumpSpeech(){
    REGULAR MAPS MODE: the instruction is spoken and that is ALL — the
    garnish branch is refused outright while Regular is active, on top of
    Regular's line book being empty. Plain in, plain out. */
-function speakGuidance(instrText, gKey, meta){
-  speak(instrText, 'instruction', meta);
+function speakGuidance(instrText, gKey, meta, step, distM){
+  speak(flavorInstruction(instrText, step, distM), 'instruction', meta);
   if (funny && !isRegular() && gKey){ const g = pickLine(charKey, gKey); if (g) speak(g, 'garnish', meta ? { ev: meta.ev, stage: 'garnish' } : undefined); }
 }
-function speakRecalc(firstInstr){
+function speakRecalc(firstInstr, step, distM){
   speak('Recalculating. New route found.', 'instruction');
-  speak(firstInstr, 'instruction');
+  speak(flavorInstruction(firstInstr, step, distM), 'instruction');
   if (funny && !isRegular()){ const g = pickLine(charKey, 'recalc'); if (g) speak(g, 'garnish'); }
 }
 
@@ -808,13 +978,13 @@ function speakRecalc(firstInstr){
    Selecting a character's map plays that character's short genre
    clip (~5 seconds, original music). One slot per character; a
    character with no entry stays silent — a pick is never guessed.
-   Dray's hip-hop sting is APPROVED by Joshua (2026-11-20). Bubba's
+   Jermaine's hip-hop sting is APPROVED by Joshua (2026-11-20). Bubba's
    country pick (takes A/B/C) is still Joshua's call, so his slot is
    deliberately EMPTY until he chooses. The Voice toggle mutes the
    whole car, music included. A blocked or offline play attempt is
    silence, never an error. */
 const STINGS = {
-  dre: 'audio/dray-hiphop-sting.mp3'
+  jermaine: 'audio/jermaine-hiphop-sting.mp3'
 };
 window.__stingLog = [];
 let stingAudio = null;
@@ -931,6 +1101,20 @@ async function fetchRoute(){
   window.__routeSteps = steps.map(s => ({ type: s.maneuver.type, modifier: s.maneuver.modifier || '',
     exit: s.maneuver.exit || null, name: s.name, ref: s.ref || '', distance: Math.round(s.distance) }));
 
+  /* DISLEXA: the same real route, run backwards — geometry, maneuver
+     order and left/right all flipped; totals stay the route's own. */
+  window.__dislexaNote = '';
+  if (CHARS[charKey].backwards){
+    const rev = reverseRoute(route);
+    route.coords = rev.coords; route.steps = rev.steps; route.events = rev.evs;
+    route.cum = [0];
+    for (let i = 1; i < route.coords.length; i++) route.cum.push(route.cum[i-1] + hav(route.coords[i-1], route.coords[i]));
+    route.geomTotal = route.cum[route.cum.length - 1] || 1;
+    window.__routeSteps = route.steps.map(s => ({ type: s.maneuver.type, modifier: s.maneuver.modifier || '',
+      exit: s.maneuver.exit || null, name: s.name, ref: s.ref || '', distance: Math.round(s.distance) }));
+    window.__dislexaNote = 'Dislexa route: drawn backwards on purpose — destination first, maneuvers in reverse order, left and right swapped, street names spelled backwards in her directions. The streets underneath are the real route.';
+  }
+
   if (routeCasing) map.removeLayer(routeCasing);
   if (routeLine) map.removeLayer(routeLine);
   routeCasing = L.polyline(route.coords, { color: STYLES[charKey].casing, weight: 10, opacity: .85 }).addTo(map);
@@ -940,7 +1124,7 @@ async function fetchRoute(){
   const sum = $('routeSummary');
   sum.style.display = 'block';
   sum.textContent = fmtDist(rt.distance) + ' · ' + fmtDur(rt.duration) + ' — from ' + origin.label + ' to ' + destination.label + '.';
-  setStatus(steveNote || 'Route is real and ready. Start it live, or run the Demo Drive to hear your co-pilot work.');
+  setStatus(steveNote || window.__dislexaNote || 'Route is real and ready. Start it live, or run the Demo Drive to hear your co-pilot work.');
   $('startBtn').style.display = 'block';
   preloadTrip();  /* offline trips: save the whole trip onto the phone */
   return route;
@@ -1075,7 +1259,7 @@ function beginNav(mode){
   document.body.classList.add('navigating');
   renderPos(route.coords[0], null, false);
   map.setView(route.coords[0], 16);
-  speakGuidance(departInstruction(), 'depart', { stage: 'depart' });
+  speakGuidance(departInstruction(), 'depart', { stage: 'depart' }, route.steps[0], null);
   if (offlineMode) speak("You're offline. This trip is saved on your phone — guidance keeps working.", 'notice');
   updateBanner();
 }
@@ -1108,8 +1292,11 @@ function updateBanner(){
   $('arrowCircle').textContent = arrowFor(ev.step);
   $('bannerDist').textContent = fmtDistShort(d);
   const isArr = ev.step.maneuver.type === 'arrive';
-  $('bannerStreet').textContent = isArr ? (destination ? destination.label : 'Destination') : (streetOf(ev.step) || 'Continue');
-  $('bannerInstr').textContent = isArr ? 'You will arrive at your destination.' : cap(actionPhrase(ev.step)) + '.';
+  const bStreet = streetOf(ev.step);
+  $('bannerStreet').textContent = isArr ? (destination ? destination.label : 'Destination')
+    : (bStreet ? (isDislexa() ? revText(bStreet) : bStreet) : 'Continue');
+  $('bannerInstr').textContent = isArr ? 'You will arrive at your destination.'
+    : (isDislexa() ? dislexaText(cap(actionPhrase(ev.step)) + '.', ev.step) : cap(actionPhrase(ev.step)) + '.');
   const remain = Math.max(0, route.distance - nav.traveled);
   const eta = route.duration * (remain / route.distance);
   $('etaLine').textContent = fmtDistShort(remain) + ' left · about ' + fmtDur(eta);
@@ -1129,19 +1316,26 @@ function checkEvents(){
     const adv = spd > 14 ? 680 : 165;
     const prep = adv > 300 ? 330 : 0;
     const meta = stage => ({ ev: idx, stage: stage, distTo: Math.max(0, Math.round(d)) });
+    /* Smiri announces arrival EARLY — serenely, and wrong. The real
+       arrival still fires at the destination (final stage, below). */
+    if (isArr && isSmiri() && !st.has(idx + ':fake') && d <= adv && d > 25){
+      st.add(idx + ':fake');
+      speak('You have arrived at your destination.', 'instruction', meta('fake-arrive'));
+      if (funny){ const g = pickLine(charKey, 'arrive'); if (g) speak(g, 'garnish', { ev: idx, stage: 'garnish' }); }
+    }
     if (d <= 25 && !st.has(idx + ':fin')){
       st.add(idx + ':fin');
       if (isArr){
-        speakGuidance('You have arrived at your destination.', 'arrive', meta('final'));
+        speakGuidance('You have arrived at your destination.', 'arrive', meta('final'), ev.step, null);
         updateBanner();
         setTimeout(() => { endNav(); if (isQA) qaRecalc(); else setStatus('Arrived. ' + (destination ? destination.label : '') + ' — nice driving.'); }, 600);
       } else {
-        speakGuidance(cap(actionPhrase(ev.step)) + ' now.', garnishKey(ev.step), meta('final'));
+        speakGuidance(cap(actionPhrase(ev.step)) + ' now.', garnishKey(ev.step), meta('final'), ev.step, null);
       }
     } else if (prep && d <= prep && d > 25 && !st.has(idx + ':prep')){
-      st.add(idx + ':prep'); speak(instrWithDist(ev, d), 'instruction', meta('prepare'));
+      st.add(idx + ':prep'); speak(flavorInstruction(instrWithDist(ev, d), ev.step, d), 'instruction', meta('prepare'));
     } else if (d <= adv && d > (prep || 25) && !st.has(idx + ':adv')){
-      st.add(idx + ':adv'); if (!isArr) speak(instrWithDist(ev, d), 'instruction', meta('advance'));
+      st.add(idx + ':adv'); if (!isArr) speak(flavorInstruction(instrWithDist(ev, d), ev.step, d), 'instruction', meta('advance'));
     }
   });
   updateBanner();
@@ -1215,7 +1409,8 @@ async function recalcFrom(latlng){
   if (ok && nav){
     nav.traveled = 0; nav.announced = new Set();
     const ev0 = route.events[0];
-    speakRecalc(ev0 ? instrWithDist(ev0, Math.max(80, ev0.at)) : 'Continue on the new route.');
+    speakRecalc(ev0 ? instrWithDist(ev0, Math.max(80, ev0.at)) : 'Continue on the new route.',
+                ev0 ? ev0.step : null, ev0 ? Math.max(80, ev0.at) : null);
     window.__rerouted = true;
     updateBanner();
     return true;
@@ -1592,7 +1787,8 @@ function qaRecalc(){
      so the spoken-line log covers recalculating for this character.
      Live off-route detection itself is UNCHECKED on a real road. */
   if (route && route.events.length){
-    speakRecalc(instrWithDist(route.events[0], Math.max(120, route.events[0].at)));
+    speakRecalc(instrWithDist(route.events[0], Math.max(120, route.events[0].at)),
+                route.events[0].step, Math.max(120, route.events[0].at));
   }
   setTimeout(() => { window.__qaDone = true; document.title = 'QA DONE'; }, 500);
 }
@@ -1606,21 +1802,28 @@ if (TESTHOOKS){
     return { marker: [m.lat, m.lng], center: [c.lat, c.lng], follow: follow, stale: markerStale,
              pill: $('locPillTxt').textContent, deniedShown: $('deniedCard').classList.contains('show') }; };
   window.__emerg = { open: openState, stored: emergStored };
+  window.__funnyState = () => ({ char: charKey,
+    coords: route ? route.coords : null,
+    firstCoord: route && route.coords.length ? route.coords[0] : null,
+    lastCoord: route && route.coords.length ? route.coords[route.coords.length - 1] : null,
+    dislexaNote: window.__dislexaNote || '' });
   if (QA.has('nogps')) setTimeout(() => handleGeoError({ code: 1 }), 600);
 }
 
 /* ---------- UI: picker, chips, toggles ---------- */
-/* Faces — Joshua's picks (2026-11-17): Bubba #4, Dre #7, Major "Hurt" #4,
+/* Faces — Joshua's picks (2026-11-17): Bubba #4, Jermaine #7, Major "Hurt" #4,
    Officer Doright #5, Stoner Steve #1; Nagging Nora #20 (2026-11-18).
    Thumbnails ride in the picker; full portraits live in characters/
    as the masters. */
 const FACES = {
   bubba: 'characters/thumbs/bubba-04.webp',
-  dre: 'characters/thumbs/dre-07.webp',
+  jermaine: 'characters/thumbs/jermaine-07.webp',
   hurt: 'characters/thumbs/major-hurt-04.webp',
   doright: 'characters/thumbs/officer-doright-05.webp',
   steve: 'characters/thumbs/stoner-steve-01.webp',
-  nora: 'characters/thumbs/nagging-nora-20.webp'
+  nora: 'characters/thumbs/nagging-nora-20.webp',
+  smiri: 'characters/thumbs/smiri-01.webp',
+  dislexa: 'characters/thumbs/dislexa-01.webp'
 };
 function avatarHTML(k){ return '<img class="avatar" src="' + FACES[k] + '" alt="' + CHARS[k].name + '">'; }
 /* Speaker test: hear the character BEFORE you drive. Runs inside the tap's
@@ -1853,16 +2056,6 @@ if (isQA){
     });
   }
 })();
-</script>
-<script>
-/* PWA: register the app-shell service worker (this folder only). The app
-   works fully without it — this just lets Funny Maps install like a real
-   app and reopen offline. */
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function () {
-    navigator.serviceWorker.register('sw.js').catch(function () { /* no worker, no problem */ });
-  });
-}
 </script>
 </body>
 </html>
