@@ -988,12 +988,15 @@ function speakRecalc(firstInstr, step, distM){
    clip (~5 seconds, original music). One slot per character; a
    character with no entry stays silent — a pick is never guessed.
    Jermaine's hip-hop sting is APPROVED by Joshua (2026-11-20). Bubba's
-   country pick (takes A/B/C) is still Joshua's call, so his slot is
-   deliberately EMPTY until he chooses. The Voice toggle mutes the
+   sting is the chorus hook of his full original country instrumental
+   (Joshua's settled direction 2026-11-20: an original country song,
+   instrumental — a real commercial song was refused on licensing, and
+   the earlier sting takes were rejected). The Voice toggle mutes the
    whole car, music included. A blocked or offline play attempt is
    silence, never an error. */
 const STINGS = {
-  jermaine: 'audio/jermaine-hiphop-sting.mp3'
+  jermaine: 'audio/jermaine-hiphop-sting.mp3',
+  bubba: 'audio/bubba-country-sting.mp3'
 };
 window.__stingLog = [];
 let stingAudio = null;
