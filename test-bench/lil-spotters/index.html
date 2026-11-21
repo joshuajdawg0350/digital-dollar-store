@@ -196,6 +196,14 @@ section.view.on{display:block;}
 .center-modal{align-items:center; padding:18px;}
 .dialog{background:var(--paper); width:100%; max-width:420px; border-radius:24px; padding:20px 18px; text-align:center; box-shadow:0 12px 30px rgba(0,0,0,.35);}
 .dialog img.bigphoto{width:100%; border-radius:16px; border:4px solid var(--sun); margin-bottom:10px;}
+/* ---------- IN-APP CAMERA (ask once, reuse all session) ---------- */
+#camScrim{position:fixed; inset:0; z-index:75; background:#000; display:none; flex-direction:column;}
+#camScrim.on{display:flex;}
+#camVideo{flex:1 1 auto; width:100%; min-height:0; object-fit:cover; background:#000;}
+.camtop{padding:12px 12px 0;}
+.cambottom{padding:12px 16px calc(16px + env(safe-area-inset-bottom)); background:#000;}
+#btnSnap{width:100%; min-height:76px; border-radius:22px; border:3px solid #155a9e; background:var(--blue); color:#fff; font-size:25px; font-weight:900; font-family:var(--kidfont); cursor:pointer;}
+.camnote{color:#cfe6f7; text-align:center; font-weight:700; font-size:13.5px; margin:8px 0 0;}
 .pinpad-dots{display:flex; gap:12px; justify-content:center; margin:14px 0 18px;}
 .pinpad-dots i{width:18px; height:18px; border-radius:50%; border:3.5px solid var(--ink); display:block;}
 .pinpad-dots i.f{background:var(--ink);}
@@ -451,6 +459,28 @@ select.pinput{appearance:none;}
     <h3 id="photoTitle" style="margin:0 0 4px; font-size:21px; font-weight:900;"></h3>
     <p id="photoMeta" style="margin:0 0 14px; font-weight:700; opacity:.75; font-size:14px;"></p>
     <button class="rowbtn primary" id="btnPhotoClose" style="width:100%; padding:14px; border-radius:14px; border:3px solid #155a9e; background:var(--blue); color:#fff; font-size:17px; font-weight:900;">Awesome!</button>
+  </div>
+</div>
+
+<!-- camera intro: shown ONCE, before the first-ever camera ask -->
+<div class="scrim center-modal" id="camIntroScrim">
+  <div class="dialog">
+    <div class="backrow"><button class="backbtn" id="btnCamIntroBack">← Back</button></div>
+    <div style="font-size:52px;">📸</div>
+    <h3 style="margin:0 0 6px; font-size:21px; font-weight:900;">Snap your finds!</h3>
+    <p style="font-weight:700; opacity:.75; font-size:14.5px; margin:0 0 14px;">Lil Spotters uses the camera so you can take a picture of each thing you spot. You only have to say yes <b>once</b> — after that the camera just opens. Your photos stay right here on this device. They never leave it.</p>
+    <button id="btnCamGo" style="width:100%; padding:16px; border-radius:16px; border:3px solid #155a9e; background:var(--blue); color:#fff; font-size:18px; font-weight:900; margin-bottom:10px; font-family:var(--kidfont); cursor:pointer;">📸 Turn On the Camera</button>
+    <button id="btnCamPick" style="width:100%; padding:16px; border-radius:16px; border:3px solid #dfeefb; background:#fff; font-size:18px; font-weight:900; font-family:var(--kidfont); cursor:pointer;">🖼️ Pick a Photo Instead</button>
+  </div>
+</div>
+
+<!-- in-app camera view: one shared stream, reused for every photo -->
+<div id="camScrim">
+  <div class="camtop"><button class="backbtn" id="btnCamBack">← Back</button></div>
+  <video id="camVideo" autoplay playsinline muted></video>
+  <div class="cambottom">
+    <button id="btnSnap">📸 SNAP IT!</button>
+    <p class="camnote">Point the camera at what you found, then tap SNAP IT!</p>
   </div>
 </div>
 
@@ -1021,10 +1051,108 @@ function openSheet(id){
 function closeSheet(){ $('#sheetScrim').classList.remove('on'); }
 $('#btnSheetBack').addEventListener('click', closeSheet);
 $('#sheetScrim').addEventListener('click', e=>{ if(e.target.id==='sheetScrim') closeSheet(); });
-$('#btnCamera').addEventListener('click', ()=>{ closeSheet(); $('#camInput').click(); });
+$('#btnCamera').addEventListener('click', ()=>{ closeSheet(); CamMgr.open(); });
 $('#btnGallery').addEventListener('click', ()=>{ closeSheet(); $('#galInput').click(); });
 $('#camInput').addEventListener('change', e=>{ if(e.target.files && e.target.files[0]) handlePhoto(e.target.files[0]); e.target.value=''; });
 $('#galInput').addEventListener('change', e=>{ if(e.target.files && e.target.files[0]) handlePhoto(e.target.files[0]); e.target.value=''; });
+
+/* ================= CAMERA — ask ONCE, reuse all session =================
+   One shared stream behind one getUserMedia path with one frozen
+   constraints object. The stream is never torn down between finds, so the
+   browser asks for camera permission a single time. The grant is also
+   remembered (localStorage flag + Permissions API) so on later visits the
+   camera opens straight away wherever the browser keeps the origin grant.
+   Denied or unavailable camera -> the original file-picker flow (camInput),
+   unchanged. (Before this, EVERY photo fired a fresh <input capture>
+   intent and the game kept no permission state at all — so the host
+   re-asked on every single photo.) */
+const CamMgr = (()=>{
+  const CONSTRAINTS = Object.freeze({video:Object.freeze({facingMode:'environment'}), audio:false});
+  const FLAG='rth_cam_grant_v1';
+  let stream=null, asking=null, permState='unknown', denied=false;
+  try{
+    if(localStorage.getItem(FLAG)==='yes') permState='granted';
+    if(localStorage.getItem(FLAG)==='no') denied=true;
+  }catch(e){}
+  function noteGrant(){ permState='granted'; denied=false; try{ localStorage.setItem(FLAG,'yes'); }catch(e){} }
+  function noteDeny(){ denied=true; try{ localStorage.setItem(FLAG,'no'); }catch(e){} }
+  function applyPermState(st){
+    permState=st;
+    if(st==='granted') noteGrant();
+    else if(st==='denied') noteDeny();
+    else denied=false; /* browser is willing to ask again — a past 'no' is not sticky */
+  }
+  if(navigator.permissions && navigator.permissions.query){
+    try{
+      navigator.permissions.query({name:'camera'}).then(st=>{
+        applyPermState(st.state);
+        st.onchange=()=> applyPermState(st.state);
+      }).catch(()=>{});
+    }catch(e){}
+  }
+  const supported = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+  function live(){ return !!(stream && stream.getVideoTracks().some(t=>t.readyState==='live')); }
+  function ensure(){
+    if(live()) return Promise.resolve(stream);
+    if(asking) return asking;
+    asking = navigator.mediaDevices.getUserMedia(CONSTRAINTS).then(s=>{
+      stream=s; asking=null; noteGrant(); return s;
+    }).catch(err=>{ asking=null; throw err; });
+    return asking;
+  }
+  function showView(){
+    const v=$('#camVideo');
+    if(v.srcObject!==stream) v.srcObject=stream;
+    $('#camScrim').classList.add('on');
+    const p=v.play(); if(p && p.catch) p.catch(()=>{});
+  }
+  function hideView(){ $('#camScrim').classList.remove('on'); }
+  function fallback(msg){
+    hideView();
+    $('#camIntroScrim').classList.remove('on');
+    if(msg) toast(msg);
+    $('#camInput').click();
+  }
+  function open(){
+    if(!supported){ $('#camInput').click(); return; }
+    if(live()){ showView(); return; }
+    if(denied || permState==='denied'){ fallback('📷 Camera is off — pick a photo instead!'); return; }
+    if(permState==='granted'){
+      ensure().then(showView).catch(()=>{ noteDeny(); fallback('📷 Camera is off — pick a photo instead!'); });
+      return;
+    }
+    /* first time ever: one friendly explanation, then the browser asks — once */
+    $('#camIntroScrim').classList.add('on');
+  }
+  function startFromIntro(){
+    $('#camIntroScrim').classList.remove('on');
+    ensure().then(showView).catch(err=>{
+      if(err && err.name==='NotAllowedError'){ noteDeny(); fallback('No worries! You can pick a photo instead. 🖼️'); }
+      else fallback('📷 Camera could not start — pick a photo instead!');
+    });
+  }
+  function snap(){
+    const v=$('#camVideo');
+    if(!live() || v.readyState<2 || !v.videoWidth){ toast('📸 One sec — camera is warming up…'); return; }
+    const cv=document.createElement('canvas');
+    cv.width=v.videoWidth; cv.height=v.videoHeight;
+    cv.getContext('2d').drawImage(v,0,0,cv.width,cv.height);
+    const done=b=>{
+      if(b){ hideView(); handlePhoto(new File([b],'spot.jpg',{type:'image/jpeg'})); }
+      else fallback();
+    };
+    if(cv.toBlob) cv.toBlob(done,'image/jpeg',0.92);
+    else fetch(cv.toDataURL('image/jpeg',0.92)).then(r=>r.blob()).then(done).catch(()=>fallback());
+  }
+  return { open, startFromIntro, snap, hideView,
+    pickInstead(){ $('#camIntroScrim').classList.remove('on'); $('#galInput').click(); } };
+})();
+$('#btnCamGo').addEventListener('click', ()=> CamMgr.startFromIntro());
+$('#btnCamPick').addEventListener('click', ()=> CamMgr.pickInstead());
+$('#btnCamIntroBack').addEventListener('click', ()=> $('#camIntroScrim').classList.remove('on'));
+$('#camIntroScrim').addEventListener('click', e=>{ if(e.target.id==='camIntroScrim') $('#camIntroScrim').classList.remove('on'); });
+$('#btnCamBack').addEventListener('click', ()=> CamMgr.hideView());
+$('#btnSnap').addEventListener('click', ()=> CamMgr.snap());
 
 function processImage(file, maxDim, q){
   return new Promise((resolve, reject)=>{
