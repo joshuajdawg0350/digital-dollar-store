@@ -121,6 +121,53 @@ section.view.on{display:block;}
 .maplegend{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;}
 .maplegend span{background:#fff; border-radius:999px; padding:5px 11px; font-size:13px; font-weight:800; box-shadow:0 2px 0 rgba(31,90,140,.15);}
 
+/* ---------- MAP THEMES (all 15 sample looks + Classic, Joshua 2026-11-21) ---------- */
+.themetint{position:absolute; inset:0; pointer-events:none;}
+.pin .pinpal{position:absolute; top:-15px; left:-10px; font-size:20px; z-index:3; filter:drop-shadow(0 2px 2px rgba(0,0,0,.35));}
+.pin .pinx{position:absolute; top:-14px; right:-10px; font-size:17px; z-index:3; filter:drop-shadow(0 2px 2px rgba(0,0,0,.3));}
+#btnMapStyle{flex:1 1 100%; min-height:54px; border-radius:16px; border:3px solid #fff; background:linear-gradient(180deg,#fff,#ffe9a8); color:var(--ink); font-weight:900; font-size:17px; box-shadow:0 4px 0 rgba(31,90,140,.25); padding:10px 14px;}
+#btnMapStyle:active{transform:translateY(2px);}
+.dialog.wide{max-width:540px; text-align:left;}
+.themegrid{display:grid; grid-template-columns:1fr 1fr; gap:10px; max-height:60vh; overflow-y:auto; padding:4px; margin-top:10px;}
+.themecard{position:relative; border:4px solid #dfeefb; border-radius:16px; background:#fff; padding:6px; text-align:center; font-family:var(--kidfont);}
+.themecard img{width:100%; height:84px; object-fit:cover; border-radius:10px; display:block;}
+.themecard .tname{display:block; font-weight:900; font-size:14.5px; margin-top:5px; color:var(--ink); line-height:1.2;}
+.themecard.sel{border-color:var(--sun); background:#fff8d6;}
+.themecard .onbadge{position:absolute; top:10px; right:10px; background:var(--grass); color:#fff; font-weight:900; font-size:11.5px; border-radius:999px; padding:3px 8px; border:2px solid #fff; box-shadow:0 2px 4px rgba(0,0,0,.3);}
+
+/* ---------- PRINTABLES: award certificate + route sheet ---------- */
+#printSheet{position:fixed; left:-10000px; top:0; width:7.4in; background:#fff; color:#22303c; font-family:var(--kidfont); padding:4px;}
+.cert{border:6px solid #22303c; border-radius:20px; padding:9px; background:#fff;}
+.cert-in{border:3px solid #d9a514; border-radius:13px; padding:24px 22px 18px; text-align:center; background:radial-gradient(circle at 10% 4%, rgba(255,210,63,.28), transparent 150px), radial-gradient(circle at 92% 6%, rgba(255,210,63,.28), transparent 150px), #fffdf5;}
+.cert-brand{font-weight:900; letter-spacing:2.2px; font-size:13px; color:#7a5200;}
+.cert-star{font-size:52px; line-height:1.1;}
+.cert h1{font-size:35px; margin:2px 0 4px; font-weight:900; letter-spacing:.3px;}
+.cert-this{font-size:15.5px; font-weight:800; margin:8px 0 0; color:#44586a;}
+.cert-name{margin:6px 34px 2px; border-bottom:4px solid #22303c; min-height:46px; font-size:29px; font-weight:900;}
+.cert-name small{display:block; font-size:10.5px; letter-spacing:2px; font-weight:800; color:#7c8b99; margin-top:3px;}
+.cert-body{font-size:17px; line-height:1.5; font-weight:700; margin:12px 8px 4px;}
+.cert-meta{font-size:13.5px; font-weight:800; color:#44586a; margin:6px 0 0;}
+.cert-seal{width:126px; height:126px; margin:14px auto 6px; border-radius:50%; background:radial-gradient(circle,#ffe066 0 54%, #f5b921 55% 74%, #d9a514 75% 100%); border:4px solid #7a5200; box-shadow:inset 0 0 0 5px rgba(255,255,255,.55); display:flex; flex-direction:column; align-items:center; justify-content:center; color:#5c4300;}
+.cert-seal .sstar{font-size:42px; line-height:1;}
+.cert-seal small{font-size:10px; font-weight:900; letter-spacing:1.2px; line-height:1.35;}
+.cert-foot{font-size:11.5px; font-weight:700; color:#66788a; margin:8px 0 0;}
+.routesheet h2{font-size:27px; margin:0 0 2px; font-weight:900;}
+.rs-meta{font-weight:800; font-size:14.5px; margin:0 0 10px; color:#44586a; line-height:1.45;}
+#printMap{position:relative; width:100%; height:4.4in; border:4px solid #22303c; border-radius:14px; overflow:hidden; background:#bfe3a8;}
+#printMap .nomap{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center; font-weight:900; font-size:17px; padding:20px; background:linear-gradient(160deg,#cdeeb2,#aede9a);}
+.rs-list{font-size:15.5px; font-weight:700; line-height:1.6; padding-left:24px; margin:12px 0 0; columns:2; column-gap:30px;}
+.rs-list li{break-inside:avoid;}
+.rs-list small{font-weight:700; color:#66788a;}
+.rs-foot{font-size:11.5px; font-weight:700; color:#66788a; margin-top:12px;}
+@page{size:letter; margin:.45in;}
+@media print{
+  body>*:not(#printSheet){display:none !important;}
+  #printSheet{position:static !important; left:auto !important; top:auto !important; width:auto !important; padding:0;}
+  #printSheet.route-only #certSlot{display:none;}
+  #certSlot .cert{page-break-after:always; break-after:page;}
+  #printMap{page-break-inside:avoid;}
+}
+
 /* ---------- ZONE BANNER (kid, gentle) + PARENT ALERT ---------- */
 #zoneBanner{display:none; align-items:center; gap:10px; background:#e8fbe8; border:3.5px solid var(--grass); border-radius:18px; padding:12px 14px; font-weight:900; font-size:15.5px; margin-bottom:12px; box-shadow:0 4px 0 rgba(31,90,140,.15);}
 #zoneBanner.on{display:flex;}
@@ -265,6 +312,11 @@ select.pinput{appearance:none;}
   .mapbox{height:500px;}
   .mapbox.tall{height:min(580px,calc(100vh - 240px)); min-height:420px;}
   .mapbtns button{width:54px; height:54px; font-size:25px;}
+  #btnMapStyle{min-height:58px; font-size:19px;}
+  .dialog.wide{max-width:660px;}
+  .themegrid{grid-template-columns:repeat(3,1fr); gap:12px;}
+  .themecard img{height:104px;}
+  .themecard .tname{font-size:16px;}
   .maplegend span{font-size:14.5px; padding:8px 14px;}
   .mapnote{font-size:12px;}
   .findrow{padding:14px;}
@@ -312,6 +364,12 @@ select.pinput{appearance:none;}
 </head>
 <body>
 
+<!-- crayon wobble filters for map themes (SVG displacement on the tile layer) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<filter id="wobbleSm" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.012 0.016" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="7"/></filter>
+<filter id="wobbleLg" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.02 0.026" numOctaves="2" seed="11" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="14"/></filter>
+</defs></svg>
+
 <div id="app">
   <div class="kidhead">
     <div class="logo">🗺️</div>
@@ -347,6 +405,7 @@ select.pinput{appearance:none;}
       <div class="mapframe"><div class="mapbox tall" id="kidMap"></div></div>
       <div class="maplegend">
         <span>⭐ = you are here</span><span>🎈 = things you found</span><span>〰️ = your trip path</span><span>🟩 = your play zone</span>
+        <button id="btnMapStyle">🎨 Map Style: <span id="mapStyleName">Classic Storybook</span> — change it!</button>
       </div>
       <button id="btnCheckin" class="hidden">💚 Check in — I'm here!</button>
       <p style="font-weight:700; opacity:.75; font-size:14px; line-height:1.45;">Your treasure map! Every time you snap a find, a balloon pops onto the map right where you were standing.</p>
@@ -401,8 +460,19 @@ select.pinput{appearance:none;}
   <div style="font-size:64px;">🎉</div>
   <h2>YOU FOUND THEM ALL!</h2>
   <p id="celebText" style="font-weight:800; font-size:16.5px; line-height:1.45;"></p>
+  <button class="bigplay" id="celebPrintBtn" style="margin-top:8px; background:var(--grass); border-bottom-color:#3d9e57;">🖨️ Print My Adventure!</button>
   <button class="bigplay" id="celebBtn" style="margin-top:8px;">Keep Playing!</button>
 </div></div>
+
+<!-- map style picker -->
+<div class="scrim center-modal" id="themeScrim">
+  <div class="dialog wide">
+    <h3 style="margin:0; font-size:23px; font-weight:900;">🎨 Pick your map style!</h3>
+    <p style="font-weight:700; opacity:.75; font-size:14.5px; margin:6px 0 0;">Same treasure map — 16 different looks. Tap one and watch the map change!</p>
+    <div class="themegrid" id="themeGrid"></div>
+    <button class="rowbtn cancel" id="btnThemeClose" style="width:100%; margin-top:12px; padding:12px; border:none; background:transparent; font-weight:900; font-size:16px; opacity:.7;">Keep this one</button>
+  </div>
+</div>
 
 <div id="toast"></div>
 
@@ -423,6 +493,11 @@ select.pinput{appearance:none;}
 
     <div class="ppanel on" id="pp-pmap">
       <div class="kidmap-in-parent"><div class="mapframe"><div class="mapbox tall" id="parentMap"></div></div></div>
+      <div class="pcard" style="margin-top:12px;">
+        <h3>🎨 Map style</h3>
+        <p>Your hunter picked the <b id="mapStyleNameParent">Classic Storybook</b> look. All 16 looks — crayon, candy, treasure, rainbow and more — are in the picker, and the choice sticks on this device.</p>
+        <button class="pbtn" id="btnMapStyleParent">🎨 Change map style</button>
+      </div>
       <div class="pcard" style="margin-top:12px;">
         <h3>What you're seeing</h3>
         <p>Every balloon is a find, pinned where the photo was taken. The blue star is this device's location <b>right now, while the game is open</b> — location is never tracked in the background and never shared with anyone but you. The dashed line is the trip path in the order things were found.</p>
@@ -471,6 +546,13 @@ select.pinput{appearance:none;}
         <div id="hintReqList"></div>
       </div>
       <div id="parentFinds"></div>
+      <div class="pcard">
+        <h3>🏆 Keepsakes — print the adventure</h3>
+        <p id="printStateText">Finish a hunt to earn the award certificate. The route sheet — the map, the trip path, and every spot in the order it was found — prints any time.</p>
+        <button class="pbtn" id="btnPrintBoth">🖨️ Print certificate + route sheet</button>
+        <button class="pbtn ghost" id="btnPrintRoute">🖨️ Print route sheet only</button>
+        <p class="small">Fridge-door ready: one page for the certificate, the route sheet on page two. On a phone, the print screen's Share button can save the same keepsake as a PDF.</p>
+      </div>
       <div class="pcard">
         <h3>Trip scrapbook (AI-compatible export)</h3>
         <p>Download the whole hunt as a plain-text scrapbook or a JSON file (photos included) that any AI assistant can read — great for turning the trip into a story or a school project.</p>
@@ -557,6 +639,9 @@ select.pinput{appearance:none;}
     <div id="snapFinds" style="margin-top:12px;"></div>
   </div>
 </div>
+
+<!-- PRINT SHEET (screen: parked off-screen so it can lay out; print: the only thing that prints) -->
+<div id="printSheet"><div id="certSlot"></div><div id="routeSlot"></div></div>
 
 <input type="file" id="camInput" accept="image/*" capture="environment" class="hidden">
 <input type="file" id="galInput" accept="image/*" class="hidden">
@@ -666,6 +751,7 @@ S.watchOn = !!S.watchOn;                  /* neighborhood boundary watch armed *
 S.alerts = S.alerts || [];                /* [{ts, name, ack}] out-of-bounds alerts */
 S.checkinMins = S.checkinMins || 15;      /* Tier 3 timed check-ins */
 S.lastCheckin = S.lastCheckin || 0;
+S.mapTheme = S.mapTheme || 'classic';     /* chosen map look — all 15 sample looks + Classic (2026-11-21) */
 function saveState(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(S)); return true; }catch(e){ return false; } }
 function tier(){ return TIERS[S.tier] || TIERS.t2; }
 function allTargets(){
@@ -1019,6 +1105,7 @@ function celebrate(){
   speak('You found them all! Amazing!');
 }
 $('#celebBtn').addEventListener('click', ()=> $('#celebrate').classList.remove('on'));
+$('#celebPrintBtn').addEventListener('click', ()=>{ $('#celebrate').classList.remove('on'); openPrint('both'); });
 
 /* photo viewer */
 function openPhoto(id){
@@ -1035,6 +1122,58 @@ $('#photoScrim').addEventListener('click', e=>{ if(e.target.id==='photoScrim') $
 function renderAll(){ renderHeader(); renderTiers(); renderDecks(); renderHunt(); renderFinds(); }
 </script>
 <script>
+/* ================= MAP THEMES =================
+   Joshua (2026-11-21): "I like all those maps for the kids. Make all of them
+   an option in the game." Every sample look (1–15) is a live theme here, plus
+   the game's original look as "Classic Storybook". A theme = tile treatment
+   (CSS filter + optional tint), trip-path color/weight, pin colors, zone
+   colors, label size, and extras (animal pals, treasure X). Samples were
+   static OSM renders; on the live map the same treatment is applied to the
+   live tiles + the game's own overlays. Per-theme gaps are named in DESIGN.md. */
+const MAP_THEMES=[
+ {id:'classic', name:'Classic Storybook', thumb:'map-samples/sample-0-classic.jpg',
+  filter:'saturate(1.55) brightness(1.06) contrast(.94)'},
+ {id:'s1', name:'Crayon Over Real Map', thumb:'map-samples/sample-1-crayon-over-real.jpg',
+  filter:'url(#wobbleSm) saturate(1.3) brightness(1.03) contrast(1.03)', path:'#d63a2f', pathWk:1.35},
+ {id:'s2', name:'Full Crayon Drawing', thumb:'map-samples/sample-2-full-crayon.jpg',
+  filter:'url(#wobbleLg) saturate(1.45) brightness(1.05) contrast(1.06)', path:'#d63a2f', pathWk:1.4},
+ {id:'s3', name:'Bright Storybook', thumb:'map-samples/sample-3-storybook.jpg',
+  filter:'saturate(1.95) brightness(1.13) contrast(.92)'},
+ {id:'s4', name:'Treasure Map', thumb:'map-samples/sample-4-treasure.jpg',
+  filter:'sepia(.55) saturate(.85) brightness(1.03) contrast(.95)', tint:'rgba(216,178,102,.26)',
+  path:'#7a4d16', pathWk:1.15, xLast:true, pinBg:['#a03d20'], zoneFill:'rgba(190,150,80,.25)', zoneStroke:'#8a5a1d'},
+ {id:'s5', name:'Clean Bold Colors', thumb:'map-samples/sample-5-bold-colors.jpg',
+  filter:'saturate(1.75) contrast(1.12) brightness(1.04)', pinBg:['#e2483a','#1f7ae0','#f2b705','#2e9e5b']},
+ {id:'s6', name:'Candy Land', thumb:'map-samples/sample-6-candy-land.jpg',
+  filter:'saturate(1.6) hue-rotate(-10deg) brightness(1.09)', tint:'rgba(255,110,180,.10)',
+  path:'#ff5e9c', pinBg:['#ff6fb5','#58d6a0','#ff8fc7','#7fe0b2']},
+ {id:'s7', name:'Toy Block World', thumb:'map-samples/sample-7-toy-blocks.jpg',
+  filter:'saturate(1.5) contrast(1.1) brightness(1.02)', pinBg:['#e2483a','#ffd23f','#1f7ae0','#58c472']},
+ {id:'s8', name:'Big Sticker Book', thumb:'map-samples/sample-8-sticker-book.jpg',
+  filter:'saturate(1.35) brightness(1.12) contrast(.95)', tint:'rgba(167,139,250,.10)',
+  pinBg:['#b79ced','#ffb3d9','#a8e6ff'], pinRing:'0 0 0 5px #ffffff, 0 4px 8px rgba(20,50,20,.35)'},
+ {id:'s9', name:'Rainbow Roads', thumb:'map-samples/sample-9-rainbow-roads.jpg',
+  filter:'saturate(1.7) brightness(1.07)', gradient:true,
+  pinBg:['#ff5e5e','#ff9f2e','#ffd23f','#58c472','#4db2ff','#8b6fd8']},
+ {id:'s10', name:'Puffy Balloon', thumb:'map-samples/sample-10-puffy-balloon.jpg',
+  filter:'saturate(1.45) brightness(1.13) contrast(.92)', pinScaleK:1.15,
+  pinBg:['#ff8a7a','#7ec8f7','#ffd23f','#9be29b'],
+  pinRing:'inset 0 6px 8px rgba(255,255,255,.55), inset 0 -6px 9px rgba(0,0,0,.15), 0 4px 8px rgba(20,50,20,.35)'},
+ {id:'s11', name:'Animal Landmarks', thumb:'map-samples/sample-11-animal-landmarks.jpg',
+  filter:'saturate(1.6) brightness(1.07) contrast(.95)', animals:['🦆','🦉','🐟','🐻','🐦']},
+ {id:'s12', name:'Bold Crayon Jumbo', thumb:'map-samples/sample-12-bold-crayon-jumbo.jpg',
+  filter:'url(#wobbleLg) saturate(1.55) brightness(1.04) contrast(1.16)', path:'#d63a2f', pathWk:1.9,
+  pinScaleK:1.3, pinBg:['#e2483a','#f2b705','#1f7ae0']},
+ {id:'s13', name:'Storybook Giant', thumb:'map-samples/sample-13-storybook-giant.jpg',
+  filter:'saturate(1.8) brightness(1.1) contrast(.94)', pinScaleK:1.35, labelK:1.2},
+ {id:'s14', name:'Treasure Map, Kid-Bright', thumb:'map-samples/sample-14-treasure-kid-bright.jpg',
+  filter:'saturate(1.65) brightness(1.1) contrast(.97)', tint:'rgba(255,209,63,.13)',
+  path:'#e8930c', xLast:true, pinBg:['#f5a623']},
+ {id:'s15', name:'Kids Atlas Flat', thumb:'map-samples/sample-15-kids-atlas-flat.jpg',
+  filter:'saturate(1.18) contrast(1.03) brightness(1.05)', labelK:1.55, pinBg:['#2e9e5b','#1f7ae0','#e2703a']}
+];
+function themeDef(id){ return MAP_THEMES.find(t=>t.id===(id||S.mapTheme)) || MAP_THEMES[0]; }
+
 /* ================= STORYBOOK MAP ENGINE =================
    Real geography (OpenStreetMap data via CARTO Voyager tiles, OSM fallback),
    custom storybook treatment: popped cheerful colors, chunky cartoon balloon
@@ -1053,14 +1192,18 @@ function inPoly(pos, pts){
   }
   return inside;
 }
+makeMap._uid=0;
 function makeMap(el, opts){
   const o=Object.assign({pinScale:1, showLabels:true, showOrder:true, pathW:7, onTap:null}, opts||{});
-  el.innerHTML=`<div class="tiles"></div>
-    <svg class="pathsvg"><polygon class="bpoly" points=""/><polyline class="tpath" fill="none" stroke-linecap="round" stroke-linejoin="round"/><polyline class="draftline" fill="none" stroke-linecap="round"/></svg>
+  const gid='rbg'+(++makeMap._uid);
+  let themeFixed=o.theme||null;
+  function th(){ return themeDef(themeFixed || S.mapTheme); }
+  el.innerHTML=`<div class="tiles"></div><div class="themetint"></div>
+    <svg class="pathsvg"><defs><linearGradient id="${gid}" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#ff5e5e"/><stop offset="20%" stop-color="#ff9f2e"/><stop offset="40%" stop-color="#ffd23f"/><stop offset="60%" stop-color="#58c472"/><stop offset="80%" stop-color="#4db2ff"/><stop offset="100%" stop-color="#8b6fd8"/></linearGradient></defs><polygon class="bpoly" points=""/><polyline class="tpath" fill="none" stroke-linecap="round" stroke-linejoin="round"/><polyline class="draftline" fill="none" stroke-linecap="round"/></svg>
     <div class="pins"></div>
     <div class="mapbtns"><button data-mz="1" aria-label="Zoom in">＋</button><button data-mz="-1" aria-label="Zoom out">－</button><button data-mz="fit" aria-label="See everything">🎯</button></div>
     <div class="mapnote">Map © OpenStreetMap contributors © CARTO</div>`;
-  const tilesEl=el.querySelector('.tiles'), svg=el.querySelector('.pathsvg'),
+  const tilesEl=el.querySelector('.tiles'), tintEl=el.querySelector('.themetint'), svg=el.querySelector('.pathsvg'),
         poly=el.querySelector('.bpoly'), pathEl=el.querySelector('.tpath'), draftEl=el.querySelector('.draftline'),
         pinsEl=el.querySelector('.pins');
   let center={lat:39.8, lon:-98.5}, zoom=4, fitted=false, tilesBroken=false;
@@ -1097,6 +1240,10 @@ function makeMap(el, opts){
   }
   function render(){
     const w=el.clientWidth, h=el.clientHeight; if(!w) return;
+    const T=th();
+    tilesEl.style.filter=T.filter;
+    tintEl.style.background=T.tint||'transparent';
+    el.dataset.theme=T.id;
     svg.setAttribute('viewBox', `0 0 ${w} ${h}`); svg.style.width=w+'px'; svg.style.height=h+'px';
     renderTiles();
     /* boundary polygon */
@@ -1106,20 +1253,23 @@ function makeMap(el, opts){
       const mode=data.boundary.mode;
       if(mode==='alert'){ poly.setAttribute('fill','rgba(255,60,40,.28)'); poly.setAttribute('stroke','#ff3b26'); }
       else if(mode==='draft'){ poly.setAttribute('fill','rgba(88,196,114,.25)'); poly.setAttribute('stroke','#ffd23f'); }
-      else { poly.setAttribute('fill','rgba(88,196,114,.30)'); poly.setAttribute('stroke','#2e9e5b'); }
+      else { poly.setAttribute('fill', T.zoneFill||'rgba(88,196,114,.30)'); poly.setAttribute('stroke', T.zoneStroke||'#2e9e5b'); }
       poly.setAttribute('stroke-width','5'); poly.setAttribute('stroke-linejoin','round'); poly.style.display='';
     } else poly.style.display='none';
     /* treasure path */
     if(data.path && data.path.length>1){
       const pts=data.path.map(p=>{ const q=project(p[0],p[1]); return `${q.x},${q.y}`; }).join(' ');
+      const pw=o.pathW*(T.pathWk||1);
       pathEl.setAttribute('points', pts);
-      pathEl.setAttribute('stroke','#ffffff'); pathEl.setAttribute('stroke-width', String(o.pathW+4)); pathEl.setAttribute('stroke-dasharray','1 14'); pathEl.style.opacity='.85';
+      pathEl.setAttribute('stroke','#ffffff'); pathEl.setAttribute('stroke-width', String(pw+4)); pathEl.setAttribute('stroke-dasharray','1 14'); pathEl.style.opacity='.85';
       pathEl.style.display='';
       if(!render._p2){
         const p2=pathEl.cloneNode(); p2.removeAttribute('class'); p2.setAttribute('class','tpath2');
-        p2.setAttribute('stroke','#ff8c42'); p2.setAttribute('stroke-width', String(o.pathW)); p2.setAttribute('stroke-dasharray','1 14');
+        p2.setAttribute('stroke-dasharray','1 14');
         svg.appendChild(p2); render._p2=p2;
       }
+      render._p2.setAttribute('stroke', T.gradient? `url(#${gid})` : (T.path||'#ff8c42'));
+      render._p2.setAttribute('stroke-width', String(pw));
       render._p2.setAttribute('points', pts); render._p2.style.display='';
     } else { pathEl.style.display='none'; if(render._p2) render._p2.style.display='none'; }
     /* draft points line */
@@ -1135,12 +1285,18 @@ function makeMap(el, opts){
       const q=project(p[0],p[1]);
       html+=`<div class="pin" style="left:${q.x}px;top:${q.y}px;z-index:7;"><div class="balloon" style="background:#ffd23f;width:30px;height:30px;border-width:3px;"><span class="pin-in" style="font-size:14px;font-weight:900;color:#7a5200;">${i+1}</span></div></div>`;
     });
-    data.pins.forEach(p=>{
-      const q=project(p.lat,p.lon); const sc=o.pinScale;
+    data.pins.forEach((p,i)=>{
+      const q=project(p.lat,p.lon); const sc=o.pinScale*(T.pinScaleK||1);
+      const bg=T.pinBg? `background:${T.pinBg[i%T.pinBg.length]};`:'';
+      const ring=T.pinRing? `box-shadow:${T.pinRing};`:'';
+      const pal=T.animals? `<span class="pinpal">${T.animals[i%T.animals.length]}</span>`:'';
+      const xx=(T.xLast && data.pins.length>1 && i===data.pins.length-1)? `<span class="pinx">❌</span>`:'';
+      const labFs=T.labelK? ` style="font-size:${Math.round(12.5*T.labelK)}px;max-width:${Math.round(150*T.labelK)}px"`:'';
       html+=`<div class="pin ${p.blue?'blue':''}" data-pin="${esc(p.id||'')}" style="left:${q.x}px;top:${q.y}px;">
+        ${pal}${xx}
         ${o.showOrder && p.ord? `<span class="ord">${p.ord}</span>`:''}
-        <div class="balloon" style="width:${46*sc}px;height:${46*sc}px;"><span class="pin-in" style="font-size:${23*sc}px;">${p.iconHTML}</span></div>
-        ${o.showLabels && p.label? `<span class="plab">${esc(p.label)}</span>`:''}</div>`;
+        <div class="balloon" style="width:${46*sc}px;height:${46*sc}px;${bg}${ring}"><span class="pin-in" style="font-size:${23*sc}px;">${p.iconHTML}</span></div>
+        ${o.showLabels && p.label? `<span class="plab"${labFs}>${esc(p.label)}</span>`:''}</div>`;
     });
     if(data.me){
       const q=project(data.me.lat, data.me.lon);
@@ -1197,6 +1353,8 @@ function makeMap(el, opts){
   return {
     setData(d){ data=Object.assign(data, d); if(!fitted) fit(); else render(); },
     render, fit,
+    setTheme(id){ themeFixed=id; render(); },
+    getTheme(){ return th().id; },
     isFitted: ()=>fitted
   };
 }
@@ -1231,6 +1389,34 @@ function refreshMaps(){
   if(parentMap) parentMap.setData({pins, path, me, boundary: boundaryFor('parent'), draft: drawMode? draftPts : null});
 }
 function refreshMapMarkers(){ refreshMaps(); onZoneCheck(); }
+
+/* ================= MAP STYLE PICKER ================= */
+function updateThemeLabels(){
+  const n=themeDef().name;
+  const a=$('#mapStyleName'); if(a) a.textContent=n;
+  const b=$('#mapStyleNameParent'); if(b) b.textContent=n;
+}
+function buildThemeGrid(){
+  const g=$('#themeGrid'); if(!g) return;
+  g.innerHTML = MAP_THEMES.map(t=>`
+    <button class="themecard ${S.mapTheme===t.id?'sel':''}" data-theme="${t.id}">
+      <img src="${t.thumb}" alt="" loading="lazy">
+      <span class="tname">${t.name}</span>
+      ${S.mapTheme===t.id? '<span class="onbadge">✔ ON</span>':''}
+    </button>`).join('');
+  g.querySelectorAll('[data-theme]').forEach(b=> b.addEventListener('click', ()=>{
+    S.mapTheme=b.dataset.theme; saveState();
+    updateThemeLabels(); refreshMaps();
+    $('#themeScrim').classList.remove('on');
+    toast('🎨 Map style: '+themeDef().name);
+  }));
+}
+function openThemePicker(){ buildThemeGrid(); $('#themeScrim').classList.add('on'); }
+$('#btnMapStyle').addEventListener('click', openThemePicker);
+$('#btnMapStyleParent').addEventListener('click', openThemePicker);
+$('#btnThemeClose').addEventListener('click', ()=> $('#themeScrim').classList.remove('on'));
+$('#themeScrim').addEventListener('click', e=>{ if(e.target.id==='themeScrim') $('#themeScrim').classList.remove('on'); });
+updateThemeLabels();
 </script>
 <script>
 /* ================= ZONE WATCH + PARENT ALERTS ================= */
@@ -1387,7 +1573,7 @@ function switchPTab(id){
   if(id==='psetup') renderParentSetup();
 }
 document.querySelectorAll('.ptabs button').forEach(b=> b.addEventListener('click', ()=> switchPTab(b.dataset.ptab)));
-function renderParentAll(){ renderParentFinds(); renderParentSetup(); updateZoneUI(); }
+function renderParentAll(){ renderParentFinds(); renderParentSetup(); updateZoneUI(); renderPrintCard(); }
 
 /* ================= PARENT FINDS ================= */
 function findRowHTML(id, opts){
@@ -1569,7 +1755,7 @@ function snapshotPayload(){
     const f=findOf(id); const tg=targetById(id); if(!f||!tg) return null;
     return {n:tg.name, i:tg.icon, ts:f.ts, lat:f.lat, lon:f.lon, ok:f.status==='ok'};
   }).filter(Boolean);
-  return {v:1, ts:Date.now(), tier:S.tier, score:score(), finds,
+  return {v:1, ts:Date.now(), tier:S.tier, score:score(), finds, theme:S.mapTheme,
           boundary: S.boundary? {name:S.boundary.name, pts:S.boundary.pts} : null};
 }
 $('#btnMakeLink').addEventListener('click', ()=>{
@@ -1589,7 +1775,7 @@ function bootSnapshot(payload){
   $('#snapshotView').classList.add('on');
   $('#snapWhen').textContent=fmtTime(payload.ts);
   const withPos=(payload.finds||[]).filter(f=>f.lat!=null);
-  snapMap=makeMap($('#snapMap'), {pinScale:1.1, showLabels:true, showOrder:true, pathW:7});
+  snapMap=makeMap($('#snapMap'), {pinScale:1.1, showLabels:true, showOrder:true, pathW:7, theme: payload.theme||'classic'});
   snapMap.setData({
     pins: withPos.map((f,i)=>({id:'', lat:f.lat, lon:f.lon, iconHTML: iconHTML(f.i), label:f.n, ord:i+1})),
     path: withPos.map(f=>[f.lat,f.lon]), me:null,
@@ -1634,6 +1820,164 @@ $('#btnCopyTxt').addEventListener('click', async ()=>{
   catch(e){ toast('Copy not available here — use the .txt download instead.'); }
 });
 
+/* ================= PRINTABLES — award certificate + route sheet =================
+   Joshua (2026-11-21): "print out their routes and stuff at the end with an
+   award if they win like a certificate printable something." The certificate
+   is EARNED only when the active hunt is fully found; the route sheet prints
+   for any hunt with at least one stamped find. The game stores no player
+   name, so the certificate carries a write-in name line — never invented data. */
+function huntComplete(){
+  if(S.activeDeck==='expedition') return false;
+  const dt=deckTargets(S.activeDeck);
+  return dt.length>0 && dt.every(t=>isFound(t.id));
+}
+function fmtDateLong(ts){ return new Date(ts).toLocaleDateString([], {weekday:'long', month:'long', day:'numeric', year:'numeric'}); }
+function fmtDur(ms){
+  const m=Math.round(ms/60000);
+  if(m<1) return 'just a few minutes';
+  if(m<60) return m+' minute'+(m===1?'':'s');
+  const h=Math.floor(m/60), r=m%60;
+  return h+' hour'+(h===1?'':'s')+(r? ' '+r+' minute'+(r===1?'':'s'):'');
+}
+/* static, print-sized render of the finished hunt in the chosen theme —
+   same tile math, same overlay language as the live map */
+function renderStaticMap(el, pins, path, boundary){
+  const T=themeDef();
+  const W=el.clientWidth, H=el.clientHeight;
+  if(!W) return;
+  const pts=[];
+  pins.forEach(p=>pts.push([p.lat,p.lon]));
+  if(boundary && boundary.pts) boundary.pts.forEach(p=>pts.push(p));
+  if(!pts.length){
+    el.innerHTML=`<div class="nomap">🗺️ No map pins on this hunt yet —<br>finds without GPS still count, they just don't pin.</div>`;
+    return;
+  }
+  let minLat=90,maxLat=-90,minLon=180,maxLon=-180;
+  pts.forEach(p=>{ minLat=Math.min(minLat,p[0]); maxLat=Math.max(maxLat,p[0]); minLon=Math.min(minLon,p[1]); maxLon=Math.max(maxLon,p[1]); });
+  const center={lat:(minLat+maxLat)/2, lon:(minLon+maxLon)/2};
+  let zoom=15;
+  while(zoom>3){
+    const dx=lon2x(maxLon,zoom)-lon2x(minLon,zoom), dy=lat2y(minLat,zoom)-lat2y(maxLat,zoom);
+    if(dx<W*0.82 && dy<H*0.78) break;
+    zoom--;
+  }
+  if(maxLat-minLat<0.001 && maxLon-minLon<0.001) zoom=13;
+  const project=(lat,lon)=>({ x: lon2x(lon,zoom) - (lon2x(center.lon,zoom) - W/2), y: lat2y(lat,zoom) - (lat2y(center.lat,zoom) - H/2) });
+  /* tiles */
+  const cx=lon2x(center.lon,zoom), cy=lat2y(center.lat,zoom);
+  const x0=Math.floor((cx-W/2)/256), x1=Math.floor((cx+W/2)/256);
+  const y0=Math.floor((cy-H/2)/256), y1=Math.floor((cy+H/2)/256);
+  const maxT=Math.pow(2,zoom)-1; let tiles='';
+  for(let tx=x0; tx<=x1; tx++) for(let ty=y0; ty<=y1; ty++){
+    if(ty<0||ty>maxT) continue;
+    const wx=((tx%(maxT+1))+maxT+1)%(maxT+1);
+    const sub='abcd'[Math.abs(tx+ty)%4];
+    tiles+=`<img alt="" data-tx="${wx}" data-ty="${ty}" style="left:${tx*256-(cx-W/2)}px;top:${ty*256-(cy-H/2)}px" src="https://${sub}.basemaps.cartocdn.com/rastertiles/voyager/${zoom}/${wx}/${ty}.png">`;
+  }
+  /* svg overlays */
+  let svgInner='';
+  if(boundary && boundary.pts && boundary.pts.length>=3){
+    const bp=boundary.pts.map(p=>{ const q=project(p[0],p[1]); return `${q.x},${q.y}`; }).join(' ');
+    svgInner+=`<polygon points="${bp}" fill="${T.zoneFill||'rgba(88,196,114,.30)'}" stroke="${T.zoneStroke||'#2e9e5b'}" stroke-width="5" stroke-linejoin="round"/>`;
+  }
+  if(path && path.length>1){
+    const pp=path.map(p=>{ const q=project(p[0],p[1]); return `${q.x},${q.y}`; }).join(' ');
+    const pw=7*(T.pathWk||1);
+    svgInner+=`<polyline points="${pp}" fill="none" stroke="#ffffff" stroke-width="${pw+4}" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1 14" opacity=".85"/>`;
+    svgInner+=`<polyline points="${pp}" fill="none" stroke="${T.path||'#ff8c42'}" stroke-width="${pw}" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1 14"/>`;
+  }
+  /* pins — same markup language as the live map */
+  let pinsHtml='';
+  pins.forEach((p,i)=>{
+    const q=project(p.lat,p.lon); const sc=1.05*(T.pinScaleK||1);
+    const bg=T.pinBg? `background:${T.pinBg[i%T.pinBg.length]};`:'';
+    const ring=T.pinRing? `box-shadow:${T.pinRing};`:'';
+    const pal=T.animals? `<span class="pinpal">${T.animals[i%T.animals.length]}</span>`:'';
+    const xx=(T.xLast && pins.length>1 && i===pins.length-1)? `<span class="pinx">❌</span>`:'';
+    const labFs=T.labelK? ` style="font-size:${Math.round(12.5*T.labelK)}px;max-width:${Math.round(150*T.labelK)}px"`:'';
+    pinsHtml+=`<div class="pin" style="left:${q.x}px;top:${q.y}px;">${pal}${xx}<span class="ord">${i+1}</span>
+      <div class="balloon" style="width:${46*sc}px;height:${46*sc}px;${bg}${ring}"><span class="pin-in" style="font-size:${23*sc}px;">${p.iconHTML}</span></div>
+      <span class="plab"${labFs}>${esc(p.label)}</span></div>`;
+  });
+  el.innerHTML=`<div class="tiles" style="filter:${T.filter}">${tiles}</div><div class="themetint" style="background:${T.tint||'transparent'}"></div>
+    <svg class="pathsvg" viewBox="0 0 ${W} ${H}" style="width:${W}px;height:${H}px">${svgInner}</svg>
+    <div class="pins">${pinsHtml}</div>
+    <div class="mapnote">Map © OpenStreetMap contributors © CARTO</div>`;
+  const tilesEl=el.querySelector('.tiles');
+  tilesEl.querySelectorAll('img').forEach(img=>{
+    img.addEventListener('error', ()=>{
+      if(!img.dataset.fb){ img.dataset.fb='1'; img.src=`https://tile.openstreetmap.org/${zoom}/${img.dataset.tx}/${img.dataset.ty}.png`; }
+      else { img.remove(); if(!tilesEl.querySelector('img') && !tilesEl.querySelector('.tilefallback')){ const d=document.createElement('div'); d.className='tilefallback'; tilesEl.appendChild(d); } }
+    });
+  });
+}
+function buildPrintSheet(mode){
+  const ids=okFinds();
+  const complete=huntComplete();
+  const first=ids.length? findOf(ids[0]) : null;
+  const last=ids.length? findOf(ids[ids.length-1]) : null;
+  const dur=(first && last && last.ts>first.ts)? fmtDur(last.ts-first.ts) : null;
+  const T=themeDef();
+  const sheet=$('#printSheet');
+  const showCert = complete && mode!=='route';
+  sheet.classList.toggle('route-only', !showCert);
+  /* certificate */
+  $('#certSlot').innerHTML = showCert ? (()=>{
+    const dt=deckTargets(S.activeDeck);
+    return `<div class="cert"><div class="cert-in">
+      <div class="cert-brand">🗺️ J-DAWGS LIL SPOTTERS™</div>
+      <div class="cert-star">🏆</div>
+      <h1>Master Spotter Award</h1>
+      <p class="cert-this">This award proudly goes to</p>
+      <div class="cert-name">&nbsp;<small>WRITE THE HUNTER'S NAME HERE</small></div>
+      <p class="cert-body">who found <b>all ${dt.length} spots</b> on the <b>${esc(DECKS[S.activeDeck].name)}</b> hunt${tier().points? ` and scored <b>${score()} points</b>`:''}!</p>
+      <p class="cert-meta">${fmtDateLong(last.ts)}${dur? ` · Hunt time: ${dur}`:''} · ${esc(tier().name)} (${esc(tier().ages)}) · Map style: ${esc(T.name)}</p>
+      <div class="cert-seal"><span class="sstar">⭐</span><small>OFFICIAL<br>LIL SPOTTER</small></div>
+      <p class="cert-foot">J-Dawgs Lil Spotters™ · © 2026 J-Dawgs Industries · Big dreams for a small world.</p>
+    </div></div>`;
+  })() : '';
+  /* route sheet */
+  const pins=mapPinsFromFinds(ids), path=mapPathFromFinds(ids);
+  const dateLine = first? (fmtDateLong(first.ts) + (last && fmtDateLong(last.ts)!==fmtDateLong(first.ts)? ' → '+fmtDateLong(last.ts):'')) : '';
+  $('#routeSlot').innerHTML = `
+    <div class="routesheet">
+      <h2>🗺️ My Adventure Map</h2>
+      <p class="rs-meta">${esc(DECKS[S.activeDeck].name)} · ${ids.length} spot${ids.length===1?'':'s'} found${tier().points? ` · ${score()} points`:''}${dateLine? `<br>${dateLine}`:''}${dur? ` · Hunt time: ${dur}`:''} · Map style: ${esc(T.name)}</p>
+      <div id="printMap"></div>
+      ${ids.length? `<ol class="rs-list">${ids.map(id=>{ const tg=targetById(id); const f=findOf(id); return `<li class="rs-item"><b>${esc(tg?tg.name:id)}</b> <small>— ${fmtTime(f.ts)}${f.lat!=null?'':' · no location saved'}</small></li>`; }).join('')}</ol>` : `<p class="rs-meta">No finds yet — the adventure map fills in with every spot you find!</p>`}
+      <p class="rs-foot">The dashed line is the trip path — the spots in the order they were found. J-Dawgs Lil Spotters™ · © 2026 J-Dawgs Industries · Big dreams for a small world.</p>
+    </div>`;
+  renderStaticMap($('#printMap'), pins, path, S.boundary? {pts:S.boundary.pts} : null);
+  return {complete, count:ids.length, cert:showCert};
+}
+function openPrint(mode){
+  const r=buildPrintSheet(mode);
+  if(!r.count){ toast('No finds yet — find a spot first, then print the adventure! 🗺️'); return; }
+  if(mode==='both' && !r.complete) toast('The award certificate is earned when every spot is found — printing the route sheet for now. 🏆');
+  setTimeout(()=>{ try{ window.print(); }catch(e){} }, 400);
+}
+/* the sheet is laid out at screen width; re-render the static map at the
+   true print width the moment the print dialog takes over */
+window.addEventListener('beforeprint', ()=>{
+  const pm=$('#printMap'); if(!pm || !$('#routeSlot').innerHTML) return;
+  const ids=okFinds();
+  renderStaticMap(pm, mapPinsFromFinds(ids), mapPathFromFinds(ids), S.boundary? {pts:S.boundary.pts} : null);
+});
+$('#btnPrintBoth').addEventListener('click', ()=> openPrint('both'));
+$('#btnPrintRoute').addEventListener('click', ()=> openPrint('route'));
+function renderPrintCard(){
+  const el=$('#printStateText'); if(!el) return;
+  const n=okFinds().length;
+  if(huntComplete()){
+    const dt=deckTargets(S.activeDeck);
+    el.innerHTML=`🎉 <b>Hunt complete — all ${dt.length} spots found!</b> The award certificate is earned and prints first, with the route sheet on page two.`;
+  } else if(n){
+    el.textContent=`${n} spot${n===1?'':'s'} found so far. The route sheet prints any time — the award certificate unlocks when every spot on the hunt is found.`;
+  } else {
+    el.textContent='Finish a hunt to earn the award certificate. The route sheet — the map, the trip path, and every spot in the order it was found — prints any time.';
+  }
+}
+
 /* ================= BOOT ================= */
 (function boot(){
   const pw=document.querySelector('#parentApp .pwrap');
@@ -1646,7 +1990,7 @@ $('#btnCopyTxt').addEventListener('click', async ()=>{
   startGeoWatch();
 })();
 /* QA / integration handle */
-window.RTH={ get state(){ return S; }, saveState, zoneStatus,
+window.RTH={ get state(){ return S; }, saveState, zoneStatus, huntComplete, buildPrintSheet, themeDef,
   setPos(lat, lon){ currentPos={lat, lon, ts:Date.now()}; refreshMapMarkers(); },
   get pos(){ return currentPos; }, enterParent, exitParent };
 </script>
