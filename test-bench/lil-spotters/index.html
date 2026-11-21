@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#7ec8f7">
+<title>J-Dawgs Lil Spotters — a kids' car-ride scavenger hunt</title>
+<meta name="description" content="J-Dawgs Lil Spotters: a one-time-download kids' map scavenger hunt for road trips and car rides. Spot it, snap it, collect them all. Parents watch the treasure map fill in. No ads, no accounts, no strangers.">
+<style>
+:root{
+  --ink:#22303c; --paper:#fffdf5; --sky:#7ec8f7; --sky2:#bfe7ff; --sun:#ffd23f;
+  --grass:#58c472; --coral:#ff6b5e; --grape:#8b6fd8; --blue:#1f7ae0; --deep:#0d1b2a;
+  --chrome1:#e8eef4; --chrome2:#9fb4c6; --eblue:#25c2ff;
+  --kidfont: ui-rounded, "SF Pro Rounded", "Arial Rounded MT Bold", "Helvetica Rounded", system-ui, sans-serif;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{font-family:var(--kidfont); color:var(--ink); background:linear-gradient(180deg,var(--sky) 0%,var(--sky2) 34%,#eafaff 100%); min-height:100vh; overscroll-behavior:none;}
+button{font-family:var(--kidfont); cursor:pointer;}
+img{user-select:none; -webkit-user-drag:none;}
+
+/* ---------- KID APP CHROME ---------- */
+#app{max-width:560px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; background:transparent;}
+.kidhead{position:sticky; top:0; z-index:30; display:flex; align-items:center; gap:8px; padding:10px 12px;
+  background:linear-gradient(180deg,#6dbdf2,#8fd2fa); border-bottom:4px solid #fff; box-shadow:0 3px 0 rgba(31,90,140,.18);}
+.logo{font-size:26px; line-height:1;}
+.kidhead h1{font-size:20px; margin:0; font-weight:900; letter-spacing:.2px; color:#fff; text-shadow:0 2px 0 rgba(20,80,130,.35);}
+.kidhead h1 .wt{display:block; font-size:9px; font-weight:700; letter-spacing:1.6px; text-transform:uppercase; opacity:.85; text-shadow:none;}
+.chip{margin-left:auto; display:flex; align-items:center; gap:5px; background:#fff; border-radius:999px; padding:6px 12px; font-weight:900; font-size:16px; box-shadow:0 3px 0 rgba(20,80,130,.25); border:3px solid #fff;}
+.chip.streak{margin-left:0; background:var(--sun);}
+#grownBtn{border:3px solid #fff; background:#2b6cb0; color:#fff; border-radius:999px; padding:8px 12px; font-weight:800; font-size:13px; box-shadow:0 3px 0 rgba(20,60,100,.4); touch-action:none;}
+#grownBtn:active{background:#1f4e79;}
+main{flex:1; padding:12px 12px 96px;}
+section.view{display:none;}
+section.view.on{display:block;}
+
+/* welcome / tier setup */
+.welcome{background:var(--paper); border:4px solid #fff; border-radius:24px; padding:16px; box-shadow:0 6px 0 rgba(31,90,140,.18); margin-bottom:14px;}
+.welcome h2{margin:0 0 4px; font-size:22px; font-weight:900;}
+.welcome p{margin:0 0 12px; font-size:15px; line-height:1.4;}
+.tierrow{display:flex; flex-direction:column; gap:10px;}
+.tierbtn{display:flex; align-items:center; gap:12px; text-align:left; border:4px solid #dfeefb; background:#fff; border-radius:18px; padding:12px 14px; box-shadow:0 4px 0 rgba(31,90,140,.12);}
+.tierbtn.sel{border-color:var(--sun); background:#fff8d6;}
+.tierbtn .tic{font-size:34px;}
+.tierbtn b{font-size:18px; display:block;}
+.tierbtn span{font-size:13px; opacity:.75; font-weight:700;}
+
+/* deck chooser */
+.deckcard{display:flex; gap:12px; align-items:center; width:100%; text-align:left; background:var(--paper); border:4px solid #fff; border-radius:22px; padding:14px; margin-bottom:12px; box-shadow:0 6px 0 rgba(31,90,140,.18);}
+.deckcard.sel{border-color:var(--sun);}
+.deckcard .dic{font-size:44px; line-height:1;}
+.deckcard b{font-size:19px; display:block;}
+.deckcard span{font-size:13.5px; font-weight:700; opacity:.75; display:block; margin-top:2px;}
+.deckcard .prog{margin-left:auto; font-weight:900; font-size:15px; background:var(--grass); color:#fff; border-radius:999px; padding:6px 10px; white-space:nowrap;}
+.howto{display:flex; gap:8px; margin:14px 0 4px;}
+.howto div{flex:1; background:#ffffffcc; border-radius:16px; padding:10px 6px; text-align:center; font-weight:900; font-size:14px; border:3px dashed #9fd3f5;}
+.howto .big{display:block; font-size:28px; margin-bottom:2px;}
+.bigplay{width:100%; margin-top:12px; background:var(--coral); color:#fff; border:none; border-bottom:6px solid #d64a3e; border-radius:20px; padding:16px; font-size:22px; font-weight:900; letter-spacing:.3px;}
+.bigplay:active{transform:translateY(3px); border-bottom-width:3px;}
+
+/* hunt grid */
+.progresswrap{background:#ffffffb8; border-radius:999px; padding:5px; margin-bottom:12px; border:3px solid #fff;}
+.progressbar{height:22px; border-radius:999px; background:repeating-linear-gradient(45deg,var(--grass),var(--grass) 14px,#4db264 14px,#4db264 28px); width:0%; transition:width .5s; min-width:0;}
+.progresslabel{text-align:center; font-weight:900; font-size:15px; margin:6px 0 12px;}
+.grid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+.card{position:relative; background:var(--paper); border:4px solid #fff; border-radius:22px; padding:12px 8px 12px; text-align:center; box-shadow:0 5px 0 rgba(31,90,140,.16); overflow:hidden; min-height:172px; display:flex; flex-direction:column; align-items:center; justify-content:flex-start;}
+.card .icon{height:92px; display:flex; align-items:center; justify-content:center; font-size:68px; line-height:1;}
+.card .icon svg{height:88px; width:88px;}
+.card .nm{font-size:17px; font-weight:900; line-height:1.15; margin-top:2px;}
+.card .hint{font-size:12px; font-weight:700; opacity:.65; margin-top:3px; line-height:1.3;}
+.card .snap{margin-top:auto; background:var(--blue); color:#fff; border:none; border-bottom:4px solid #155a9e; border-radius:999px; padding:8px 14px; font-weight:900; font-size:14px;}
+.card.found{border-color:var(--sun); background:#fffbe8;}
+.card.found .photo{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;}
+.card.found .veil{position:absolute; inset:0; background:linear-gradient(180deg,transparent 46%,rgba(20,40,20,.72));}
+.card.found .stamp{position:absolute; top:8px; right:8px; background:var(--sun); color:#7a5200; font-weight:900; font-size:12.5px; padding:5px 9px; border-radius:999px; transform:rotate(6deg); box-shadow:0 3px 0 rgba(0,0,0,.25); z-index:3;}
+.card.found .fname{position:absolute; left:8px; right:8px; bottom:8px; color:#fff; font-weight:900; font-size:15px; text-align:left; z-index:2; text-shadow:0 2px 3px rgba(0,0,0,.5); line-height:1.2;}
+.card.found .fname small{display:block; font-size:11.5px; font-weight:700; opacity:.9;}
+.card.manual .photo{display:none;}
+.card .nophoto{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:74px; opacity:.28;}
+
+/* bottom nav */
+.kidnav{position:fixed; left:50%; transform:translateX(-50%); bottom:0; width:100%; max-width:560px; z-index:30; display:flex; gap:8px; padding:10px 12px calc(10px + env(safe-area-inset-bottom)); background:linear-gradient(0deg,#6dbdf2,#8fd2fa); border-top:4px solid #fff;}
+.kidnav button{flex:1; border:3px solid #fff; background:#ffffff; border-radius:16px; padding:9px 4px; font-weight:900; font-size:14.5px; color:var(--ink); box-shadow:0 3px 0 rgba(20,80,130,.3);}
+.kidnav button.on{background:var(--sun);}
+.kidnav .ni{display:block; font-size:21px; line-height:1.1;}
+
+/* finds list (kid) */
+.findrow{display:flex; gap:12px; background:var(--paper); border:3px solid #fff; border-radius:18px; padding:10px; margin-bottom:10px; box-shadow:0 4px 0 rgba(31,90,140,.14); align-items:center;}
+.findrow img{width:74px; height:74px; object-fit:cover; border-radius:12px; border:3px solid var(--sun);}
+.findrow .noimg{width:74px; height:74px; border-radius:12px; background:#eaf6ff; display:flex; align-items:center; justify-content:center; font-size:38px; border:3px solid var(--sun); flex:none;}
+.findrow b{font-size:16.5px; display:block;}
+.findrow span{font-size:13px; font-weight:700; opacity:.7; display:block; line-height:1.35;}
+.empty{background:#ffffffb8; border:3px dashed #9fd3f5; border-radius:18px; padding:22px 14px; text-align:center; font-weight:800; font-size:15.5px;}
+
+/* ---------- MAP (storybook, both views) ---------- */
+.mapframe{position:relative; border-radius:22px; overflow:hidden; border:5px solid #fff; box-shadow:0 6px 0 rgba(31,90,140,.2); background:#bfe3a8;}
+.mapbox{position:relative; width:100%; height:380px; overflow:hidden; touch-action:none; background:#bfe3a8;}
+.mapbox.tall{height:440px;}
+.tiles{position:absolute; inset:0; filter:saturate(1.55) brightness(1.06) contrast(.94);}
+.tiles img{position:absolute; width:256px; height:256px; pointer-events:none;}
+.tilefallback{position:absolute; inset:0; background:
+  radial-gradient(circle at 22% 30%, #a5dd8e 0 90px, transparent 91px),
+  radial-gradient(circle at 78% 66%, #a5dd8e 0 120px, transparent 121px),
+  radial-gradient(circle at 60% 18%, #9fd0f5 0 70px, transparent 71px),
+  linear-gradient(160deg,#cdeeb2,#aede9a);}
+.pathsvg{position:absolute; inset:0; pointer-events:none; overflow:visible;}
+.pin{position:absolute; transform:translate(-50%,-100%); text-align:center; pointer-events:auto; cursor:pointer; z-index:5;}
+.pin .balloon{margin:0 auto; width:46px; height:46px; border-radius:50% 50% 50% 6px; transform:rotate(-45deg); background:var(--coral); border:3.5px solid #fff; box-shadow:0 4px 8px rgba(20,50,20,.35); display:flex; align-items:center; justify-content:center;}
+.pin .balloon .pin-in{transform:rotate(45deg); font-size:23px; line-height:1; display:flex;}
+.pin .balloon .pin-in svg{width:27px; height:27px;}
+.pin.blue .balloon{background:var(--blue);}
+.pin .ord{position:absolute; top:-9px; right:2px; background:var(--sun); color:#7a5200; border:2.5px solid #fff; width:22px; height:22px; border-radius:50%; font-size:12.5px; font-weight:900; display:flex; align-items:center; justify-content:center; z-index:2;}
+.pin .plab{margin-top:5px; display:inline-block; background:#fff; border-radius:999px; padding:3px 9px; font-size:12.5px; font-weight:900; box-shadow:0 2px 5px rgba(20,50,20,.3); white-space:nowrap; max-width:132px; overflow:hidden; text-overflow:ellipsis;}
+.meme{position:absolute; transform:translate(-50%,-50%); z-index:6; text-align:center; pointer-events:none;}
+.meme .star{width:52px; height:52px; margin:0 auto; background:radial-gradient(circle,#4db2ff 0 58%, #1f7ae0 59% 100%); border:4px solid #fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:27px; box-shadow:0 0 0 8px rgba(77,178,255,.35), 0 5px 10px rgba(20,50,90,.4); animation:pulse 1.8s infinite;}
+@keyframes pulse{0%{box-shadow:0 0 0 4px rgba(77,178,255,.45),0 5px 10px rgba(20,50,90,.4);}50%{box-shadow:0 0 0 13px rgba(77,178,255,.12),0 5px 10px rgba(20,50,90,.4);}100%{box-shadow:0 0 0 4px rgba(77,178,255,.45),0 5px 10px rgba(20,50,90,.4);}}
+.meme .melab{margin-top:4px; display:inline-block; background:var(--blue); color:#fff; border:2.5px solid #fff; border-radius:999px; padding:2px 9px; font-size:12px; font-weight:900; letter-spacing:.4px;}
+.mapbtns{position:absolute; right:10px; top:10px; z-index:8; display:flex; flex-direction:column; gap:8px;}
+.mapbtns button{width:48px; height:48px; border-radius:16px; border:3px solid #fff; background:#fff; font-size:22px; font-weight:900; box-shadow:0 3px 0 rgba(20,60,30,.3); color:var(--ink);}
+.mapnote{position:absolute; left:10px; bottom:8px; z-index:8; background:#ffffffd9; border-radius:10px; padding:4px 8px; font-size:10.5px; font-weight:700;}
+.maplegend{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;}
+.maplegend span{background:#fff; border-radius:999px; padding:5px 11px; font-size:13px; font-weight:800; box-shadow:0 2px 0 rgba(31,90,140,.15);}
+
+/* ---------- ZONE BANNER (kid, gentle) + PARENT ALERT ---------- */
+#zoneBanner{display:none; align-items:center; gap:10px; background:#e8fbe8; border:3.5px solid var(--grass); border-radius:18px; padding:12px 14px; font-weight:900; font-size:15.5px; margin-bottom:12px; box-shadow:0 4px 0 rgba(31,90,140,.15);}
+#zoneBanner.on{display:flex;}
+#alertBar{display:none; background:linear-gradient(180deg,#c62f24,#9e1f16); border:2px solid #ff8a7a; color:#fff; border-radius:16px; padding:14px; margin-bottom:14px; box-shadow:0 0 22px rgba(255,70,50,.45); animation:alertpulse 1.1s infinite;}
+#alertBar.on{display:block;}
+@keyframes alertpulse{0%,100%{box-shadow:0 0 10px rgba(255,70,50,.35);}50%{box-shadow:0 0 30px rgba(255,70,50,.75);}}
+#alertBar b{font-size:17px; display:block; margin-bottom:4px;}
+#alertBar p{margin:0 0 10px; font-size:14px; line-height:1.45; color:#ffe3de;}
+#alertBar button{background:#fff; color:#9e1f16; border:none; border-radius:10px; padding:10px 16px; font-weight:900; font-size:14.5px;}
+.zoneStatus{font-weight:900; font-size:15px; padding:9px 12px; border-radius:11px; background:#0d2b18; color:#8df0a8; border:1px solid #2c7a44;}
+.zoneStatus.out{background:#3a1410; color:#ffb3ab; border-color:#a03a2c;}
+.zoneStatus.idle{background:#0d1b2a; color:#9fc3dd; border-color:#33506d;}
+#btnCheckin{width:100%; margin-top:12px; background:var(--grass); color:#fff; border:none; border-bottom:6px solid #3d9e57; border-radius:18px; padding:15px; font-size:19px; font-weight:900;}
+#btnCheckin:active{transform:translateY(3px); border-bottom-width:3px;}
+
+/* ---------- MODALS / SHEETS / TOAST ---------- */
+.scrim{position:fixed; inset:0; background:rgba(15,35,55,.55); z-index:60; display:none; align-items:flex-end; justify-content:center;}
+.scrim.on{display:flex;}
+.sheet{background:var(--paper); width:100%; max-width:560px; border-radius:26px 26px 0 0; padding:18px 16px calc(18px + env(safe-area-inset-bottom)); animation:up .22s ease-out;}
+@keyframes up{from{transform:translateY(40px); opacity:.4;} to{transform:none; opacity:1;}}
+.sheet h3{margin:0 0 4px; font-size:21px; font-weight:900; text-align:center;}
+.sheet p{margin:0 0 14px; text-align:center; font-weight:700; opacity:.75; font-size:14.5px;}
+.sheet .rowbtn{width:100%; padding:16px; border-radius:16px; border:3px solid #dfeefb; background:#fff; font-size:18px; font-weight:900; margin-bottom:10px; display:flex; align-items:center; gap:12px; justify-content:center;}
+.sheet .rowbtn.primary{background:var(--blue); color:#fff; border-color:#155a9e;}
+.sheet .rowbtn.cancel{background:transparent; border-color:transparent; opacity:.7;}
+.center-modal{align-items:center; padding:18px;}
+.dialog{background:var(--paper); width:100%; max-width:420px; border-radius:24px; padding:20px 18px; text-align:center; box-shadow:0 12px 30px rgba(0,0,0,.35);}
+.dialog img.bigphoto{width:100%; border-radius:16px; border:4px solid var(--sun); margin-bottom:10px;}
+.pinpad-dots{display:flex; gap:12px; justify-content:center; margin:14px 0 18px;}
+.pinpad-dots i{width:18px; height:18px; border-radius:50%; border:3.5px solid var(--ink); display:block;}
+.pinpad-dots i.f{background:var(--ink);}
+.pinpad{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; max-width:260px; margin:0 auto;}
+.pinpad button{padding:15px 0; font-size:22px; font-weight:900; border-radius:16px; border:3px solid #dfeefb; background:#fff;}
+#toast{position:fixed; left:50%; transform:translateX(-50%) translateY(20px); bottom:108px; z-index:90; background:var(--ink); color:#fff; font-weight:800; font-size:15px; padding:12px 18px; border-radius:999px; opacity:0; pointer-events:none; transition:.25s; max-width:88vw; text-align:center; box-shadow:0 6px 16px rgba(0,0,0,.3);}
+#toast.on{opacity:1; transform:translateX(-50%);}
+#celebrate{position:fixed; inset:0; z-index:80; display:none; align-items:center; justify-content:center; background:rgba(20,50,90,.45); padding:18px;}
+#celebrate.on{display:flex;}
+#celebrate .card2{background:var(--paper); border-radius:28px; border:5px solid var(--sun); padding:28px 20px; text-align:center; max-width:420px; width:100%; box-shadow:0 14px 34px rgba(0,0,0,.35);}
+#celebrate h2{font-size:31px; margin:6px 0; font-weight:900;}
+.confetti{position:absolute; width:11px; height:16px; top:-20px; border-radius:3px; animation:fall linear forwards;}
+@keyframes fall{to{transform:translateY(105vh) rotate(720deg);}}
+
+/* ---------- PARENT VIEW (chrome/blue) ---------- */
+#parentApp,#snapshotView{position:fixed; inset:0; z-index:50; overflow-y:auto; background:linear-gradient(180deg,#0d1b2a,#12293f 60%,#0d1b2a); color:#eaf4fc; display:none;}
+#parentApp.on,#snapshotView.on{display:block;}
+.pwrap{max-width:640px; margin:0 auto; padding:16px 14px 60px;}
+.phead{display:flex; align-items:center; gap:10px; padding:12px 14px; border-radius:16px; background:linear-gradient(180deg,#22384f,#16283c); border:1px solid #3d5a76; box-shadow:inset 0 1px 0 #5b7d9e, 0 4px 10px rgba(0,0,0,.4); margin-bottom:14px;}
+.phead .pt{font-weight:900; font-size:18px; letter-spacing:.3px;}
+.phead .pt small{display:block; font-size:10px; letter-spacing:1.6px; text-transform:uppercase; color:var(--eblue); font-weight:800;}
+.phead button{margin-left:auto; background:linear-gradient(180deg,var(--chrome1),var(--chrome2)); border:1px solid #d7e3ee; color:#12293f; font-weight:900; border-radius:10px; padding:9px 13px;}
+.ptabs{display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;}
+.ptabs button{flex:1; min-width:70px; padding:11px 6px; border-radius:12px; border:1px solid #3d5a76; background:#16283c; color:#cfe6f7; font-weight:800; font-size:14.5px;}
+.ptabs button.on{background:linear-gradient(180deg,#2b9fd8,#1778b8); color:#fff; border-color:#5ec2f2; box-shadow:0 0 12px rgba(37,194,255,.35);}
+.ppanel{display:none;}
+.ppanel.on{display:block;}
+.pcard{background:#132539; border:1px solid #33506d; border-radius:16px; padding:14px; margin-bottom:12px;}
+.pcard h3{margin:0 0 8px; font-size:16.5px; color:#fff;}
+.pcard p,.pcard li{font-size:14.5px; line-height:1.5; color:#cfe0ef;}
+.pcard ul{margin:6px 0; padding-left:20px;}
+.pfind{display:flex; gap:12px; background:#132539; border:1px solid #33506d; border-radius:14px; padding:10px; margin-bottom:10px; align-items:center;}
+.pfind img{width:66px; height:66px; border-radius:10px; object-fit:cover; border:2px solid var(--eblue);}
+.pfind .noimg{width:66px; height:66px; border-radius:10px; background:#0d1b2a; border:2px solid #33506d; display:flex; align-items:center; justify-content:center; font-size:32px; flex:none;}
+.pfind b{color:#fff; font-size:15.5px; display:block;}
+.pfind span{font-size:12.5px; color:#9fc3dd; display:block; line-height:1.4;}
+.pfind a{color:var(--eblue); font-weight:800; text-decoration:none;}
+.pbtn{display:inline-block; background:linear-gradient(180deg,#2b9fd8,#1778b8); color:#fff; border:1px solid #5ec2f2; border-radius:11px; padding:11px 15px; font-weight:900; font-size:14.5px; margin:4px 6px 4px 0;}
+.pbtn.ghost{background:#16283c; color:#cfe6f7; border-color:#3d5a76;}
+.pbtn.danger{background:#3a1f24; border-color:#7a3540; color:#ffb3ab;}
+.pinput{width:100%; background:#0d1b2a; border:1px solid #3d5a76; border-radius:11px; color:#fff; padding:12px; font-size:15px; font-family:var(--kidfont); font-weight:700;}
+select.pinput{appearance:none;}
+.iconpick{display:flex; flex-wrap:wrap; gap:7px; margin:10px 0;}
+.iconpick button{width:47px; height:47px; font-size:24px; border-radius:12px; border:2px solid #33506d; background:#0d1b2a;}
+.iconpick button.sel{border-color:var(--sun); background:#2a2410;}
+.checkrow{display:flex; align-items:center; gap:10px; padding:10px; border:1px solid #33506d; border-radius:12px; margin-bottom:8px; background:#0f2236;}
+.checkrow .ci{font-size:27px;}
+.checkrow b{color:#fff; font-size:15px;}
+.checkrow button{margin-left:auto;}
+.snapbanner{background:linear-gradient(180deg,#ffd23f,#f5b921); color:#5c4300; font-weight:900; border-radius:14px; padding:12px 14px; margin-bottom:12px; font-size:14.5px; line-height:1.45;}
+.kidmap-in-parent .mapframe{border-color:#33506d; box-shadow:0 4px 14px rgba(0,0,0,.5);}
+.small{font-size:12.5px !important; opacity:.85;}
+.hidden{display:none !important;}
+.card .minirow{display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; justify-content:center;}
+.card .minirow button{border:2.5px solid #bfe0f7; background:#fff; border-radius:999px; padding:6px 11px; font-weight:900; font-size:12.5px; color:var(--ink);}
+.card .fact{font-size:12px; font-weight:700; opacity:.8; margin-top:5px; line-height:1.35; background:#eef7ff; border-radius:10px; padding:6px 8px;}
+.card .step2{display:none; font-size:12.5px; font-weight:800; margin-top:5px; background:#fff3bf; border-radius:10px; padding:6px 8px; line-height:1.35;}
+.card .step2.on{display:block;}
+.sheet.giant .rowbtn.primary{font-size:27px; padding:30px 16px; border-radius:22px;}
+.sheet.giant .rowbtn:not(.primary):not(.cancel){display:none;}
+.stickerrow{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;}
+.sticker{width:56px; height:56px; border-radius:50%; background:#fff; border:3.5px solid var(--sun); display:flex; align-items:center; justify-content:center; font-size:29px; box-shadow:0 3px 0 rgba(31,90,140,.2);}
+.sticker svg{width:36px; height:36px;}
+.badgerow{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;}
+.badgechip{background:linear-gradient(180deg,#fff,#ffe9a8); border:3px solid var(--sun); border-radius:999px; padding:7px 12px; font-weight:900; font-size:13.5px; box-shadow:0 3px 0 rgba(31,90,140,.15);}
+.starbtns{display:inline-flex; gap:2px; margin-left:8px; vertical-align:middle;}
+.starbtns button{background:none; border:none; font-size:21px; padding:2px; filter:grayscale(1) opacity(.45);}
+.starbtns button.lit{filter:none;}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="kidhead">
+    <div class="logo">🗺️</div>
+    <h1>J-Dawgs Lil Spotters</h1>
+    <div class="chip" id="scoreChip" title="Your score">⭐ 0</div>
+    <div class="chip streak" id="streakChip" title="Find streak">🔥 0</div>
+    <button id="grownBtn" aria-label="Grown-ups area — press and hold">Grown-ups</button>
+  </div>
+  <main>
+    <section class="view on" id="view-home">
+      <div class="welcome" id="welcomeCard">
+        <h2>👋 Grown-ups: quick setup!</h2>
+        <p>Pick who is playing, then hand the phone to your hunter. You can change this any time in the Grown-ups area.</p>
+        <div class="tierrow" id="tierRow"></div>
+      </div>
+      <div id="deckList"></div>
+      <div class="howto">
+        <div><span class="big">👀</span>1. Spot it!</div>
+        <div><span class="big">📸</span>2. Snap it!</div>
+        <div><span class="big">⭐</span>3. Collect them all!</div>
+      </div>
+      <button class="bigplay" id="playBtn">▶ Start Hunting!</button>
+    </section>
+
+    <section class="view" id="view-hunt">
+      <div class="progresswrap"><div class="progressbar" id="progBar"></div></div>
+      <div class="progresslabel" id="progLabel"></div>
+      <div class="grid" id="cardGrid"></div>
+    </section>
+
+    <section class="view" id="view-map">
+      <div id="zoneBanner">🧭 <span>You wandered a bit far, explorer! Head back inside your <b>green zone</b> — that's where the hunting happens.</span></div>
+      <div class="mapframe"><div class="mapbox tall" id="kidMap"></div></div>
+      <div class="maplegend">
+        <span>⭐ = you are here</span><span>🎈 = things you found</span><span>〰️ = your trip path</span><span>🟩 = your play zone</span>
+      </div>
+      <button id="btnCheckin" class="hidden">💚 Check in — I'm here!</button>
+      <p style="font-weight:700; opacity:.75; font-size:14px; line-height:1.45;">Your treasure map! Every time you snap a find, a balloon pops onto the map right where you were standing.</p>
+    </section>
+
+    <section class="view" id="view-finds">
+      <div id="findsHead"></div>
+      <div id="findsList"></div>
+    </section>
+  </main>
+  <nav class="kidnav">
+    <button data-nav="home" class="on"><span class="ni">🏠</span>Home</button>
+    <button data-nav="hunt"><span class="ni">🔎</span>Hunt</button>
+    <button data-nav="map"><span class="ni">🗺️</span>My Map</button>
+    <button data-nav="finds"><span class="ni">📸</span>My Finds</button>
+  </nav>
+</div>
+
+<!-- action sheet: photo choices -->
+<div class="scrim" id="sheetScrim">
+  <div class="sheet">
+    <h3 id="sheetTitle">Found it?</h3>
+    <p id="sheetSub">Snap a picture to prove it!</p>
+    <button class="rowbtn primary" id="btnCamera">📸 Take a Photo</button>
+    <button class="rowbtn" id="btnGallery">🖼️ Pick from Photos</button>
+    <button class="rowbtn cancel" id="btnSheetCancel">Not yet</button>
+  </div>
+</div>
+
+<!-- photo viewer -->
+<div class="scrim center-modal" id="photoScrim">
+  <div class="dialog">
+    <img class="bigphoto" id="bigPhoto" alt="Your find photo">
+    <h3 id="photoTitle" style="margin:0 0 4px; font-size:21px; font-weight:900;"></h3>
+    <p id="photoMeta" style="margin:0 0 14px; font-weight:700; opacity:.75; font-size:14px;"></p>
+    <button class="rowbtn primary" id="btnPhotoClose" style="width:100%; padding:14px; border-radius:14px; border:3px solid #155a9e; background:var(--blue); color:#fff; font-size:17px; font-weight:900;">Awesome!</button>
+  </div>
+</div>
+
+<!-- PIN pad -->
+<div class="scrim center-modal" id="pinScrim">
+  <div class="dialog">
+    <h3 style="margin:0; font-size:21px; font-weight:900;" id="pinTitle">Grown-ups only</h3>
+    <p style="font-weight:700; opacity:.75; font-size:14px; margin:6px 0 0;" id="pinSub">Type your 4-number PIN</p>
+    <div class="pinpad-dots" id="pinDots"><i></i><i></i><i></i><i></i></div>
+    <div class="pinpad" id="pinPad"></div>
+    <button class="rowbtn cancel" id="btnPinCancel" style="width:100%; margin-top:14px; padding:10px; border:none; background:transparent; font-weight:900; font-size:16px; opacity:.7;">Cancel</button>
+  </div>
+</div>
+
+<div id="celebrate"><div class="card2">
+  <div style="font-size:64px;">🎉</div>
+  <h2>YOU FOUND THEM ALL!</h2>
+  <p id="celebText" style="font-weight:800; font-size:16.5px; line-height:1.45;"></p>
+  <button class="bigplay" id="celebBtn" style="margin-top:8px;">Keep Playing!</button>
+</div></div>
+
+<div id="toast"></div>
+
+<!-- PARENT VIEW -->
+<div id="parentApp">
+  <div class="pwrap">
+    <div class="phead">
+      <div class="pt">Parent View<small>J-Dawgs Lil Spotters</small></div>
+      <button id="btnExitParent">← Back to game</button>
+    </div>
+    <p class="small" style="margin:0 2px 12px;">🚗 Passenger use only while the car is moving — drivers, eyes on the road, always.</p>
+    <div class="ptabs">
+      <button data-ptab="pmap" class="on">🗺️ Map</button>
+      <button data-ptab="pfinds">📸 Finds</button>
+      <button data-ptab="psetup">⚙️ Setup</button>
+      <button data-ptab="pinfo">🛡️ Safety</button>
+    </div>
+
+    <div class="ppanel on" id="pp-pmap">
+      <div class="kidmap-in-parent"><div class="mapframe"><div class="mapbox tall" id="parentMap"></div></div></div>
+      <div class="pcard" style="margin-top:12px;">
+        <h3>What you're seeing</h3>
+        <p>Every balloon is a find, pinned where the photo was taken. The blue star is this device's location <b>right now, while the game is open</b> — location is never tracked in the background and never shared with anyone but you. The dashed line is the trip path in the order things were found.</p>
+        <p class="small">Same storybook map the kids see — real geography, no road-map clutter.</p>
+      </div>
+      <div class="pcard" id="boundaryCard">
+        <h3>🟩 Neighborhood boundary — you draw the play zone</h3>
+        <p>Tap <b>Start drawing</b>, then tap the map to drop points around the allowed area — your block, the park, grandma's street. Tap <b>Save boundary</b> when the shape closes around the zone. Your child sees it as a friendly green zone on their map. Neighborhood hunt decks arrive in Phase 3; the boundary, the watch, and the alerts work now so you can set it up and try it.</p>
+        <input class="pinput" id="bName" maxlength="30" placeholder="Name the zone — e.g. Our Block">
+        <div style="margin-top:10px;">
+          <button class="pbtn" id="btnDraw">✏️ Start drawing</button>
+          <button class="pbtn ghost hidden" id="btnBUndo">↩ Undo point</button>
+          <button class="pbtn ghost hidden" id="btnBClear">🗑 Clear points</button>
+          <button class="pbtn hidden" id="btnBSave">✓ Save boundary</button>
+          <button class="pbtn danger hidden" id="btnBDelete">Delete saved boundary</button>
+        </div>
+        <p class="small" id="bStatus">No boundary saved yet.</p>
+        <div style="margin-top:12px; border-top:1px solid #33506d; padding-top:12px;">
+          <button class="pbtn" id="btnWatch">🔔 Boundary watch: OFF</button>
+          <p class="small">With the watch ON, if the device leaves the zone during play: <b>you get an alert</b> (red alarm banner + sound in this Parent View, pinned until you acknowledge it) and your child gets a gentle “head back inside your zone” note. Little Spotters (ages 3–5) can't use neighborhood mode — the watch stays locked off for that tier.</p>
+          <div class="zoneStatus idle" id="zoneStatus">Zone status: —</div>
+        </div>
+        <div id="checkinCard" class="hidden" style="margin-top:12px; border-top:1px solid #33506d; padding-top:12px;">
+          <h3 style="font-size:15px;">⏱️ Timed check-ins (Trailblazers)</h3>
+          <p class="small">During a watched neighborhood hunt, your Trailblazer taps “Check in — I'm here!” on their map. If a check-in runs late, it shows here.</p>
+          <label class="small">Check in every
+            <select id="checkinMins" class="pinput" style="width:auto; display:inline-block; padding:7px 10px;">
+              <option value="10">10 minutes</option><option value="15">15 minutes</option>
+              <option value="20">20 minutes</option><option value="30">30 minutes</option>
+            </select>
+          </label>
+          <p class="small" id="checkinStatus">No check-in yet this hunt.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="ppanel" id="pp-pfinds">
+      <div class="pcard hidden" id="pendingCard">
+        <h3>👍 Photos waiting for your stamp</h3>
+        <p>Little Spotters' photos need a grown-up stamp before they count. Shaky and blurry still counts — did they get the thing in the picture?</p>
+        <div id="pendingList"></div>
+      </div>
+      <div class="pcard hidden" id="hintCard">
+        <h3>🙋 Hint requests</h3>
+        <p>Your hunter asked for help on these. Releasing shows an extra hint on their card.</p>
+        <div id="hintReqList"></div>
+      </div>
+      <div id="parentFinds"></div>
+      <div class="pcard">
+        <h3>Trip scrapbook (AI-compatible export)</h3>
+        <p>Download the whole hunt as a plain-text scrapbook or a JSON file (photos included) that any AI assistant can read — great for turning the trip into a story or a school project.</p>
+        <button class="pbtn" id="btnExportTxt">⬇ Scrapbook (.txt)</button>
+        <button class="pbtn" id="btnExportJson">⬇ Scrapbook (.json)</button>
+        <button class="pbtn ghost" id="btnCopyTxt">📋 Copy text scrapbook</button>
+      </div>
+      <div class="pcard">
+        <h3>No camera or no GPS? Check off by hand</h3>
+        <p>If the camera or location didn't work for a find, you can approve it here. It will be marked “checked off by a grown-up” — no photo, and a map pin only if we know where you are.</p>
+        <div id="checkoffList"></div>
+      </div>
+    </div>
+
+    <div class="ppanel" id="pp-psetup">
+      <div class="pcard">
+        <h3>1 · Who is playing? (age tier)</h3>
+        <p>The tier sets the list length, how hard the finds are, and how much reading the game asks for. <span class="small">(Interim tiers — being finalized against child-development research.)</span></p>
+        <div class="tierrow" id="tierRowParent"></div>
+      </div>
+      <div class="pcard">
+        <h3>2 · Pick the hunt</h3>
+        <p>Choose a deck, or build your own list below — perfect for “find grandma's house, a red truck, and the big dinosaur statue.”</p>
+        <div id="deckPickParent"></div>
+      </div>
+      <div class="pcard">
+        <h3>3 · Build a custom hunt</h3>
+        <input class="pinput" id="customName" maxlength="40" placeholder="Name it — e.g. Grandma's House">
+        <div class="iconpick" id="iconPick"></div>
+        <button class="pbtn" id="btnAddCustom">＋ Add to my hunt list</button>
+        <div id="customList" style="margin-top:10px;"></div>
+      </div>
+      <div class="pcard">
+        <h3>4 · Parent link</h3>
+        <p>Make a link you can open on another phone or computer to see the hunt map and finds. <b>Please read:</b> the link is a <b>snapshot</b> from the moment you make it — it does not update live, it does not show the photos (they stay on this device), and it has no live location. Anyone holding the link can see that snapshot, so only share it with family. Make a fresh link any time to share a newer snapshot.</p>
+        <button class="pbtn" id="btnMakeLink">🔗 Make parent link</button>
+        <input class="pinput hidden" id="linkOut" readonly style="margin-top:8px;">
+        <button class="pbtn ghost hidden" id="btnCopyLink">📋 Copy link</button>
+      </div>
+      <div class="pcard">
+        <h3>5 · Parent PIN</h3>
+        <p id="pinStateText">No PIN set yet. The Grown-ups area opens with a press-and-hold. Set a PIN to lock it properly.</p>
+        <button class="pbtn" id="btnSetPin">Set / change PIN</button>
+      </div>
+      <div class="pcard">
+        <h3>Start over</h3>
+        <p>Erase all finds, photos, and settings on this device and start fresh.</p>
+        <button class="pbtn danger" id="btnReset">Erase everything</button>
+      </div>
+    </div>
+
+    <div class="ppanel" id="pp-pinfo">
+      <div class="pcard">
+        <h3>🛡️ Safety &amp; privacy — in plain words</h3>
+        <ul>
+          <li><b>Location is only used while the game is open.</b> When a photo is snapped, the game saves where it was taken so it can pin it on the family map. The blue star shows this device's location only while the game is on screen.</li>
+          <li><b>Nothing is public.</b> There are no accounts, no sign-ups, no strangers, no chat, no followers — nothing leaves this device except a parent link <i>you</i> choose to make and share.</li>
+          <li><b>Photos stay on this device.</b> Finds and photos are stored in this browser on this phone. The parent link never carries photos.</li>
+          <li><b>No ads. Ever.</b> No trackers, no data selling — that's the J-Dawgs promise on everything we make.</li>
+          <li><b>The PIN is a kid-lock, not a bank vault.</b> It keeps little fingers out of the settings. If you forget it, erasing the app's data resets it (and the hunt).</li>
+          <li><b>Road safety:</b> the game is for passengers. Drivers — eyes on the road; hunters ride in the back seat.</li>
+        </ul>
+      </div>
+      <div class="pcard">
+        <h3>How to set up (passenger-seat edition)</h3>
+        <ul>
+          <li>1. Pick the age tier above and a hunt deck.</li>
+          <li>2. Say “yes” when the phone asks for camera and location — that's what lets finds land on the map. If you say no, the game still works: photos save without pins, and you can check finds off by hand in Finds.</li>
+          <li>3. Hand the phone to your hunter. They tap a card when they spot the thing, then snap its picture.</li>
+          <li>4. Open this Parent View any time (press-and-hold “Grown-ups”) to watch the treasure map fill in.</li>
+        </ul>
+        <p class="small">J-Dawgs Lil Spotters™ · © 2026 J-Dawgs Industries. Big dreams for a small world.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SNAPSHOT VIEW (from parent link) -->
+<div id="snapshotView">
+  <div class="pwrap">
+    <div class="phead"><div class="pt">Parent Snapshot<small>J-Dawgs Lil Spotters · read-only</small></div></div>
+    <div class="snapbanner">📸 This is a snapshot of the hunt from <span id="snapWhen"></span>. It doesn't update live and doesn't include photos — those stay on the hunter's device. The map pins and the found list below are exactly what was shared.</div>
+    <div class="kidmap-in-parent"><div class="mapframe"><div class="mapbox tall" id="snapMap"></div></div></div>
+    <div id="snapFinds" style="margin-top:12px;"></div>
+  </div>
+</div>
+
+<input type="file" id="camInput" accept="image/*" capture="environment" class="hidden">
+<input type="file" id="galInput" accept="image/*" class="hidden">
+<script>
+'use strict';
+/* ================= DATA ================= */
+function svgIcon(kind){
+  const o='stroke="#22303c" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"';
+  const thin='stroke="#22303c" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"';
+  switch(kind){
+  case 'arch': return `<svg viewBox="0 0 100 100"><path d="M18 92 L18 46 Q50 4 82 46 L82 92" fill="none" stroke="#c0ccd6" stroke-width="13"/><path d="M18 92 L18 46 Q50 4 82 46 L82 92" fill="none" ${thin} opacity=".45"/><line x1="6" y1="92" x2="94" y2="92" stroke="#58c472" stroke-width="7" stroke-linecap="round"/></svg>`;
+  case 'watertower': return `<svg viewBox="0 0 100 100"><ellipse cx="50" cy="26" rx="30" ry="17" fill="#7ec8f7" ${o}/><path d="M22 30 L28 48 L72 48 L78 30" fill="#5aa9e6" ${o}/><line x1="32" y1="48" x2="24" y2="90" ${o}/><line x1="68" y1="48" x2="76" y2="90" ${o}/><line x1="50" y1="48" x2="50" y2="90" ${o}/><line x1="28" y1="68" x2="72" y2="68" ${o}/></svg>`;
+  case 'windmill': return `<svg viewBox="0 0 100 100"><g stroke="#8b6fd8" stroke-width="6" stroke-linecap="round"><line x1="50" y1="34" x2="50" y2="10"/><line x1="50" y1="34" x2="74" y2="34"/><line x1="50" y1="34" x2="50" y2="58"/><line x1="50" y1="34" x2="26" y2="34"/></g><circle cx="50" cy="34" r="7" fill="#ffd23f" ${o}/><path d="M38 92 L46 40 L54 40 L62 92 Z" fill="#c0ccd6" ${o}/></svg>`;
+  case 'barn': return `<svg viewBox="0 0 100 100"><path d="M14 44 L50 18 L86 44 L80 44 L80 90 L20 90 L20 44 Z" fill="#e2483a" ${o}/><path d="M14 44 L50 18 L86 44" fill="none" stroke="#8f2d23" stroke-width="7" stroke-linecap="round"/><rect x="38" y="58" width="24" height="32" fill="#fff" ${o}/><line x1="38" y1="58" x2="62" y2="90" ${thin}/><line x1="62" y1="58" x2="38" y2="90" ${thin}/><rect x="42" y="30" width="16" height="13" fill="#ffd23f" ${o}/></svg>`;
+  case 'bridge': return `<svg viewBox="0 0 100 100"><path d="M8 40 L50 22 L92 40 L86 40 L86 66 L14 66 L14 40 Z" fill="#b06a3b" ${o}/><rect x="24" y="48" width="14" height="18" fill="#5b3a22" ${o}/><rect x="62" y="48" width="14" height="18" fill="#5b3a22" ${o}/><path d="M4 78 Q18 70 32 78 T60 78 T96 78" fill="none" stroke="#4db2ff" stroke-width="6" stroke-linecap="round"/></svg>`;
+  case 'silo': return `<svg viewBox="0 0 100 100"><path d="M32 90 L32 34 Q32 12 50 12 Q68 12 68 34 L68 90 Z" fill="#c0ccd6" ${o}/><line x1="32" y1="48" x2="68" y2="48" ${thin}/><line x1="32" y1="66" x2="68" y2="66" ${thin}/><path d="M68 90 L68 56 L88 56 L88 90 Z" fill="#e2483a" ${o}/></svg>`;
+  case 'liberty': return `<svg viewBox="0 0 100 100"><path d="M38 92 L42 52 L58 52 L62 92 Z" fill="#43b581" ${o}/><circle cx="50" cy="40" r="9" fill="#43b581" ${o}/><g stroke="#43b581" stroke-width="4" stroke-linecap="round"><line x1="50" y1="31" x2="50" y2="22"/><line x1="41" y1="34" x2="36" y2="27"/><line x1="59" y1="34" x2="64" y2="27"/></g><line x1="58" y1="48" x2="72" y2="26" stroke="#43b581" stroke-width="6" stroke-linecap="round"/><path d="M72 12 Q78 20 72 27 Q66 20 72 12Z" fill="#ff9f2e" ${thin}/><rect x="30" y="90" width="40" height="6" fill="#8a97a5" ${thin}/></svg>`;
+  case 'rushmore': return `<svg viewBox="0 0 100 100"><path d="M6 92 L14 38 L34 22 L62 18 L84 34 L94 92 Z" fill="#a8b2ba" ${o}/><g fill="#ffd9b3" ${thin}><circle cx="32" cy="46" r="8"/><circle cx="50" cy="42" r="8"/><circle cx="67" cy="46" r="8"/></g><g fill="#22303c"><circle cx="29" cy="45" r="1.6"/><circle cx="35" cy="45" r="1.6"/><circle cx="47" cy="41" r="1.6"/><circle cx="53" cy="41" r="1.6"/><circle cx="64" cy="45" r="1.6"/><circle cx="70" cy="45" r="1.6"/></g><path d="M10 92 L24 66 L40 80 L58 62 L76 78 L90 92Z" fill="#58c472" opacity=".55"/></svg>`;
+  case 'gate': return `<svg viewBox="0 0 100 100"><rect x="24" y="18" width="9" height="52" fill="#e2483a" ${o}/><rect x="67" y="18" width="9" height="52" fill="#e2483a" ${o}/><path d="M28 24 Q50 44 72 24" fill="none" stroke="#e2483a" stroke-width="4"/><path d="M28 36 Q50 54 72 36" fill="none" stroke="#e2483a" stroke-width="3"/><line x1="6" y1="70" x2="94" y2="70" stroke="#22303c" stroke-width="6" stroke-linecap="round"/><path d="M4 84 Q16 77 28 84 T52 84 T76 84 T96 84" fill="none" stroke="#4db2ff" stroke-width="6" stroke-linecap="round"/></svg>`;
+  case 'canyon': return `<svg viewBox="0 0 100 100"><circle cx="80" cy="18" r="9" fill="#ffd23f" ${thin}/><path d="M4 40 L30 40 L36 52 L64 52 L70 40 L96 40 L96 60 L4 60Z" fill="#e2703a" ${o}/><path d="M4 60 L96 60 L88 76 L14 76Z" fill="#c7502b" ${o}/><path d="M14 76 L88 76 L96 92 L4 92Z" fill="#a03d20" ${o}/><path d="M44 60 L50 76 L56 60" fill="none" stroke="#7ec8f7" stroke-width="4" stroke-linecap="round"/></svg>`;
+  case 'falls': return `<svg viewBox="0 0 100 100"><path d="M6 30 L94 30 L94 42 L6 42Z" fill="#7a8a99" ${o}/><path d="M18 42 L30 42 L28 78 L20 78Z" fill="#7ec8f7" ${thin}/><path d="M44 42 L58 42 L56 78 L46 78Z" fill="#7ec8f7" ${thin}/><path d="M70 42 L82 42 L80 78 L72 78Z" fill="#7ec8f7" ${thin}/><g fill="#eaf7ff" ${thin}><circle cx="26" cy="84" r="7"/><circle cx="50" cy="86" r="8"/><circle cx="76" cy="84" r="7"/><circle cx="38" cy="80" r="5"/><circle cx="64" cy="80" r="5"/></g></svg>`;
+  case 'needle': return `<svg viewBox="0 0 100 100"><line x1="50" y1="26" x2="50" y2="6" ${o}/><ellipse cx="50" cy="30" rx="24" ry="9" fill="#c0ccd6" ${o}/><path d="M40 38 L34 92 L44 92 L48 40Z" fill="#8a97a5" ${o}/><path d="M60 38 L66 92 L56 92 L52 40Z" fill="#8a97a5" ${o}/><line x1="30" y1="92" x2="70" y2="92" stroke="#58c472" stroke-width="6" stroke-linecap="round"/></svg>`;
+  case 'hollywood': return `<svg viewBox="0 0 100 100"><path d="M4 92 L4 62 Q30 40 52 54 Q76 38 96 58 L96 92Z" fill="#58c472" ${o}/><text x="50" y="52" text-anchor="middle" font-size="12.5" font-weight="900" fill="#ffffff" stroke="#22303c" stroke-width="0.7" letter-spacing="1">HOLLYWOOD</text><circle cx="84" cy="16" r="8" fill="#ffd23f" ${thin}/></svg>`;
+  case 'dam': return `<svg viewBox="0 0 100 100"><path d="M10 26 Q50 44 90 26 L84 92 L16 92Z" fill="#a8b2ba" ${o}/><path d="M10 26 Q50 44 90 26" fill="none" stroke="#4db2ff" stroke-width="7"/><g stroke="#7ec8f7" stroke-width="3.4" stroke-linecap="round"><line x1="34" y1="58" x2="34" y2="84"/><line x1="50" y1="64" x2="50" y2="88"/><line x1="66" y1="58" x2="66" y2="84"/></g></svg>`;
+  case 'cadillac': return `<svg viewBox="0 0 100 100"><g transform="rotate(-32 50 55)"><rect x="18" y="44" width="64" height="20" rx="9" fill="#ff6b5e" ${o}/><path d="M32 44 L40 30 L62 30 L70 44Z" fill="#7ec8f7" ${o}/><circle cx="32" cy="66" r="7" fill="#22303c"/><circle cx="68" cy="66" r="7" fill="#22303c"/></g><line x1="6" y1="90" x2="94" y2="90" stroke="#c9a86a" stroke-width="6" stroke-linecap="round"/><path d="M14 84 L22 78 M34 86 L42 80 M70 86 L78 80" stroke="#58c472" stroke-width="3.4" stroke-linecap="round"/></svg>`;
+  case 'shield66': return `<svg viewBox="0 0 100 100"><path d="M50 8 L88 16 L88 48 Q88 76 50 92 Q12 76 12 48 L12 16Z" fill="#ffffff" ${o}/><path d="M12 34 L88 34" ${o}/><text x="50" y="29" text-anchor="middle" font-size="12" font-weight="900" fill="#22303c">ROUTE</text><text x="50" y="72" text-anchor="middle" font-size="30" font-weight="900" fill="#22303c">66</text></svg>`;
+  case 'whitehouse': return `<svg viewBox="0 0 100 100"><path d="M14 34 L50 20 L86 34Z" fill="#8a97a5" ${o}/><rect x="14" y="34" width="72" height="46" fill="#ffffff" ${o}/><g stroke="#22303c" stroke-width="3.4"><line x1="28" y1="40" x2="28" y2="74"/><line x1="42" y1="40" x2="42" y2="74"/><line x1="58" y1="40" x2="58" y2="74"/><line x1="72" y1="40" x2="72" y2="74"/></g><rect x="45" y="58" width="10" height="22" fill="#5b7d9e" ${thin}/><line x1="50" y1="20" x2="50" y2="10" ${thin}/><path d="M50 10 L62 13 L50 16Z" fill="#e2483a" ${thin}/><line x1="6" y1="84" x2="94" y2="84" stroke="#58c472" stroke-width="6" stroke-linecap="round"/></svg>`;
+  case 'cow': return `<svg viewBox="0 0 100 100"><rect x="16" y="34" width="56" height="34" rx="13" fill="#ffffff" ${o}/><ellipse cx="34" cy="46" rx="9" ry="6" fill="#22303c"/><ellipse cx="58" cy="58" rx="8" ry="5" fill="#22303c"/><rect x="66" y="28" width="24" height="22" rx="8" fill="#ffffff" ${o}/><ellipse cx="78" cy="47" rx="10" ry="6" fill="#ffb3c8" ${thin}/><circle cx="74" cy="47" r="1.8" fill="#22303c"/><circle cx="82" cy="47" r="1.8" fill="#22303c"/><circle cx="72" cy="36" r="2.2" fill="#22303c"/><path d="M66 32 Q58 24 52 28 M88 30 Q94 22 98 26" fill="none" ${thin}/><g ${o}><line x1="26" y1="66" x2="26" y2="86"/><line x1="62" y1="66" x2="62" y2="86"/></g><line x1="14" y1="38" x2="10" y2="56" ${thin}/></svg>`;
+  case 'horse': return `<svg viewBox="0 0 100 100"><ellipse cx="46" cy="52" rx="28" ry="15" fill="#b06a3b" ${o}/><path d="M64 44 L78 22 L88 26 L80 46 L74 54Z" fill="#b06a3b" ${o}/><path d="M78 22 L74 12 L84 18 L88 26" fill="#8a4f27" ${thin}/><circle cx="82" cy="28" r="2" fill="#22303c"/><g ${o}><line x1="28" y1="62" x2="26" y2="88"/><line x1="40" y1="65" x2="40" y2="88"/><line x1="58" y1="65" x2="60" y2="88"/><line x1="68" y1="60" x2="74" y2="86"/></g><path d="M18 44 Q8 56 14 72" fill="none" stroke="#8a4f27" stroke-width="6" stroke-linecap="round"/></svg>`;
+  case 'train': return `<svg viewBox="0 0 100 100"><circle cx="30" cy="14" r="6" fill="#eaf2f8" ${thin}/><circle cx="44" cy="9" r="4.5" fill="#eaf2f8" ${thin}/><rect x="24" y="20" width="52" height="52" rx="12" fill="#e2483a" ${o}/><rect x="33" y="29" width="34" height="17" rx="5" fill="#7ec8f7" ${o}/><circle cx="50" cy="56" r="6" fill="#ffd23f" ${o}/><line x1="24" y1="64" x2="76" y2="64" ${thin}/><path d="M30 72 L18 90 M70 72 L82 90" ${o}/><line x1="10" y1="90" x2="90" y2="90" stroke="#8a97a5" stroke-width="5" stroke-linecap="round"/></svg>`;
+  case 'bus': return `<svg viewBox="0 0 100 100"><rect x="12" y="24" width="76" height="46" rx="10" fill="#ffd23f" ${o}/><g fill="#7ec8f7" ${thin}><rect x="19" y="31" width="13" height="13" rx="3"/><rect x="36" y="31" width="13" height="13" rx="3"/><rect x="53" y="31" width="13" height="13" rx="3"/><rect x="70" y="31" width="12" height="13" rx="3"/></g><line x1="12" y1="54" x2="88" y2="54" ${thin}/><circle cx="30" cy="72" r="8" fill="#22303c"/><circle cx="70" cy="72" r="8" fill="#22303c"/><path d="M88 40 L96 46 L88 52Z" fill="#e2483a" ${thin}/></svg>`;
+  case 'firetruck': return `<svg viewBox="0 0 100 100"><rect x="8" y="42" width="56" height="30" rx="5" fill="#e2483a" ${o}/><path d="M64 52 L80 52 L88 62 L88 72 L64 72Z" fill="#e2483a" ${o}/><rect x="70" y="56" width="11" height="9" fill="#7ec8f7" ${thin}/><g stroke="#c0ccd6" stroke-width="4" stroke-linecap="round"><line x1="12" y1="36" x2="66" y2="36"/><line x1="16" y1="36" x2="16" y2="28"/><line x1="30" y1="36" x2="30" y2="28"/><line x1="44" y1="36" x2="44" y2="28"/><line x1="58" y1="36" x2="58" y2="28"/></g><circle cx="46" cy="30" r="4" fill="#4db2ff" ${thin}/><circle cx="26" cy="74" r="8" fill="#22303c"/><circle cx="72" cy="74" r="8" fill="#22303c"/></svg>`;
+  case 'tractor': return `<svg viewBox="0 0 100 100"><path d="M30 58 L30 30 L52 30 L58 48 L74 48 L74 58Z" fill="#58c472" ${o}/><rect x="35" y="35" width="13" height="13" fill="#7ec8f7" ${thin}/><line x1="62" y1="48" x2="62" y2="24" ${o}/><circle cx="30" cy="66" r="17" fill="#22303c"/><circle cx="30" cy="66" r="8" fill="#c0ccd6" ${thin}/><circle cx="76" cy="74" r="10" fill="#22303c"/><circle cx="76" cy="74" r="4.5" fill="#c0ccd6" ${thin}/></svg>`;
+  case 'hay': return `<svg viewBox="0 0 100 100"><ellipse cx="34" cy="58" rx="17" ry="24" fill="#f2c94c" ${o}/><ellipse cx="34" cy="58" rx="9" ry="14" fill="none" ${thin}/><path d="M51 40 L84 40 Q92 58 84 76 L51 76Z" fill="#e0aa35" ${o}/><ellipse cx="84" cy="58" rx="8" ry="18" fill="#f2c94c" ${o}/><line x1="6" y1="86" x2="94" y2="86" stroke="#58c472" stroke-width="6" stroke-linecap="round"/></svg>`;
+  case 'plate': return `<svg viewBox="0 0 100 100"><rect x="10" y="28" width="80" height="46" rx="9" fill="#ffffff" ${o}/><rect x="10" y="28" width="80" height="13" rx="6" fill="#1f7ae0"/><text x="50" y="39" text-anchor="middle" font-size="9.5" font-weight="900" fill="#ffffff">SHOW-ME STATE</text><text x="50" y="66" text-anchor="middle" font-size="21" font-weight="900" fill="#1f7ae0" letter-spacing="2">FUN·21</text><circle cx="17" cy="66" r="2.4" fill="#8a97a5"/><circle cx="83" cy="66" r="2.4" fill="#8a97a5"/></svg>`;
+  case 'sign': return `<svg viewBox="0 0 100 100"><rect x="14" y="14" width="72" height="40" rx="9" fill="#2e9e5b" ${o}/><text x="50" y="32" text-anchor="middle" font-size="11.5" font-weight="900" fill="#ffffff">WELCOME TO</text><text x="50" y="48" text-anchor="middle" font-size="13" font-weight="900" fill="#ffd23f">OUR STATE!</text><line x1="50" y1="54" x2="50" y2="90" ${o}/><line x1="34" y1="90" x2="66" y2="90" stroke="#58c472" stroke-width="6" stroke-linecap="round"/></svg>`;
+  }
+  return '🗺️';
+}
+/* icon: emoji string, or 'svg:<kind>'. diff 1 easy(50pts) / 2 medium(100) / 3 rare(150).
+   hint = Tier-3 clue text & Tier-2 short phrase · riddle = Tier-2 clue · fact = Tier-3 fun fact ·
+   step2 = Tier-3 second clue step · hint2 = grown-up-released extra hint (Tier 2). */
+const TARGETS = {
+  legends:[
+    {id:'liberty',   name:'Statue of Liberty', icon:'svg:liberty', diff:3, hint:'A giant lady holding a torch, in New York Harbor.', fact:'Her torch was the first thing immigrants saw when their ships reached America.', riddle:'I hold a torch up high by the sea — who am I?', step2:'She is green because her copper skin turned color in the weather.', hint2:'Look toward the harbor — she stands on her own little island.'},
+    {id:'rushmore',  name:'Mount Rushmore',    icon:'svg:rushmore', diff:3, hint:'Four presidents carved into a mountain in South Dakota.', fact:'Each president’s nose is 21 feet long — longer than a car!', step2:'The faces are Washington, Jefferson, Roosevelt, and Lincoln.', hint2:'Watch the rocky hillsides as you drive through the Black Hills.'},
+    {id:'goldengate',name:'Golden Gate Bridge',icon:'svg:gate', diff:3, hint:'A giant red-orange bridge crossing the bay in San Francisco.', fact:'The bridge is painted “International Orange” so ships can see it in the fog.', riddle:'I am orange, I stretch over the sea, fog likes to hide me — what am I?', step2:'Its two towers rise 746 feet — taller than a 60-story building.', hint2:'It appears right where the highway meets the bay.'},
+    {id:'arch',      name:'Gateway Arch',      icon:'svg:arch', diff:3, hint:'A huge silver rainbow in St. Louis you can ride to the top of.', fact:'The Arch is 630 feet tall AND 630 feet wide — a perfect rainbow shape.', riddle:'I am a rainbow made of silver that never fades — what am I?', step2:'Tiny windows at the very top look down on the Mississippi River.', hint2:'Look for a giant silver curve against the sky near the river.'},
+    {id:'canyon',    name:'Grand Canyon',      icon:'svg:canyon', diff:3, hint:'The biggest, deepest canyon on Earth, in Arizona.', fact:'The Grand Canyon is so big, the whole city of Tokyo could fit inside it.', step2:'Its oldest rocks are nearly 2 billion years old.', hint2:'You will see the land drop away into stripes of red and orange rock.'},
+    {id:'niagara',   name:'Niagara Falls',     icon:'svg:falls', diff:3, hint:'A waterfall so big it makes its own rainbows and thunder.', fact:'About 2,800 tons of water crash over Niagara Falls every single second.', riddle:'I roar all day and never stop falling — what am I?', step2:'Boats in blue ponchos sail right into its mist.', hint2:'Listen — you may hear it before you see it!'},
+    {id:'needle',    name:'Space Needle',      icon:'svg:needle', diff:2, hint:'A tower in Seattle with a flying saucer on top.', fact:'The Space Needle was built for the 1962 World’s Fair and can sway in strong wind.', step2:'Its restaurant near the top slowly spins in a full circle.', hint2:'Look for a skinny tower with a round top above the city.'},
+    {id:'hollywood', name:'Hollywood Sign',    icon:'svg:hollywood', diff:3, hint:'Giant white letters on a hill in Los Angeles.', fact:'The sign first said “HOLLYWOODLAND” and was only meant to stay up 18 months.', step2:'Each letter is 45 feet tall — as high as a four-story building.', hint2:'Scan the dry hills above the city — the letters face the road.'},
+    {id:'hoover',    name:'Hoover Dam',        icon:'svg:dam', diff:2, hint:'A giant curved wall across the Colorado River that makes electricity.', fact:'There is enough concrete in Hoover Dam to build a road across the whole USA.', step2:'It holds back Lake Mead, one of the biggest lakes people ever made.', hint2:'The road crosses right over the top of it — look down!'},
+    {id:'cadillac',  name:'Cadillac Ranch',    icon:'svg:cadillac', diff:2, hint:'Old Cadillacs buried nose-first in a Texas field.', fact:'Visitors bring spray paint and add their own colors to the cars.', step2:'There are exactly ten cars, all in a straight line.', hint2:'Look for bright car tails sticking up out of a flat field.'},
+    {id:'route66',   name:'Route 66 Sign',     icon:'svg:shield66', diff:2, hint:'The black-and-white shield sign of the famous Mother Road.', fact:'Route 66 ran 2,448 miles from Chicago to Los Angeles.', riddle:'I am a shield with two sixes — find me on the Mother Road!', step2:'It opened in 1926 and crossed eight states.', hint2:'Check old gas stations and diners along the frontage road.'},
+    {id:'whitehouse',name:'The White House',   icon:'svg:whitehouse', diff:3, hint:'Where the President lives, in Washington, DC.', fact:'The White House has 132 rooms, 35 bathrooms, and a bowling alley.', step2:'It was painted white to cover scorch marks after a fire in 1814.', hint2:'It sits behind a black fence and a big green lawn.'}
+  ],
+  carride:[
+    {id:'cow',       name:'Cow',               icon:'svg:cow', diff:1, hint:'Find a cow.', fact:'A cow has four stomachs and chews its food twice!', riddle:'I say moo and I munch the grass — who am I?', hint2:'Look in green fields, often near a fence or a barn.'},
+    {id:'horse',     name:'Horse',             icon:'svg:horse', diff:1, hint:'Find a horse.', fact:'Horses can sleep standing up — and even while lying down.', riddle:'I neigh and gallop and love hay — who am I?', hint2:'Check pastures with white or wooden fences.'},
+    {id:'barn',      name:'Red Barn',          icon:'svg:barn', diff:1, hint:'Find a red barn.', fact:'Barns were painted red because the paint was cheap and kept the wood safe.', riddle:'I am a red house where farm animals live — what am I?', hint2:'Farms have them — look just past the fields.'},
+    {id:'silo',      name:'Silo',              icon:'svg:silo', diff:1, hint:'Find a silo.', fact:'Silos store chopped corn and grass to feed animals all winter.', riddle:'I am a tall silver tower full of animal food — what am I?', hint2:'It stands right next to a barn, taller than the roof.'},
+    {id:'hay',       name:'Hay Bales',         icon:'svg:hay', diff:1, hint:'Find hay bales in a field.', fact:'One round hay bale can weigh as much as a small car.', riddle:'We are round, golden rolls resting in a field — what are we?', hint2:'Golden rolls sitting in a cut field — check after farmland.'},
+    {id:'tractor',   name:'Tractor',           icon:'svg:tractor', diff:1, hint:'Find a tractor.', fact:'The biggest tractors have tires taller than a grown-up!', riddle:'My back wheels are huge and I pull the plow — what am I?', hint2:'Working in fields or parked by a barn.'},
+    {id:'train',     name:'Train',             icon:'svg:train', diff:1, hint:'Find a train.', fact:'Some freight trains are over two miles long — 150 cars or more!', riddle:'I whistle, I rumble, I ride on rails — what am I?', step2:'Count the cars as it passes — can you reach twenty?', hint2:'Tracks run beside many highways — watch crossings.'},
+    {id:'schoolbus', name:'School Bus',        icon:'svg:bus', diff:1, hint:'Find a school bus.', fact:'School-bus yellow was chosen in 1939 because eyes see it fastest.', riddle:'I am yellow, I flash red lights, I carry kids — what am I?', hint2:'Near schools, depots, and neighborhoods on school days.'},
+    {id:'watertower',name:'Water Tower',       icon:'svg:watertower', diff:1, hint:'Find a water tower.', fact:'Most water towers hold about a million gallons — a whole town’s water!', riddle:'I am a giant ball on legs with a town’s name — what am I?', hint2:'It rises above the rooftops — towns write their name on it.'},
+    {id:'plate',     name:'Out-of-State Plate',icon:'svg:plate', diff:2, hint:'Find a car with a license plate from another state.', fact:'The first license plates were made of leather and porcelain!', riddle:'My plate says I drove here from far away — find me!', step2:'Bonus mission: find plates from THREE different states.', hint2:'Rest stops and truck stops are plate gold mines.'},
+    {id:'stateline', name:'State Line Sign',   icon:'svg:sign', diff:2, hint:'Find a “Welcome to…” state line sign.', fact:'There are 50 state welcome signs — some are shaped like the state itself.', riddle:'Cross me and you are in a brand-new state — what am I?', step2:'Note the new state’s nickname on the sign as you pass.', hint2:'It comes right at the border — watch after rivers and bridges.'},
+    {id:'windmill',  name:'Windmill',          icon:'svg:windmill', diff:2, hint:'Find a windmill.', fact:'Farm windmills pump water from underground for the animals.', riddle:'I spin in the wind and pump, pump, pump — what am I?', hint2:'Skinny tower, spinning blades — on farms and ranches.'},
+    {id:'firetruck', name:'Fire Truck',        icon:'svg:firetruck', diff:2, hint:'Find a fire truck.', fact:'The longest fire-truck ladders can reach 10 stories high.', riddle:'I am red and loud and carry ladders — what am I?', hint2:'Near fire stations — or with lights flashing on the road.'},
+    {id:'covbridge', name:'Covered Bridge',    icon:'svg:bridge', diff:3, hint:'Find a covered bridge.', fact:'Covered bridges have roofs to protect the wooden beams from rain and snow.', riddle:'I am a bridge wearing a little house — what am I?', step2:'Vermont has about 100 covered bridges — more than any other state.', hint2:'They hide on small side roads over creeks — rare find!'}
+  ]
+};
+const DECKS = {
+  legends:{name:'Road Trip Legends', icon:'🏆', blurb:'Famous American monuments & landmarks'},
+  carride:{name:'Any Car Ride',      icon:'🚗', blurb:'Everyday finds for any drive, long or short'},
+  expedition:{name:'Expedition',     icon:'🧭', blurb:'Every find in one giant running collection — no finish line'},
+  custom:{ name:'My Custom Hunt',    icon:'✏️', blurb:'A list your family built together'}
+};
+/* Age tiers — per ~/workspace/road-trip-hunt/AGE-TIERS.md (researched spec, 2026-11-21). */
+const TIERS = {
+  t1:{name:'Lil Spotters', ages:'Ages 3–5', icon:'🌱', counts:{legends:5, carride:6}, showNames:false, audioAuto:true,
+      pinScale:1.4, pathW:12, points:false, stickers:true, session:'10–15 minute hunts',
+      blurb:'Picture-only cards that talk out loud. One giant camera button. A grown-up stamps each photo. Stickers, not points.'},
+  t2:{name:'Explorers', ages:'Ages 6–8', icon:'🧭', counts:{legends:10, carride:10}, showNames:true, audioAuto:false,
+      pinScale:1.12, pathW:7, points:true, stickers:false, session:'20–30 minute hunts',
+      blurb:'Pictures + short phrases + riddles. Kids run the camera. Points (50/100/150) and badges.'},
+  t3:{name:'Trailblazers', ages:'Ages 9–12', icon:'🏅', counts:{legends:12, carride:14}, showNames:true, audioAuto:false,
+      pinScale:1, pathW:6, points:true, stickers:false, session:'30–45 minute legs · Expedition mode',
+      blurb:'Full clues, fun facts, two-step hunts, streaks, photo stars — plus the giant Expedition list.'}
+};
+const PTS = {1:50, 2:100, 3:150};
+const PICK_ICONS = ['⭐','🏠','🚗','🌳','🐶','🦖','🏰','⚽','🍦','🚀','🎈','🐴','🌻','⛺','🎡','🦁','🍔','🚂','🌈','👵'];
+
+/* ================= STATE ================= */
+const LS_KEY='rth_state_v1';
+let S = loadState();
+function loadState(){
+  try{ const raw=localStorage.getItem(LS_KEY); if(raw){ const s=JSON.parse(raw); if(s && s.v===1) return s; } }catch(e){}
+  return {v:1, pin:null, tier:null, activeDeck:'carride', custom:[], finds:{}, order:[],
+          lastFindTs:0, streak:0, bestStreak:0, hintReq:{}, hintOpen:{}};
+}
+/* boundary / alert fields (added with the parent geofence tools) */
+S.boundary = S.boundary || null;          /* {name, pts:[[lat,lon],...]} */
+S.watchOn = !!S.watchOn;                  /* neighborhood boundary watch armed */
+S.alerts = S.alerts || [];                /* [{ts, name, ack}] out-of-bounds alerts */
+S.checkinMins = S.checkinMins || 15;      /* Tier 3 timed check-ins */
+S.lastCheckin = S.lastCheckin || 0;
+function saveState(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(S)); return true; }catch(e){ return false; } }
+function tier(){ return TIERS[S.tier] || TIERS.t2; }
+function allTargets(){
+  const list=[];
+  TARGETS.legends.forEach(t=>list.push({...t, deck:'legends'}));
+  TARGETS.carride.forEach(t=>list.push({...t, deck:'carride'}));
+  S.custom.forEach(t=>list.push({...t, deck:'custom'}));
+  return list;
+}
+function targetById(id){ return allTargets().find(t=>t.id===id) || null; }
+function deckTargets(deckId){
+  if(deckId==='custom') return S.custom.map(t=>({...t, deck:'custom'}));
+  if(deckId==='expedition'){
+    const all=[...TARGETS.legends.map(t=>({...t,deck:'legends'})), ...TARGETS.carride.map(t=>({...t,deck:'carride'}))];
+    return all.sort((a,b)=>a.diff-b.diff);
+  }
+  let list=(TARGETS[deckId]||[]).map(t=>({...t, deck:deckId}));
+  const n=tier().counts[deckId]||list.length;
+  return [...list].sort((a,b)=>a.diff-b.diff).slice(0,n);
+}
+function findOf(id){ return S.finds[id] || null; }
+function isFound(id){ const f=findOf(id); return !!f && f.status==='ok'; }
+function isPending(id){ const f=findOf(id); return !!f && f.status==='pending'; }
+function score(){ return S.order.reduce((sum,id)=>{ const f=S.finds[id]; return sum + ((f&&f.status==='ok'&&f.pts)||0); },0); }
+function okFinds(){ return S.order.filter(id=>isFound(id)); }
+
+/* badges (Tiers 2–3) */
+function badges(){
+  const ok=okFinds(); const out=[];
+  const has=id=>ok.includes(id);
+  if(ok.length>=1) out.push({icon:'⭐', name:'First Find'});
+  if(ok.length>=5) out.push({icon:'🖐️', name:'High Five — 5 finds'});
+  if(ok.length>=10) out.push({icon:'🔭', name:'Super Spotter — 10 finds'});
+  if(has('train')) out.push({icon:'🚆', name:'Train Spotter'});
+  if(has('arch')||has('covbridge')||has('goldengate')) out.push({icon:'🌉', name:'Bridge Master'});
+  if(ok.filter(id=>{const t=targetById(id); return t&&t.deck==='legends';}).length>=5) out.push({icon:'🏆', name:'Legend Hunter'});
+  if(S.bestStreak>=3) out.push({icon:'🔥', name:'On Fire — streak of 3'});
+  ['legends','carride'].forEach(d=>{ const dt=deckTargets(d); if(dt.length && dt.every(t=>isFound(t.id))) out.push({icon:'👑', name:DECKS[d].name+' Master'}); });
+  return out;
+}
+
+/* ================= UTILS ================= */
+const $=sel=>document.querySelector(sel);
+function toast(msg, ms){
+  const t=$('#toast'); t.textContent=msg; t.classList.add('on');
+  clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('on'), ms||2600);
+}
+function fmtTime(ts){
+  const d=new Date(ts);
+  return d.toLocaleDateString([], {month:'short', day:'numeric'}) + ' · ' + d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+}
+function iconHTML(icon){ if(typeof icon==='string' && icon.startsWith('svg:')) return svgIcon(icon.slice(4)); return icon || '🗺️'; }
+function esc(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function speak(text){
+  try{
+    if(!('speechSynthesis' in window)) return;
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text); u.rate=0.95; u.pitch=1.05;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* ================= GEO ================= */
+let currentPos=null; /* {lat, lon, ts} — only while the game is open */
+let geoWatchId=null;
+function startGeoWatch(){
+  if(!('geolocation' in navigator) || geoWatchId!==null) return;
+  try{
+    geoWatchId = navigator.geolocation.watchPosition(
+      p=>{ currentPos={lat:p.coords.latitude, lon:p.coords.longitude, ts:Date.now()}; refreshMapMarkers(); },
+      ()=>{},
+      {enableHighAccuracy:false, maximumAge:60000, timeout:15000}
+    );
+  }catch(e){}
+}
+function freshPos(timeoutMs){
+  return new Promise(resolve=>{
+    if(!('geolocation' in navigator)) return resolve(null);
+    let done=false;
+    const to=setTimeout(()=>{ if(!done){done=true; resolve(currentPos);} }, timeoutMs||4000);
+    try{
+      navigator.geolocation.getCurrentPosition(
+        p=>{ if(!done){done=true; clearTimeout(to); currentPos={lat:p.coords.latitude, lon:p.coords.longitude, ts:Date.now()}; resolve(currentPos);} },
+        ()=>{ if(!done){done=true; clearTimeout(to); resolve(currentPos);} },
+        {enableHighAccuracy:true, maximumAge:30000, timeout:timeoutMs||4000}
+      );
+    }catch(e){ if(!done){done=true; clearTimeout(to); resolve(currentPos);} }
+  });
+}
+</script>
+<script>
+/* ================= KID VIEWS ================= */
+let curView='home';
+function showView(v){
+  curView=v;
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on', s.id==='view-'+v));
+  document.querySelectorAll('.kidnav button').forEach(b=>b.classList.toggle('on', b.dataset.nav===v));
+  if(v==='hunt') renderHunt();
+  if(v==='finds') renderFinds();
+  if(v==='map'){ initKidMap(); refreshMaps(); }
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('.kidnav button').forEach(b=> b.addEventListener('click', ()=>{ startGeoWatch(); showView(b.dataset.nav); }));
+
+function renderHeader(){
+  const t=tier();
+  $('#scoreChip').textContent = t.stickers ? `🎟️ ${okFinds().length}` : `⭐ ${score()}`;
+  const sc=$('#streakChip');
+  if(S.tier==='t3'){ sc.style.display=''; sc.textContent=`🔥 ${S.streak}`; } else sc.style.display='none';
+}
+function renderTiers(){
+  const html=Object.entries(TIERS).map(([id,t])=>`
+    <button class="tierbtn ${S.tier===id?'sel':''}" data-tier="${id}">
+      <span class="tic">${t.icon}</span>
+      <span><b>${t.name} · ${t.ages}</b><span>${t.blurb} (${t.session})</span></span>
+    </button>`).join('');
+  $('#tierRow').innerHTML=html; $('#tierRowParent').innerHTML=html;
+  document.querySelectorAll('[data-tier]').forEach(b=> b.addEventListener('click', ()=>{
+    S.tier=b.dataset.tier; saveState(); renderAll();
+    toast(`${TIERS[b.dataset.tier].icon} ${TIERS[b.dataset.tier].name} — ${TIERS[b.dataset.tier].session}`);
+  }));
+  $('#welcomeCard').classList.toggle('hidden', !!S.tier);
+}
+function availableDecks(){
+  const ids=['carride','legends'];
+  if(S.tier==='t3') ids.push('expedition');
+  if(S.custom.length) ids.push('custom');
+  if(!ids.includes(S.activeDeck)) S.activeDeck='carride';
+  return ids;
+}
+function renderDecks(){
+  $('#deckList').innerHTML = availableDecks().map(id=>{
+    const d=DECKS[id]; const dt=deckTargets(id);
+    const got=dt.filter(t=>isFound(t.id)).length;
+    return `<button class="deckcard ${S.activeDeck===id?'sel':''}" data-deck="${id}">
+      <span class="dic">${d.icon}</span>
+      <span><b>${d.name}</b><span>${d.blurb} · ${dt.length} finds</span></span>
+      <span class="prog">${got}/${dt.length} ⭐</span></button>`;
+  }).join('');
+  document.querySelectorAll('[data-deck]').forEach(b=> b.addEventListener('click', ()=>{
+    S.activeDeck=b.dataset.deck; saveState(); renderDecks(); renderHunt();
+  }));
+  const dp=$('#deckPickParent');
+  if(dp){
+    dp.innerHTML = availableDecks().map(id=>{
+      const d=DECKS[id];
+      return `<button class="pbtn ${S.activeDeck===id?'':'ghost'}" data-pdeck="${id}">${d.icon} ${d.name}</button>`;
+    }).join('');
+    dp.querySelectorAll('[data-pdeck]').forEach(b=> b.addEventListener('click', ()=>{
+      S.activeDeck=b.dataset.pdeck; saveState(); renderDecks(); renderParentSetup();
+    }));
+  }
+}
+$('#playBtn').addEventListener('click', ()=>{ startGeoWatch(); showView('hunt'); });
+
+function clueText(t){
+  if(S.tier==='t3') return t.hint || 'Find it!';
+  if(S.tier==='t2') return t.riddle || t.hint || 'Find it!';
+  return '';
+}
+function renderHunt(){
+  const dt=deckTargets(S.activeDeck);
+  const got=dt.filter(t=>isFound(t.id)).length;
+  const bar=$('#progBar'), lab=$('#progLabel');
+  if(S.activeDeck==='expedition'){
+    bar.style.width=Math.min(100, got*4)+'%';
+    lab.textContent=`🧭 Expedition: ${got} collected — no finish line, keep going!`;
+  } else {
+    bar.style.width=(dt.length? (got/dt.length*100):0)+'%';
+    lab.textContent = got===dt.length && dt.length ? `🎉 All ${dt.length} found! Amazing hunting!` : `⭐ ${got} of ${dt.length} found — keep looking!`;
+  }
+  const t=tier();
+  $('#cardGrid').innerHTML = dt.map(tg=>{
+    const f=findOf(tg.id);
+    if(f && f.status==='ok'){
+      const inner = f.photo
+        ? `<img class="photo" src="${f.photo}" alt=""><div class="veil"></div>`
+        : `<div class="nophoto">${iconHTML(tg.icon)}</div>`;
+      return `<div class="card found ${f.manual?'manual':''}" data-card="${tg.id}">${inner}
+        <div class="stamp">FOUND ⭐</div>
+        <div class="fname">${t.showNames? esc(tg.name):''}<small>${fmtTime(f.ts)}${f.manual?' · checked off by a grown-up':''}</small></div></div>`;
+    }
+    if(f && f.status==='pending'){
+      return `<div class="card found" data-card="${tg.id}">
+        ${f.photo? `<img class="photo" src="${f.photo}" alt=""><div class="veil"></div>` : `<div class="nophoto">${iconHTML(tg.icon)}</div>`}
+        <div class="stamp">GROWN-UP CHECK 👍</div>
+        <div class="fname">${t.showNames? esc(tg.name):''}<small>Show a grown-up to stamp it!</small></div></div>`;
+    }
+    let extra='';
+    if(S.tier==='t2'){
+      extra=`<div class="minirow">
+        <button data-listen="${tg.id}">🔊 Listen</button>
+        ${S.hintOpen[tg.id] ? '' : `<button data-ask="${tg.id}">🙋 Ask a grown-up</button>`}
+      </div>${S.hintOpen[tg.id] && tg.hint2 ? `<div class="step2 on">💡 Grown-up hint: ${esc(tg.hint2)}</div>`:''}`;
+    }
+    if(S.tier==='t3'){
+      extra=`${tg.fact? `<div class="fact">🤓 ${esc(tg.fact)}</div>`:''}
+        ${tg.step2? `<button class="minirow" style="border:none;background:none;"><span data-clue2="${tg.id}" style="border:2.5px solid #bfe0f7;background:#fff;border-radius:999px;padding:6px 11px;font-weight:900;font-size:12.5px;">🔍 Clue 2</span></button><div class="step2" id="step2-${tg.id}">Step 2: ${esc(tg.step2)}</div>`:''}
+        <div class="minirow"><button data-listen="${tg.id}">🔊 Listen</button></div>`;
+    }
+    return `<div class="card" data-card="${tg.id}">
+      <div class="icon">${iconHTML(tg.icon)}</div>
+      ${t.showNames? `<div class="nm">${esc(tg.name)}</div><div class="hint">${esc(clueText(tg))}</div>`:''}
+      ${extra}
+      <button class="snap" data-snap="${tg.id}">📸 Snap it!</button>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('[data-snap]').forEach(b=> b.addEventListener('click', e=>{ e.stopPropagation(); openSheet(b.dataset.snap); }));
+  document.querySelectorAll('[data-listen]').forEach(b=> b.addEventListener('click', e=>{ e.stopPropagation(); const tg=targetById(b.dataset.listen); if(tg) speak(`${tg.name}. ${clueText(tg)||tg.hint||''}`); }));
+  document.querySelectorAll('[data-ask]').forEach(b=> b.addEventListener('click', e=>{ e.stopPropagation();
+    S.hintReq[b.dataset.ask]=true; saveState(); toast('🙋 Ask your grown-up — they can unlock a hint!'); }));
+  document.querySelectorAll('[data-clue2]').forEach(b=> b.addEventListener('click', e=>{ e.stopPropagation(); const el=$('#step2-'+b.dataset.clue2); if(el) el.classList.toggle('on'); }));
+  document.querySelectorAll('[data-card]').forEach(c=> c.addEventListener('click', ()=>{
+    const id=c.dataset.card; const f=findOf(id); const tg=targetById(id);
+    if(f && f.status==='ok'){ openPhoto(id); return; }
+    if(f && f.status==='pending'){ speak('Show a grown-up to stamp your photo!'); toast('👍 Show a grown-up to stamp it!'); return; }
+    if(S.tier==='t1' && tg){ speak(`Find ${tg.name}!`); }
+    openSheet(id);
+  }));
+}
+
+function renderFinds(){
+  const head=$('#findsHead'); const list=$('#findsList');
+  const ok=okFinds();
+  if(S.tier==='t1'){
+    head.innerHTML = ok.length
+      ? `<div class="progresslabel" style="text-align:left;">🎟️ My Sticker Book</div><div class="stickerrow">${ok.map(id=>{const tg=targetById(id); return `<div class="sticker">${tg?iconHTML(tg.icon):'⭐'}</div>`;}).join('')}</div>`
+      : '';
+  } else {
+    const b=badges();
+    head.innerHTML = b.length ? `<div class="progresslabel" style="text-align:left;">🏅 My Badges</div><div class="badgerow">${b.map(x=>`<span class="badgechip">${x.icon} ${x.name}</span>`).join('')}</div>` : '';
+  }
+  const ids=[...S.order].reverse();
+  if(!ids.length){ list.innerHTML=`<div class="empty">No finds yet!<br>Tap “Hunt”, spot something on the list, and snap its picture. 📸</div>`; return; }
+  list.innerHTML = ids.map(id=>{
+    const tg=targetById(id); const f=findOf(id); if(!tg||!f) return '';
+    const place = f.lat!=null ? '📌 Pinned on your map' : 'No location saved';
+    const status = f.status==='pending' ? ' · ⏳ Waiting for a grown-up 👍' : (f.manual ? ' · Checked off by a grown-up' : '');
+    return `<div class="findrow" data-find="${id}">
+      ${f.photo? `<img src="${f.photo}" alt="">` : `<div class="noimg">${iconHTML(tg.icon)}</div>`}
+      <div><b>${esc(tg.name)}</b><span>${fmtTime(f.ts)}<br>${place}${status}</span></div></div>`;
+  }).join('');
+  list.querySelectorAll('[data-find]').forEach(r=> r.addEventListener('click', ()=> openPhoto(r.dataset.find)));
+}
+
+/* ================= PHOTO FLOW ================= */
+let pendingTarget=null;
+function openSheet(id){
+  pendingTarget=id;
+  const tg=targetById(id); if(!tg) return;
+  $('#sheetTitle').textContent = S.tier==='t1' ? tg.name : `Found the ${tg.name}?`;
+  $('#sheetSub').textContent = S.tier==='t1' ? 'Tap the big button and take its picture!' : 'Snap a picture to prove it!';
+  $('#btnCamera').textContent = S.tier==='t1' ? '📸 SNAP IT!' : '📸 Take a Photo';
+  document.querySelector('#sheetScrim .sheet').classList.toggle('giant', S.tier==='t1');
+  $('#sheetScrim').classList.add('on');
+}
+function closeSheet(){ $('#sheetScrim').classList.remove('on'); }
+$('#btnSheetCancel').addEventListener('click', closeSheet);
+$('#sheetScrim').addEventListener('click', e=>{ if(e.target.id==='sheetScrim') closeSheet(); });
+$('#btnCamera').addEventListener('click', ()=>{ closeSheet(); $('#camInput').click(); });
+$('#btnGallery').addEventListener('click', ()=>{ closeSheet(); $('#galInput').click(); });
+$('#camInput').addEventListener('change', e=>{ if(e.target.files && e.target.files[0]) handlePhoto(e.target.files[0]); e.target.value=''; });
+$('#galInput').addEventListener('change', e=>{ if(e.target.files && e.target.files[0]) handlePhoto(e.target.files[0]); e.target.value=''; });
+
+function processImage(file, maxDim, q){
+  return new Promise((resolve, reject)=>{
+    const url=URL.createObjectURL(file);
+    const img=new Image();
+    img.onload=()=>{
+      try{
+        const scale=Math.min(1, maxDim/Math.max(img.width, img.height));
+        const cv=document.createElement('canvas');
+        cv.width=Math.round(img.width*scale); cv.height=Math.round(img.height*scale);
+        cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
+        URL.revokeObjectURL(url);
+        resolve(cv.toDataURL('image/jpeg', q));
+      }catch(err){ reject(err); }
+    };
+    img.onerror=reject;
+    img.src=url;
+  });
+}
+async function handlePhoto(file){
+  const id=pendingTarget; if(!id) return;
+  const tg=targetById(id); if(!tg) return;
+  toast('📸 Saving your photo…');
+  let photo=null;
+  try{ photo=await processImage(file, 720, 0.72); }catch(e){ photo=null; }
+  const pos=await freshPos(4000);
+  recordFind(id, {photo, lat: pos?pos.lat:null, lon: pos?pos.lon:null, manual:false});
+}
+function recordFind(id, data){
+  const tg=targetById(id); if(!tg) return;
+  const now=Date.now();
+  const within = S.lastFindTs && (now - S.lastFindTs) < 15*60*1000;
+  S.streak = within ? S.streak+1 : 1;
+  S.bestStreak = Math.max(S.bestStreak, S.streak);
+  S.lastFindTs = now;
+  let pts=0;
+  if(tier().points){ pts=(PTS[tg.diff]||50) + (S.tier==='t3' ? Math.min(S.streak,5)*10 : 0); }
+  const find={photo:data.photo||null, lat:data.lat, lon:data.lon, ts:now, manual:!!data.manual,
+              pts, status: S.tier==='t1' && !data.manual ? 'pending':'ok', stars:0};
+  S.finds[id]=find;
+  if(!S.order.includes(id)) S.order.push(id);
+  if(!saveState() && find.photo){
+    /* storage full: shrink the photo and retry once */
+    processImageFromDataURL(find.photo).then(small=>{
+      find.photo=small; S.finds[id]=find; saveState(); afterFind(id, tg, find);
+    }).catch(()=>{ find.photo=null; S.finds[id]=find; saveState(); afterFind(id, tg, find); });
+    return;
+  }
+  afterFind(id, tg, find);
+}
+function processImageFromDataURL(dataUrl){
+  return new Promise((resolve, reject)=>{
+    const img=new Image();
+    img.onload=()=>{ try{
+      const scale=Math.min(1, 440/Math.max(img.width, img.height));
+      const cv=document.createElement('canvas');
+      cv.width=Math.round(img.width*scale); cv.height=Math.round(img.height*scale);
+      cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
+      resolve(cv.toDataURL('image/jpeg', 0.6));
+    }catch(e){ reject(e); } };
+    img.onerror=reject; img.src=dataUrl;
+  });
+}
+function afterFind(id, tg, find){
+  renderAll();
+  if(find.status==='pending'){
+    speak('Great job! Show a grown-up!');
+    toast('🎉 Got it! Show a grown-up to stamp your sticker!');
+    return;
+  }
+  speak(`You found ${tg.name}!`);
+  toast(tier().points ? `⭐ Found the ${tg.name}! +${find.pts} points` : `🎉 You found the ${tg.name}!`);
+  const dt=deckTargets(S.activeDeck);
+  if(S.activeDeck!=='expedition' && dt.length && dt.every(t=>isFound(t.id))) celebrate();
+  refreshMaps();
+}
+function celebrate(){
+  const dt=deckTargets(S.activeDeck);
+  $('#celebText').textContent=`You finished ${DECKS[S.activeDeck].name} — all ${dt.length} finds! ${tier().points? 'Final score: '+score()+' points.' : 'Your sticker book is full!'}`;
+  const box=$('#celebrate'); box.classList.add('on');
+  const colors=['#ff6b5e','#ffd23f','#58c472','#4db2ff','#8b6fd8'];
+  for(let i=0;i<44;i++){
+    const c=document.createElement('div'); c.className='confetti';
+    c.style.left=Math.random()*100+'vw'; c.style.background=colors[i%colors.length];
+    c.style.animationDuration=(1.6+Math.random()*1.8)+'s'; c.style.animationDelay=(Math.random()*0.5)+'s';
+    box.appendChild(c); setTimeout(()=>c.remove(), 4200);
+  }
+  speak('You found them all! Amazing!');
+}
+$('#celebBtn').addEventListener('click', ()=> $('#celebrate').classList.remove('on'));
+
+/* photo viewer */
+function openPhoto(id){
+  const tg=targetById(id); const f=findOf(id); if(!tg||!f) return;
+  if(!f.photo){ toast(f.manual? 'Checked off by a grown-up — no photo.' : 'No photo saved for this one.'); return; }
+  $('#bigPhoto').src=f.photo;
+  $('#photoTitle').textContent=tg.name;
+  $('#photoMeta').textContent=`${fmtTime(f.ts)}${f.lat!=null? ' · 📌 pinned on the map':''}${S.tier==='t3'&&tg.fact? '\n🤓 '+tg.fact:''}`;
+  $('#photoScrim').classList.add('on');
+}
+$('#btnPhotoClose').addEventListener('click', ()=> $('#photoScrim').classList.remove('on'));
+$('#photoScrim').addEventListener('click', e=>{ if(e.target.id==='photoScrim') $('#photoScrim').classList.remove('on'); });
+
+function renderAll(){ renderHeader(); renderTiers(); renderDecks(); renderHunt(); renderFinds(); }
+</script>
+<script>
+/* ================= STORYBOOK MAP ENGINE =================
+   Real geography (OpenStreetMap data via CARTO Voyager tiles, OSM fallback),
+   custom storybook treatment: popped cheerful colors, chunky cartoon balloon
+   pins with the game's own drawn icons, a dashed treasure path, a friendly
+   green play-zone polygon, and big rounded labels. No road-map clutter:
+   the game defaults to wide, simple views and lets the pins tell the story. */
+function lon2x(lon,z){ return (lon+180)/360 * Math.pow(2,z) * 256; }
+function lat2y(lat,z){ const s=Math.sin(lat*Math.PI/180); return (0.5 - Math.log((1+s)/(1-s))/(4*Math.PI)) * Math.pow(2,z) * 256; }
+function x2lon(x,z){ return x/(Math.pow(2,z)*256)*360 - 180; }
+function y2lat(y,z){ const n=Math.PI - 2*Math.PI*y/(Math.pow(2,z)*256); return 180/Math.PI * Math.atan(0.5*(Math.exp(n)-Math.exp(-n))); }
+function inPoly(pos, pts){
+  let inside=false; const x=pos.lon, y=pos.lat;
+  for(let i=0,j=pts.length-1;i<pts.length;j=i++){
+    const xi=pts[i][1], yi=pts[i][0], xj=pts[j][1], yj=pts[j][0];
+    if(((yi>y)!==(yj>y)) && (x < (xj-xi)*(y-yi)/(yj-yi)+xi)) inside=!inside;
+  }
+  return inside;
+}
+function makeMap(el, opts){
+  const o=Object.assign({pinScale:1, showLabels:true, showOrder:true, pathW:7, onTap:null}, opts||{});
+  el.innerHTML=`<div class="tiles"></div>
+    <svg class="pathsvg"><polygon class="bpoly" points=""/><polyline class="tpath" fill="none" stroke-linecap="round" stroke-linejoin="round"/><polyline class="draftline" fill="none" stroke-linecap="round"/></svg>
+    <div class="pins"></div>
+    <div class="mapbtns"><button data-mz="1" aria-label="Zoom in">＋</button><button data-mz="-1" aria-label="Zoom out">－</button><button data-mz="fit" aria-label="See everything">🎯</button></div>
+    <div class="mapnote">Map © OpenStreetMap contributors © CARTO</div>`;
+  const tilesEl=el.querySelector('.tiles'), svg=el.querySelector('.pathsvg'),
+        poly=el.querySelector('.bpoly'), pathEl=el.querySelector('.tpath'), draftEl=el.querySelector('.draftline'),
+        pinsEl=el.querySelector('.pins');
+  let center={lat:39.8, lon:-98.5}, zoom=4, fitted=false, tilesBroken=false;
+  let data={pins:[], path:[], me:null, boundary:null, draft:null};
+  function project(lat,lon){
+    const w=el.clientWidth, h=el.clientHeight;
+    return { x: lon2x(lon,zoom) - (lon2x(center.lon,zoom) - w/2), y: lat2y(lat,zoom) - (lat2y(center.lat,zoom) - h/2) };
+  }
+  function unproject(px,py){
+    const w=el.clientWidth, h=el.clientHeight;
+    return { lat: y2lat(lat2y(center.lat,zoom) - h/2 + py, zoom), lon: x2lon(lon2x(center.lon,zoom) - w/2 + px, zoom) };
+  }
+  function renderTiles(){
+    if(tilesBroken){ tilesEl.innerHTML=''; if(!tilesEl.querySelector('.tilefallback')){ const d=document.createElement('div'); d.className='tilefallback'; tilesEl.appendChild(d);} return; }
+    const w=el.clientWidth, h=el.clientHeight; if(!w) return;
+    const cx=lon2x(center.lon,zoom), cy=lat2y(center.lat,zoom);
+    const x0=Math.floor((cx-w/2)/256), x1=Math.floor((cx+w/2)/256);
+    const y0=Math.floor((cy-h/2)/256), y1=Math.floor((cy+h/2)/256);
+    const maxT=Math.pow(2,zoom)-1; let html='';
+    for(let tx=x0; tx<=x1; tx++) for(let ty=y0; ty<=y1; ty++){
+      if(ty<0||ty>maxT) continue;
+      const wx=((tx%(maxT+1))+maxT+1)%(maxT+1);
+      const left=tx*256-(cx-w/2), top=ty*256-(cy-h/2);
+      const sub='abcd'[(tx+ty)%4<0?0:(tx+ty)%4];
+      html+=`<img alt="" data-tx="${wx}" data-ty="${ty}" style="left:${left}px;top:${top}px" src="https://${sub}.basemaps.cartocdn.com/rastertiles/voyager/${zoom}/${wx}/${ty}.png">`;
+    }
+    tilesEl.innerHTML=html;
+    tilesEl.querySelectorAll('img').forEach(img=>{
+      img.addEventListener('error', ()=>{
+        if(!img.dataset.fb){ img.dataset.fb='1'; img.src=`https://tile.openstreetmap.org/${zoom}/${img.dataset.tx}/${img.dataset.ty}.png`; }
+        else { tilesBroken=true; renderTiles(); }
+      });
+    });
+  }
+  function render(){
+    const w=el.clientWidth, h=el.clientHeight; if(!w) return;
+    svg.setAttribute('viewBox', `0 0 ${w} ${h}`); svg.style.width=w+'px'; svg.style.height=h+'px';
+    renderTiles();
+    /* boundary polygon */
+    if(data.boundary && data.boundary.pts && data.boundary.pts.length>=3){
+      const pts=data.boundary.pts.map(p=>{ const q=project(p[0],p[1]); return `${q.x},${q.y}`; }).join(' ');
+      poly.setAttribute('points', pts);
+      const mode=data.boundary.mode;
+      if(mode==='alert'){ poly.setAttribute('fill','rgba(255,60,40,.28)'); poly.setAttribute('stroke','#ff3b26'); }
+      else if(mode==='draft'){ poly.setAttribute('fill','rgba(88,196,114,.25)'); poly.setAttribute('stroke','#ffd23f'); }
+      else { poly.setAttribute('fill','rgba(88,196,114,.30)'); poly.setAttribute('stroke','#2e9e5b'); }
+      poly.setAttribute('stroke-width','5'); poly.setAttribute('stroke-linejoin','round'); poly.style.display='';
+    } else poly.style.display='none';
+    /* treasure path */
+    if(data.path && data.path.length>1){
+      const pts=data.path.map(p=>{ const q=project(p[0],p[1]); return `${q.x},${q.y}`; }).join(' ');
+      pathEl.setAttribute('points', pts);
+      pathEl.setAttribute('stroke','#ffffff'); pathEl.setAttribute('stroke-width', String(o.pathW+4)); pathEl.setAttribute('stroke-dasharray','1 14'); pathEl.style.opacity='.85';
+      pathEl.style.display='';
+      if(!render._p2){
+        const p2=pathEl.cloneNode(); p2.removeAttribute('class'); p2.setAttribute('class','tpath2');
+        p2.setAttribute('stroke','#ff8c42'); p2.setAttribute('stroke-width', String(o.pathW)); p2.setAttribute('stroke-dasharray','1 14');
+        svg.appendChild(p2); render._p2=p2;
+      }
+      render._p2.setAttribute('points', pts); render._p2.style.display='';
+    } else { pathEl.style.display='none'; if(render._p2) render._p2.style.display='none'; }
+    /* draft points line */
+    if(data.draft && data.draft.length){
+      const pts=data.draft.map(p=>{ const q=project(p[0],p[1]); return `${q.x},${q.y}`; }).join(' ');
+      draftEl.setAttribute('points', pts);
+      draftEl.setAttribute('stroke','#ffd23f'); draftEl.setAttribute('stroke-width','4'); draftEl.setAttribute('stroke-dasharray','7 7');
+      draftEl.style.display='';
+    } else draftEl.style.display='none';
+    /* pins */
+    let html='';
+    (data.draft||[]).forEach((p,i)=>{
+      const q=project(p[0],p[1]);
+      html+=`<div class="pin" style="left:${q.x}px;top:${q.y}px;z-index:7;"><div class="balloon" style="background:#ffd23f;width:30px;height:30px;border-width:3px;"><span class="pin-in" style="font-size:14px;font-weight:900;color:#7a5200;">${i+1}</span></div></div>`;
+    });
+    data.pins.forEach(p=>{
+      const q=project(p.lat,p.lon); const sc=o.pinScale;
+      html+=`<div class="pin ${p.blue?'blue':''}" data-pin="${esc(p.id||'')}" style="left:${q.x}px;top:${q.y}px;">
+        ${o.showOrder && p.ord? `<span class="ord">${p.ord}</span>`:''}
+        <div class="balloon" style="width:${46*sc}px;height:${46*sc}px;"><span class="pin-in" style="font-size:${23*sc}px;">${p.iconHTML}</span></div>
+        ${o.showLabels && p.label? `<span class="plab">${esc(p.label)}</span>`:''}</div>`;
+    });
+    if(data.me){
+      const q=project(data.me.lat, data.me.lon);
+      html+=`<div class="meme" style="left:${q.x}px;top:${q.y}px;"><div class="star">⭐</div><span class="melab">YOU ARE HERE</span></div>`;
+    }
+    pinsEl.innerHTML=html;
+    pinsEl.querySelectorAll('[data-pin]').forEach(n=> n.addEventListener('click', ()=>{ if(o.onPin) o.onPin(n.dataset.pin); }));
+  }
+  function fit(){
+    const pts=[];
+    data.pins.forEach(p=>pts.push([p.lat,p.lon]));
+    if(data.me) pts.push([data.me.lat, data.me.lon]);
+    if(data.boundary && data.boundary.pts) data.boundary.pts.forEach(p=>pts.push(p));
+    if(data.draft) data.draft.forEach(p=>pts.push(p));
+    if(!pts.length) return;
+    let minLat=90,maxLat=-90,minLon=180,maxLon=-180;
+    pts.forEach(p=>{ minLat=Math.min(minLat,p[0]); maxLat=Math.max(maxLat,p[0]); minLon=Math.min(minLon,p[1]); maxLon=Math.max(maxLon,p[1]); });
+    center={lat:(minLat+maxLat)/2, lon:(minLon+maxLon)/2};
+    const w=el.clientWidth||360, h=el.clientHeight||380;
+    let z=15;
+    while(z>3){
+      const dx=lon2x(maxLon,z)-lon2x(minLon,z), dy=lat2y(minLat,z)-lat2y(maxLat,z);
+      if(dx<w*0.82 && dy<h*0.78) break;
+      z--;
+    }
+    zoom = (maxLat-minLat<0.001 && maxLon-minLon<0.001) ? 13 : z;
+    fitted=true; render();
+  }
+  /* pan + tap */
+  let drag=null;
+  el.addEventListener('pointerdown', e=>{ drag={x:e.clientX, y:e.clientY, cx:center.lon, cy:center.lat, moved:false, t:Date.now()}; el.setPointerCapture(e.pointerId); });
+  el.addEventListener('pointermove', e=>{
+    if(!drag) return;
+    const dx=e.clientX-drag.x, dy=e.clientY-drag.y;
+    if(Math.abs(dx)+Math.abs(dy)>6) drag.moved=true;
+    if(drag.moved){
+      center={ lat: y2lat(lat2y(drag.cy,zoom)+dy, zoom), lon: x2lon(lon2x(drag.cx,zoom)+dx, zoom) };
+      render();
+    }
+  });
+  el.addEventListener('pointerup', e=>{
+    if(drag && !drag.moved && (Date.now()-drag.t)<450 && o.onTap){
+      const r=el.getBoundingClientRect();
+      o.onTap(unproject(e.clientX-r.left, e.clientY-r.top));
+    }
+    drag=null;
+  });
+  el.querySelectorAll('[data-mz]').forEach(b=> b.addEventListener('click', e=>{
+    e.stopPropagation();
+    const v=b.dataset.mz;
+    if(v==='fit'){ fit(); return; }
+    zoom=Math.max(3, Math.min(17, zoom+Number(v))); render();
+  }));
+  return {
+    setData(d){ data=Object.assign(data, d); if(!fitted) fit(); else render(); },
+    render, fit,
+    isFitted: ()=>fitted
+  };
+}
+
+/* ================= SHARED MAP STATE ================= */
+let kidMap=null, parentMap=null, snapMap=null;
+function mapPinsFromFinds(ids){
+  return ids.filter(id=>{ const f=findOf(id); return f && f.lat!=null; }).map((id,i)=>{
+    const f=findOf(id); const tg=targetById(id);
+    return {id, lat:f.lat, lon:f.lon, iconHTML: tg?iconHTML(tg.icon):'⭐', label: tg?tg.name:'', ord:i+1};
+  });
+}
+function mapPathFromFinds(ids){
+  return ids.filter(id=>{ const f=findOf(id); return f && f.lat!=null; }).map(id=>{ const f=findOf(id); return [f.lat, f.lon]; });
+}
+function boundaryFor(role){
+  if(!S.boundary) return null;
+  let mode='ok';
+  if(role==='parent' && S.watchOn && zoneStatus()==='out') mode='alert';
+  return {pts:S.boundary.pts, mode};
+}
+function initKidMap(){
+  if(kidMap) return;
+  kidMap=makeMap($('#kidMap'), {pinScale: tier().pinScale, showLabels: S.tier!=='t1', showOrder: S.tier==='t3', pathW: tier().pathW,
+    onPin: id=>{ if(id) openPhoto(id); }});
+}
+function refreshMaps(){
+  const ids=okFinds();
+  const pins=mapPinsFromFinds(ids), path=mapPathFromFinds(ids);
+  const me=currentPos? {lat:currentPos.lat, lon:currentPos.lon} : null;
+  if(kidMap) kidMap.setData({pins, path, me, boundary: boundaryFor('kid')});
+  if(parentMap) parentMap.setData({pins, path, me, boundary: boundaryFor('parent'), draft: drawMode? draftPts : null});
+}
+function refreshMapMarkers(){ refreshMaps(); onZoneCheck(); }
+</script>
+<script>
+/* ================= ZONE WATCH + PARENT ALERTS ================= */
+var drawMode=false, draftPts=[];
+let parentOpen=false;
+function zoneStatus(){
+  if(!S.boundary || !S.boundary.pts || S.boundary.pts.length<3 || !currentPos) return null;
+  return inPoly(currentPos, S.boundary.pts) ? 'in' : 'out';
+}
+let lastZone=null;
+function onZoneCheck(){
+  const z=zoneStatus();
+  if(S.watchOn && S.boundary && z==='out' && lastZone!=='out') fireOutAlert();
+  lastZone=z;
+  updateZoneUI();
+}
+function fireOutAlert(){
+  S.alerts.push({ts:Date.now(), name:(S.boundary&&S.boundary.name)||'the play zone', ack:false});
+  saveState();
+  toast('🧭 You wandered a bit far! Head back inside your green zone.', 5200);
+  speak('Head back inside your green zone.');
+  if(parentOpen){ renderParentAlerts(); switchPTab('pmap'); startAlertSound(); refreshMaps(); }
+}
+function unackedAlerts(){ return S.alerts.filter(a=>!a.ack); }
+let alertCtx=null, alertTimer=null;
+function startAlertSound(){
+  if(alertTimer || !unackedAlerts().length) return;
+  const beep=()=>{
+    try{
+      alertCtx = alertCtx || new (window.AudioContext||window.webkitAudioContext)();
+      if(alertCtx.state==='suspended') alertCtx.resume();
+      const t0=alertCtx.currentTime;
+      [880,659].forEach((f,i)=>{
+        const osc=alertCtx.createOscillator(), g=alertCtx.createGain();
+        osc.type='sine'; osc.frequency.value=f;
+        g.gain.setValueAtTime(0.0001, t0+i*0.22);
+        g.gain.exponentialRampToValueAtTime(0.12, t0+i*0.22+0.03);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0+i*0.22+0.2);
+        osc.connect(g); g.connect(alertCtx.destination);
+        osc.start(t0+i*0.22); osc.stop(t0+i*0.22+0.22);
+      });
+    }catch(e){}
+  };
+  beep(); alertTimer=setInterval(beep, 3000);
+}
+function stopAlertSound(){ if(alertTimer){ clearInterval(alertTimer); alertTimer=null; } }
+function renderParentAlerts(){
+  const bar=$('#alertBar'); if(!bar) return;
+  const un=unackedAlerts();
+  if(!un.length){ bar.classList.remove('on'); stopAlertSound(); return; }
+  const a=un[un.length-1];
+  bar.innerHTML=`<b>🚨 OUTSIDE THE PLAY ZONE</b><p>The device left “${esc(a.name)}” — flagged ${fmtTime(a.ts)}. The boundary on the map below is red while they're outside. This alert stays pinned until you acknowledge it. (In-app alert: it sounds while Parent View is open. True phone push notifications arrive with the account layer — see the design notes.)</p><button id="btnAckAlert">✓ Acknowledge</button>`;
+  bar.classList.add('on');
+  $('#btnAckAlert').addEventListener('click', ()=>{ S.alerts.forEach(x=>x.ack=true); saveState(); renderParentAlerts(); toast('Alert acknowledged.'); });
+}
+function updateZoneUI(){
+  const z=zoneStatus();
+  const banner=$('#zoneBanner');
+  if(banner) banner.classList.toggle('on', !!(S.watchOn && S.boundary && z==='out'));
+  const zs=$('#zoneStatus');
+  if(zs){
+    if(!S.boundary){ zs.className='zoneStatus idle'; zs.textContent='Zone status: no boundary saved.'; }
+    else if(!S.watchOn){ zs.className='zoneStatus idle'; zs.textContent='Zone status: watch is OFF.'; }
+    else if(z==='out'){ zs.className='zoneStatus out'; zs.textContent='⚠️ OUTSIDE the zone right now.'; }
+    else if(z==='in'){ zs.className='zoneStatus'; zs.textContent='💚 Inside the zone.'; }
+    else { zs.className='zoneStatus idle'; zs.textContent='Zone status: waiting for GPS…'; }
+  }
+  const ci=$('#checkinStatus');
+  if(ci && S.tier==='t3'){
+    if(!S.lastCheckin) ci.textContent='No check-in yet this hunt.';
+    else{
+      const mins=Math.floor((Date.now()-S.lastCheckin)/60000);
+      const overdue = S.watchOn && mins>=S.checkinMins;
+      ci.innerHTML=`Last check-in: ${fmtTime(S.lastCheckin)} (${mins} min ago)${overdue? ' — <b style="color:#ffb3ab;">OVERDUE</b>':''}`;
+    }
+  }
+  const cb=$('#btnCheckin');
+  if(cb) cb.classList.toggle('hidden', !(S.watchOn && S.boundary && S.tier==='t3'));
+}
+
+/* ================= PARENT UNLOCK (hold + PIN) ================= */
+let holdTimer=null, suppressClick=false;
+const grownBtn=$('#grownBtn');
+grownBtn.addEventListener('pointerdown', e=>{ e.preventDefault(); holdTimer=setTimeout(()=>{ holdTimer=null; suppressClick=true; unlockFlow(); }, 2000); });
+['pointerup','pointerleave','pointercancel'].forEach(ev=> grownBtn.addEventListener(ev, ()=>{ if(holdTimer){ clearTimeout(holdTimer); holdTimer=null; } }));
+grownBtn.addEventListener('click', ()=>{ if(suppressClick){ suppressClick=false; return; } toast('Grown-ups: press and HOLD the button 🚸'); });
+function unlockFlow(){
+  if(S.pin) openPinPad('unlock');
+  else { enterParent(); toast('Welcome! Set a PIN in Setup to lock this area.', 3400); }
+}
+let pinMode='unlock', pinBuf='', pinStage=null;
+function openPinPad(mode){
+  pinMode=mode; pinBuf=''; pinStage=null;
+  $('#pinTitle').textContent = mode==='set' ? 'Set a new PIN' : 'Grown-ups only';
+  $('#pinSub').textContent = mode==='set' ? 'Type a 4-number PIN' : 'Type your 4-number PIN';
+  renderPinDots(); buildPinPad();
+  $('#pinScrim').classList.add('on');
+}
+function buildPinPad(){
+  const pad=$('#pinPad'); pad.innerHTML='';
+  ['1','2','3','4','5','6','7','8','9','','0','⌫'].forEach(k=>{
+    const b=document.createElement('button'); b.textContent=k;
+    if(!k) b.style.visibility='hidden';
+    b.addEventListener('click', ()=> pinKey(k));
+    pad.appendChild(b);
+  });
+}
+function renderPinDots(){ document.querySelectorAll('#pinDots i').forEach((d,i)=> d.classList.toggle('f', i<pinBuf.length)); }
+function pinKey(k){
+  if(k==='⌫'){ pinBuf=pinBuf.slice(0,-1); renderPinDots(); return; }
+  if(!k || pinBuf.length>=4) return;
+  pinBuf+=k; renderPinDots();
+  if(pinBuf.length===4) setTimeout(finishPin, 130);
+}
+function finishPin(){
+  if(pinMode==='unlock'){
+    if(pinBuf===S.pin){ $('#pinScrim').classList.remove('on'); enterParent(); }
+    else { toast('❌ Not the right PIN'); pinBuf=''; renderPinDots(); }
+  } else {
+    if(!pinStage){ pinStage=pinBuf; pinBuf=''; renderPinDots(); $('#pinSub').textContent='Type it again to confirm'; }
+    else if(pinBuf===pinStage){ S.pin=pinBuf; saveState(); $('#pinScrim').classList.remove('on'); toast('🔒 PIN set!'); renderParentSetup(); }
+    else { toast('❌ PINs did not match — try again'); pinBuf=''; pinStage=null; renderPinDots(); $('#pinSub').textContent='Type a 4-number PIN'; }
+  }
+}
+$('#btnPinCancel').addEventListener('click', ()=> $('#pinScrim').classList.remove('on'));
+$('#pinScrim').addEventListener('click', e=>{ if(e.target.id==='pinScrim') $('#pinScrim').classList.remove('on'); });
+
+/* ================= PARENT VIEW SHELL ================= */
+function enterParent(){
+  parentOpen=true;
+  $('#parentApp').classList.add('on');
+  document.body.style.overflow='hidden';
+  if(!parentMap){
+    parentMap=makeMap($('#parentMap'), {pinScale:1.05, showLabels:true, showOrder:true, pathW:7,
+      onPin: id=>{ if(id) openPhoto(id); },
+      onTap: ll=>{ if(drawMode){ draftPts.push([ll.lat, ll.lon]); $('#bStatus').textContent=`Drawing: ${draftPts.length} point${draftPts.length===1?'':'s'} — tap Save when the shape closes around the zone.`; refreshMaps(); } }});
+  }
+  renderParentAll(); refreshMaps(); renderParentAlerts();
+  if(unackedAlerts().length) startAlertSound();
+}
+function exitParent(){
+  parentOpen=false;
+  $('#parentApp').classList.remove('on');
+  document.body.style.overflow='';
+  stopAlertSound();
+  if(drawMode) toggleDraw(false);
+}
+$('#btnExitParent').addEventListener('click', exitParent);
+function switchPTab(id){
+  document.querySelectorAll('.ptabs button').forEach(b=> b.classList.toggle('on', b.dataset.ptab===id));
+  document.querySelectorAll('.ppanel').forEach(p=> p.classList.toggle('on', p.id==='pp-'+id));
+  if(id==='pmap'){ if(parentMap){ parentMap.render(); refreshMaps(); } }
+  if(id==='pfinds') renderParentFinds();
+  if(id==='psetup') renderParentSetup();
+}
+document.querySelectorAll('.ptabs button').forEach(b=> b.addEventListener('click', ()=> switchPTab(b.dataset.ptab)));
+function renderParentAll(){ renderParentFinds(); renderParentSetup(); updateZoneUI(); }
+
+/* ================= PARENT FINDS ================= */
+function findRowHTML(id, opts){
+  const tg=targetById(id); const f=findOf(id); if(!tg||!f) return '';
+  const place = f.lat!=null ? `📌 ${f.lat.toFixed(5)}, ${f.lon.toFixed(5)} · <a href="https://www.google.com/maps?q=${f.lat},${f.lon}" target="_blank" rel="noopener">Open in Maps</a>` : 'No location saved';
+  const tags = `${f.manual?' · checked off by a grown-up':''}${f.status==='pending'?' · ⏳ waiting for your stamp':''}`;
+  const stars = (opts && opts.stars) ? `<span class="starbtns" data-stars="${id}">${[1,2,3].map(n=>`<button data-star="${n}" class="${f.stars>=n?'lit':''}">⭐</button>`).join('')}</span>` : '';
+  return `<div class="pfind">
+    ${f.photo? `<img src="${f.photo}" alt="">` : `<div class="noimg">${iconHTML(tg.icon)}</div>`}
+    <div style="flex:1;"><b>${esc(tg.name)}${stars}</b><span>${fmtTime(f.ts)}${tags}<br>${place}</span></div>
+    ${opts && opts.undo? `<button class="pbtn ghost" data-undo="${id}">Undo</button>`:''}
+  </div>`;
+}
+function wireFindRows(container){
+  container.querySelectorAll('[data-undo]').forEach(b=> b.addEventListener('click', ()=>{
+    const id=b.dataset.undo;
+    delete S.finds[id]; S.order=S.order.filter(x=>x!==id);
+    saveState(); renderAll(); renderParentFinds(); refreshMaps(); toast('Find removed.');
+  }));
+  container.querySelectorAll('[data-stars]').forEach(w=>{
+    w.querySelectorAll('[data-star]').forEach(b=> b.addEventListener('click', ()=>{
+      const f=findOf(w.dataset.stars); if(!f) return;
+      f.stars=Number(b.dataset.star); saveState(); renderParentFinds();
+    }));
+  });
+}
+function renderParentFinds(){
+  /* pending approvals (Tier 1) */
+  const pend=S.order.filter(id=>isPending(id));
+  $('#pendingCard').classList.toggle('hidden', !pend.length);
+  $('#pendingList').innerHTML = pend.map(id=>{
+    const tg=targetById(id); const f=findOf(id);
+    return `<div class="pfind">
+      ${f.photo? `<img src="${f.photo}" alt="">` : `<div class="noimg">${iconHTML(tg.icon)}</div>`}
+      <div style="flex:1;"><b>${esc(tg.name)}</b><span>${fmtTime(f.ts)}${f.lat!=null?' · 📌 location saved':' · no location'}</span></div>
+      <button class="pbtn" data-approve="${id}">👍 Stamp it</button>
+      <button class="pbtn ghost" data-retake="${id}">↩ Retake</button>
+    </div>`;
+  }).join('');
+  $('#pendingList').querySelectorAll('[data-approve]').forEach(b=> b.addEventListener('click', ()=>{
+    const f=findOf(b.dataset.approve); if(!f) return;
+    f.status='ok'; saveState(); renderAll(); renderParentFinds(); refreshMaps(); toast('Stamped! 🎟️ Sticker earned.');
+  }));
+  $('#pendingList').querySelectorAll('[data-retake]').forEach(b=> b.addEventListener('click', ()=>{
+    const id=b.dataset.retake;
+    delete S.finds[id]; S.order=S.order.filter(x=>x!==id);
+    saveState(); renderAll(); renderParentFinds(); refreshMaps(); toast('Photo sent back for a retake.');
+  }));
+  /* hint requests (Tier 2) */
+  const reqs=Object.keys(S.hintReq||{}).filter(id=>!S.hintOpen[id]);
+  $('#hintCard').classList.toggle('hidden', !reqs.length);
+  $('#hintReqList').innerHTML = reqs.map(id=>{
+    const tg=targetById(id); if(!tg) return '';
+    return `<div class="checkrow"><span class="ci">${iconHTML(tg.icon)}</span><b>${esc(tg.name)}</b><button class="pbtn" data-release="${id}">Release hint 💡</button></div>`;
+  }).join('');
+  $('#hintReqList').querySelectorAll('[data-release]').forEach(b=> b.addEventListener('click', ()=>{
+    S.hintOpen[b.dataset.release]=true; delete S.hintReq[b.dataset.release];
+    saveState(); renderHunt(); renderParentFinds(); toast('Hint released 💡');
+  }));
+  /* all finds — the collection atlas */
+  const wrap=$('#parentFinds');
+  const ids=[...S.order].reverse();
+  wrap.innerHTML = (S.tier==='t3' ? `<div class="pcard"><h3>🗺️ Collection Atlas</h3><p>Every find ever stamped, with its date and place. Rate Trailblazer photos 1–3 stars — feedback, never a gate: a 1-star photo still counts.</p></div>` : '')
+    + (ids.length ? ids.map(id=> findRowHTML(id, {stars: S.tier==='t3', undo:true})).join('') : `<div class="pcard"><p>No finds yet. When your hunter snaps one, it lands here with its photo and map pin.</p></div>`);
+  wireFindRows(wrap);
+  /* manual check-off */
+  const dt=deckTargets(S.activeDeck).filter(t=>!findOf(t.id));
+  $('#checkoffList').innerHTML = dt.length ? dt.map(tg=>`
+    <div class="checkrow"><span class="ci">${iconHTML(tg.icon)}</span><b>${esc(tg.name)}</b><button class="pbtn ghost" data-checkoff="${tg.id}">Check off</button></div>`).join('')
+    : `<p class="small">Everything on the current list is found. 🎉</p>`;
+  $('#checkoffList').querySelectorAll('[data-checkoff]').forEach(b=> b.addEventListener('click', ()=>{
+    recordFind(b.dataset.checkoff, {photo:null, lat: currentPos?currentPos.lat:null, lon: currentPos?currentPos.lon:null, manual:true});
+    renderParentFinds();
+  }));
+}
+</script>
+<script>
+/* ================= PARENT SETUP ================= */
+let pickIcon='⭐';
+function renderParentSetup(){
+  renderTiers(); renderDecks();
+  /* custom builder */
+  const ip=$('#iconPick');
+  if(!ip.dataset.built){
+    ip.dataset.built='1';
+    ip.innerHTML=PICK_ICONS.map(e=>`<button data-pick="${e}" class="${e===pickIcon?'sel':''}">${e}</button>`).join('');
+    ip.querySelectorAll('[data-pick]').forEach(b=> b.addEventListener('click', ()=>{
+      pickIcon=b.dataset.pick;
+      ip.querySelectorAll('[data-pick]').forEach(x=> x.classList.toggle('sel', x.dataset.pick===pickIcon));
+    }));
+  }
+  $('#customList').innerHTML = S.custom.length ? S.custom.map(t=>`
+    <div class="checkrow"><span class="ci">${iconHTML(t.icon)}</span><b>${esc(t.name)}</b><button class="pbtn danger" data-delcustom="${t.id}">Delete</button></div>`).join('')
+    : `<p class="small">No custom finds yet — add the first one above.</p>`;
+  $('#customList').querySelectorAll('[data-delcustom]').forEach(b=> b.addEventListener('click', ()=>{
+    S.custom=S.custom.filter(t=>t.id!==b.dataset.delcustom);
+    saveState(); renderParentSetup(); renderDecks(); toast('Removed from your hunt list.');
+  }));
+  /* PIN state */
+  $('#pinStateText').textContent = S.pin
+    ? 'A PIN is set. The Grown-ups area asks for it after the press-and-hold.'
+    : 'No PIN set yet. The Grown-ups area opens with a press-and-hold. Set a PIN to lock it properly.';
+  /* boundary state */
+  const b=$('#boundaryCard');
+  if(b){
+    $('#bName').value = S.boundary? (S.boundary.name||'') : ($('#bName').value||'');
+    $('#btnBDelete').classList.toggle('hidden', !S.boundary || drawMode);
+    $('#bStatus').textContent = drawMode
+      ? `Drawing: ${draftPts.length} point${draftPts.length===1?'':'s'} — tap Save when the shape closes around the zone.`
+      : (S.boundary ? `Saved zone: “${S.boundary.name}” (${S.boundary.pts.length} points). Start drawing again to redraw it.` : 'No boundary saved yet.');
+    const w=$('#btnWatch');
+    if(S.tier==='t1'){ w.textContent='🔒 Boundary watch: locked for Lil Spotters'; }
+    else { w.textContent=`🔔 Boundary watch: ${S.watchOn?'ON':'OFF'}`; }
+    $('#checkinCard').classList.toggle('hidden', S.tier!=='t3');
+    $('#checkinMins').value=String(S.checkinMins||15);
+  }
+  updateZoneUI();
+}
+$('#btnAddCustom').addEventListener('click', ()=>{
+  const name=$('#customName').value.trim();
+  if(!name){ toast('Give your find a name first ✏️'); return; }
+  S.custom.push({id:'c'+Date.now().toString(36), name, icon:pickIcon, diff:1, hint:'Find: '+name+'!'});
+  $('#customName').value='';
+  if(!availableDecks().includes('custom')) S.activeDeck='custom';
+  saveState(); renderParentSetup(); renderDecks(); toast(`Added “${name}” to your custom hunt ✏️`);
+});
+$('#btnSetPin').addEventListener('click', ()=> openPinPad('set'));
+$('#btnReset').addEventListener('click', ()=>{
+  if(!confirm('Erase ALL finds, photos, boundary, and settings on this device?')) return;
+  try{ localStorage.removeItem(LS_KEY); }catch(e){}
+  location.hash=''; location.reload();
+});
+
+/* ================= BOUNDARY TOOLS ================= */
+function toggleDraw(on){
+  drawMode=on;
+  if(on){ draftPts = S.boundary? S.boundary.pts.map(p=>[p[0],p[1]]) : []; }
+  $('#btnDraw').textContent = on? '✏️ Drawing… tap the map' : '✏️ Start drawing';
+  ['#btnBUndo','#btnBClear','#btnBSave'].forEach(s=> $(s).classList.toggle('hidden', !on));
+  $('#btnBDelete').classList.toggle('hidden', !S.boundary || on);
+  renderParentSetup(); refreshMaps();
+}
+$('#btnDraw').addEventListener('click', ()=>{
+  toggleDraw(!drawMode);
+  if(drawMode) toast('✏️ Tap the map to drop points around the play zone.', 3400);
+});
+$('#btnBUndo').addEventListener('click', ()=>{ draftPts.pop(); renderParentSetup(); refreshMaps(); });
+$('#btnBClear').addEventListener('click', ()=>{ draftPts=[]; renderParentSetup(); refreshMaps(); });
+$('#btnBSave').addEventListener('click', ()=>{
+  if(draftPts.length<3){ toast('Draw at least 3 points to make a zone 🟩'); return; }
+  S.boundary={name: $('#bName').value.trim()||'Our Block', pts: draftPts.map(p=>[p[0],p[1]])};
+  saveState(); toggleDraw(false);
+  toast(`🟩 Boundary saved: “${S.boundary.name}”`);
+});
+$('#btnBDelete').addEventListener('click', ()=>{
+  if(!confirm('Delete the saved boundary? The watch will turn off.')) return;
+  S.boundary=null; S.watchOn=false; saveState();
+  renderParentSetup(); refreshMaps(); updateZoneUI(); toast('Boundary deleted.');
+});
+$('#btnWatch').addEventListener('click', ()=>{
+  if(S.tier==='t1'){ toast('🔒 Neighborhood mode is off for Lil Spotters (ages 3–5) — by design.', 3600); return; }
+  if(!S.watchOn && !S.boundary){ toast('Draw and save a boundary first 🟩'); return; }
+  S.watchOn=!S.watchOn; saveState();
+  renderParentSetup(); updateZoneUI(); refreshMaps();
+  toast(S.watchOn? '🔔 Boundary watch ON — you will get an alert if they leave the zone.' : 'Boundary watch OFF.');
+  if(S.watchOn) onZoneCheck();
+});
+$('#checkinMins').addEventListener('change', e=>{ S.checkinMins=Number(e.target.value); saveState(); });
+$('#btnCheckin').addEventListener('click', ()=>{
+  S.lastCheckin=Date.now(); saveState(); updateZoneUI();
+  toast('💚 Checked in! Your grown-up can see you are safe.'); speak('Checked in!');
+});
+
+/* ================= PARENT LINK (snapshot) ================= */
+function b64urlEncode(str){ return btoa(unescape(encodeURIComponent(str))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+function b64urlDecode(s){ s=s.replace(/-/g,'+').replace(/_/g,'/'); while(s.length%4) s+='='; return decodeURIComponent(escape(atob(s))); }
+function snapshotPayload(){
+  const finds=S.order.map(id=>{
+    const f=findOf(id); const tg=targetById(id); if(!f||!tg) return null;
+    return {n:tg.name, i:tg.icon, ts:f.ts, lat:f.lat, lon:f.lon, ok:f.status==='ok'};
+  }).filter(Boolean);
+  return {v:1, ts:Date.now(), tier:S.tier, score:score(), finds,
+          boundary: S.boundary? {name:S.boundary.name, pts:S.boundary.pts} : null};
+}
+$('#btnMakeLink').addEventListener('click', ()=>{
+  const link=location.origin + location.pathname + '#p=' + b64urlEncode(JSON.stringify(snapshotPayload()));
+  const out=$('#linkOut'); out.value=link; out.classList.remove('hidden');
+  $('#btnCopyLink').classList.remove('hidden');
+  toast('🔗 Parent link made — it is a snapshot from right now.');
+});
+$('#btnCopyLink').addEventListener('click', async ()=>{
+  const v=$('#linkOut').value;
+  try{ await navigator.clipboard.writeText(v); toast('📋 Link copied!'); }
+  catch(e){ $('#linkOut').select(); document.execCommand('copy'); toast('📋 Link copied!'); }
+});
+function bootSnapshot(payload){
+  $('#app').style.display='none';
+  document.querySelector('.kidnav').style.display='none';
+  $('#snapshotView').classList.add('on');
+  $('#snapWhen').textContent=fmtTime(payload.ts);
+  const withPos=(payload.finds||[]).filter(f=>f.lat!=null);
+  snapMap=makeMap($('#snapMap'), {pinScale:1.1, showLabels:true, showOrder:true, pathW:7});
+  snapMap.setData({
+    pins: withPos.map((f,i)=>({id:'', lat:f.lat, lon:f.lon, iconHTML: iconHTML(f.i), label:f.n, ord:i+1})),
+    path: withPos.map(f=>[f.lat,f.lon]), me:null,
+    boundary: payload.boundary? {pts:payload.boundary.pts, mode:'ok'} : null
+  });
+  $('#snapFinds').innerHTML = (payload.finds&&payload.finds.length) ? payload.finds.map(f=>`
+    <div class="pfind"><div class="noimg">${iconHTML(f.i)}</div>
+      <div><b>${esc(f.n)}</b><span>${fmtTime(f.ts)}${f.lat!=null?' · 📌 pinned on the map':' · no location saved'}<br>📷 The photo stays on the hunter's device</span></div></div>`).join('')
+    : `<div class="pcard"><p>No finds in this snapshot yet.</p></div>`;
+}
+
+/* ================= EXPORT (AI-compatible scrapbook) ================= */
+function scrapbookText(){
+  const lines=[`J-DAWGS LIL SPOTTERS — TRIP SCRAPBOOK`, `Exported: ${fmtTime(Date.now())}`,
+    `Tier: ${tier().name} (${tier().ages}) · Score: ${score()} points · Finds: ${okFinds().length}`, ''];
+  S.order.forEach((id,i)=>{
+    const f=findOf(id); const tg=targetById(id); if(!f||!tg) return;
+    lines.push(`${i+1}. ${tg.name} — ${fmtTime(f.ts)}${f.lat!=null? ` — location ${f.lat.toFixed(5)}, ${f.lon.toFixed(5)}`:' — no location saved'}${f.manual?' — checked off by a grown-up':''}${f.status==='pending'?' — waiting for a grown-up stamp':''}${f.stars?` — photo stars: ${'⭐'.repeat(f.stars)}`:''}`);
+    if(tg.fact) lines.push(`   Fun fact: ${tg.fact}`);
+  });
+  const bd=badges(); if(bd.length) lines.push('', 'Badges: '+bd.map(b=>`${b.icon} ${b.name}`).join(' · '));
+  if(S.boundary) lines.push('', `Play zone: “${S.boundary.name}” (${S.boundary.pts.length} boundary points)`);
+  lines.push('', '© 2026 J-Dawgs Industries · J-Dawgs Lil Spotters');
+  return lines.join('\n');
+}
+function downloadFile(name, content, type){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([content], {type}));
+  a.download=name; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 4000);
+}
+$('#btnExportTxt').addEventListener('click', ()=> downloadFile('lil-spotters-scrapbook.txt', scrapbookText(), 'text/plain'));
+$('#btnExportJson').addEventListener('click', ()=>{
+  const data={game:'J-Dawgs Lil Spotters', exportedAt:new Date().toISOString(), tier:S.tier, score:score(),
+    finds:S.order.map(id=>{ const f=findOf(id); const tg=targetById(id); if(!f||!tg) return null;
+      return {target:tg.name, foundAt:new Date(f.ts).toISOString(), lat:f.lat, lon:f.lon, manual:f.manual, status:f.status, points:f.pts, photoStars:f.stars||0, funFact:tg.fact||null, photo:f.photo||null}; }).filter(Boolean),
+    boundary: S.boundary};
+  downloadFile('lil-spotters-scrapbook.json', JSON.stringify(data, null, 2), 'application/json');
+});
+$('#btnCopyTxt').addEventListener('click', async ()=>{
+  try{ await navigator.clipboard.writeText(scrapbookText()); toast('📋 Scrapbook copied — paste it to any AI!'); }
+  catch(e){ toast('Copy not available here — use the .txt download instead.'); }
+});
+
+/* ================= BOOT ================= */
+(function boot(){
+  const pw=document.querySelector('#parentApp .pwrap');
+  if(pw) pw.insertAdjacentHTML('afterbegin', '<div id="alertBar"></div>');
+  const m=location.hash.match(/#p=([A-Za-z0-9\-_]+)/);
+  if(m){ try{ bootSnapshot(JSON.parse(b64urlDecode(m[1]))); return; }catch(e){} }
+  renderAll();
+  updateZoneUI();
+  document.addEventListener('pointerdown', ()=> startGeoWatch(), {once:true});
+  startGeoWatch();
+})();
+/* QA / integration handle */
+window.RTH={ get state(){ return S; }, saveState, zoneStatus,
+  setPos(lat, lon){ currentPos={lat, lon, ts:Date.now()}; refreshMapMarkers(); },
+  get pos(){ return currentPos; }, enterParent, exitParent };
+</script>
+</body>
+</html>
