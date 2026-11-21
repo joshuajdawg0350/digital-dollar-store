@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#05070a">
+<title>Hustle City Slots — Casino Classics</title>
+<meta name="description" content="Hustle City Slots — Casino Classics. A chrome & blue 5-reel, 20-line casino slot machine. Play credits only — no cash value, no prizes.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="room">
+  <main class="cabinet" id="cabinet">
+    <div class="cab-glow"></div>
+
+    <header class="marquee-wrap">
+      <img class="marquee" src="assets/marquee.webp" alt="HUSTLE CITY — CASINO CLASSICS" draggable="false">
+      <div class="marquee-shine"></div>
+    </header>
+
+    <div class="fs-banner" id="fsBanner" aria-live="polite"></div>
+
+    <section class="reel-window" aria-label="Slot reels">
+      <div class="reel-bezel">
+        <div class="reels" id="reels">
+          <div class="reel" id="reel0"></div>
+          <div class="reel" id="reel1"></div>
+          <div class="reel" id="reel2"></div>
+          <div class="reel" id="reel3"></div>
+          <div class="reel" id="reel4"></div>
+          <div class="glass"></div>
+          <div class="win-flash" id="winFlash"></div>
+        </div>
+        <div class="payline-rail left" aria-hidden="true"></div>
+        <div class="payline-rail right" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <div class="message" id="msg" aria-live="polite">Set your bet, then press SPIN.</div>
+
+    <section class="deck">
+      <div class="readouts">
+        <div class="readout">
+          <label>CREDITS</label>
+          <div class="led" id="credits">1,000</div>
+        </div>
+        <div class="readout">
+          <label>BET</label>
+          <div class="led" id="bet">20</div>
+        </div>
+        <div class="readout win-readout">
+          <label>WIN</label>
+          <div class="led win" id="win">0</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn chrome-btn" id="betOneBtn" type="button">
+          <span class="btn-top">BET</span><span class="btn-sub">ONE</span>
+        </button>
+        <button class="btn chrome-btn" id="maxBetBtn" type="button">
+          <span class="btn-top">MAX</span><span class="btn-sub">BET</span>
+        </button>
+        <button class="btn spin-btn" id="spinBtn" type="button" aria-label="Spin the reels">
+          <span class="spin-ring"></span>
+          <span class="spin-face">SPIN</span>
+        </button>
+        <button class="btn chrome-btn" id="payBtn" type="button">
+          <span class="btn-top">PAYS</span><span class="btn-sub">INFO</span>
+        </button>
+        <button class="btn chrome-btn" id="soundBtn" type="button">
+          <span class="btn-top">SOUND</span><span class="btn-sub" id="soundState">ON</span>
+        </button>
+      </div>
+
+      <button class="btn refill-btn" id="refillBtn" type="button">+ 1,000 FREE PLAY CREDITS</button>
+    </section>
+
+    <footer class="legal">
+      Play credits only — no cash value, no prizes. For entertainment.<br>
+      © 2026 J-Dawgs Industries
+    </footer>
+  </main>
+</div>
+
+<div class="sheet-backdrop" id="sheetBackdrop"></div>
+<section class="sheet" id="paySheet" aria-hidden="true" aria-label="Paytable and how to play">
+  <div class="sheet-handle" id="sheetHandle"><span></span></div>
+  <div class="sheet-body">
+    <h2>PAYTABLE <small>per credit bet per line · 20 lines</small></h2>
+    <div id="payrows"></div>
+    <h2>HOW TO PLAY</h2>
+    <ul class="howto">
+      <li><b>BET ONE</b> raises your bet 1–5 credits per line (×20 lines). <b>MAX BET</b> jumps to 5 per line.</li>
+      <li>Wins pay left to right on 20 lines. Only the highest win per line pays.</li>
+      <li><b>WILD</b> substitutes for every symbol except SCATTER.</li>
+      <li><b>CHERRY</b> pays from just 2 on a line.</li>
+      <li>3+ <b>SCATTER</b> anywhere pays 2× / 8× / 40× your total bet and awards 7 / 10 / 15 <b>FREE SPINS</b> — line wins pay <b>double</b> in free spins, and free spins can retrigger.</li>
+      <li>Credits are saved on this device. Out of credits? The machine refills 1,000 free.</li>
+    </ul>
+    <p class="sheet-legal">Play credits only — no cash value, no prizes. © 2026 J-Dawgs Industries</p>
+  </div>
+</section>
+
+<script src="logic.js"></script>
+<script src="machines.js"></script>
+<script src="game.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  }
+</script>
+</body>
+</html>
