@@ -2,11 +2,14 @@
    Grown-up rebuild 2026-11-21 around generated luxury poker-room art.
    Engine (logic.js) + strips/paytable/wheel (machines.js): 5x3, 20 paylines,
    weighted strips, WILD substitutes, X2/X3 line multipliers, SCATTER free
-   spins, BONUS tokens on reels 2-4 opening the BONUS WHEEL, NO blank stops
-   (every reel position is a real symbol), RTP 94.08% theoretical.
+   spins, BONUS tokens on reels 2-4 opening the BONUS WHEEL (about 1 spin
+   in 40), NO blank stops (every reel position is a real symbol),
+   RTP 98% theoretical (Joshua's settled target, 2026-11-21).
    Reels spin on a physics curve: spin-up, blur at speed, staggered stops
-   left-to-right, settle bounce. Pull arm + SPIN button fire the same spin —
-   and both spin the Bonus Wheel when it is open. Play credits only.
+   left-to-right, settle bounce — with a mechanical rolling sound that
+   tracks the motion. SPIN becomes STOP while the reels turn. Pull arm +
+   SPIN button fire the same spin — and both spin the Bonus Wheel when it
+   is open. Max bet climbs in tiers as the balance grows. Play credits only.
    (c) 2026 J-Dawgs Industries. */
 'use strict';
 (function () {
@@ -31,7 +34,9 @@
   const reelsEl = [$('reel0'), $('reel1'), $('reel2'), $('reel3'), $('reel4')];
   const creditsEl = $('credits'), betEl = $('bet'), winEl = $('win'), msgEl = $('msg');
   const spinBtn = $('spinBtn'), betOneBtn = $('betOneBtn'), maxBetBtn = $('maxBetBtn');
-  const fsBanner = $('fsBanner'), refillBtn = $('refillBtn'), soundBtn = $('soundBtn');
+  const spinFace = spinBtn.querySelector('.spin-face');
+  const fsBanner = $('fsBanner'), newGameBtn = $('newGameBtn'), soundBtn = $('soundBtn');
+  const maxBetLineEl = $('maxBetLine');
   const soundStateEl = $('soundState'), winFlash = $('winFlash');
   const paySheet = $('paySheet'), sheetBackdrop = $('sheetBackdrop');
   const bonusOverlay = $('bonusOverlay'), wheelEl = $('wheel'), bonusMsg = $('bonusMsg');
@@ -40,14 +45,40 @@
   let credits = 1000, betPerLine = 1, spinning = false;
   let freeSpinsLeft = 0, freeSpinTotal = 0, soundOn = true;
   let stops = [4, 9, 2, 14, 7];
+
+  /* ---------- max-bet progression (Joshua, 2026-11-21) ----------
+     "The more money you get, the higher the max bet goes." The cap on
+     bet-per-line rises in tiers as the credit balance grows. Once a tier
+     unlocks it stays unlocked for this game (the cap never drops when the
+     balance dips); a NEW GAME restart returns to the base tier. */
+  const BET_TIERS = [
+    { at: 0, cap: 5 }, { at: 2500, cap: 10 }, { at: 5000, cap: 25 },
+    { at: 10000, cap: 50 }, { at: 25000, cap: 100 }
+  ];
+  const BET_STEPS = [1, 2, 3, 4, 5, 10, 15, 20, 25, 40, 50, 75, 100];
+  let maxTier = 0, tierUpMsg = null;
+  function tierFor(balance) { let t = 0; BET_TIERS.forEach((x, i) => { if (balance >= x.at) t = i; }); return t; }
+  function maxBetCap() { return BET_TIERS[maxTier].cap; }
+  function checkTierUp() {
+    const t = tierFor(credits);
+    if (t > maxTier) {
+      maxTier = t;
+      tierUpMsg = `★ MAX BET UP! Your balance passed ${fmt(BET_TIERS[t].at)} credits — max bet is now ${maxBetCap()} per line! ★`;
+      save();
+    }
+  }
+
   try {
     const saved = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
     if (saved && typeof saved.credits === 'number') credits = saved.credits;
     if (saved && typeof saved.sound === 'boolean') soundOn = saved.sound;
+    if (saved && typeof saved.tier === 'number') maxTier = Math.max(0, Math.min(BET_TIERS.length - 1, saved.tier | 0));
   } catch (e) { /* restricted webview: play without persistence */ }
+  maxTier = Math.max(maxTier, tierFor(credits));
+  if (betPerLine > maxBetCap()) betPerLine = maxBetCap();
 
   function save() {
-    try { localStorage.setItem(LS_KEY, JSON.stringify({ credits, sound: soundOn })); } catch (e) {}
+    try { localStorage.setItem(LS_KEY, JSON.stringify({ credits, sound: soundOn, tier: maxTier })); } catch (e) {}
   }
   function fmt(n) { return n.toLocaleString('en-US'); }
   function totalBet() { return betPerLine * core.PAYLINES.length; }
@@ -70,9 +101,80 @@
     o.connect(g); g.connect(a.destination);
     o.start(t); o.stop(t + dur + 0.02);
   }
-  const sTick = () => tone(1250, 0.04, 'square', 0.028);
-  const sPeg = () => tone(1900, 0.03, 'square', 0.035);
-  const sStop = () => tone(150, 0.1, 'sine', 0.14);
+  /* ---------- mechanical reel sound (Joshua, 2026-11-21) ----------
+     The reels ROLL — no digital beeps. A looped noise bed runs through a
+     bandpass whose level and pitch track the reels' actual speed (rises on
+     spin-up, rolls through cruise, falls as reels brake), and a dry
+     clatter of short noise clicks is scheduled from the reels' real
+     travel — one click per tooth pitch, so it ticks down naturally as
+     each reel lands, and cuts dead when STOP slams the reels home. */
+  let noiseBuf = null;
+  function getNoiseBuf(a) {
+    if (noiseBuf) return noiseBuf;
+    const buf = a.createBuffer(1, a.sampleRate, a.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    noiseBuf = buf;
+    return buf;
+  }
+  function clack(intensity) {
+    if (!soundOn) return;
+    const a = ac(); if (!a) return;
+    const src = a.createBufferSource();
+    src.buffer = getNoiseBuf(a);
+    src.playbackRate.value = 0.8 + Math.random() * 0.5;
+    const hp = a.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1700;
+    const g = a.createGain();
+    const t = a.currentTime;
+    g.gain.setValueAtTime(0.028 + 0.045 * (intensity || 0.5), t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
+    src.connect(hp); hp.connect(g); g.connect(a.destination);
+    src.start(t, Math.random() * 0.4, 0.05);
+  }
+  function thunk() {
+    if (!soundOn) return;
+    const a = ac(); if (!a) return;
+    const src = a.createBufferSource();
+    src.buffer = getNoiseBuf(a);
+    const lp = a.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 420;
+    const g = a.createGain();
+    const t = a.currentTime;
+    g.gain.setValueAtTime(0.11, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+    src.connect(lp); lp.connect(g); g.connect(a.destination);
+    src.start(t, Math.random() * 0.4, 0.1);
+  }
+  let rollNodes = null;
+  function startRollSound() {
+    if (rollNodes || !soundOn) return;
+    const a = ac(); if (!a) return;
+    const src = a.createBufferSource();
+    src.buffer = getNoiseBuf(a); src.loop = true;
+    const bp = a.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 650; bp.Q.value = 0.85;
+    const g = a.createGain(); g.gain.value = 0;
+    src.connect(bp); bp.connect(g); g.connect(a.destination);
+    src.start();
+    rollNodes = { src, bp, g };
+  }
+  function rollLevel(speedNorm) {
+    if (!rollNodes || !actx) return;
+    const t = actx.currentTime;
+    rollNodes.g.gain.setTargetAtTime(soundOn ? 0.015 + 0.085 * speedNorm : 0, t, 0.05);
+    rollNodes.bp.frequency.setTargetAtTime(480 + 1450 * speedNorm, t, 0.05);
+  }
+  function stopRollSound(quick) {
+    if (!rollNodes || !actx) { rollNodes = null; return; }
+    const nodes = rollNodes; rollNodes = null;
+    const t = actx.currentTime;
+    try {
+      nodes.g.gain.cancelScheduledValues(t);
+      nodes.g.gain.setTargetAtTime(0, t, quick ? 0.025 : 0.085);
+      nodes.src.stop(t + (quick ? 0.14 : 0.4));
+    } catch (e) { /* already stopped */ }
+  }
+  const sTick = () => clack(0.35);
+  const sPeg = () => clack(0.55);
+  const sStop = () => { tone(130, 0.1, 'sine', 0.12); thunk(); };
   const sCoin = () => { tone(988, 0.09, 'square', 0.05); tone(1319, 0.14, 'square', 0.05, 0.07); };
   const sWin = big => { const n = big ? 9 : 5; for (let i = 0; i < n; i++) tone(523 + i * 131, 0.12, 'triangle', 0.07, i * 0.07); };
   const sScatter = () => { [392, 523, 659, 784, 1046].forEach((f, i) => tone(f, 0.16, 'triangle', 0.08, i * 0.09)); };
@@ -100,10 +202,26 @@
     if (track && track.children[row]) track.children[row].classList.add(cls);
   }
 
+  /* STOP control (Joshua, 2026-11-21): while the reels turn, SPIN becomes
+     STOP. Tapping it calls every spinning reel's finish() at once — each
+     reel snaps cleanly onto its dealt stop (the same final window a full
+     spin would land on), the roll sound cuts, and payouts evaluate from
+     those dealt stops exactly as an unstopped spin. */
+  let activeReelFinishes = [null, null, null, null, null];
+  let stopRequested = false;
+  const clatterAcc = [0, 0, 0, 0, 0];
+  function requestStop() {
+    if (!spinning || stopRequested) return;
+    stopRequested = true;
+    stopRollSound(true);
+    for (const f of activeReelFinishes) if (f) f();
+  }
+
   /* Physics-curve reel spin: smoothstep velocity profile (spin-up, fast
      middle, gentle arrival), motion blur while the reel is moving fast,
      and a small settle bounce when it locks. Reels stop left to right
-     because each reel's duration is longer than the one before it. */
+     because each reel's duration is longer than the one before it. The
+     rolling sound and tooth clatter are driven from this same motion. */
   function spinReel(r, finalStops, duration) {
     return new Promise(resolve => {
       const reel = reelsEl[r], H = cellH(r), strip = cfg.strips[r];
@@ -122,14 +240,15 @@
       const target = -(seq.length - 3) * H;
       const smooth = u => u * u * (3 - 2 * u);
       let finished = false;
-      let tickCount = 0;
+      let lastOffset = 0;
       const finish = () => {
         if (finished) return;
         finished = true;
+        activeReelFinishes[r] = null;
         track.classList.remove('fast');
         track.style.transform = 'translateY(0px)';
         track.innerHTML = grid[r].map(s => cellHTML(s, H)).join('');
-        sStop();
+        if (!stopRequested || r === 0) sStop();
         /* settle bounce: a quick physical recoil as the reel locks */
         try {
           track.animate(
@@ -139,6 +258,7 @@
         } catch (e) { /* WAAPI unavailable: reel simply rests */ }
         resolve();
       };
+      activeReelFinishes[r] = finish;
       const t0 = performance.now();
       (function frame(now) {
         if (finished) return;
@@ -147,7 +267,13 @@
         track.style.transform = `translateY(${target * p}px)`;
         const vel = 6 * u * (1 - u); /* smoothstep derivative, peaks mid-spin */
         track.classList.toggle('fast', vel > 0.62);
-        if (++tickCount % 4 === 0 && vel > 0.35) sTick();
+        /* rolling sound follows this reel's motion; clatter per tooth pitch */
+        const speedNorm = Math.min(1, vel / 1.5);
+        rollLevel(speedNorm);
+        const off = Math.abs(target * p);
+        clatterAcc[r] += off - lastOffset;
+        lastOffset = off;
+        if (clatterAcc[r] >= H * 0.75) { clatterAcc[r] = 0; if (vel > 0.12) clack(speedNorm); }
         if (u < 1) requestAnimationFrame(frame);
         else finish();
       })(t0);
@@ -156,13 +282,32 @@
   }
 
   /* ---------- readouts / controls ---------- */
+  function updateMaxBetLine() {
+    if (!maxBetLineEl) return;
+    const next = BET_TIERS[maxTier + 1];
+    maxBetLineEl.innerHTML = next
+      ? `MAX BET <b>${maxBetCap()}/LINE</b> · NEXT ${next.cap}/LINE AT ${fmt(next.at)}`
+      : `MAX BET <b>${maxBetCap()}/LINE</b> · TOP TIER UNLOCKED`;
+  }
   function renderReadouts(winVal) {
     creditsEl.textContent = fmt(credits);
     betEl.textContent = fmt(totalBet());
     if (typeof winVal === 'number') winEl.textContent = fmt(winVal);
+    /* NEW GAME shows whenever the balance can't cover the current bet */
+    newGameBtn.classList.toggle('on', credits < totalBet());
+    updateMaxBetLine();
   }
+  let controlsOn = true;
   function setControlsEnabled(on) {
-    spinBtn.disabled = !on; betOneBtn.disabled = !on; maxBetBtn.disabled = !on;
+    /* The SPIN button never disables: while the reels turn it is the STOP
+       button (and while the Bonus Wheel is armed it fires the wheel —
+       runBonusWheel manages that state itself). */
+    controlsOn = on;
+    window.__busy = !on;
+    betOneBtn.disabled = !on; maxBetBtn.disabled = !on;
+    spinBtn.classList.toggle('stopping', !on);
+    spinFace.textContent = on ? 'SPIN' : 'STOP';
+    spinBtn.setAttribute('aria-label', on ? 'Spin the reels' : 'Stop the reels');
     const lv = $('lever');
     if (lv) { lv.classList.toggle('off', !on); lv.setAttribute('aria-disabled', String(!on)); }
   }
@@ -192,8 +337,9 @@
       `<div class="payrow"><div class="thumb"><img src="${ART.WD}" alt="WILD"></div><div class="nm">WILD</div><span class="pv wide">Substitutes for every symbol except SCATTER</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.X2}" alt="WIN ×2"></div><div class="nm">WIN ×2</div><span class="pv wide">Anywhere on a winning line, this line's win is DOUBLED (×2)</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.X3}" alt="WIN ×3"></div><div class="nm">WIN ×3</div><span class="pv wide">Anywhere on a winning line, this line's win is TRIPLED (×3). Two multipliers on the same line multiply together — ×2 and ×3 pay ×6</span></div>` +
-      `<div class="payrow"><div class="thumb"><img src="${ART.SC}" alt="SCATTER"></div><div class="nm">SCATTER</div><span class="pv wide">3+ anywhere: pays 2× / 8× / 40× total bet + 7 / 10 / 15 FREE SPINS at 2× line wins</span></div>` +
-      `<div class="payrow"><div class="thumb"><img src="${ART.BN}" alt="BONUS"></div><div class="nm">BONUS WHEEL</div><span class="pv wide">BONUS tokens ride reels 2, 3 and 4 — when all three windows show one, the BONUS WHEEL opens: one spin, wedges pay × your total bet up to a 250× JACKPOT (BANKRUPT pays nothing)</span></div>`;
+      `<div class="payrow"><div class="thumb"><img src="${ART.SC}" alt="SCATTER"></div><div class="nm">SCATTER</div><span class="pv wide">3+ anywhere: pays 2× / 7× / 35× total bet + 7 / 10 / 15 FREE SPINS at 2× line wins</span></div>` +
+      `<div class="payrow"><div class="thumb"><img src="${ART.BN}" alt="BONUS"></div><div class="nm">BONUS WHEEL</div><span class="pv wide">BONUS tokens ride reels 2, 3 and 4 — when all three windows show one, the BONUS WHEEL opens: one spin, wedges pay × your total bet up to a ${Math.max(...cfg.wheel)}× JACKPOT (BANKRUPT pays nothing). The wheel lands about once every 40 spins</span></div>` +
+      `<div class="payrow"><div class="thumb"><img src="${ART.CP}" alt="MAX BET"></div><div class="nm">MAX BET GROWS</div><span class="pv wide">The more credits you hold, the higher your max bet climbs — and once a tier unlocks it stays unlocked for this game: you start at 5/line · balance 2,500+ → 10/line · 5,000+ → 25/line · 10,000+ → 50/line · 25,000+ → 100/line</span></div>`;
   }
 
   /* ---------- paytable sheet ---------- */
@@ -278,6 +424,8 @@
       /* arm the wheel: SPIN button and lever now spin the wheel, not the reels */
       betOneBtn.disabled = true; maxBetBtn.disabled = true;
       spinBtn.disabled = false;
+      spinBtn.classList.remove('stopping');
+      spinFace.textContent = 'SPIN';
       const lv = $('lever');
       if (lv) { lv.classList.remove('off'); lv.setAttribute('aria-disabled', 'false'); }
       wheelArmed = async () => {
@@ -292,7 +440,7 @@
           tone(160, 0.5, 'sawtooth', 0.06);
           tone(120, 0.6, 'sawtooth', 0.05, 0.18);
         } else if (val === Math.max(...WEDGES)) {
-          bonusMsg.textContent = `★ JACKPOT! 250× your bet = ${fmt(pay)} credits! ★`;
+          bonusMsg.textContent = `★ JACKPOT! ${val}× your bet = ${fmt(pay)} credits! ★`;
           sWin(true); sCoin();
         } else {
           bonusMsg.textContent = `The wheel pays ${val}× your bet = ${fmt(pay)} credits!`;
@@ -323,8 +471,8 @@
     winEl.textContent = '0';
     if (!isFree) {
       if (credits < totalBet()) {
-        msgEl.textContent = credits <= 0 ? 'Out of credits — grab 1,000 free play credits below.' : 'Not enough credits for that bet — lower the bet or refill.';
-        refillBtn.classList.toggle('on', credits < core.PAYLINES.length);
+        msgEl.textContent = credits <= 0 ? 'Out of credits — tap NEW GAME below for a fresh 1,000.' : 'Not enough credits for that bet — lower the bet, or tap NEW GAME for a fresh start.';
+        renderReadouts();
         spinning = false; setControlsEnabled(true);
         return;
       }
@@ -335,7 +483,11 @@
     const betAtTrigger = totalBet();
     const finalStops = core.randomStops(Math.random, cfg.strips);
     const durations = [1050, 1300, 1550, 1800, 2050];
+    stopRequested = false;
+    clatterAcc.fill(0);
+    startRollSound();
     await Promise.all(finalStops.map((_, r) => spinReel(r, finalStops, durations[r])));
+    stopRollSound(false);
     stops = finalStops;
     const grid = core.windowForStops(cfg.strips, stops);
     const ev = core.evaluateGrid(grid, betPerLine, cfg);
@@ -359,6 +511,7 @@
       if (isFree) freeSpinTotal += totalWin;
     }
     renderReadouts(totalWin);
+    checkTierUp();
     save();
 
     /* Bonus Wheel plays before free spins when both trigger together. */
@@ -367,6 +520,8 @@
       msgEl.textContent = '3 BONUS tokens! The Bonus Wheel is yours — one spin!';
       spinning = false;
       await runBonusWheel(betAtTrigger);
+      checkTierUp();
+      renderReadouts();
       spinning = true;
     }
 
@@ -396,7 +551,8 @@
         ? (ev.lineWins.length ? `Winner! ${ev.lineWins.map(w => `${w.count}× ${NAMES[w.symbol]}${w.mult > 1 ? ` (×${w.mult})` : ''}`).join(' · ')}` : 'Scatter pay!')
         : 'Set your bet, then press SPIN — or pull the arm.';
     }
-    refillBtn.classList.toggle('on', credits < core.PAYLINES.length);
+    if (tierUpMsg) { msgEl.textContent = tierUpMsg; tierUpMsg = null; }
+    renderReadouts();
     spinning = false;
     setControlsEnabled(true);
   }
@@ -405,6 +561,8 @@
   spinBtn.addEventListener('click', () => {
     ac();
     if (wheelArmed) { const fire = wheelArmed; fire(); return; }
+    if (spinning) { requestStop(); return; }
+    if (!controlsOn) return; /* free-spin pause etc.: the STOP face is inert */
     doSpin(false);
   });
 
@@ -429,7 +587,7 @@
     leverArm.style.transition = animate ? 'transform .5s cubic-bezier(.25,1.35,.4,1)' : 'none';
     leverArm.style.transform = `translateY(${y}px)`;
   }
-  function leverFire() { if (!spinBtn.disabled) spinBtn.click(); }
+  function leverFire() { spinBtn.click(); }
   function leverScriptedPull() {
     leverArm.style.transition = 'transform .16s ease-in';
     leverArm.style.transform = `translateY(${LEVER_MAX}px)`;
@@ -437,7 +595,7 @@
   }
   if (leverEl && leverArm) {
     leverEl.addEventListener('pointerdown', e => {
-      if (spinBtn.disabled) return;
+      if (!wheelArmed && !controlsOn && !spinning) return;
       e.preventDefault();
       try { leverEl.setPointerCapture(e.pointerId); } catch (err) {}
       leverDrag = { y0: e.clientY, travel: 0, t0: performance.now() };
@@ -467,15 +625,39 @@
     leverEl.addEventListener('pointerup', leverRelease);
     leverEl.addEventListener('pointercancel', () => { leverDrag = null; leverSet(0, true); });
     leverEl.addEventListener('keydown', e => {
-      if ((e.key === 'Enter' || e.key === ' ') && !spinBtn.disabled) { e.preventDefault(); leverScriptedPull(); }
+      if ((e.key === 'Enter' || e.key === ' ') && (wheelArmed || controlsOn || spinning)) { e.preventDefault(); leverScriptedPull(); }
     });
   }
-  betOneBtn.addEventListener('click', () => { betPerLine = betPerLine >= 5 ? 1 : betPerLine + 1; renderReadouts(); buildPaytable(); sTick(); });
-  maxBetBtn.addEventListener('click', () => { betPerLine = 5; renderReadouts(); buildPaytable(); sTick(); });
-  refillBtn.addEventListener('click', () => { credits += 1000; refillBtn.classList.remove('on'); renderReadouts(); save(); msgEl.textContent = '1,000 play credits added. Good luck!'; });
+  betOneBtn.addEventListener('click', () => {
+    const steps = BET_STEPS.filter(s => s <= maxBetCap());
+    const next = steps.find(s => s > betPerLine);
+    betPerLine = next === undefined ? 1 : next;
+    renderReadouts(); buildPaytable(); sTick();
+  });
+  maxBetBtn.addEventListener('click', () => { betPerLine = maxBetCap(); renderReadouts(); buildPaytable(); sTick(); });
+  /* NEW GAME (Joshua, 2026-11-21): when the balance can't cover a spin,
+     one tap restarts the game fresh — standard 1,000 starting credits,
+     base bet, base max-bet tier. */
+  newGameBtn.addEventListener('click', () => {
+    if (spinning || wheelArmed || wheelSpinning || freeSpinsLeft > 0) return;
+    credits = 1000;
+    betPerLine = 1;
+    maxTier = 0;
+    tierUpMsg = null;
+    freeSpinTotal = 0;
+    fsBanner.classList.remove('on');
+    clearWinMarks();
+    winEl.textContent = '0';
+    renderReadouts(0);
+    buildPaytable();
+    save();
+    msgEl.textContent = 'New game — 1,000 credits on the house. Good luck!';
+    sCoin();
+  });
   soundBtn.addEventListener('click', () => {
     soundOn = !soundOn;
     soundStateEl.textContent = soundOn ? 'ON' : 'OFF';
+    if (!soundOn) stopRollSound(true);
     save();
     if (soundOn) sTick();
   });
@@ -492,5 +674,4 @@
   showWindow();
   renderReadouts(0);
   buildPaytable();
-  refillBtn.classList.toggle('on', credits < core.PAYLINES.length);
 })();

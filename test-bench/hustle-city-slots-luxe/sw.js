@@ -1,5 +1,5 @@
 /* Hustle City Slots — Poker Luxe service worker. (c) 2026 J-Dawgs Industries. */
-const CACHE = 'hc-slots-luxe-v1';
+const CACHE = 'hc-slots-luxe-v2';
 const ASSETS = [
   './', './index.html', './style.css', './game.js', './logic.js', './machines.js',
   './manifest.webmanifest', './icon-192.png', './icon-512.png',

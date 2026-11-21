@@ -70,6 +70,8 @@
         </div>
       </div>
 
+      <div class="maxbet-line" id="maxBetLine" aria-live="polite"></div>
+
       <div class="controls">
         <button class="btn chrome-btn" id="betOneBtn" type="button">
           <span class="btn-top">BET</span><span class="btn-sub">ONE</span>
@@ -89,7 +91,7 @@
         </button>
       </div>
 
-      <button class="btn refill-btn" id="refillBtn" type="button">+ 1,000 FREE PLAY CREDITS</button>
+      <button class="btn newgame-btn" id="newGameBtn" type="button">↻ NEW GAME — 1,000 CREDITS</button>
     </section>
 
     <footer class="legal">
@@ -103,7 +105,7 @@
   <div class="bonus-card">
     <h2 class="bonus-title">★ BONUS WHEEL ★</h2>
     <p class="bonus-rules">3 BONUS tokens lit the wheel — one spin, on the house.<br>
-      Wedges pay <b>× your total bet</b>. <b class="gold">JACKPOT pays 250×</b>. <b class="bad">BANKRUPT pays nothing</b>.</p>
+      Wedges pay <b>× your total bet</b>. <b class="gold">JACKPOT pays 100×</b>. <b class="bad">BANKRUPT pays nothing</b>.</p>
     <div class="wheel-wrap">
       <div class="wheel-pointer" id="wheelPointer"></div>
       <div class="wheel" id="wheel"></div>
@@ -121,16 +123,18 @@
     <div id="payrows"></div>
     <h2>HOW TO PLAY</h2>
     <ul class="howto">
-      <li><b>BET ONE</b> raises your bet 1–5 credits per line (×20 lines). <b>MAX BET</b> jumps to 5 per line.</li>
+      <li><b>BET ONE</b> steps your bet up per line (×20 lines). <b>MAX BET</b> jumps straight to your current max.</li>
+      <li><b>MAX BET GROWS:</b> the more credits you hold, the higher your max bet climbs — balance 2,500+ unlocks 10/line, 5,000+ unlocks 25/line, 10,000+ unlocks 50/line, 25,000+ unlocks 100/line. Once a tier unlocks it stays unlocked for this game, even if your balance dips.</li>
       <li>Spin two ways: press <b>SPIN</b>, or grab the <b>PULL ARM</b> on the side of the machine and pull it down — a tap on the arm works too.</li>
+      <li><b>STOP:</b> while the reels are turning, SPIN becomes <b>STOP</b> — tap it and the reels land right away on the stops they were dealt. Same result, no waiting.</li>
       <li>Wins pay left to right on 20 lines. Only the highest win per line pays.</li>
       <li><b>WILD</b> substitutes for every symbol except SCATTER.</li>
       <li><b>WIN ×2 / WIN ×3</b>: a multiplier anywhere on a winning line multiplies that line's win — ×2 doubles it, ×3 triples it. If two multipliers land on the same line, they multiply together (×2 and ×3 pay ×6).</li>
       <li><b>No blank stops:</b> every reel position is a real symbol — all 15 windows show a symbol on every spin.</li>
       <li><b>POKER CHIPS</b> pay from just 2 on a line.</li>
-      <li>3+ <b>SCATTER</b> anywhere pays 2× / 8× / 40× your total bet and awards 7 / 10 / 15 <b>FREE SPINS</b> — line wins pay <b>double</b> in free spins, and free spins can retrigger.</li>
-      <li><b>BONUS WHEEL:</b> one BONUS token rides reels 2, 3 and 4. When all three windows show one, the Bonus Wheel opens — pull the arm or tap SPIN for one spin of the wheel. Wedges pay × your total bet: the gold <b>JACKPOT</b> wedge pays 250×, and the black <b>BANKRUPT</b> wedge pays nothing.</li>
-      <li>Credits are saved on this device. Out of credits? The machine refills 1,000 free.</li>
+      <li>3+ <b>SCATTER</b> anywhere pays 2× / 7× / 35× your total bet and awards 7 / 10 / 15 <b>FREE SPINS</b> — line wins pay <b>double</b> in free spins, and free spins can retrigger.</li>
+      <li><b>BONUS WHEEL:</b> BONUS tokens ride reels 2, 3 and 4. When all three windows show one, the Bonus Wheel opens — pull the arm or tap SPIN for one spin of the wheel. It lands about once every 40 spins. Wedges pay × your total bet: the gold <b>JACKPOT</b> wedge pays 100×, and the black <b>BANKRUPT</b> wedge pays nothing.</li>
+      <li>Credits are saved on this device. Run out? Tap <b>NEW GAME</b> for a fresh start with 1,000 credits.</li>
     </ul>
     <p class="sheet-legal">Play credits only — no cash value, no prizes. © 2026 J-Dawgs Industries</p>
   </div>
