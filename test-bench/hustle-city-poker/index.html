@@ -32,13 +32,14 @@
   .tbtn + .tbtn{margin-left:0;}
   #tableWrap{position:absolute;inset:0;display:flex;flex-direction:column;z-index:5;}
   #feltZone{flex:1;position:relative;display:flex;align-items:center;justify-content:center;padding-top:34px;}
-  #felt{position:relative;width:min(94vw,560px);height:min(52vh,430px);border-radius:50%;
+  #felt{position:relative;transform:translateY(5vh);width:min(94vw,560px);height:min(52vh,430px);border-radius:50%;
        background:radial-gradient(ellipse at 50% 38%, #127347 0%, var(--felt) 55%, var(--felt2) 100%);
        border:10px solid #2a1a10;outline:3px solid rgba(220,230,240,.28);
        box-shadow:0 30px 60px rgba(0,0,0,.75), inset 0 0 60px rgba(0,0,0,.55), 0 0 44px rgba(0,150,255,.16);}
-  #felt::after{content:"HUSTLE CITY POKER";position:absolute;left:0;right:0;top:57%;text-align:center;
-       font-weight:900;letter-spacing:.3em;font-size:11px;color:rgba(255,255,255,.13);}
+  #felt::after{content:"HUSTLE CITY POKER";position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;z-index:1;
+       font-weight:900;letter-spacing:.06em;font-size:25px;color:rgba(255,255,255,.10);white-space:nowrap;}
   #board{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);display:flex;gap:6px;z-index:6;}
+  #board .card{--card-w:43.2px;--card-h:60.8px;}
   #potBox{position:absolute;left:50%;top:calc(38% + 52px);transform:translateX(-50%);z-index:6;text-align:center;}
   #potBox .potlab{font-size:10px;letter-spacing:.28em;color:#bfe0ff;font-weight:700;text-shadow:0 1px 4px #000;}
   #potBox .potamt{font-size:22px;font-weight:900;color:#fff;text-shadow:0 2px 8px #000,0 0 16px rgba(0,150,255,.5);}
@@ -60,10 +61,10 @@
   .card.deal-in{animation:dealIn .34s cubic-bezier(.2,.9,.3,1.2);}
   @keyframes dealIn{from{transform:translateY(-26px) rotate(-5deg) scale(.8);opacity:0;}to{transform:none;opacity:1;}}
   .card.win-glow{box-shadow:0 0 0 2px #ffd75e,0 0 22px rgba(255,215,94,.85),0 4px 10px rgba(0,0,0,.5);}
-  .mini{--card-w:38px;--card-h:54px;}
+  .mini{--card-w:30.4px;--card-h:43.2px;}
   .mini .rk{font-size:12px;} .mini .st{font-size:10px;top:14px;} .mini .big{font-size:20px;}
   .seat{position:absolute;z-index:8;display:flex;flex-direction:column;align-items:center;gap:3px;width:118px;}
-  .seat .hole{display:flex;gap:4px;min-height:54px;align-items:flex-start;justify-content:center;}
+  .seat .hole{display:flex;gap:4px;min-height:43.2px;align-items:flex-start;justify-content:center;}
   .seat .plate{background:var(--panel);border:1px solid rgba(140,180,220,.35);border-radius:11px;
        padding:4px 8px;text-align:center;min-width:104px;box-shadow:0 4px 14px rgba(0,0,0,.6);}
   .seat .nm{font-size:12px;font-weight:800;letter-spacing:.04em;display:flex;align-items:center;gap:5px;justify-content:center;}
@@ -76,9 +77,11 @@
   .seat.turn .plate{border-color:#0096FF;box-shadow:0 0 0 1px #0096FF,0 0 18px rgba(0,150,255,.65);}
   .seat.folded{opacity:.45;filter:grayscale(.6);}
   .seat.winner .plate{border-color:#ffd75e;box-shadow:0 0 18px rgba(255,215,94,.8);}
-  #seat1{top:5%;left:50%;transform:translateX(-50%);}
-  #seat2{top:25%;left:1%;}
-  #seat3{top:25%;right:1%;}
+  #seat1{top:5%;left:50%;transform:translate(-50%,5vh);}
+  #seat2{top:23%;left:1%;transform:translateY(5vh);}
+  #seat3{top:23%;right:1%;transform:translateY(5vh);}
+  #seat4{top:60%;left:1%;transform:translateY(5vh);}
+  #seat5{top:60%;right:1%;transform:translateY(5vh);}
   .dbtn{width:20px;height:20px;border-radius:50%;background:linear-gradient(180deg,#fff,#b9c9d8);color:#0a1420;
        font-size:11px;font-weight:900;display:inline-flex;align-items:center;justify-content:center;
        box-shadow:0 2px 5px rgba(0,0,0,.6);}
@@ -137,13 +140,16 @@
   @media (min-width:760px){
     :root{--card-w:62px;--card-h:86px;}
     #felt{height:min(58vh,470px);}
-    #seat2{left:6%;} #seat3{right:6%;}
+    #seat2{left:6%;} #seat3{right:6%;} #seat4{left:6%;} #seat5{right:6%;}
+    #board .card{--card-w:49.6px;--card-h:68.8px;}
+    #felt::after{font-size:40px;}
     .sheet h1{font-size:44px;}
   }
   @media (max-height:700px){
     :root{--card-w:46px;--card-h:64px;}
     #myCards .card{--card-w:56px;--card-h:78px;}
     #felt{height:46vh;}
+    #board .card{--card-w:36.8px;--card-h:51.2px;}
     .abtn{min-height:48px;}
   }
 .card .hcimg{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;border-radius:inherit;display:block}
@@ -172,6 +178,8 @@
     <div class="seat" id="seat1"></div>
     <div class="seat" id="seat2"></div>
     <div class="seat" id="seat3"></div>
+    <div class="seat" id="seat4"></div>
+    <div class="seat" id="seat5"></div>
   </div>
   <div id="playerZone">
     <div id="myRow">
@@ -200,7 +208,7 @@
   <div class="sheet">
     <div style="font-size:11px;letter-spacing:.34em;color:#8fc6f5;font-weight:800;">HUSTLE CITY</div>
     <h1 class="chrome-text">POKER</h1>
-    <p>Texas Hold'em at the back-room table. You against Slick, Deuce, and Pearl.
+    <p>Texas Hold'em at the back-room table. You against Slick, Deuce, Pearl, Roxy, and Fats.
        Play chips only &mdash; <b>no real money, ever</b>. Take their stacks before they take yours.</p>
     <button class="bigbtn" id="startBtn">TAKE YOUR SEAT</button>
     <button class="ghostbtn" id="titleHelpBtn">HOW TO PLAY</button>
@@ -543,7 +551,9 @@ const players = [
   { name:"You",   stack:START_STACK, pers:null,     initial:"Y" },
   { name:"Slick", stack:START_STACK, pers:"tight",  initial:"S" },
   { name:"Deuce", stack:START_STACK, pers:"loose",  initial:"D" },
-  { name:"Pearl", stack:START_STACK, pers:"caller", initial:"P" }
+  { name:"Pearl", stack:START_STACK, pers:"caller", initial:"P" },
+  { name:"Roxy",  stack:START_STACK, pers:"std",    initial:"R" },
+  { name:"Fats",  stack:START_STACK, pers:"tight",  initial:"F" }
 ];
 let hand = null, button = 3, handNo = 0, busy = false, showdownReveal = false;
 const $ = id => document.getElementById(id);
@@ -581,8 +591,8 @@ function render(){
   const pot = hand ? hand.pot() : 0;
   $("potAmt").textContent = fmt(pot);
   $("potChips").innerHTML = pot > 0 ? chipHTML(pot) : "";
-  // AI seats 1..3
-  for(let i=1;i<=3;i++){
+  // AI seats 1..5
+  for(let i=1;i<=5;i++){
     const seat = $("seat"+i), p = players[i];
     let holeHTML = "";
     seat.innerHTML = "";
@@ -713,9 +723,9 @@ function stepAI(){
 function startHand(){
   busy = false; // defensive: a fresh hand never starts busy
   // room rule: busted AI rebuys between hands; busted player is asked first
-  for(let i=1;i<4;i++) if(players[i].stack <= 0) players[i].stack = START_STACK;
+  for(let i=1;i<6;i++) if(players[i].stack <= 0) players[i].stack = START_STACK;
   if(players[0].stack <= 0){ $("rebuyOverlay").classList.add("open"); return; }
-  button = (button + 1) % 4;
+  button = (button + 1) % 6;
   handNo += 1; showdownReveal = false;
   hand = new PokerHand(players, button, {sb:SB, bb:BB});
   AudioFX.ensure(); AudioFX.card(); setTimeout(()=>AudioFX.card(), 160);
