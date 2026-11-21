@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Proof — Hustle City Solitaire — Digital Dollar Store</title>
-<meta name="description" content="The real test record for Hustle City Solitaire BIG v2: a full game played to a win with 546 real taps at 390×844, measured card and number sizes, and the honest limits — including the one phone where it still renders small and blurry. Hits and misses both, no invented numbers.">
+<meta name="description" content="The real test record for Hustle City Solitaire BIG v2: a full game played to a win with 546 real taps at 390×844, measured card and number sizes, and the honest limits — including the one phone that rendered it small and blurry, the stale-cache bug we found and fixed behind it, and the player's passing re-check. Hits and misses both, no invented numbers.">
 <link rel="canonical" href="https://digitaldollarstore.org/proof-hustle-city-solitaire.html">
 <script>document.documentElement.className+=" js"</script>
 <link rel="stylesheet" href="assets/site.css">
@@ -74,7 +74,7 @@
       <div class="sec-head proof-head" style="margin-bottom:0">
         <p class="eyebrow">Proof, not promises</p>
         <h1>How Hustle City Solitaire was tested.</h1>
-        <p class="lead">Our rule: if it's for sale, it has to work — and there has to be proof it works. This is the real test record for the exact build going on the shelf (BIG v2, November 21, 2026): a complete game played to a win with real taps, the card and number sizes measured on screen, and the owner's own hands on his own phone. Hits and misses both — the one phone where this build still doesn't render right is named below, in plain words.</p>
+        <p class="lead">Our rule: if it's for sale, it has to work — and there has to be proof it works. This is the real test record for the exact build going on the shelf (BIG v2, November 21, 2026): a complete game played to a win with real taps, the card and number sizes measured on screen, and the owner's own hands on his own phone. Hits and misses both — including the one phone where this build first rendered wrong, the bug we found behind it, and how that story ended. It's all below, in plain words.</p>
       </div>
 
       <div class="game-proof">
@@ -118,7 +118,7 @@
       <div class="limits">
         <h2>The honest limits — read these before you buy</h2>
         <ul>
-          <li><strong>One phone still renders it small and blurry — OPEN.</strong> The player this big-card build was made for (Cheryl) reports that on her phone the new build still looks too small and kind of blurry, even though the same build renders correctly on the owner's phone and laptop. The cause is under investigation as this page goes up. Her verdict on the earlier build was a plain fail — "That is worse. I cant read them" (November 21, 2026) — and that failed check is exactly why BIG v2 was built. We are not hiding her result because the owner's phone passes; both are on this page, and this entry stays until her phone renders it right or we know why it can't.</li>
+          <li><strong>The one phone that rendered it small and blurry — RESOLVED, and she passed it.</strong> The player this big-card build was made for (Cheryl) first reported that on her phone the new build still looked too small and kind of blurry, even though the same build rendered correctly on the owner's phone and laptop. Her verdict on the earlier build was a plain fail — "That is worse. I cant read them" (November 21, 2026) — and that failed check is exactly why BIG v2 was built. We dug in and found the cause on our side: the game was holding onto an old saved copy on phones that had opened it before, so the bigger cards may never have reached her — she was judging the previous build. That is fixed (the game now checks for the newest version on every visit instead of serving the saved copy first; live-verified November 21, 2026). She re-checked it after the fix and passed it the same day — her verdict, relayed by the owner: <strong>"Cheryl's game is good."</strong> The fail stays on this page because it happened; the fix and her pass are on it too.</li>
           <li><strong>Card width is capped by the screen, as measured above.</strong> If your phone is narrower than 360 px, cards will be proportionally smaller; the corner numbers scale with them.</li>
           <li><strong>Not yet checked: a purchase by a real buyer.</strong> We never fake a sale, so the first genuine checkout is the end-to-end proof of the payment step itself. Everything up to that step — this page, the game, the price — is published here, and the Fix-It Guarantee below covers the rest.</li>
         </ul>
