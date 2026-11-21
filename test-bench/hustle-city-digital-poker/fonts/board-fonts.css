@@ -1,0 +1,15 @@
+/* Bundled locally — no external requests. DSEG faces are open source (SIL OFL 1.1, see DSEG-LICENSE.txt). */
+@font-face{font-family:'DSEG7 Classic';src:url('dseg7classic-400.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'DSEG7 Classic';src:url('dseg7classic-700.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:'Codystar';src:url('codystar-400.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'DSEG14 Classic';src:url('dseg14classic-400.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'DSEG14 Classic';src:url('dseg14classic-700.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:'Orbitron';src:url('orbitron-500.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:'Orbitron';src:url('orbitron-700.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:'Orbitron';src:url('orbitron-900.woff2') format('woff2');font-weight:900;font-style:normal;font-display:swap}
+@font-face{font-family:'Audiowide';src:url('audiowide-400.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Electrolize';src:url('electrolize-400.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Share Tech Mono';src:url('sharetechmono-400.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Michroma';src:url('michroma-400.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Zen Dots';src:url('zendots-400.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Monoton';src:url('monoton-400.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#04070c">
+<title>Bet Bar Font Board — Hustle City Digital Poker</title>
+<meta name="description" content="Ten digital display fonts for the Hustle City Digital Poker bet bar. Pick a number.">
+<link rel="stylesheet" href="fonts/board-fonts.css">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+:root{
+  --blue:#2f8cff; --blue2:#7cc0ff; --blue-hot:#38b6ff;
+  --ink:#eef6ff; --muted:#9db9d9;
+}
+html,body{background:#02040a}
+body{
+  font-family:"Avenir Next","Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(90% 40% at 50% -5%, rgba(56,182,255,.16), transparent 60%),
+    linear-gradient(180deg,#02040a,#03060d);
+  min-height:100dvh;
+}
+#wrap{max-width:600px;margin:0 auto;padding:14px 10px 30px}
+header.board-head{text-align:center;padding:8px 4px 4px}
+header.board-head .house{font-size:10px;font-weight:900;letter-spacing:.52em;color:var(--blue2);text-shadow:0 0 12px rgba(56,182,255,.8);margin-left:.52em}
+header.board-head h1{
+  font-size:clamp(24px,7.6vw,38px);line-height:1.02;font-weight:1000;letter-spacing:.045em;text-transform:uppercase;margin-top:4px;
+  background:linear-gradient(180deg,#fff 0%,#eaf3ff 30%,#8fb4d8 52%,#f8fdff 56%,#5f7e9f 78%,#d7e7f7 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 2px 1px rgba(0,0,0,.85)) drop-shadow(0 0 14px rgba(56,182,255,.28));
+}
+header.board-head .sub{margin-top:5px;font-size:11px;font-weight:800;letter-spacing:.16em;color:#cfe5ff;text-transform:uppercase}
+header.board-head .pick{margin-top:9px;font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.02em}
+header.board-head .pick b{color:#fff}
+
+/* ---------- one option = the machine's screen slice ---------- */
+.opt{margin-top:18px}
+.opt-head{display:flex;align-items:center;gap:10px;padding:0 2px 7px}
+.opt-num{
+  flex:0 0 auto;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:17px;font-weight:1000;color:#04101f;
+  background:linear-gradient(180deg,#fff,#7cc0ff 60%,#2f8cff);border:1.5px solid #fff;
+  box-shadow:0 0 14px rgba(56,182,255,.8), 0 3px 6px rgba(0,0,0,.6);
+}
+.opt-name{font-size:16.5px;font-weight:1000;letter-spacing:.05em;text-transform:uppercase;color:#fff;line-height:1.1}
+.opt-tag{font-size:9.5px;font-weight:800;letter-spacing:.18em;color:var(--blue2);text-transform:uppercase;margin-top:2px}
+.screen{
+  position:relative;border-radius:18px;padding:10px 9px 11px;overflow:hidden;
+  background:
+    radial-gradient(130% 80% at 50% -10%, rgba(88,178,255,.20), transparent 55%),
+    radial-gradient(100% 70% at 50% 115%, rgba(20,70,140,.24), transparent 60%),
+    linear-gradient(180deg,#071426 0%,#050b16 55%,#03060d 100%);
+  border:2px solid #7288a3;
+  box-shadow:inset 0 0 0 2px rgba(0,0,0,.8), inset 0 0 34px rgba(0,0,0,.82), 0 4px 14px rgba(0,0,0,.65);
+}
+/* paytable row — same styling as the machine */
+.payrow{display:grid;grid-template-columns:1.6fr .8fr 1fr;gap:5px}
+.pay{
+  border-radius:9px;padding:5px 7px 6px;min-height:37px;
+  background:linear-gradient(180deg, rgba(50,86,140,.34), rgba(10,22,42,.72));
+  border:1px solid rgba(124,192,255,.28);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10);
+  display:flex;flex-direction:column;justify-content:center;
+}
+.pay .h{font-size:10.5px;font-weight:var(--fw);letter-spacing:.045em;color:#dceeff;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pay .v{font-size:16px;font-weight:var(--fw);color:#fff;line-height:1.1;text-shadow:0 0 9px rgba(56,182,255,.55)}
+.pay .v small{font-size:8.5px;color:var(--blue2);font-weight:var(--fw);letter-spacing:.05em}
+.pay.maxcell{background:linear-gradient(180deg, rgba(56,182,255,.34), rgba(10,60,130,.66));border-color:rgba(160,215,255,.6)}
+/* status line — same styling as the machine */
+.status{
+  margin-top:7px;min-height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;text-align:center;
+  padding:5px 10px;font-size:13.5px;font-weight:var(--fw);letter-spacing:.05em;color:#eaf5ff;
+  background:linear-gradient(180deg, rgba(9,24,46,.85), rgba(4,10,22,.9));
+  border:1px solid rgba(124,192,255,.30); text-shadow:0 1px 2px #000;
+}
+/* meters — same styling as the machine */
+.meters{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:7px}
+.meter{
+  border-radius:10px;padding:5px 8px 6px;text-align:center;
+  background:linear-gradient(180deg,#0a1526,#040910);
+  border:1px solid rgba(124,192,255,.35); box-shadow:inset 0 0 14px rgba(0,0,0,.85), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.meter .k{font-size:9px;font-weight:var(--fw);letter-spacing:.26em;margin-left:.26em;color:var(--blue2)}
+.meter .v{font-size:clamp(19px,6vw,27px);font-weight:var(--fw);color:#fff;line-height:1.12;font-variant-numeric:tabular-nums;text-shadow:0 0 12px rgba(56,182,255,.65)}
+.meter.winmeter .v{color:#aee1ff}
+/* controls — same styling as the machine */
+.controls{display:grid;grid-template-columns:1fr 1fr 1.5fr;gap:7px;margin-top:8px}
+.mbtn{
+  font-family:inherit;cursor:pointer;border-radius:13px;min-height:52px;padding:8px 4px;
+  font-size:clamp(12px,3.8vw,15px);font-weight:var(--fw);letter-spacing:.07em;color:#f2f8ff;text-transform:uppercase;
+  background:linear-gradient(180deg,#5a708c 0%,#263449 42%,#131f31 58%,#31445e 100%);
+  border:1.5px solid #a9bed6;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.55), inset 0 -3px 0 rgba(0,0,0,.55), 0 5px 10px rgba(0,0,0,.65);
+  text-shadow:0 1px 2px #000;
+}
+.mbtn small{display:block;font-size:8.5px;letter-spacing:.2em;color:var(--blue2);font-weight:var(--fw);margin-top:1px}
+.mbtn.primary{
+  color:#fff;background:linear-gradient(180deg,#9fd6ff 0%,#2f8cff 42%,#0f5fd0 60%,#38b6ff 100%);
+  border-color:#e2f2ff; box-shadow:inset 0 2px 0 rgba(255,255,255,.75), inset 0 -3px 0 rgba(0,20,60,.6), 0 5px 12px rgba(0,0,0,.65), 0 0 16px rgba(47,140,255,.45);
+}
+/* ---------- the 10 digital faces ---------- */
+.opt{font-synthesis-weight:none}
+.f-dseg7    .screen{font-family:'DSEG7 Classic','Share Tech Mono',monospace; --fw:700}
+.f-codystar .screen{font-family:'Codystar',sans-serif; --fw:400}
+.f-dseg14   .screen{font-family:'DSEG14 Classic','Share Tech Mono',monospace; --fw:700}
+.f-orbitron .screen{font-family:'Orbitron',sans-serif; --fw:900}
+.f-audiowide .screen{font-family:'Audiowide',sans-serif; --fw:400}
+.f-electrolize .screen{font-family:'Electrolize',sans-serif; --fw:400}
+.f-sharetech .screen{font-family:'Share Tech Mono',monospace; --fw:400}
+.f-michroma .screen{font-family:'Michroma',sans-serif; --fw:400}
+.f-zendots  .screen{font-family:'Zen Dots',sans-serif; --fw:400}
+.f-monoton  .screen{font-family:'Monoton',sans-serif; --fw:400}
+/* Codystar's dots are hairline-thin — give them the bloom a real LED dot sign has */
+.f-codystar .pay .v,.f-codystar .meter .v,.f-codystar .status{ text-shadow:0 0 8px rgba(170,220,255,.95),0 0 3px rgba(255,255,255,.9)}
+.f-codystar .mbtn{ text-shadow:0 0 8px rgba(170,220,255,.95),0 0 3px rgba(255,255,255,.85)}
+.f-codystar .pay .h,.f-codystar .meter .k,.f-codystar .mbtn small{ text-shadow:0 0 6px rgba(124,192,255,.9)}
+/* Codystar's dots scale with size — run this one bigger so the dots read */
+.f-codystar .meter .v{font-size:clamp(24px,7.4vw,33px)}
+.f-codystar .pay .v{font-size:19px}
+.f-codystar .pay .h{font-size:12px}
+.f-codystar .meter .k{font-size:10.5px}
+.f-codystar .status{font-size:15.5px}
+.f-codystar .mbtn{font-size:clamp(14px,4.4vw,17px)}
+/* wide faces need a touch less size on buttons/labels so nothing clips */
+.f-michroma .mbtn{font-size:clamp(9.5px,3vw,12px);letter-spacing:.03em}
+.f-michroma .pay .h{font-size:9px}
+.f-michroma .status{font-size:11.5px}
+.f-monoton .mbtn{font-size:clamp(11px,3.4vw,14px)}
+.f-monoton .pay .h{font-size:9.5px}
+.f-zendots .pay .h{font-size:9.5px}
+.f-dseg7 .status,.f-dseg7m .status,.f-dseg14 .status{font-size:12px;letter-spacing:.02em}
+footer{margin-top:26px;text-align:center;font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--muted);line-height:1.7}
+footer b{color:#dceeff}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <header class="board-head">
+    <div class="house">HUSTLE CITY</div>
+    <h1>Bet Bar Font Board</h1>
+    <div class="sub">Digital Poker · 10 digital display fonts</div>
+    <div class="pick">Every bar below is the machine's real writing — paytable, readouts, buttons — in one font. <b>Pick a number, 1–10.</b></div>
+  </header>
+
+  <!-- option template ×10 injected pattern: payrow + status + meters + controls -->
+  <section class="opt f-dseg7" data-font="DSEG7 Classic">
+    <div class="opt-head"><div class="opt-num">1</div><div><div class="opt-name">DSEG7 Classic</div><div class="opt-tag">True 7-segment LED · the real machine readout</div></div></div>
+    <div class="screen">
+      <div class="payrow"><div class="pay"><div class="h">Royal Flush</div></div><div class="pay"><div class="v">250</div></div><div class="pay maxcell"><div class="v">4,000 <small>MAX BET</small></div></div></div>
+      <div class="status">Set your bet, then press DEAL.</div>
+      <div class="meters"><div class="meter"><div class="k">CREDITS</div><div class="v">1,000</div></div><div class="meter"><div class="k">BET</div><div class="v">1</div></div><div class="meter winmeter"><div class="k">WIN</div><div class="v">0</div></div></div>
+      <div class="controls"><button class="mbtn" type="button">Bet One<small>+1 coin</small></button><button class="mbtn" type="button">Max Bet<small>5 coins</small></button><button class="mbtn primary" type="button">Deal<small>Start hand</small></button></div>
+    </div>
+  </section>
+
+  <section class="opt f-codystar" data-font="Codystar">
+    <div class="opt-head"><div class="opt-num">2</div><div><div class="opt-name">Codystar</div><div class="opt-tag">Dot-matrix LED · letters + digits in light dots</div></div></div>
+    <div class="screen">
+      <div class="payrow"><div class="pay"><div class="h">Royal Flush</div></div><div class="pay"><div class="v">250</div></div><div class="pay maxcell"><div class="v">4,000 <small>MAX BET</small></div></div></div>
+      <div class="status">Set your bet, then press DEAL.</div>
+      <div class="meters"><div class="meter"><div class="k">CREDITS</div><div class="v">1,000</div></div><div class="meter"><div class="k">BET</div><div class="v">1</div></div><div class="meter winmeter"><div class="k">WIN</div><div class="v">0</div></div></div>
+      <div class="controls"><button class="mbtn" type="button">Bet One<small>+1 coin</small></button><button class="mbtn" type="button">Max Bet<small>5 coins</small></button><button class="mbtn primary" type="button">Deal<small>Start hand</small></button></div>
+    </div>
+  </section>
+
+  <section class="opt f-dseg14" data-font="DSEG14 Classic">
+    <div class="opt-head"><div class="opt-num">3</div><div><div class="opt-name">DSEG14 Classic</div><div class="opt-tag">14-segment display · letters + numbers in segments</div></div></div>
+    <div class="screen">
+      <div class="payrow"><div class="pay"><div class="h">Royal Flush</div></div><div class="pay"><div class="v">250</div></div><div class="pay maxcell"><div class="v">4,000 <small>MAX BET</small></div></div></div>
+      <div class="status">Set your bet, then press DEAL.</div>
+      <div class="meters"><div class="meter"><div class="k">CREDITS</div><div class="v">1,000</div></div><div class="meter"><div class="k">BET</div><div class="v">1</div></div><div class="meter winmeter"><div class="k">WIN</div><div class="v">0</div></div></div>
+      <div class="controls"><button class="mbtn" type="button">Bet One<small>+1 coin</small></button><button class="mbtn" type="button">Max Bet<small>5 coins</small></button><button class="mbtn primary" type="button">Deal<small>Start hand</small></button></div>
+    </div>
+  </section>
+
+  <section class="opt f-orbitron" data-font="Orbitron">
+    <div class="opt-head"><div class="opt-num">4</div><div><div class="opt-name">Orbitron</div><div class="opt-tag">Digital tech · squared sci-fi numerals</div></div></div>
+    <div class="screen">
+      <div class="payrow"><div class="pay"><div class="h">Royal Flush</div></div><div class="pay"><div class="v">250</div></div><div class="pay maxcell"><div class="v">4,000 <small>MAX BET</small></div></div></div>
+      <div class="status">Set your bet, then press DEAL.</div>
+      <div class="meters"><div class="meter"><div class="k">CREDITS</div><div class="v">1,000</div></div><div class="meter"><div class="k">BET</div><div class="v">1</div></div><div class="meter winmeter"><div class="k">WIN</div><div class="v">0</div></div></div>
+      <div class="controls"><button class="mbtn" type="button">Bet One<small>+1 coin</small></button><button class="mbtn" type="button">Max Bet<small>5 coins</small></button><button class="mbtn primary" type="button">Deal<small>Start hand</small></button></div>
+    </div>
+  </section>
+
+  <section class="opt f-audiowide" data-font="Audiowide">
+    <div class="opt-head"><div class="opt-num">5</div><div><div class="opt-name">Audiowide</div><div class="opt-tag">Digital display · smooth techno curves</div></div></div>
+    <div class="screen">
+      <div class="payrow"><div class="pay"><div class="h">Royal Flush</div></div><div class="pay"><div class="v">250</div></div><div class="pay maxcell"><div class="v">4,000 <small>MAX BET</small></div></div></div>
+      <div class="status">Set your bet, then press DEAL.</div>
+      <div class="meters"><div class="meter"><div class="k">CREDITS</div><div class="v">1,000</div></div><div class="meter"><div class="k">BET</div><div class="v">1</div></div><div class="meter winmeter"><div class="k">WIN</div><div class="v">0</div></div></div>
+      <div class="controls"><button class="mbtn" type="button">Bet One<small>+1 coin</small></button><button class="mbtn" type="button">Max Bet<small>5 coins</small></button><button class="mbtn primary" type="button">Deal<small>Start hand</small></button></div>
+    </div>
+  </section>
+
+  <section class="opt f-electrolize" data-font="Electrolize">
+    <div class="opt-head"><div class="opt-num">6</div><div><div class="opt-name">Electrolize</div><div class="opt-tag">Electronic readout · engineered letterforms</div></div></div>
+    <div class="screen">
+      <div class="payrow"><div class="pay"><div class="h">Royal Flush</div></div><div class="pay"><div class="v">250</div></div><div class="pay maxcell"><div class="v">4,000 <small>MAX BET</small></div></div></div>
+      <div class="status">Set your bet, then press DEAL.</div>
+      <div class="meters"><div class="meter"><div class="k">CREDITS</div><div class="v">1,000</div></div><div class="meter"><div class="k">BET</div><div class="v">1</div></div><div class="meter winmeter"><div class="k">WIN</div><div class="v">0</div></div></div>
+      <div class="controls"><button class="mbtn" type="button">Bet One<small>+1 coin</small></button><button class="mbtn" type="button">Max Bet<small>5 coins</small></button><button class="mbtn primary" type="button">Deal<small>Start hand</small></button></div>
+    </div>
+  </section>
+
+  <section class="opt f-sharetech" data-font="Share Tech Mono">
+    <div class="opt-head"><div class="opt-num">7</div><div><div class="opt-name">Share Tech Mono</div><div class="opt-tag">Terminal readout · every digit same width</div></div></div>
+    <div class="screen">
+      <div class="payrow"><div class="pay"><div class="h">Royal Flush</div></div><div class="pay"><div class="v">250</div></div><div class="pay maxcell"><div class="v">4,000 <small>MAX BET</small></div></div></div>
+      <div class="status">Set your bet, then press DEAL.</div>
+      <div class="meters"><div class="meter"><div class="k">CREDITS</div><div class="v">1,000</div></div><div class="meter"><div class="k">BET</div><div class="v">1</div></div><div class="meter winmeter"><div class="k">WIN</div><div class="v">0</div></div></div>
+      <div class="controls"><button class="mbtn" type="button">Bet One<small>+1 coin</small></button><button class="mbtn" type="button">Max Bet<small>5 coins</small></button><button class="mbtn primary" type="button">Deal<small>Start hand</small></button></div>
+    </div>
+  </section>
+
+  <section class="opt f-michroma" data-font="Michroma">
+    <div class="opt-head"><div class="opt-num">8</div><div><div class="opt-name">Michroma</div><div class="opt-tag">Wide digital tech · chrome instrument panel</div></div></div>
+    <div class="screen">
+      <div class="payrow"><div class="pay"><div class="h">Royal Flush</div></div><div class="pay"><div class="v">250</div></div><div class="pay maxcell"><div class="v">4,000 <small>MAX BET</small></div></div></div>
+      <div class="status">Set your bet, then press DEAL.</div>
+      <div class="meters"><div class="meter"><div class="k">CREDITS</div><div class="v">1,000</div></div><div class="meter"><div class="k">BET</div><div class="v">1</div></div><div class="meter winmeter"><div class="k">WIN</div><div class="v">0</div></div></div>
+      <div class="controls"><button class="mbtn" type="button">Bet One<small>+1 coin</small></button><button class="mbtn" type="button">Max Bet<small>5 coins</small></button><button class="mbtn primary" type="button">Deal<small>Start hand</small></button></div>
+    </div>
+  </section>
+
+  <section class="opt f-zendots" data-font="Zen Dots">
+    <div class="opt-head"><div class="opt-num">9</div><div><div class="opt-name">Zen Dots</div><div class="opt-tag">Dot-matrix · digits built from dots</div></div></div>
+    <div class="screen">
+      <div class="payrow"><div class="pay"><div class="h">Royal Flush</div></div><div class="pay"><div class="v">250</div></div><div class="pay maxcell"><div class="v">4,000 <small>MAX BET</small></div></div></div>
+      <div class="status">Set your bet, then press DEAL.</div>
+      <div class="meters"><div class="meter"><div class="k">CREDITS</div><div class="v">1,000</div></div><div class="meter"><div class="k">BET</div><div class="v">1</div></div><div class="meter winmeter"><div class="k">WIN</div><div class="v">0</div></div></div>
+      <div class="controls"><button class="mbtn" type="button">Bet One<small>+1 coin</small></button><button class="mbtn" type="button">Max Bet<small>5 coins</small></button><button class="mbtn primary" type="button">Deal<small>Start hand</small></button></div>
+    </div>
+  </section>
+
+  <section class="opt f-monoton" data-font="Monoton">
+    <div class="opt-head"><div class="opt-num">10</div><div><div class="opt-name">Monoton</div><div class="opt-tag">Neon tube · casino marquee glow</div></div></div>
+    <div class="screen">
+      <div class="payrow"><div class="pay"><div class="h">Royal Flush</div></div><div class="pay"><div class="v">250</div></div><div class="pay maxcell"><div class="v">4,000 <small>MAX BET</small></div></div></div>
+      <div class="status">Set your bet, then press DEAL.</div>
+      <div class="meters"><div class="meter"><div class="k">CREDITS</div><div class="v">1,000</div></div><div class="meter"><div class="k">BET</div><div class="v">1</div></div><div class="meter winmeter"><div class="k">WIN</div><div class="v">0</div></div></div>
+      <div class="controls"><button class="mbtn" type="button">Bet One<small>+1 coin</small></button><button class="mbtn" type="button">Max Bet<small>5 coins</small></button><button class="mbtn primary" type="button">Deal<small>Start hand</small></button></div>
+    </div>
+  </section>
+
+  <footer>
+    <b>HUSTLE CITY DIGITAL POKER</b> · Font board — the game itself is unchanged until a number is picked.<br>
+    All fonts are bundled with this page (no outside downloads). DSEG segment faces are open source (SIL OFL 1.1). · © 2026 J-Dawgs Industries
+  </footer>
+</div>
+</body>
+</html>
