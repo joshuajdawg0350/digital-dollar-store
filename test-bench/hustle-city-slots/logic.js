@@ -1,5 +1,6 @@
 /* Hustle City Slots — shared engine core (web game + Node verifier).
-   5 reels x 3 rows, 20 paylines, weighted reel strips, WILD + SCATTER free spins.
+   5 reels x 3 rows, 20 paylines, weighted reel strips, WILD + SCATTER free spins,
+   X2 / X3 line multipliers. No blank stops: every strip position is a real symbol.
    Machine-specific strips/paytables live in machines.js. Play credits only.
    (c) 2026 J-Dawgs Industries. */
 'use strict';
@@ -16,6 +17,17 @@ const PAYLINES = [
 ];
 const FREE_SPIN_MULTIPLIER = 2;
 
+/* Line multipliers: an X2 / X3 anywhere on a payline multiplies that line's win
+   (X2 doubles it, X3 triples it). Two multipliers on the same line multiply
+   together (X2 + X3 = x6). Multipliers never substitute and never pay alone. */
+const MULTIPLIERS = { X2: 2, X3: 3 };
+
+function lineMultiplier(cells) {
+  let m = 1;
+  for (const c of cells) if (MULTIPLIERS[c]) m *= MULTIPLIERS[c];
+  return m;
+}
+
 function windowForStops(strips, stops) {
   const grid = [];
   for (let r = 0; r < 5; r++) {
@@ -31,7 +43,9 @@ function randomStops(rng, strips) {
 }
 
 /* Best pay for one payline: for each paying symbol, the run from the left of
-   that symbol-or-WILD; WILD also pays as its own symbol. Returns line-bet units. */
+   that symbol-or-WILD; WILD also pays as its own symbol. Any X2/X3 on the line
+   then multiplies the win (they multiply together). Returns line-bet units:
+   pay = basePay x mult. */
 function evaluateLine(cells, paytable) {
   let best = { pay: 0, symbol: null, count: 0 };
   for (const sym of Object.keys(paytable)) {
@@ -45,7 +59,8 @@ function evaluateLine(cells, paytable) {
       }
     }
   }
-  return best;
+  const mult = lineMultiplier(cells);
+  return { pay: best.pay * mult, basePay: best.pay, mult, symbol: best.symbol, count: best.count };
 }
 
 /* cfg = { strips, paytable, scatterPay, scatterSpins } */
@@ -59,7 +74,9 @@ function evaluateGrid(grid, lineBet, cfg) {
     const res = evaluateLine(cells, cfg.paytable);
     if (res.pay > 0) {
       const credits = res.pay * lineBet;
-      lineWins.push({ line: li + 1, symbol: res.symbol, count: res.count, pay: credits, rows: rows.slice(0, res.count) });
+      const multCells = [];
+      for (let r = 0; r < 5; r++) if (MULTIPLIERS[cells[r]]) multCells.push(r);
+      lineWins.push({ line: li + 1, symbol: res.symbol, count: res.count, pay: credits, mult: res.mult, multCells, rows: rows.slice(0, res.count) });
       lineWinTotal += credits;
     }
   }
@@ -72,6 +89,6 @@ function evaluateGrid(grid, lineBet, cfg) {
   return { lineWins, lineWinTotal, scatterCount, scatterPay, freeSpins };
 }
 
-const coreApi = { PAYLINES, FREE_SPIN_MULTIPLIER, windowForStops, randomStops, evaluateLine, evaluateGrid };
+const coreApi = { PAYLINES, FREE_SPIN_MULTIPLIER, MULTIPLIERS, lineMultiplier, windowForStops, randomStops, evaluateLine, evaluateGrid };
 if (typeof module !== 'undefined' && module.exports) module.exports = coreApi;
 if (typeof window !== 'undefined') window.SlotCore = coreApi;

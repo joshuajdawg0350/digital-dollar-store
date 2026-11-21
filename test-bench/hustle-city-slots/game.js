@@ -1,7 +1,10 @@
 /* Hustle City Slots — Casino Classics · v2 cabinet UI.
    Presentation layer rebuilt 2026-11-21 around generated chrome/blue art assets.
-   Engine (logic.js) + strips/paytable (machines.js) are the math-proven v1 core:
-   5x3, 20 paylines, weighted strips, WILD substitutes, SCATTER free spins, RTP 94.58%.
+   Engine (logic.js) + strips/paytable (machines.js): 5x3, 20 paylines, weighted
+   strips, WILD substitutes, X2/X3 line multipliers, SCATTER free spins, NO blank
+   stops (every reel position is a real symbol), RTP 94.48%. Cabinet is plain
+   black + blue so the screen pops; cherries are electric red, the dollar sign
+   electric green. Pull arm + SPIN button both fire the same spin.
    Play credits only. (c) 2026 J-Dawgs Industries. */
 'use strict';
 (function () {
@@ -12,11 +15,12 @@
   const ART = {
     DL: 'assets/sym-dl.webp', SV: 'assets/sym-sv.webp', CH: 'assets/sym-ch.webp',
     HS: 'assets/sym-hs.webp', BL: 'assets/sym-bl.webp', B1: 'assets/sym-b1.webp',
-    WD: 'assets/sym-wd.webp', SC: 'assets/sym-sc.webp'
+    WD: 'assets/sym-wd.webp', SC: 'assets/sym-sc.webp',
+    X2: 'assets/sym-x2.webp', X3: 'assets/sym-x3.webp'
   };
   const NAMES = {
     DL: 'Dollar Sign', SV: 'Seven', HS: 'Horseshoe', CH: 'Cherry',
-    BL: 'Bell', B1: 'BAR', WD: 'WILD', SC: 'SCATTER', XX: 'Blank'
+    BL: 'Bell', B1: 'BAR', WD: 'WILD', SC: 'SCATTER', X2: 'WIN ×2', X3: 'WIN ×3'
   };
 
   const $ = id => document.getElementById(id);
@@ -68,7 +72,6 @@
 
   /* ---------- reel rendering (generated art cells) ---------- */
   function cellHTML(sym, h) {
-    if (sym === 'XX') return `<div class="cell blank" data-sym="XX" style="height:${h}px"></div>`;
     return `<div class="cell" data-sym="${sym}" style="height:${h}px"><img src="${ART[sym]}" alt="${NAMES[sym]}" draggable="false"></div>`;
   }
   function cellH(r) { return reelsEl[r].clientHeight / 3; }
@@ -135,6 +138,8 @@
   }
   function setControlsEnabled(on) {
     spinBtn.disabled = !on; betOneBtn.disabled = !on; maxBetBtn.disabled = !on;
+    const lv = $('lever');
+    if (lv) { lv.classList.toggle('off', !on); lv.setAttribute('aria-disabled', String(!on)); }
   }
   function countUp(el, from, to, dur) {
     return new Promise(res => {
@@ -160,6 +165,8 @@
       }).join('');
     $('payrows').innerHTML = rows +
       `<div class="payrow"><div class="thumb"><img src="${ART.WD}" alt="WILD"></div><div class="nm">WILD</div><span class="pv wide">Substitutes for every symbol except SCATTER</span></div>` +
+      `<div class="payrow"><div class="thumb"><img src="${ART.X2}" alt="WIN ×2"></div><div class="nm">WIN ×2</div><span class="pv wide">Anywhere on a winning line, this line's win is DOUBLED (×2)</span></div>` +
+      `<div class="payrow"><div class="thumb"><img src="${ART.X3}" alt="WIN ×3"></div><div class="nm">WIN ×3</div><span class="pv wide">Anywhere on a winning line, this line's win is TRIPLED (×3). Two multipliers on the same line multiply together — ×2 and ×3 pay ×6</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.SC}" alt="SCATTER"></div><div class="nm">SCATTER</div><span class="pv wide">3+ anywhere: pays 2× / 8× / 40× total bet + 7 / 10 / 15 FREE SPINS at 2× line wins</span></div>`;
   }
 
@@ -198,7 +205,10 @@
     const linePay = ev.lineWinTotal * mult;
     const totalWin = linePay + ev.scatterPay;
 
-    for (const w of ev.lineWins) for (let r = 0; r < w.count; r++) markCell(r, w.rows[r], 'win');
+    for (const w of ev.lineWins) {
+      for (let r = 0; r < w.count; r++) markCell(r, w.rows[r], 'win');
+      if (w.mult > 1 && w.multCells) for (const r of w.multCells) markCell(r, core.PAYLINES[w.line - 1][r], 'win');
+    }
     if (ev.scatterCount >= 1) for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) if (grid[r][row] === 'SC') markCell(r, row, 'scatterhit');
 
     if (totalWin > 0) {
@@ -235,8 +245,8 @@
       freeSpinTotal = 0;
     } else {
       msgEl.textContent = totalWin > 0
-        ? (ev.lineWins.length ? `Winner! ${ev.lineWins.map(w => `${w.count}× ${NAMES[w.symbol]}`).join(' · ')}` : 'Scatter pay!')
-        : 'Set your bet, then press SPIN.';
+        ? (ev.lineWins.length ? `Winner! ${ev.lineWins.map(w => `${w.count}× ${NAMES[w.symbol]}${w.mult > 1 ? ` (×${w.mult})` : ''}`).join(' · ')}` : 'Scatter pay!')
+        : 'Set your bet, then press SPIN — or pull the arm.';
     }
     refillBtn.classList.toggle('on', credits < core.PAYLINES.length);
     spinning = false;
@@ -245,6 +255,57 @@
   function runFreeSpins() { if (freeSpinsLeft > 0 && !spinning) doSpin(true); }
 
   spinBtn.addEventListener('click', () => { ac(); doSpin(false); });
+
+  /* ---------- pull arm (lever): drag it down, it springs back and spins.
+     Tap = scripted full pull. Both paths fire the exact SPIN button path. ---------- */
+  const leverEl = $('lever'), leverArm = $('leverArm');
+  const LEVER_MAX = 62; /* px of knob travel */
+  let leverDrag = null;
+  function leverSet(y, animate) {
+    leverArm.style.transition = animate ? 'transform .5s cubic-bezier(.25,1.35,.4,1)' : 'none';
+    leverArm.style.transform = `translateY(${y}px)`;
+  }
+  function leverFire() { if (!spinBtn.disabled) spinBtn.click(); }
+  function leverScriptedPull() {
+    leverArm.style.transition = 'transform .16s ease-in';
+    leverArm.style.transform = `translateY(${LEVER_MAX}px)`;
+    setTimeout(() => { leverSet(0, true); leverFire(); }, 175);
+  }
+  if (leverEl && leverArm) {
+    leverEl.addEventListener('pointerdown', e => {
+      if (spinBtn.disabled) return;
+      e.preventDefault();
+      try { leverEl.setPointerCapture(e.pointerId); } catch (err) {}
+      leverDrag = { y0: e.clientY, travel: 0, t0: performance.now() };
+      leverArm.style.transition = 'none';
+    });
+    leverEl.addEventListener('pointermove', e => {
+      if (!leverDrag) return;
+      let travel = (e.clientY - leverDrag.y0) / 1.35; /* resistance: pull farther than the knob moves */
+      if (travel < 0) travel = 0;
+      if (travel > LEVER_MAX) travel = LEVER_MAX + (travel - LEVER_MAX) * 0.25; /* rubber-band */
+      leverDrag.travel = travel;
+      leverArm.style.transform = `translateY(${travel}px)`;
+    });
+    const leverRelease = () => {
+      if (!leverDrag) return;
+      const d = leverDrag; leverDrag = null;
+      if (d.travel >= LEVER_MAX * 0.45) {
+        leverArm.style.transition = 'transform .12s ease-in';
+        leverArm.style.transform = `translateY(${LEVER_MAX}px)`;
+        setTimeout(() => { leverSet(0, true); leverFire(); }, 130);
+      } else if (d.travel < 8 && performance.now() - d.t0 < 350) {
+        leverScriptedPull(); /* tap fallback */
+      } else {
+        leverSet(0, true); /* short pull let go early: springs back, no spin */
+      }
+    };
+    leverEl.addEventListener('pointerup', leverRelease);
+    leverEl.addEventListener('pointercancel', () => { leverDrag = null; leverSet(0, true); });
+    leverEl.addEventListener('keydown', e => {
+      if ((e.key === 'Enter' || e.key === ' ') && !spinBtn.disabled) { e.preventDefault(); leverScriptedPull(); }
+    });
+  }
   betOneBtn.addEventListener('click', () => { betPerLine = betPerLine >= 5 ? 1 : betPerLine + 1; renderReadouts(); buildPaytable(); sTick(); });
   maxBetBtn.addEventListener('click', () => { betPerLine = 5; renderReadouts(); buildPaytable(); sTick(); });
   refillBtn.addEventListener('click', () => { credits += 1000; refillBtn.classList.remove('on'); renderReadouts(); save(); msgEl.textContent = '1,000 play credits added. Good luck!'; });
