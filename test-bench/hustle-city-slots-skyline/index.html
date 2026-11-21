@@ -67,8 +67,11 @@
       </div>
 
       <div class="controls">
-        <button class="btn chrome-btn" id="betOneBtn" type="button">
-          <span class="btn-top">BET</span><span class="btn-sub">ONE</span>
+        <button class="btn chrome-btn" id="betDownBtn" type="button" aria-label="Bet down 25">
+          <span class="btn-top">−25</span><span class="btn-sub">BET</span>
+        </button>
+        <button class="btn chrome-btn" id="betUpBtn" type="button" aria-label="Bet up 25">
+          <span class="btn-top">+25</span><span class="btn-sub">BET</span>
         </button>
         <button class="btn chrome-btn" id="maxBetBtn" type="button">
           <span class="btn-top">MAX</span><span class="btn-sub">BET</span>
@@ -95,6 +98,15 @@
       © 2026 J-Dawgs Industries
     </footer>
   </main>
+</div>
+
+<div class="celeb" id="celeb" aria-hidden="true" role="alertdialog" aria-label="Celebration">
+  <div class="celeb-frame">
+    <div class="celeb-kick" id="celebKick">★ BONUS ★</div>
+    <div class="celeb-title" id="celebTitle">DICE ROLL!</div>
+    <div class="celeb-sub" id="celebSub"></div>
+    <div class="celeb-tap">TAP TO PLAY</div>
+  </div>
 </div>
 
 <div class="bonus-backdrop" id="bonusBackdrop"></div>
@@ -153,6 +165,7 @@
 
 <script src="logic.js"></script>
 <script src="machines.js"></script>
+<script src="soundkit.js"></script>
 <script src="game.js"></script>
 <script>
   if ('serviceWorker' in navigator) {
