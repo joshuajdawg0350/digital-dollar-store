@@ -25,7 +25,8 @@
    Joshua's picked voices — recorded lines under audio/lines/ play on
    demand (never in the shell); the device synth is no longer any
    character's voice for those lines. */
-const SHELL_CACHE = 'funny-maps-shell-v6';
+/* v7 (2026-11-20): Emergency Maps rebuilt — all 50 state maps are now HD satellite imagery with real-elevation 3D terrain relief in one uniform system; the app fetches them under its fm-emergency-v2 cache. */
+const SHELL_CACHE = 'funny-maps-shell-v7';
 const SHELL = [
   './',
   './index.html',

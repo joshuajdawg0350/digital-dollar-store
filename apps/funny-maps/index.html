@@ -297,7 +297,7 @@
   <div class="secLabel">NO SERVICE? NO PROBLEM.</div>
   <button id="emergBtn" class="bigBtn" style="width:100%; background:linear-gradient(180deg,#e8eef5,#9db4cc); color:#0a1220;">🗺️ Emergency Maps — all 50 states</button>
   <div id="emergPanel" style="display:none; margin-top:10px;">
-    <div style="font-size:13.5px; color:var(--dim); line-height:1.45;">Paper-map backups that live on this phone. No service, no GPS, no routing — open a state and read it like the glovebox map. The first tap on a state downloads it while you have service; after that it opens offline, forever. Missouri comes pre-loaded.</div>
+    <div style="font-size:13.5px; color:var(--dim); line-height:1.45;">HD satellite backups with 3D terrain relief that live on this phone. No service, no GPS, no routing — open a state and read it like the glovebox map. The first tap on a state downloads it while you have service; after that it opens offline, forever. Missouri comes pre-loaded.</div>
     <div id="emergGrid"></div>
     <div id="emergStatus" style="font-size:13px; color:var(--dim); margin-top:8px;"></div>
   </div>
@@ -312,7 +312,7 @@
     <button id="emergPlus">+</button>
   </div>
   <div id="emergStage"><img id="emergImg" alt="Emergency state road map"></div>
-  <div id="emergAttrib">Roads &amp; places from OpenStreetMap contributors (ODbL) — emergency reference map, not for navigation.</div>
+  <div id="emergAttrib">Satellite imagery © Esri, Vantor, Earthstar Geographics • Roads &amp; places: Esri / OpenStreetMap contributors • Boundaries: U.S. Census Bureau • Elevation: AWS Terrain Tiles — emergency reference, not for navigation.</div>
 </div>
 
 <pre id="qa-log"></pre>
@@ -1670,7 +1670,7 @@ function restoreTrip(){
    Static, readable state road maps stored on the phone (Cache Storage).
    The viewer makes ZERO network calls for a state that's been stored —
    it is the emergency path. States not yet stored need service once. */
-const EMERG_CACHE = 'fm-emergency-v1';
+const EMERG_CACHE = 'fm-emergency-v2';
 const STATES = ['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming'];
 const slugOf = n => n.toLowerCase().replace(/ /g, '-');
 function emergStored(){ try { return JSON.parse(localStorage.getItem('fm-emerg') || '[]'); } catch(e){ return []; } }
