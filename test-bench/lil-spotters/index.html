@@ -217,6 +217,97 @@ select.pinput{appearance:none;}
 .starbtns{display:inline-flex; gap:2px; margin-left:8px; vertical-align:middle;}
 .starbtns button{background:none; border:none; font-size:21px; padding:2px; filter:grayscale(1) opacity(.45);}
 .starbtns button.lit{filter:none;}
+
+/* ---------- TABLET (>=700px): use the whole screen, kid-size targets ----------
+   Added 2026-11-21 at Joshua's order ("definitely make that game very tablet
+   friendly"). Phone layout below 700px is untouched. */
+@media (min-width:700px){
+  #app{max-width:min(1120px,97vw);}
+  .kidnav{max-width:min(1120px,97vw);}
+  .kidhead{padding:12px 18px;}
+  .kidhead h1{font-size:24px;}
+  .kidhead h1 .wt{font-size:10.5px;}
+  .logo{font-size:32px;}
+  .chip{font-size:18px; padding:9px 15px; min-height:46px;}
+  #grownBtn{min-height:48px; padding:12px 18px; font-size:15px;}
+  main{padding:18px 18px 112px;}
+  .welcome{padding:22px;}
+  .welcome h2{font-size:27px;}
+  .welcome p{font-size:17px;}
+  .tierrow{flex-direction:row;}
+  .tierbtn{flex:1; flex-direction:column; text-align:center; padding:18px 12px; gap:8px; min-height:118px; justify-content:center;}
+  .tierbtn .tic{font-size:46px;}
+  .tierbtn b{font-size:20px;}
+  .tierbtn span{font-size:14px;}
+  #deckList{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .deckcard{margin-bottom:0; padding:18px;}
+  .deckcard .dic{font-size:56px;}
+  .deckcard b{font-size:21px;}
+  .deckcard span{font-size:15px;}
+  .howto{gap:12px;}
+  .howto div{font-size:16.5px; padding:14px 8px;}
+  .howto .big{font-size:36px;}
+  .bigplay{font-size:26px; padding:20px; min-height:64px;}
+  .grid{grid-template-columns:repeat(3,1fr); gap:16px;}
+  .card{min-height:208px; padding:16px 10px 14px;}
+  .card .icon{height:108px; font-size:82px;}
+  .card .icon svg{height:104px; width:104px;}
+  .card .nm{font-size:19.5px;}
+  .card .hint{font-size:13.5px;}
+  .card .snap{min-height:48px; padding:12px 22px; font-size:16.5px;}
+  .card .minirow button{min-height:44px; padding:9px 14px; font-size:14px;}
+  .card .fact,.card .step2{font-size:13.5px;}
+  .progresslabel{font-size:17.5px;}
+  .progressbar{height:26px;}
+  .kidnav{gap:12px; padding:12px 16px calc(12px + env(safe-area-inset-bottom));}
+  .kidnav button{min-height:58px; font-size:16.5px; border-radius:18px;}
+  .kidnav .ni{font-size:25px;}
+  .mapbox{height:500px;}
+  .mapbox.tall{height:min(580px,calc(100vh - 240px)); min-height:420px;}
+  .mapbtns button{width:54px; height:54px; font-size:25px;}
+  .maplegend span{font-size:14.5px; padding:8px 14px;}
+  .mapnote{font-size:12px;}
+  .findrow{padding:14px;}
+  .findrow img,.findrow .noimg{width:92px; height:92px;}
+  .findrow b{font-size:18.5px;}
+  .findrow span{font-size:14.5px;}
+  .empty{font-size:17px; padding:28px 18px;}
+  #zoneBanner{font-size:17.5px; padding:15px 18px;}
+  #btnCheckin{font-size:21px; padding:18px; min-height:64px;}
+  .sheet{max-width:660px;}
+  .sheet h3{font-size:24px;}
+  .sheet p{font-size:16px;}
+  .sheet .rowbtn{min-height:56px; font-size:19.5px;}
+  .dialog{max-width:500px; padding:26px 24px;}
+  .pinpad button{min-height:60px;}
+  #toast{font-size:16.5px; bottom:120px;}
+  .pwrap{max-width:1020px; padding:20px 20px 70px;}
+  .phead .pt{font-size:21px;}
+  .phead button{min-height:48px; padding:12px 18px; font-size:15px;}
+  .ptabs button{min-height:50px; font-size:16px;}
+  .pcard{padding:18px;}
+  .pcard h3{font-size:18.5px;}
+  .pcard p,.pcard li{font-size:16px;}
+  .pbtn{min-height:48px; padding:13px 18px; font-size:15.5px; display:inline-flex; align-items:center;}
+  .pinput{padding:14px; font-size:16.5px; min-height:52px;}
+  .pfind img,.pfind .noimg{width:80px; height:80px;}
+  .pfind b{font-size:17px;}
+  .pfind span{font-size:14px;}
+  .iconpick button{width:54px; height:54px; font-size:27px;}
+  .zoneStatus{font-size:16.5px; padding:12px 14px;}
+}
+@media (min-width:700px) and (orientation:landscape){
+  #view-map.on{display:grid; grid-template-columns:1fr 292px; grid-template-areas:"banner banner" "map rail" "map checkin"; column-gap:16px; align-items:start;}
+  #view-map #zoneBanner{grid-area:banner;}
+  #view-map .mapframe{grid-area:map;}
+  #view-map .maplegend{grid-area:rail; flex-direction:column; margin-top:0;}
+  #view-map .maplegend span{text-align:center; padding:11px 14px;}
+  #view-map #btnCheckin{grid-area:checkin; margin-top:12px;}
+  #view-map .mapbox.tall{height:calc(100vh - 218px); min-height:400px;}
+}
+@media (min-width:1100px){
+  .grid{grid-template-columns:repeat(4,1fr);}
+}
 </style>
 </head>
 <body>
