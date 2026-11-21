@@ -14,8 +14,11 @@
    ships inside the shell instead of loading from unpkg, whose stall
    on second loads left the app dead with no error anywhere.
    v3 (2026-11-20): character picker faces swapped to Joshua's picks
-   from the 2026-11-20 thumbnail board (all 8 characters). */
-const SHELL_CACHE = 'funny-maps-shell-v3';
+   from the 2026-11-20 thumbnail board (all 8 characters).
+   v4 (2026-11-20): the location-off card no longer covers the control
+   panel (it floated over the sheet and froze every panel touch,
+   Emergency Maps included); its dismissal is now remembered. */
+const SHELL_CACHE = 'funny-maps-shell-v4';
 const SHELL = [
   './',
   './index.html',

@@ -156,7 +156,14 @@
   #locPill .dot{display:inline-block; width:9px; height:9px; border-radius:50%; background:var(--good); margin-right:6px;}
   #locPill.stale .dot{background:var(--warn);}
   #locPill.off .dot{background:#e5484d;}
-  #deniedCard{position:absolute; left:12px; right:12px; bottom:14px; z-index:990; background:#151c28;
+  /* The location-off card floats over the MAP, above the sheet's top
+     edge (--sheetH is mirrored onto :root by the sheet script) — it
+     must never cover the panel: at z-index 990 over a bottom-anchored
+     card, it ate every touch to the sheet handle and body and froze
+     the whole panel (owner's phone, 2026-11-20). Capped + scrollable
+     so it can't swallow the map on short screens either. */
+  #deniedCard{position:absolute; left:12px; right:12px; bottom:calc(var(--sheetH, 42dvh) + 12px); z-index:990; background:#151c28;
+    max-height:calc(100dvh - var(--sheetH, 42dvh) - 26px); overflow-y:auto;
     border:2px solid var(--warn); border-radius:14px; padding:14px 16px; display:none; font-size:15px; line-height:1.45;}
   #deniedCard.show{display:block;}
   #deniedCard b{color:var(--warn);}
@@ -199,7 +206,7 @@
     #tagline{ margin:2px 0 8px; }
     #banner{ right:var(--panelW); }
     #locPill{ right:calc(var(--panelW) + 10px); max-width:40vw; }
-    #deniedCard{ right:calc(var(--panelW) + 12px); }
+    #deniedCard{ right:calc(var(--panelW) + 12px); bottom:14px; max-height:none; overflow-y:visible; }
     .secLabel{ margin:11px 0 7px; }
     #picker{ gap:8px; }
     .charCard{ display:grid; grid-template-columns:52px 1fr; column-gap:10px;
@@ -1511,7 +1518,12 @@ function handleGeoError(err){
   if (err && err.code === 1){
     geoDenied = true;
     setPill('off', 'Location off — tap for the fix');
-    $('deniedCard').classList.add('show');
+    /* Auto-show once only: after the driver has tapped "Got it" the
+       card stays out of the way on later opens (the pill still brings
+       it back on tap). */
+    let acked = false;
+    try { acked = localStorage.getItem('fm-denied-ok') === '1'; } catch(e) {}
+    if (!acked) $('deniedCard').classList.add('show');
   } else if (!lastFixAt){
     setPill('stale', 'GPS signal weak — still looking…');
   }
@@ -1539,7 +1551,7 @@ setInterval(() => {  /* the dot never freezes silently: it shows its age */
     setPill('stale', 'GPS signal weak — last fix ' + Math.round(age / 1000) + 's ago');
   }
 }, 1000);
-$('deniedOk').onclick = () => $('deniedCard').classList.remove('show');
+$('deniedOk').onclick = () => { $('deniedCard').classList.remove('show'); try { localStorage.setItem('fm-denied-ok', '1'); } catch(e) {} };
 $('locPill').onclick = () => {
   if ($('locPill').classList.contains('off')){ $('deniedCard').classList.add('show'); return; }
   follow = true; map.panTo(posMarker.getLatLng());
@@ -1982,6 +1994,7 @@ if (isQA){
     if (name !== 'collapsed') lastOpen = name;
     sheet.classList.toggle('collapsed', name === 'collapsed');
     sheet.style.setProperty('--sheetH', snapPx(name) + 'px');
+    document.documentElement.style.setProperty('--sheetH', snapPx(name) + 'px'); /* mirrored for #deniedCard, a sibling of the sheet */
   }
   function nearest(h) {
     var best = ORDER[0], bd = Infinity;
@@ -2013,6 +2026,7 @@ if (isQA){
     var h = drag.startH - (e.clientY - drag.startY); /* bottom-anchored: down = shorter */
     h = Math.max(collapsedH(), Math.min(snapPx('full'), h));
     sheet.style.setProperty('--sheetH', h + 'px');
+    document.documentElement.style.setProperty('--sheetH', h + 'px');
   });
   function endDrag(e) {
     if (!drag || (e && e.pointerId !== drag.id)) return;
@@ -2030,7 +2044,7 @@ if (isQA){
 
   function onResize() {
     if (drag) return;
-    if (wide.matches) { sheet.style.removeProperty('--sheetH'); sheet.classList.remove('dragging'); }
+    if (wide.matches) { sheet.style.removeProperty('--sheetH'); document.documentElement.style.removeProperty('--sheetH'); sheet.classList.remove('dragging'); }
     else applySnap(snap);
   }
   window.addEventListener('resize', onResize);
