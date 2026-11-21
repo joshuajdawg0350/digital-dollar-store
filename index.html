@@ -169,6 +169,7 @@ footer a{color:#6FC3FF}
    On phones the whole shelf area below lives in a pull-up sheet:
    chrome handle, stops full 72% / half 42% / collapsed (handle only).
    Desktop and no-JS: plain document flow, exactly as before. */
+@media (max-width:899px){html,body{overscroll-behavior:none}}
 .dsheet{--dsBar:#05080e;--dsBg:#f4f6f9;--dsLine:#0096ff;--dsInk:#8fa3ba;--dsChev:#6fc3ff}
 .dsheet-handle{display:none}
 @media (max-width:899px){
@@ -907,6 +908,13 @@ main section{scroll-margin-top:76px}
   }
   wire();
 })();
+</script>
+<script>/* ptr-guard (2026-11-21): pull-to-refresh must never steal a sheet drag */
+(function(){var b=document.getElementById('dsheetBody'),s=document.getElementById('dsheet'),y=0;
+document.addEventListener('touchstart',function(e){if(e.touches[0])y=e.touches[0].clientY;},{passive:true});
+document.addEventListener('touchmove',function(e){if(!e.touches[0])return;
+if(s&&s.classList.contains('dragging')){e.preventDefault();return;}
+if(b&&e.target&&b.contains&&b.contains(e.target)&&b.scrollTop<=0&&e.touches[0].clientY>y)e.preventDefault();},{passive:false});})();
 </script>
 </body>
 </html>

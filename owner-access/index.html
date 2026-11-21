@@ -77,6 +77,7 @@
    site.css: bar/body = page bg #05080E, accent line = the page's electric
    blue --eb #39C2FF, hint = shared --muted #93A1B5, chevron = --eb-bright
    #6FC3FF (the same blue as the Get it buttons). */
+@media (max-width:899px){html,body{overscroll-behavior:none}}
 .dsheet{--dsBar:#05080e;--dsBg:#05080e;--dsLine:#39c2ff;--dsInk:#93a1b5;--dsChev:#6fc3ff}
 /* On phones the fixed sheet spans the full width, so its body carries the
    side inset .oa-wrap gives the rest of the page (JS + mobile only —
@@ -458,6 +459,13 @@
     snap: function () { return snap; }
   };
 })();
+</script>
+<script>/* ptr-guard (2026-11-21): pull-to-refresh must never steal a sheet drag */
+(function(){var b=document.getElementById('dsheetBody'),s=document.getElementById('dsheet'),y=0;
+document.addEventListener('touchstart',function(e){if(e.touches[0])y=e.touches[0].clientY;},{passive:true});
+document.addEventListener('touchmove',function(e){if(!e.touches[0])return;
+if(s&&s.classList.contains('dragging')){e.preventDefault();return;}
+if(b&&e.target&&b.contains&&b.contains(e.target)&&b.scrollTop<=0&&e.touches[0].clientY>y)e.preventDefault();},{passive:false});})();
 </script>
 </body>
 </html>
