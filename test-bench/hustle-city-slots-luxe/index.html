@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Poker Luxe — Hustle City Slots</title>
+<meta name="description" content="Poker Luxe: a deep-blue velvet card-room slot. 5 reels, 20 lines, jeweled crowns, aces and blue chips. Free spins round. Play credits only.">
+<meta name="theme-color" content="#070a18">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-luxe">
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="chrome" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/><stop offset=".32" stop-color="#dbe6f5"/>
+      <stop offset=".52" stop-color="#8b9bb8"/><stop offset=".56" stop-color="#f2f6ff"/>
+      <stop offset="1" stop-color="#67779a"/>
+    </linearGradient>
+    <linearGradient id="blueg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a9c2ff"/><stop offset="1" stop-color="#2c4ad0"/>
+    </linearGradient>
+    <radialGradient id="sapphire" cx=".35" cy=".3" r="1">
+      <stop offset="0" stop-color="#bcd2ff"/><stop offset=".45" stop-color="#3b6fe0"/><stop offset="1" stop-color="#122e7a"/>
+    </radialGradient>
+    <linearGradient id="chipg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4d7dff"/><stop offset="1" stop-color="#1c3fae"/>
+    </linearGradient>
+  </defs>
+</svg>
+<div class="cabinet">
+  <div class="topbar">
+    <button class="chipbtn" id="soundBtn" type="button">SOUND ON</button>
+  </div>
+  <div class="marquee">
+    <div class="eyebrow">HUSTLE CITY</div>
+    <h1><span class="lite">POKER LUXE</span></h1>
+    <div class="sub">CARD ROOM · 20 LINES</div>
+  </div>
+  <div class="fs-banner" id="fsBanner"></div>
+  <div class="msg" id="msg">Set your bet, then press SPIN.</div>
+  <div class="reels-frame">
+    <div class="reels">
+      <div class="reel" id="reel0"></div><div class="reel" id="reel1"></div><div class="reel" id="reel2"></div><div class="reel" id="reel3"></div><div class="reel" id="reel4"></div>
+    </div>
+  </div>
+  <div class="readouts">
+    <div class="readout"><div class="lbl">CREDITS</div><div class="val" id="credits">1,000</div></div>
+    <div class="readout"><div class="lbl">BET</div><div class="val" id="bet">20</div></div>
+    <div class="readout winbox"><div class="lbl">WIN</div><div class="val" id="win">0</div></div>
+  </div>
+  <div class="controls">
+    <button class="ctl" id="betOneBtn" type="button"><span class="t">BET ONE</span><span class="s">+1 / LINE</span></button>
+    <button class="ctl" id="maxBetBtn" type="button"><span class="t">MAX BET</span><span class="s">5 / LINE</span></button>
+    <button class="ctl spin" id="spinBtn" type="button"><span class="t">SPIN</span><span class="s">20 LINES</span></button>
+  </div>
+  <button class="ctl refill" id="refillBtn" type="button"><span class="t">+ 1,000 FREE CREDITS</span><span class="s">PLAY CREDITS ONLY</span></button>
+  <div class="panel">
+    <h2>PAYTABLE — PER LINE BET</h2>
+    <div id="payrows"></div>
+    <p class="paynote">Line wins pay left to right on 20 lines. Only the highest win per line pays. <b>Scatter</b> pays any position and triggers free spins with line wins doubled. Theoretical return to player: <b>94.6%</b>.</p>
+  </div>
+  <details class="panel">
+    <summary>HOW TO PLAY</summary>
+    <p><b>Set your bet:</b> BET ONE raises your bet per line (1–5 credits); every spin plays all 20 lines, so total bet is 20× your per-line bet. MAX BET jumps to 5 per line.</p>
+    <p><b>Spin:</b> Press SPIN and the reels stop one by one, left to right. Matching symbols on a payline, starting from the left reel, pay per the paytable. <b>WILD</b> substitutes for every symbol except SCATTER.</p>
+    <p><b>Free spins:</b> 3 or more SCATTER symbols anywhere award 7, 10 or 15 free spins. During free spins all line wins are doubled, and scatters can retrigger more free spins.</p>
+    <p><b>Credits:</b> You start with 1,000 play credits. If you run low, tap +1,000 FREE CREDITS. Play credits only — no cash value, no prizes.</p>
+  </details>
+  <div class="foot">Play credits only — no cash value, no prizes.<br>© 2026 J-Dawgs Industries</div>
+</div>
+<script>window.MACHINE_ID = 'luxe';</script>
+<script>
+window.SYMBOL_NAMES = { CR: 'Jeweled Crown', AS: 'Ace of Spades', CHIP: 'Chip Stack', CB: 'Card Backs', CUFF: 'Sapphire Cufflinks', CHP: 'Blue Chip', WD: 'Wild', SC: 'Scatter', XX: '' };
+window.SYMBOL_ART = {
+  CR: '<svg viewBox="0 0 60 60"><path d="M7 45 L3 15 L19 27 L30 8 L41 27 L57 15 L53 45 Z" fill="url(#chrome)" stroke="#5a6ca8" stroke-width="1.6"/><rect x="7" y="45" width="46" height="7" rx="3" fill="url(#chrome)" stroke="#5a6ca8" stroke-width="1.2"/><circle cx="30" cy="33" r="5" fill="url(#sapphire)"/><circle cx="14" cy="40" r="3.4" fill="url(#sapphire)"/><circle cx="46" cy="40" r="3.4" fill="url(#sapphire)"/><circle cx="30" cy="10" r="3" fill="url(#sapphire)"/></svg>',
+  AS: '<svg viewBox="0 0 60 60"><rect x="13" y="4" width="34" height="52" rx="5" fill="#f4f7ff" stroke="#8b9bb8" stroke-width="1.6"/><text x="18.5" y="19" font-size="13" font-weight="900" fill="#131b3d" font-family="Georgia, serif">A</text><text x="30" y="44" font-size="27" text-anchor="middle" fill="#131b3d">♠</text></svg>',
+  CHIP: '<svg viewBox="0 0 60 60"><g><ellipse cx="30" cy="44" rx="19" ry="7.5" fill="url(#chipg)" stroke="#dbe6f5" stroke-width="1.4"/><ellipse cx="30" cy="36" rx="19" ry="7.5" fill="url(#chipg)" stroke="#dbe6f5" stroke-width="1.4"/><ellipse cx="30" cy="28" rx="19" ry="7.5" fill="url(#chipg)" stroke="#dbe6f5" stroke-width="1.4"/><ellipse cx="30" cy="20" rx="19" ry="7.5" fill="url(#chipg)" stroke="#dbe6f5" stroke-width="1.4"/></g><g fill="#dbe6f5"><rect x="14" y="16.5" width="5" height="4"/><rect x="27.5" y="15" width="5" height="4"/><rect x="41" y="16.5" width="5" height="4"/></g></svg>',
+  CB: '<svg viewBox="0 0 60 60"><g><rect x="8" y="12" width="26" height="40" rx="4" transform="rotate(-14 21 32)" fill="#16224e" stroke="url(#chrome)" stroke-width="1.8"/><rect x="26" y="12" width="26" height="40" rx="4" transform="rotate(14 39 32)" fill="#16224e" stroke="url(#chrome)" stroke-width="1.8"/><rect x="17" y="8" width="26" height="40" rx="4" fill="#1b2a5e" stroke="url(#chrome)" stroke-width="1.8"/><path d="M30 14 l9 14 -9 14 -9-14z" fill="none" stroke="#7ea2ff" stroke-width="1.6"/><circle cx="30" cy="28" r="3" fill="#7ea2ff"/></g></svg>',
+  CUFF: '<svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="21" fill="url(#chrome)" stroke="#5a6ca8" stroke-width="1.6"/><path d="M30 13 L45 30 L30 47 L15 30 Z" fill="url(#sapphire)" stroke="#dbe6f5" stroke-width="1.4"/><path d="M15 30 h30 M30 13 v34" stroke="#dbe6f5" stroke-width="1" opacity=".5"/></svg>',
+  CHP: '<svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="23" fill="url(#chipg)" stroke="#dbe6f5" stroke-width="5" stroke-dasharray="7.5 6.6"/><circle cx="30" cy="30" r="12.5" fill="none" stroke="#dbe6f5" stroke-width="1.8"/><text x="30" y="36.5" font-size="13" font-weight="900" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif">$</text></svg>',
+  WD: '<svg viewBox="0 0 60 60"><path d="M30 3 l6.5 14 15.5 1.6 -11.5 10.4 3.4 15.2 L30 36.6 16.1 44.2 19.5 29 8 18.6 23.5 17z" fill="url(#blueg)" stroke="#eef2ff" stroke-width="1.6"/><text x="30" y="33.5" font-size="10.5" font-weight="900" text-anchor="middle" fill="#0d1330" font-family="Arial, sans-serif">WILD</text></svg>',
+  SC: '<svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="25" fill="#0d1330" stroke="url(#blueg)" stroke-width="2.6"/><path d="M30 12 l3.8 8.6 9.4.8 -7.1 6.2 2.2 9.2 -8.3-5 -8.3 5 2.2-9.2 -7.1-6.2 9.4-.8z" fill="url(#chrome)"/><text x="30" y="52.5" font-size="8.6" font-weight="900" letter-spacing="1" text-anchor="middle" fill="#a9c2ff" font-family="Arial, sans-serif">SCATTER</text></svg>',
+  XX: '<svg viewBox="0 0 60 60"></svg>'
+};
+</script>
+<script src="logic.js"></script>
+<script src="machines.js"></script>
+<script src="game.js"></script>
+<script>if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js').catch(function () {}); }</script>
+</body>
+</html>
