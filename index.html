@@ -166,6 +166,22 @@ footer a{color:#6FC3FF}
 @media(max-width:760px){.cats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.feat{grid-template-columns:1fr}.doors{grid-template-columns:1fr}.freeband .btn{margin-left:0}.install{padding:1.2rem 1.1rem;gap:1rem}.install img{width:64px;height:64px}.hg-row img{width:104px;height:84px}}
 @media(max-width:560px){.brand{gap:9px}.brand img{height:40px}.brand-name{font-size:.84rem;letter-spacing:.02em}.nav-toggle{padding:8px 12px;font-size:.85rem}}
 
+/* ---------- electric red hints (Joshua, 2026-11-21) ----------
+   Hints only: chrome + electric blue still run the page, red is the
+   accent — same electric red family as the slot machine's cherries
+   (#e01e37 core, #ff1e3c glow). CSS-only: no layout, copy, price or
+   link changes. */
+:root{--red:#FF1E3C;--red-deep:#E01E37;--red-glow:rgba(255,30,60,.55)}
+.brand-name::after{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red);margin-left:7px;box-shadow:0 0 9px var(--red-glow)}
+.eyebrow::before{content:"";display:inline-block;width:22px;height:3px;border-radius:2px;background:var(--red);vertical-align:middle;margin-right:8px;box-shadow:0 0 8px var(--red-glow)}
+h2.sec{text-decoration:underline;text-decoration-color:var(--red);text-decoration-thickness:3px;text-underline-offset:6px}
+.feat{box-shadow:inset 0 3px 0 var(--red),0 4px 18px rgba(16,32,54,.07)}
+.feat .price{color:var(--red-deep)}
+.btn:hover,.buyrow a.buy:hover,.hg-buy:hover{box-shadow:0 0 0 2px var(--red),0 6px 18px rgba(255,30,60,.35)}
+.tag.hot{background:#ffe9ec;color:#C40F2A;box-shadow:inset 0 0 0 1px rgba(255,30,60,.45)}
+.trust{box-shadow:inset 0 -3px 0 var(--red-deep)}
+footer{box-shadow:inset 0 3px 0 rgba(255,30,60,.8)}
+
 /* ---------- drag sheet (Funny Maps pattern, Joshua 2026-11-20) ----------
    On phones the whole shelf area below lives in a pull-up sheet:
    chrome handle, stops full 72% / half 42% / collapsed (handle only).
@@ -383,7 +399,7 @@ main section{scroll-margin-top:76px}
   <div class="body"><h3>Hustle City Bundle — HC1 + HC2</h3>
   <p>Both games for one price — Hustle City and Hustle City 2. Start with $2,000 and work your way up to the final dice game against King Balsey.</p>
   <div class="buyrow"><span class="p">$1.00<small>one-time</small></span><a class="buy" id="buy-bundle-card" href="https://buy.stripe.com/aFadR98Kl6Icb0h6T33kt1v" aria-label="Buy the Hustle City Bundle — $1">Get the Bundle — $1.00</a></div>
-  <div class="sublinks"><a class="open-link" href="https://jdawgsindustries.com/games/hc1-demo/">▶ HC1 demo</a><a class="open-link" href="https://jdawgsindustries.com/games/hc2-demo/">▶ HC2 demo</a><span class="tag">Best deal</span></div>
+  <div class="sublinks"><a class="open-link" href="https://jdawgsindustries.com/games/hc1-demo/">▶ HC1 demo</a><a class="open-link" href="https://jdawgsindustries.com/games/hc2-demo/">▶ HC2 demo</a><span class="tag hot">Best deal</span></div>
   <p class="plays">Both games, right in your browser. A backup copy arrives by email.</p></div>
 </article>
 
