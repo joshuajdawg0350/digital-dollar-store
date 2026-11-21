@@ -936,13 +936,135 @@ function speakWithSynth(item, tok, done){
    REGULAR MAPS MODE: the instruction is spoken and that is ALL — the
    garnish branch is refused outright while Regular is active, on top of
    Regular's line book being empty. Plain in, plain out. */
+/* ---------- DIRECTION FRAGMENTS — directions in the character's own voice ----------
+   Joshua's order (2026-11-20 19:36): the turn-by-turn DIRECTIONS themselves
+   are spoken in the selected character's picked voice — the device synth is
+   no longer any character's direction voice. Every spoken direction is
+   assembled from pre-recorded fragments in that character's voice
+   (audio/frag/<char>/): an advance call is [distance fragment] + [action
+   fragment], the final call is the action's "now." fragment, departure is a
+   compass fragment, and arrival / recalc lead-in / off-route are fixed
+   fragments. Street names are not spoken — they stay on the banner, exactly
+   as displayed (the recorded-voice GPS design). A character or maneuver
+   with no fragment falls back to the previous text path for that one
+   instruction — a voice gap must never become silence. Smiri's wrongness
+   is applied at fragment level (mirrored action, inflated distance,
+   mirrored compass); the map stays true. Dislexa's route itself is built
+   backwards by the app (see buildRoute); her fragments speak that route's
+   maneuvers in her own voice. ROLLOUT (2026-11-20 21:30, Joshua's go):
+   all 8 characters carry the full 77-fragment bank, every clip
+   transcription-verified word-for-word. */
+const FRAG_PREFIX = 'audio/frag/';
+const FRAG_AUDIO = { bubba: { d100: 'd100.mp3', d200: 'd200.mp3', d300: 'd300.mp3', d400: 'd400.mp3', d500: 'd500.mp3', d600: 'd600.mp3', d700: 'd700.mp3', d800: 'd800.mp3', d900: 'd900.mp3', d1000: 'd1000.mp3', m03: 'm03.mp3', m04: 'm04.mp3', m05: 'm05.mp3', m06: 'm06.mp3', m07: 'm07.mp3', m08: 'm08.mp3', m09: 'm09.mp3', m10: 'm10.mp3', m15: 'm15.mp3', m20: 'm20.mp3', m30: 'm30.mp3', m50: 'm50.mp3', left: 'left.mp3', right: 'right.mp3', sharpLeft: 'sharpLeft.mp3', sharpRight: 'sharpRight.mp3', slightLeft: 'slightLeft.mp3', slightRight: 'slightRight.mp3', turnBare: 'turnBare.mp3', endLeft: 'endLeft.mp3', endRight: 'endRight.mp3', continue: 'continue.mp3', merge: 'merge.mp3', keepLeft: 'keepLeft.mp3', keepRight: 'keepRight.mp3', ramp: 'ramp.mp3', uturn: 'uturn.mp3', rb1: 'rb1.mp3', rb2: 'rb2.mp3', rb3: 'rb3.mp3', rb4: 'rb4.mp3', rb5: 'rb5.mp3', rb6: 'rb6.mp3', arriveTail: 'arriveTail.mp3', leftNow: 'leftNow.mp3', rightNow: 'rightNow.mp3', sharpLeftNow: 'sharpLeftNow.mp3', sharpRightNow: 'sharpRightNow.mp3', slightLeftNow: 'slightLeftNow.mp3', slightRightNow: 'slightRightNow.mp3', turnBareNow: 'turnBareNow.mp3', endLeftNow: 'endLeftNow.mp3', endRightNow: 'endRightNow.mp3', continueNow: 'continueNow.mp3', mergeNow: 'mergeNow.mp3', keepLeftNow: 'keepLeftNow.mp3', keepRightNow: 'keepRightNow.mp3', rampNow: 'rampNow.mp3', uturnNow: 'uturnNow.mp3', rb1Now: 'rb1Now.mp3', rb2Now: 'rb2Now.mp3', rb3Now: 'rb3Now.mp3', rb4Now: 'rb4Now.mp3', rb5Now: 'rb5Now.mp3', rb6Now: 'rb6Now.mp3', headNorth: 'headNorth.mp3', headNortheast: 'headNortheast.mp3', headEast: 'headEast.mp3', headSoutheast: 'headSoutheast.mp3', headSouth: 'headSouth.mp3', headSouthwest: 'headSouthwest.mp3', headWest: 'headWest.mp3', headNorthwest: 'headNorthwest.mp3', headRoute: 'headRoute.mp3', arrived: 'arrived.mp3', recalcLead: 'recalcLead.mp3', offroute: 'offroute.mp3' }, jermaine: { d100: 'd100.mp3', d200: 'd200.mp3', d300: 'd300.mp3', d400: 'd400.mp3', d500: 'd500.mp3', d600: 'd600.mp3', d700: 'd700.mp3', d800: 'd800.mp3', d900: 'd900.mp3', d1000: 'd1000.mp3', m03: 'm03.mp3', m04: 'm04.mp3', m05: 'm05.mp3', m06: 'm06.mp3', m07: 'm07.mp3', m08: 'm08.mp3', m09: 'm09.mp3', m10: 'm10.mp3', m15: 'm15.mp3', m20: 'm20.mp3', m30: 'm30.mp3', m50: 'm50.mp3', left: 'left.mp3', right: 'right.mp3', sharpLeft: 'sharpLeft.mp3', sharpRight: 'sharpRight.mp3', slightLeft: 'slightLeft.mp3', slightRight: 'slightRight.mp3', turnBare: 'turnBare.mp3', endLeft: 'endLeft.mp3', endRight: 'endRight.mp3', continue: 'continue.mp3', merge: 'merge.mp3', keepLeft: 'keepLeft.mp3', keepRight: 'keepRight.mp3', ramp: 'ramp.mp3', uturn: 'uturn.mp3', rb1: 'rb1.mp3', rb2: 'rb2.mp3', rb3: 'rb3.mp3', rb4: 'rb4.mp3', rb5: 'rb5.mp3', rb6: 'rb6.mp3', arriveTail: 'arriveTail.mp3', leftNow: 'leftNow.mp3', rightNow: 'rightNow.mp3', sharpLeftNow: 'sharpLeftNow.mp3', sharpRightNow: 'sharpRightNow.mp3', slightLeftNow: 'slightLeftNow.mp3', slightRightNow: 'slightRightNow.mp3', turnBareNow: 'turnBareNow.mp3', endLeftNow: 'endLeftNow.mp3', endRightNow: 'endRightNow.mp3', continueNow: 'continueNow.mp3', mergeNow: 'mergeNow.mp3', keepLeftNow: 'keepLeftNow.mp3', keepRightNow: 'keepRightNow.mp3', rampNow: 'rampNow.mp3', uturnNow: 'uturnNow.mp3', rb1Now: 'rb1Now.mp3', rb2Now: 'rb2Now.mp3', rb3Now: 'rb3Now.mp3', rb4Now: 'rb4Now.mp3', rb5Now: 'rb5Now.mp3', rb6Now: 'rb6Now.mp3', headNorth: 'headNorth.mp3', headNortheast: 'headNortheast.mp3', headEast: 'headEast.mp3', headSoutheast: 'headSoutheast.mp3', headSouth: 'headSouth.mp3', headSouthwest: 'headSouthwest.mp3', headWest: 'headWest.mp3', headNorthwest: 'headNorthwest.mp3', headRoute: 'headRoute.mp3', arrived: 'arrived.mp3', recalcLead: 'recalcLead.mp3', offroute: 'offroute.mp3' }, hurt: { d100: 'd100.mp3', d200: 'd200.mp3', d300: 'd300.mp3', d400: 'd400.mp3', d500: 'd500.mp3', d600: 'd600.mp3', d700: 'd700.mp3', d800: 'd800.mp3', d900: 'd900.mp3', d1000: 'd1000.mp3', m03: 'm03.mp3', m04: 'm04.mp3', m05: 'm05.mp3', m06: 'm06.mp3', m07: 'm07.mp3', m08: 'm08.mp3', m09: 'm09.mp3', m10: 'm10.mp3', m15: 'm15.mp3', m20: 'm20.mp3', m30: 'm30.mp3', m50: 'm50.mp3', left: 'left.mp3', right: 'right.mp3', sharpLeft: 'sharpLeft.mp3', sharpRight: 'sharpRight.mp3', slightLeft: 'slightLeft.mp3', slightRight: 'slightRight.mp3', turnBare: 'turnBare.mp3', endLeft: 'endLeft.mp3', endRight: 'endRight.mp3', continue: 'continue.mp3', merge: 'merge.mp3', keepLeft: 'keepLeft.mp3', keepRight: 'keepRight.mp3', ramp: 'ramp.mp3', uturn: 'uturn.mp3', rb1: 'rb1.mp3', rb2: 'rb2.mp3', rb3: 'rb3.mp3', rb4: 'rb4.mp3', rb5: 'rb5.mp3', rb6: 'rb6.mp3', arriveTail: 'arriveTail.mp3', leftNow: 'leftNow.mp3', rightNow: 'rightNow.mp3', sharpLeftNow: 'sharpLeftNow.mp3', sharpRightNow: 'sharpRightNow.mp3', slightLeftNow: 'slightLeftNow.mp3', slightRightNow: 'slightRightNow.mp3', turnBareNow: 'turnBareNow.mp3', endLeftNow: 'endLeftNow.mp3', endRightNow: 'endRightNow.mp3', continueNow: 'continueNow.mp3', mergeNow: 'mergeNow.mp3', keepLeftNow: 'keepLeftNow.mp3', keepRightNow: 'keepRightNow.mp3', rampNow: 'rampNow.mp3', uturnNow: 'uturnNow.mp3', rb1Now: 'rb1Now.mp3', rb2Now: 'rb2Now.mp3', rb3Now: 'rb3Now.mp3', rb4Now: 'rb4Now.mp3', rb5Now: 'rb5Now.mp3', rb6Now: 'rb6Now.mp3', headNorth: 'headNorth.mp3', headNortheast: 'headNortheast.mp3', headEast: 'headEast.mp3', headSoutheast: 'headSoutheast.mp3', headSouth: 'headSouth.mp3', headSouthwest: 'headSouthwest.mp3', headWest: 'headWest.mp3', headNorthwest: 'headNorthwest.mp3', headRoute: 'headRoute.mp3', arrived: 'arrived.mp3', recalcLead: 'recalcLead.mp3', offroute: 'offroute.mp3' }, doright: { d100: 'd100.mp3', d200: 'd200.mp3', d300: 'd300.mp3', d400: 'd400.mp3', d500: 'd500.mp3', d600: 'd600.mp3', d700: 'd700.mp3', d800: 'd800.mp3', d900: 'd900.mp3', d1000: 'd1000.mp3', m03: 'm03.mp3', m04: 'm04.mp3', m05: 'm05.mp3', m06: 'm06.mp3', m07: 'm07.mp3', m08: 'm08.mp3', m09: 'm09.mp3', m10: 'm10.mp3', m15: 'm15.mp3', m20: 'm20.mp3', m30: 'm30.mp3', m50: 'm50.mp3', left: 'left.mp3', right: 'right.mp3', sharpLeft: 'sharpLeft.mp3', sharpRight: 'sharpRight.mp3', slightLeft: 'slightLeft.mp3', slightRight: 'slightRight.mp3', turnBare: 'turnBare.mp3', endLeft: 'endLeft.mp3', endRight: 'endRight.mp3', continue: 'continue.mp3', merge: 'merge.mp3', keepLeft: 'keepLeft.mp3', keepRight: 'keepRight.mp3', ramp: 'ramp.mp3', uturn: 'uturn.mp3', rb1: 'rb1.mp3', rb2: 'rb2.mp3', rb3: 'rb3.mp3', rb4: 'rb4.mp3', rb5: 'rb5.mp3', rb6: 'rb6.mp3', arriveTail: 'arriveTail.mp3', leftNow: 'leftNow.mp3', rightNow: 'rightNow.mp3', sharpLeftNow: 'sharpLeftNow.mp3', sharpRightNow: 'sharpRightNow.mp3', slightLeftNow: 'slightLeftNow.mp3', slightRightNow: 'slightRightNow.mp3', turnBareNow: 'turnBareNow.mp3', endLeftNow: 'endLeftNow.mp3', endRightNow: 'endRightNow.mp3', continueNow: 'continueNow.mp3', mergeNow: 'mergeNow.mp3', keepLeftNow: 'keepLeftNow.mp3', keepRightNow: 'keepRightNow.mp3', rampNow: 'rampNow.mp3', uturnNow: 'uturnNow.mp3', rb1Now: 'rb1Now.mp3', rb2Now: 'rb2Now.mp3', rb3Now: 'rb3Now.mp3', rb4Now: 'rb4Now.mp3', rb5Now: 'rb5Now.mp3', rb6Now: 'rb6Now.mp3', headNorth: 'headNorth.mp3', headNortheast: 'headNortheast.mp3', headEast: 'headEast.mp3', headSoutheast: 'headSoutheast.mp3', headSouth: 'headSouth.mp3', headSouthwest: 'headSouthwest.mp3', headWest: 'headWest.mp3', headNorthwest: 'headNorthwest.mp3', headRoute: 'headRoute.mp3', arrived: 'arrived.mp3', recalcLead: 'recalcLead.mp3', offroute: 'offroute.mp3' }, steve: { d100: 'd100.mp3', d200: 'd200.mp3', d300: 'd300.mp3', d400: 'd400.mp3', d500: 'd500.mp3', d600: 'd600.mp3', d700: 'd700.mp3', d800: 'd800.mp3', d900: 'd900.mp3', d1000: 'd1000.mp3', m03: 'm03.mp3', m04: 'm04.mp3', m05: 'm05.mp3', m06: 'm06.mp3', m07: 'm07.mp3', m08: 'm08.mp3', m09: 'm09.mp3', m10: 'm10.mp3', m15: 'm15.mp3', m20: 'm20.mp3', m30: 'm30.mp3', m50: 'm50.mp3', left: 'left.mp3', right: 'right.mp3', sharpLeft: 'sharpLeft.mp3', sharpRight: 'sharpRight.mp3', slightLeft: 'slightLeft.mp3', slightRight: 'slightRight.mp3', turnBare: 'turnBare.mp3', endLeft: 'endLeft.mp3', endRight: 'endRight.mp3', continue: 'continue.mp3', merge: 'merge.mp3', keepLeft: 'keepLeft.mp3', keepRight: 'keepRight.mp3', ramp: 'ramp.mp3', uturn: 'uturn.mp3', rb1: 'rb1.mp3', rb2: 'rb2.mp3', rb3: 'rb3.mp3', rb4: 'rb4.mp3', rb5: 'rb5.mp3', rb6: 'rb6.mp3', arriveTail: 'arriveTail.mp3', leftNow: 'leftNow.mp3', rightNow: 'rightNow.mp3', sharpLeftNow: 'sharpLeftNow.mp3', sharpRightNow: 'sharpRightNow.mp3', slightLeftNow: 'slightLeftNow.mp3', slightRightNow: 'slightRightNow.mp3', turnBareNow: 'turnBareNow.mp3', endLeftNow: 'endLeftNow.mp3', endRightNow: 'endRightNow.mp3', continueNow: 'continueNow.mp3', mergeNow: 'mergeNow.mp3', keepLeftNow: 'keepLeftNow.mp3', keepRightNow: 'keepRightNow.mp3', rampNow: 'rampNow.mp3', uturnNow: 'uturnNow.mp3', rb1Now: 'rb1Now.mp3', rb2Now: 'rb2Now.mp3', rb3Now: 'rb3Now.mp3', rb4Now: 'rb4Now.mp3', rb5Now: 'rb5Now.mp3', rb6Now: 'rb6Now.mp3', headNorth: 'headNorth.mp3', headNortheast: 'headNortheast.mp3', headEast: 'headEast.mp3', headSoutheast: 'headSoutheast.mp3', headSouth: 'headSouth.mp3', headSouthwest: 'headSouthwest.mp3', headWest: 'headWest.mp3', headNorthwest: 'headNorthwest.mp3', headRoute: 'headRoute.mp3', arrived: 'arrived.mp3', recalcLead: 'recalcLead.mp3', offroute: 'offroute.mp3' }, nora: { d100: 'd100.mp3', d200: 'd200.mp3', d300: 'd300.mp3', d400: 'd400.mp3', d500: 'd500.mp3', d600: 'd600.mp3', d700: 'd700.mp3', d800: 'd800.mp3', d900: 'd900.mp3', d1000: 'd1000.mp3', m03: 'm03.mp3', m04: 'm04.mp3', m05: 'm05.mp3', m06: 'm06.mp3', m07: 'm07.mp3', m08: 'm08.mp3', m09: 'm09.mp3', m10: 'm10.mp3', m15: 'm15.mp3', m20: 'm20.mp3', m30: 'm30.mp3', m50: 'm50.mp3', left: 'left.mp3', right: 'right.mp3', sharpLeft: 'sharpLeft.mp3', sharpRight: 'sharpRight.mp3', slightLeft: 'slightLeft.mp3', slightRight: 'slightRight.mp3', turnBare: 'turnBare.mp3', endLeft: 'endLeft.mp3', endRight: 'endRight.mp3', continue: 'continue.mp3', merge: 'merge.mp3', keepLeft: 'keepLeft.mp3', keepRight: 'keepRight.mp3', ramp: 'ramp.mp3', uturn: 'uturn.mp3', rb1: 'rb1.mp3', rb2: 'rb2.mp3', rb3: 'rb3.mp3', rb4: 'rb4.mp3', rb5: 'rb5.mp3', rb6: 'rb6.mp3', arriveTail: 'arriveTail.mp3', leftNow: 'leftNow.mp3', rightNow: 'rightNow.mp3', sharpLeftNow: 'sharpLeftNow.mp3', sharpRightNow: 'sharpRightNow.mp3', slightLeftNow: 'slightLeftNow.mp3', slightRightNow: 'slightRightNow.mp3', turnBareNow: 'turnBareNow.mp3', endLeftNow: 'endLeftNow.mp3', endRightNow: 'endRightNow.mp3', continueNow: 'continueNow.mp3', mergeNow: 'mergeNow.mp3', keepLeftNow: 'keepLeftNow.mp3', keepRightNow: 'keepRightNow.mp3', rampNow: 'rampNow.mp3', uturnNow: 'uturnNow.mp3', rb1Now: 'rb1Now.mp3', rb2Now: 'rb2Now.mp3', rb3Now: 'rb3Now.mp3', rb4Now: 'rb4Now.mp3', rb5Now: 'rb5Now.mp3', rb6Now: 'rb6Now.mp3', headNorth: 'headNorth.mp3', headNortheast: 'headNortheast.mp3', headEast: 'headEast.mp3', headSoutheast: 'headSoutheast.mp3', headSouth: 'headSouth.mp3', headSouthwest: 'headSouthwest.mp3', headWest: 'headWest.mp3', headNorthwest: 'headNorthwest.mp3', headRoute: 'headRoute.mp3', arrived: 'arrived.mp3', recalcLead: 'recalcLead.mp3', offroute: 'offroute.mp3' }, smiri: { d100: 'd100.mp3', d200: 'd200.mp3', d300: 'd300.mp3', d400: 'd400.mp3', d500: 'd500.mp3', d600: 'd600.mp3', d700: 'd700.mp3', d800: 'd800.mp3', d900: 'd900.mp3', d1000: 'd1000.mp3', m03: 'm03.mp3', m04: 'm04.mp3', m05: 'm05.mp3', m06: 'm06.mp3', m07: 'm07.mp3', m08: 'm08.mp3', m09: 'm09.mp3', m10: 'm10.mp3', m15: 'm15.mp3', m20: 'm20.mp3', m30: 'm30.mp3', m50: 'm50.mp3', left: 'left.mp3', right: 'right.mp3', sharpLeft: 'sharpLeft.mp3', sharpRight: 'sharpRight.mp3', slightLeft: 'slightLeft.mp3', slightRight: 'slightRight.mp3', turnBare: 'turnBare.mp3', endLeft: 'endLeft.mp3', endRight: 'endRight.mp3', continue: 'continue.mp3', merge: 'merge.mp3', keepLeft: 'keepLeft.mp3', keepRight: 'keepRight.mp3', ramp: 'ramp.mp3', uturn: 'uturn.mp3', rb1: 'rb1.mp3', rb2: 'rb2.mp3', rb3: 'rb3.mp3', rb4: 'rb4.mp3', rb5: 'rb5.mp3', rb6: 'rb6.mp3', arriveTail: 'arriveTail.mp3', leftNow: 'leftNow.mp3', rightNow: 'rightNow.mp3', sharpLeftNow: 'sharpLeftNow.mp3', sharpRightNow: 'sharpRightNow.mp3', slightLeftNow: 'slightLeftNow.mp3', slightRightNow: 'slightRightNow.mp3', turnBareNow: 'turnBareNow.mp3', endLeftNow: 'endLeftNow.mp3', endRightNow: 'endRightNow.mp3', continueNow: 'continueNow.mp3', mergeNow: 'mergeNow.mp3', keepLeftNow: 'keepLeftNow.mp3', keepRightNow: 'keepRightNow.mp3', rampNow: 'rampNow.mp3', uturnNow: 'uturnNow.mp3', rb1Now: 'rb1Now.mp3', rb2Now: 'rb2Now.mp3', rb3Now: 'rb3Now.mp3', rb4Now: 'rb4Now.mp3', rb5Now: 'rb5Now.mp3', rb6Now: 'rb6Now.mp3', headNorth: 'headNorth.mp3', headNortheast: 'headNortheast.mp3', headEast: 'headEast.mp3', headSoutheast: 'headSoutheast.mp3', headSouth: 'headSouth.mp3', headSouthwest: 'headSouthwest.mp3', headWest: 'headWest.mp3', headNorthwest: 'headNorthwest.mp3', headRoute: 'headRoute.mp3', arrived: 'arrived.mp3', recalcLead: 'recalcLead.mp3', offroute: 'offroute.mp3' }, dislexa: { d100: 'd100.mp3', d200: 'd200.mp3', d300: 'd300.mp3', d400: 'd400.mp3', d500: 'd500.mp3', d600: 'd600.mp3', d700: 'd700.mp3', d800: 'd800.mp3', d900: 'd900.mp3', d1000: 'd1000.mp3', m03: 'm03.mp3', m04: 'm04.mp3', m05: 'm05.mp3', m06: 'm06.mp3', m07: 'm07.mp3', m08: 'm08.mp3', m09: 'm09.mp3', m10: 'm10.mp3', m15: 'm15.mp3', m20: 'm20.mp3', m30: 'm30.mp3', m50: 'm50.mp3', left: 'left.mp3', right: 'right.mp3', sharpLeft: 'sharpLeft.mp3', sharpRight: 'sharpRight.mp3', slightLeft: 'slightLeft.mp3', slightRight: 'slightRight.mp3', turnBare: 'turnBare.mp3', endLeft: 'endLeft.mp3', endRight: 'endRight.mp3', continue: 'continue.mp3', merge: 'merge.mp3', keepLeft: 'keepLeft.mp3', keepRight: 'keepRight.mp3', ramp: 'ramp.mp3', uturn: 'uturn.mp3', rb1: 'rb1.mp3', rb2: 'rb2.mp3', rb3: 'rb3.mp3', rb4: 'rb4.mp3', rb5: 'rb5.mp3', rb6: 'rb6.mp3', arriveTail: 'arriveTail.mp3', leftNow: 'leftNow.mp3', rightNow: 'rightNow.mp3', sharpLeftNow: 'sharpLeftNow.mp3', sharpRightNow: 'sharpRightNow.mp3', slightLeftNow: 'slightLeftNow.mp3', slightRightNow: 'slightRightNow.mp3', turnBareNow: 'turnBareNow.mp3', endLeftNow: 'endLeftNow.mp3', endRightNow: 'endRightNow.mp3', continueNow: 'continueNow.mp3', mergeNow: 'mergeNow.mp3', keepLeftNow: 'keepLeftNow.mp3', keepRightNow: 'keepRightNow.mp3', rampNow: 'rampNow.mp3', uturnNow: 'uturnNow.mp3', rb1Now: 'rb1Now.mp3', rb2Now: 'rb2Now.mp3', rb3Now: 'rb3Now.mp3', rb4Now: 'rb4Now.mp3', rb5Now: 'rb5Now.mp3', rb6Now: 'rb6Now.mp3', headNorth: 'headNorth.mp3', headNortheast: 'headNortheast.mp3', headEast: 'headEast.mp3', headSoutheast: 'headSoutheast.mp3', headSouth: 'headSouth.mp3', headSouthwest: 'headSouthwest.mp3', headWest: 'headWest.mp3', headNorthwest: 'headNorthwest.mp3', headRoute: 'headRoute.mp3', arrived: 'arrived.mp3', recalcLead: 'recalcLead.mp3', offroute: 'offroute.mp3' } };
+const FRAG_TEXT = { d100: "In 100 feet,", d200: "In 200 feet,", d300: "In 300 feet,", d400: "In 400 feet,", d500: "In 500 feet,", d600: "In 600 feet,", d700: "In 700 feet,", d800: "In 800 feet,", d900: "In 900 feet,", d1000: "In 1000 feet,", m03: "In 0.3 miles,", m04: "In 0.4 miles,", m05: "In 0.5 miles,", m06: "In 0.6 miles,", m07: "In 0.7 miles,", m08: "In 0.8 miles,", m09: "In 0.9 miles,", m10: "In 1 mile,", m15: "In 1.5 miles,", m20: "In 2 miles,", m30: "In 3 miles,", m50: "In 5 miles,", left: "turn left.", right: "turn right.", sharpLeft: "turn sharp left.", sharpRight: "turn sharp right.", slightLeft: "bear left.", slightRight: "bear right.", turnBare: "turn.", endLeft: "at the end of the road, turn left.", endRight: "at the end of the road, turn right.", continue: "continue straight.", merge: "merge.", keepLeft: "keep left.", keepRight: "keep right.", ramp: "take the ramp.", uturn: "make a U-turn.", rb1: "at the roundabout, take the first exit.", rb2: "at the roundabout, take the second exit.", rb3: "at the roundabout, take the third exit.", rb4: "at the roundabout, take the fourth exit.", rb5: "at the roundabout, take the fifth exit.", rb6: "at the roundabout, take the sixth exit.", arriveTail: "you will arrive at your destination.", leftNow: "Turn left now.", rightNow: "Turn right now.", sharpLeftNow: "Turn sharp left now.", sharpRightNow: "Turn sharp right now.", slightLeftNow: "Bear left now.", slightRightNow: "Bear right now.", turnBareNow: "Turn now.", endLeftNow: "At the end of the road, turn left now.", endRightNow: "At the end of the road, turn right now.", continueNow: "Continue straight now.", mergeNow: "Merge now.", keepLeftNow: "Keep left now.", keepRightNow: "Keep right now.", rampNow: "Take the ramp now.", uturnNow: "Make a U-turn now.", rb1Now: "At the roundabout, take the first exit now.", rb2Now: "At the roundabout, take the second exit now.", rb3Now: "At the roundabout, take the third exit now.", rb4Now: "At the roundabout, take the fourth exit now.", rb5Now: "At the roundabout, take the fifth exit now.", rb6Now: "At the roundabout, take the sixth exit now.", headNorth: "Head north.", headNortheast: "Head northeast.", headEast: "Head east.", headSoutheast: "Head southeast.", headSouth: "Head south.", headSouthwest: "Head southwest.", headWest: "Head west.", headNorthwest: "Head northwest.", headRoute: "Head toward your route.", arrived: "You have arrived at your destination.", recalcLead: "Recalculating. New route found.", offroute: "You're off the route. I'll guide you back to it." };
+const FRAG_MIRROR = { left: 'right', right: 'left', sharpLeft: 'sharpRight', sharpRight: 'sharpLeft',
+  slightLeft: 'slightRight', slightRight: 'slightLeft', endLeft: 'endRight', endRight: 'endLeft',
+  keepLeft: 'keepRight', keepRight: 'keepLeft' };
+const FRAG_COMPASS_MIRROR = { North: 'South', South: 'North', East: 'West', West: 'East',
+  Northeast: 'Southwest', Southwest: 'Northeast', Northwest: 'Southeast', Southeast: 'Northwest' };
+const FRAG_MI_RUNGS = [[0.3, 'm03'], [0.4, 'm04'], [0.5, 'm05'], [0.6, 'm06'], [0.7, 'm07'],
+  [0.8, 'm08'], [0.9, 'm09'], [1.0, 'm10'], [1.5, 'm15'], [2, 'm20'], [3, 'm30'], [5, 'm50']];
+function fragDistKey(d){
+  if (d < 320){ const f = Math.min(1000, Math.max(100, Math.round(d * 3.28084 / 100) * 100)); return 'd' + f; }
+  const mi = d / 1609.34; let best = FRAG_MI_RUNGS[FRAG_MI_RUNGS.length - 1];
+  for (const r of FRAG_MI_RUNGS) if (Math.abs(mi - r[0]) < Math.abs(mi - best[0])) best = r;
+  return best[1];
+}
+function fragActionKey(step){
+  const m = step.maneuver, mod = m.modifier || '';
+  if (mod === 'uturn') return 'uturn';
+  switch (m.type){
+    case 'turn':
+      if (mod === 'sharp left') return 'sharpLeft';
+      if (mod === 'sharp right') return 'sharpRight';
+      if (mod === 'slight left') return 'slightLeft';
+      if (mod === 'slight right') return 'slightRight';
+      if (mod.includes('left')) return 'left';
+      if (mod.includes('right')) return 'right';
+      return 'turnBare';
+    case 'end of road': return mod.includes('left') ? 'endLeft' : 'endRight';
+    case 'new name': case 'continue': return 'continue';
+    case 'merge': return 'merge';
+    case 'roundabout': case 'rotary': return 'rb' + Math.min(6, Math.max(1, m.exit || 1));
+    case 'fork': return mod.includes('left') ? 'keepLeft' : 'keepRight';
+    case 'on ramp': case 'off ramp': return 'ramp';
+    default:
+      if (mod.includes('left')) return 'left';
+      if (mod.includes('right')) return 'right';
+      return 'continue';
+  }
+}
+function fragEntry(charK, key){
+  const bank = FRAG_AUDIO[charK];
+  if (!bank || !bank[key]) return null;
+  return { audio: FRAG_PREFIX + charK + '/' + bank[key], text: FRAG_TEXT[key] || '' };
+}
+/* The fragment playlist for one instruction, or null when this character
+   cannot speak it in-voice (the caller falls back to the text path). */
+function fragList(charK, step, stage, d){
+  if (!FRAG_AUDIO[charK] || !step) return null;
+  const type = step.maneuver.type;
+  let key = fragActionKey(step);
+  if (charK === 'smiri' && FRAG_MIRROR[key]) key = FRAG_MIRROR[key];
+  if (stage === 'final'){
+    if (type === 'arrive'){ const e = fragEntry(charK, 'arrived'); return e ? [e] : null; }
+    const e = fragEntry(charK, key + 'Now'); return e ? [e] : null;
+  }
+  let dd = d;
+  if (charK === 'smiri' && dd != null) dd = dd * 1.8 + 120;
+  const dist = fragEntry(charK, fragDistKey(Math.max(0, dd || 0)));
+  const tail = fragEntry(charK, type === 'arrive' ? 'arriveTail' : key);
+  return (dist && tail) ? [dist, tail] : null;
+}
+function fragDepart(charK, step){
+  if (!FRAG_AUDIO[charK]) return null;
+  const b = step && step.maneuver ? step.maneuver.bearing_after : null;
+  if (b != null){
+    let c = cap(compass(b));
+    if (charK === 'smiri' && FRAG_COMPASS_MIRROR[c]) c = FRAG_COMPASS_MIRROR[c];
+    const e = fragEntry(charK, 'head' + c); if (e) return [e];
+  }
+  const e2 = fragEntry(charK, 'headRoute'); return e2 ? [e2] : null;
+}
+function speakFrags(frags, displayText, meta){
+  frags.forEach((f, i) => enqueueSpeech(i === 0 && displayText ? displayText : f.text,
+    'instruction', i === 0 ? meta : undefined, charKey, f.audio));
+}
+function speakInstrV(step, stage, d, meta){
+  const fl = fragList(charKey, step, stage, d);
+  const text = flavorInstruction(instrWithDist({ step: step }, d), step, d);
+  if (fl){ speakFrags(fl, text, meta); return; }
+  speak(text, 'instruction', meta);
+}
+function speakFixedV(key, text, meta){
+  const e = fragEntry(charKey, key);
+  if (e){ enqueueSpeech(text, 'instruction', meta, charKey, e.audio); return; }
+  speak(text, 'instruction', meta);
+}
+/* speakGuidance with the instruction spoken from the character's fragments
+   when this character has them; otherwise the original function, untouched. */
+function speakGuidanceV(text, gKey, meta, step, distM, stage){
+  const fl = isRegular() ? null :
+    (stage === 'depart' ? fragDepart(charKey, step) : fragList(charKey, step, stage || 'final', distM));
+  if (!fl){ speakGuidance(text, gKey, meta, step, distM); return; }
+  speakFrags(fl, text, meta);
+  if (funny && gKey){ const e = pickLineEntry(charKey, gKey); if (e) speakLine(charKey, e, 'garnish', meta ? { ev: meta.ev, stage: 'garnish' } : undefined); }
+}
+
 function speakGuidance(instrText, gKey, meta, step, distM){
   speak(flavorInstruction(instrText, step, distM), 'instruction', meta);
   if (funny && !isRegular() && gKey){ const e = pickLineEntry(charKey, gKey); if (e) speakLine(charKey, e, 'garnish', meta ? { ev: meta.ev, stage: 'garnish' } : undefined); }
 }
 function speakRecalc(firstInstr, step, distM){
-  speak('Recalculating. New route found.', 'instruction');
-  speak(flavorInstruction(firstInstr, step, distM), 'instruction');
+  const fl = (step && distM != null) ? fragList(charKey, step, 'advance', distM) : null;
+  const lead = fragEntry(charKey, 'recalcLead');
+  if (fl && lead){
+    enqueueSpeech('Recalculating. New route found.', 'instruction', null, charKey, lead.audio);
+    speakFrags(fl, firstInstr, null);
+  } else {
+    speak('Recalculating. New route found.', 'instruction');
+    speak(flavorInstruction(firstInstr, step, distM), 'instruction');
+  }
   if (funny && !isRegular()){ const e = pickLineEntry(charKey, 'recalc'); if (e) speakLine(charKey, e, 'garnish'); }
 }
 
@@ -1247,7 +1369,8 @@ function beginNav(mode){
   document.body.classList.add('navigating');
   renderPos(route.coords[0], null, false);
   map.setView(route.coords[0], 16);
-  speakGuidance(departInstruction(), 'depart', { stage: 'depart' }, route.steps[0], null);
+  if (FRAG_AUDIO[charKey]) Object.values(FRAG_AUDIO[charKey]).forEach(f => { const a = new Audio(); a.preload = 'auto'; a.src = FRAG_PREFIX + charKey + '/' + f; });
+  speakGuidanceV(departInstruction(), 'depart', { stage: 'depart' }, route.steps[0], null, 'depart');
   if (offlineMode) speak("You're offline. This trip is saved on your phone — guidance keeps working.", 'notice');
   updateBanner();
 }
@@ -1308,22 +1431,22 @@ function checkEvents(){
        arrival still fires at the destination (final stage, below). */
     if (isArr && isSmiri() && !st.has(idx + ':fake') && d <= adv && d > 25){
       st.add(idx + ':fake');
-      speak('You have arrived at your destination.', 'instruction', meta('fake-arrive'));
+      speakFixedV('arrived', 'You have arrived at your destination.', meta('fake-arrive'));
       if (funny){ const e = pickLineEntry(charKey, 'arrive'); if (e) speakLine(charKey, e, 'garnish', { ev: idx, stage: 'garnish' }); }
     }
     if (d <= 25 && !st.has(idx + ':fin')){
       st.add(idx + ':fin');
       if (isArr){
-        speakGuidance('You have arrived at your destination.', 'arrive', meta('final'), ev.step, null);
+        speakGuidanceV('You have arrived at your destination.', 'arrive', meta('final'), ev.step, null, 'final');
         updateBanner();
         setTimeout(() => { endNav(); if (isQA) qaRecalc(); else setStatus('Arrived. ' + (destination ? destination.label : '') + ' — nice driving.'); }, 600);
       } else {
-        speakGuidance(cap(actionPhrase(ev.step)) + ' now.', garnishKey(ev.step), meta('final'), ev.step, null);
+        speakGuidanceV(cap(actionPhrase(ev.step)) + ' now.', garnishKey(ev.step), meta('final'), ev.step, null, 'final');
       }
     } else if (prep && d <= prep && d > 25 && !st.has(idx + ':prep')){
-      st.add(idx + ':prep'); speak(flavorInstruction(instrWithDist(ev, d), ev.step, d), 'instruction', meta('prepare'));
+      st.add(idx + ':prep'); speakInstrV(ev.step, 'prepare', d, meta('prepare'));
     } else if (d <= adv && d > (prep || 25) && !st.has(idx + ':adv')){
-      st.add(idx + ':adv'); if (!isArr) speak(flavorInstruction(instrWithDist(ev, d), ev.step, d), 'instruction', meta('advance'));
+      st.add(idx + ':adv'); if (!isArr) speakInstrV(ev.step, 'advance', d, meta('advance'));
     }
   });
   updateBanner();
@@ -1569,7 +1692,9 @@ function enterRejoinMode(latlng){
   if (!nav || nav.rejoining) return;
   nav.rejoining = true;
   const proj = projectOntoRoute(latlng);
-  speak("You're off the route, and we're offline. Head " + compass(bearingTo(latlng, proj.point)) +
+  const offE = fragEntry(charKey, 'offroute');
+  if (offE) enqueueSpeech("You're off the route. I'll guide you back to it.", 'instruction', null, charKey, offE.audio);
+  else speak("You're off the route, and we're offline. Head " + compass(bearingTo(latlng, proj.point)) +
         " — the route is " + fmtDist(proj.dist) + " that way. I'll guide you back to it.", 'instruction');
   updateRejoinBanner(latlng, proj);
 }

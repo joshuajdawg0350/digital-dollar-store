@@ -26,7 +26,11 @@
    demand (never in the shell); the device synth is no longer any
    character's voice for those lines. */
 /* v7 (2026-11-20): Emergency Maps rebuilt — all 50 state maps are now HD satellite imagery with real-elevation 3D terrain relief in one uniform system; the app fetches them under its fm-emergency-v2 cache. */
-const SHELL_CACHE = 'funny-maps-shell-v7';
+/* v8 (2026-11-20): DIRECTIONS-IN-VOICE ROLLOUT — turn-by-turn directions are
+   spoken from pre-recorded fragments in each character's own picked voice
+   (audio/frag/<char>/, 77 clips x 8 characters, transcription-verified);
+   the fragment audio rides along on demand like the lines, not in the shell. */
+const SHELL_CACHE = 'funny-maps-shell-v8';
 const SHELL = [
   './',
   './index.html',
