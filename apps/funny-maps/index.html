@@ -336,196 +336,116 @@ const CHARS = {
   bubba: { name:"Bubba", emoji:"🤠", tag:"Laid-back country buddy",
     pitch:0.60, rate:0.84, voiceNames:["David","Daniel","Google US English","Google UK English Male","en-US"], say:"Bubba",
     lines:{
-      depart:["Alright… let's roll. I got shotgun, and I got the directions — you just drive, partner.",
-              "Easy peasy. Follow my lead and we'll be there 'fore the ice melts.",
-              "Let's go see what's over yonder."],
-      left:["Hang a left up here, smooth as butter.",
-            "Left turn, Clyde. Easy does it.",
-            "Swing 'er left like you're pullin' into the Dairy Queen."],
-      right:["Hang a right, slicker than a greased pig.",
-             "Right turn, partner. Nice and easy.",
-             "Right up here — don't go scarin' the chickens."],
-      slightLeft:["Just ease on over left a touch, no big fuss.",
-                  "Little nudge left, that's all she needs."],
-      slightRight:["Just ease on over right a touch, no big fuss.",
-                   "Little nudge right, that's all she needs."],
-      sharpLeft:["Now that's a real turn — crank 'er on around, slow and steady.",
-                 "Whoa nelly, that's a tight one. Take it slow."],
-      sharpRight:["Now that's a real turn — crank 'er on around, slow and steady.",
-                  "Whoa nelly, that's a tight one. Take it slow."],
-      uturn:["Well butter my biscuit, we gotta flip around.",
-             "Turn this buggy around — we'll get 'er right this time.",
-             "Loop-de-loop time. Ain't no shame in it."],
-      roundabout:["Round and round she goes — hop off where I told ya.",
-                  "It's like a merry-go-round for trucks. You'll be fine.",
-                  "Circle on around and slide out at your exit."],
-      merge:["Slide on in there like you own the place. 'Cause you do. Briefly.",
-             "Ease into traffic and wave at somebody. It's polite."],
-      straight:["Just keep her straight — we're cookin' now.",
-                "Straight on ahead. Good time for a sip of sweet tea. Eyes on the road, though."],
-      recalc:["Well shoot, we missed that'n. Hold on, let me re-figure.",
-              "Dang it. Okay, new plan — I got another way, don't you worry.",
-              "That turn snuck right past us. I'm recalculatin'. That's a word I know now."],
-      arrive:["And there she is! Told ya we'd make it.",
-              "We have arrived, and in fine style too.",
-              "Park 'er right there. Good drivin', partner."]
-    }},
+      depart:["Alright, we're off like a prom dress — route's set, let's roll.",
+              "Keep both hands on the wheel. I know, I know — Bubba's a distraction."],
+      straight:["Long stretch of nothin' but road and sky now. Sing along to the radio, I'll keep watch.",
+              "If you're hungry, there's eatin' up ahead. Bubba recommends anything fried. Bubba always recommends anything fried.",
+              "Rain's makin' the road slicker than a greased pig. Easy on the pedals.",
+              "Deer country. Keep your eyes peeled — they travel in pairs, and the second one's dumber than the first.",
+              "Pull over whenever you're ready. Bubba's not shy about a little roadside stop.",
+              "Fog's rollin' in — can't see a thing. Bubba'll guide you by feel."],
+      left:["In about a mile, hang a left at the light. Plenty of time, no need to hug the bumper.",
+              "Take this next left. It's the one right after the gas station with the good jerky."],
+      slightLeft:["Left up here where the road forks — if you see the water tower, you're on the right track."],
+      slightRight:["Bear right up yonder. If you pass the big oak, you've gone too far."],
+      uturn:["Make a U-turn when you can do it safe. Even Bubba turns around when the fish ain't bitin'."],
+      roundabout:["Round this circle thing and take the second road out."],
+      exit:["Your exit's comin' up — slide on over, no need to dive across three lanes like a bass after a lure."],
+      recalc:["Recalculatin'... alright, got it. New plan, same destination.",
+              "Detour time. Scenic route, no extra charge."],
+      traffic:["Traffic's thick as grandma's gravy up ahead. Sit tight, we'll ooze through it."],
+      speed:["Construction zone — slow it down and mind the fellas in the orange vests. They'd like to get home too.",
+              "Watch your speed through here — this stretch feeds the county one ticket at a time."],
+      arrive:["Welcome home. Kettle's on, porch light's burnin' — you made it.",
+              "That's the trip, folks. Bubba's ridin' with you again anytime — just holler.",
+              "Your stop's comin' up on the right — start easin' over.",
+              "Park anywhere you can fit her. Bubba ain't judgin' your parkin' — today.",
+              "Alright, that's us done. Bubba's hangin' up his hat — holler when you need a co-pilot again."] }},
   jermaine: { name:"Jermaine", emoji:"🎧", tag:"Streetwise. Coolest head in the car.",
     pitch:0.92, rate:0.94, voiceNames:["Mark","Google UK English Male","Daniel","Google US English","David"], say:"Jermaine",
     lines:{
-      depart:["Aight, I got you. Sit back — I know these streets like I drew 'em.",
-              "We locked in. I'll call it out early so you never gotta guess."],
-      left:["Left right here — smooth, like that.",
-            "Make that left. See? I told you I got you."],
-      right:["Right turn, easy money.",
-             "Bust that right. Clean."],
-      slightLeft:["Just lean it over left a touch. Subtle.",
-                  "Little slide left — finesse, not force."],
-      slightRight:["Just lean it over right a touch. Subtle.",
-                   "Little slide right — finesse, not force."],
-      sharpLeft:["Okay, this one's tight — take your time, bring it around.",
-                 "Sharp one. Respect it and it's yours."],
-      sharpRight:["Okay, this one's tight — take your time, bring it around.",
-                  "Sharp one. Respect it and it's yours."],
-      uturn:["Flip it around. Hey — even the best routes need a remix sometimes.",
-             "U-turn. No stress, we spin it and keep it moving."],
-      roundabout:["Roundabout — go 'round, pop out where I said. Don't overthink it.",
-                  "Circle up, slide out clean. You got this."],
-      merge:["Slide in like you belong there — 'cause you do.",
-             "Merge smooth. Confidence looks good on you."],
-      straight:["Straight shot from here. This is the easy part.",
-                "Hold it right here, we cruisin' now."],
-      recalc:["Hold up — that ain't the move. Gimme two seconds, I got another way.",
-              "Okay, plot twist. New route loading — and honestly? This one's better.",
-              "We missed that one, no big deal. I always got a backup plan. Watch this."],
-      arrive:["And we here. Told you — ridin' with me, you don't get lost.",
-              "Destination secured. That's how we do it."]
-    }},
+      straight:["Cruise straight for a bit. Windows down, volume up — we got time."],
+      right:["Next right is yours. Take it easy, no rush — cool heads get there first."],
+      slightRight:["Bear right up here. Trust me, I know these streets like I know my own playlist."],
+      uturn:["Flip a bitch when it's clear. Even the best of us run it back sometimes."],
+      merge:["Merge like you mean it. Confidence, baby — the lane respects confidence."],
+      recalc:["Recalculatin'... done. New route, same destination, zero drama."] }},
   hurt: { name:'Major "Hurt"', emoji:"🎖️", tag:"Drill sergeant. Zero patience for wrong turns.",
     pitch:0.48, rate:1.16, voiceNames:["Guy","Alex","Google UK English Male","Daniel","David","Google US English"], say:"Major Hurt",
     lines:{
-      depart:["MOVE OUT! I will call every turn. You WILL arrive on time. That is NOT a request.",
-              "Operation Get There has begun. Stay frosty, stay in your lane."],
-      left:["LEFT TURN! Execute! Execute!",
-            "Turn left like you MEAN it, soldier!"],
-      right:["RIGHT TURN! Snap to it!",
-             "Column right — MOVE!"],
-      slightLeft:["Adjust course slightly left. Precision, people, precision!",
-                  "Small correction left. Even legends adjust."],
-      slightRight:["Adjust course slightly right. Precision, people, precision!",
-                   "Small correction right. Even legends adjust."],
-      sharpLeft:["HARD LEFT! Both hands! Show me something!",
-                 "Sharp turn! Slow it down, THEN turn it. That's an order!"],
-      sharpRight:["HARD RIGHT! Both hands! Show me something!",
-                  "Sharp turn! Slow it down, THEN turn it. That's an order!"],
-      uturn:["ABOUT-FACE! We are reversing course, and we are doing it with PRIDE!",
-             "U-turn! That is not retreat — that is a tactical reposition!"],
-      roundabout:["Enter the circle! Take your exit! Do NOT get dizzy on my watch!",
-                  "Roundabout! It's a circle, not a suggestion!"],
-      merge:["MERGE! Blend like your life depends on it — because out here, it does!",
-             "Enter the highway flow! Confidence is your armor!"],
-      straight:["Hold this course! Steady! Beautiful! I could cry, but I won't!",
-                "Straight ahead! Easiest order you'll get all day!"],
-      recalc:["NEW ORDERS INBOUND! Stand by while I re-plan this operation!",
-              "Course deviation detected! Unacceptable — and ALREADY CORRECTED. New route, let's go!",
-              "We do NOT get lost. We take scenic detours at full speed. Recalculating!"],
-      arrive:["OBJECTIVE SECURED! Outstanding work, soldier. Dismissed!",
-              "You have ARRIVED. I am not saying I'm proud, but my voice just cracked a little."]
-    }},
+      depart:["MOVE OUT. Major Hurt has the map, you have the wheel — that's the whole damn chain of command."],
+      straight:["Straight ahead, soldier. Eyes up, phone down, excuses zero."],
+      left:["LEFT TURN, half a mile. Signal like you mean it — this ain't a suggestion box.",
+              "Take the next left. Hesitate and we're doing push-ups at the next goddamn light."],
+      right:["RIGHT TURN coming up. Execute it clean or we'll run it again."],
+      slightRight:["Bear right. That's your other left's opposite, sunshine. You got this."],
+      uturn:["Make a U-turn when safe. About-face — it's a classic for a reason."],
+      roundabout:["Roundabout — second exit. Go around like you got somewhere to be, because you do."],
+      merge:["Merge NOW. Own that lane like you paid rent on it."],
+      exit:["Exit in one mile. Fall out of this highway in an orderly fashion."],
+      recalc:["YOU MISSED THE TURN. I saw it. The car saw it. Hell, the satellites saw it. U-turn, double time.",
+              "Recalculating. That's military for \"the Major is fixing your mess.\""],
+      traffic:["Traffic ahead. Perfect. More time for you to sit there and reflect on your shitty life choices."],
+      speed:["SLOW DOWN. This ain't a racetrack and you sure as hell ain't a racecar driver. I've seen your parking."],
+      arrive:["Destination on the right. MISSION ACCOMPLISHED. The Major is almost proud, damn it.",
+              "You're home. Dismissed. And soldier — good driving out there. Don't let it go to your head."] }},
   doright: { name:"Officer Doright", emoji:"🚔", tag:"By-the-book traffic officer. Dead serious about safety.",
     pitch:1.10, rate:0.86, voiceNames:["Daniel","Google US English","David","Google UK English Male"], say:"Officer Do-right",
     lines:{
-      depart:["Seatbelts fastened. Mirrors adjusted. Hands at nine and three. We may proceed.",
-              "This is a lawful journey at lawful speeds. As it should be.",
-              "Headlights on, distractions off. We roll by the book."],
-      left:["Left turn. Signal on — a full three seconds before the turn, per regulation.",
-            "Check the crosswalk twice. Pedestrians have the right of way, and my respect."],
-      right:["Right turn. Signal, brake gently, then turn. Textbook.",
-             "Right on red only after a complete stop, where permitted. I will be watching."],
-      slightLeft:["Slight adjustment left. Signal anyway. Signaling is free, and it is the law.",
-                  "Ease over left. Smooth inputs keep everyone insured and happy."],
-      slightRight:["Slight adjustment right. Signal anyway. Signaling is free, and it is the law.",
-                   "Ease over right. Smooth inputs keep everyone insured and happy."],
-      sharpLeft:["Sharp turn ahead. Reduce speed BEFORE the turn, never during. Physics is also the law.",
-                 "Slow for the sharp one. Gravity does not accept excuses."],
-      sharpRight:["Sharp turn ahead. Reduce speed BEFORE the turn, never during. Physics is also the law.",
-                  "Slow for the sharp one. Gravity does not accept excuses."],
-      uturn:["A legal U-turn, executed where permitted. I checked. Twice.",
-             "U-turn. Yield to everyone. EVERYONE. Then proceed with confidence."],
-      roundabout:["Roundabout. Yield on entry, signal on exit, and nobody gets a citation.",
-                  "Circulate counterclockwise. This is America, and this is a roundabout. Order prevails."],
-      merge:["Merge at highway speed. Match the flow, check the blind spot, be predictable.",
-             "Merging is a zipper when done correctly. Be the zipper."],
-      straight:["Continue straight. Maintain a three-second following distance. Four, if it's raining.",
-                "Steady as she goes. Cruise control is a tool, not a personality."],
-      recalc:["A deviation has occurred. Remain calm. A new lawful route is being computed.",
-              "We have departed from the approved route. This happens. The correction will be swift and legal.",
-              "Recalculating. No ticket for getting lost — yet. Follow the new instructions precisely."],
-      arrive:["Destination reached. Park legally, engage the parking brake, and accept my commendation.",
-              "We have arrived without a single violation. I am putting that in the report."]
-    }},
+      depart:["Officer Do-right on duty. We'll be conducting this trip safely and by the book."],
+      straight:["Proceed straight. Maintain your lane and your composure."],
+      left:["Left turn in half a mile. Signal early — it's the law and it's just polite.",
+              "Make the next left. Clean, legal, and nobody gets a citation."],
+      right:["Right turn ahead. Full stop means full stop — rolling is just speeding with confidence, and I ticket confidence."],
+      slightRight:["Bear right at the fork. I'll be noting your excellent cooperation."],
+      roundabout:["Roundabout — take the second exit. Yield means yield. I've written tickets for less."],
+      merge:["Merge onto the highway. Match the speed of traffic, not the speed of your damn ambitions."],
+      exit:["Exit coming up. Move over one lane at a time — this isn't a hostage negotiation."],
+      recalc:["You missed the turn. I'm going to pretend I didn't see that shit. Make a legal U-turn up ahead.",
+              "Recalculating your route. Even the law takes a detour now and then."],
+      traffic:["Traffic reported ahead. Patience is not optional — I've checked, it's in the manual."],
+      speed:["Speed check: you're over. Ease off before someone with a real badge and a worse mood notices."],
+      arrive:["Your destination is on the left. Pull in and park legally — I'll be watching. Supportively.",
+              "You have arrived. Scene secure. Excellent work, citizen.",
+              "End of watch. Officer Do-right reminds you: the best trip is the one with no paperwork."] }},
   steve: { name:"Stoner Steve", emoji:"🌅", tag:"No tolls, scenic route, arrives when he arrives.",
     pitch:1.00, rate:0.64, voiceNames:["Fred","English (United States)","Google US English","David","Daniel"], say:"Stoner Steve", scenic:true,
     lines:{
-      depart:["Alright… we're rollin'. No tolls… no highways… no hurry. The long way's the good way, man.",
-              "Let's take the chill route. Windows down, snacks up."],
-      left:["Left up here, man. Easy does it. Everything's easy.",
-            "Hang a left. No rush — the left will wait for you. It did for me."],
-      right:["Right turn, comin' up. Smooth like a sunset.",
-             "Take that right. Then maybe snacks. Definitely snacks."],
-      slightLeft:["Just kinda drift left a little. Like a cloud.",
-                  "Nudge it left, real gentle. Clouds don't jerk the wheel."],
-      slightRight:["Just kinda drift right a little. Like a cloud.",
-                   "Nudge it right, real gentle. Clouds don't jerk the wheel."],
-      sharpLeft:["Whoa, sharp one. Slow down, feel it out. We got all day. Well. Most of the day.",
-                 "Sharp turn, man. Treat it like a yawn — slow and wide."],
-      sharpRight:["Whoa, sharp one. Slow down, feel it out. We got all day. Well. Most of the day.",
-                  "Sharp turn, man. Treat it like a yawn — slow and wide."],
-      uturn:["We're gonna flip it around, man. Sometimes the road changes its mind. Respect.",
-             "U-turn. The universe is telling us something. Probably snacks."],
-      roundabout:["Roundabout, man. Just go with the flow, come out the other side a better person.",
-                  "Circle thing coming up. Ride it like a lazy river."],
-      merge:["Merge in slow and friendly. We're all just cars in the same river, man.",
-             "Ease on in. Nobody's racing. If they are, let 'em win."],
-      straight:["Just cruise straight, man. This is the best part. Nothing to do but vibe.",
-                "Straight ahead. If you see a sunset, you're welcome. I planned that. Not really. But maybe."],
-      recalc:["Whoa. We like, missed that. It's cool. The road provides another road.",
-              "New plan, man. Plans are just suggestions the road makes. Here's the next one."],
-      arrive:["We made it, man. And honestly? The drive WAS the destination. Also this is the destination.",
-              "And we're here. Whenever we got here was exactly the right time."]
-    }},
+      depart:["Heeey. Steve's here. We're going somewhere, probably. Let's cruise."],
+      straight:["Just keep going straight, man. The road's doing most of the work anyway."],
+      left:["There's a left coming up in, like, a while. I'll remind you again. Maybe twice.",
+              "Okay the left is now-ish. Turn left. Beautiful. That was beautiful."],
+      right:["Right turn up here. No hurry — the right turn will wait for us. It's chill like that."],
+      slightRight:["Bear right, dude. Or is it bear left? No — right. I checked twice. Right."],
+      uturn:["Flip it around when you can. A U-turn is just a second chance with extra steps."],
+      roundabout:["Roundabout coming. Take the second exit. Or the third. No — second. Definitely second."],
+      merge:["Merge onto the highway. Whoa. Everybody's going so fast. Match 'em, I guess."],
+      exit:["Exit's in a mile. Start drifting over. Drifting is kind of my whole thing."],
+      recalc:["Whoa, we passed it. That's fine. Everything's fine. There's always another turn. Life finds a way.",
+              "Recalculating, man. Even the GPS needs a minute to gather its thoughts."],
+      traffic:["Traffic jam ahead. Perfect excuse to just... vibe. Got any snacks? Asking for me."],
+      speed:["Slow down a little. Not because of cops. Just... the scenery's better slow."],
+      arrive:["We're here, man. We actually made it. I never doubted us. I might have doubted us.",
+              "Later, dude. Steve's gonna go find a burrito. You did great. We did great."] }},
   nora: { name:"Nagging Nora", emoji:"📋", tag:"Backseat planner. Yes, we're behind schedule.",
     pitch:1.32, rate:1.14, voiceNames:["Zira","Samantha","Google UK English Female","Aria","Jenny","Female","Google US English"], say:"Nagging Nora",
     lines:{
-      depart:["Itinerary's printed and highlighted. We were supposed to leave at nine, but we're leaving together, and that's what counts.",
-              "Okay! Stops are numbered, snacks are scheduled, and I've got the map. Follow my calls and we'll stay right on plan.",
-              "Rolling! Leg one of the itinerary starts now. I made you a copy, but I'll just read it out loud. All of it."],
-      left:["Left here — and good news, this turn was already highlighted. I love when the plan works.",
-            "Turn left. That's exactly what the itinerary said, word for word. I checked twice."],
-      right:["Right turn, just like page one of the itinerary. See? Planning works.",
-             "Right here. I penciled in a backup right turn too, but we won't need it. Probably."],
-      slightLeft:["Ease left a touch. The plan allows for gentle adjustments. I wrote that in the margins.",
-                  "Little left. Still on schedule, still on itinerary. Beautiful."],
-      slightRight:["Ease right a touch. The plan allows for gentle adjustments. I wrote that in the margins.",
-                   "Little right. Still on schedule, still on itinerary. Beautiful."],
-      sharpLeft:["Sharp left — take it nice and easy. The itinerary budgets extra time for this one. It does now, anyway.",
-                 "Sharp left coming. Slow and smooth; arriving calm is also on the schedule."],
-      sharpRight:["Sharp right — take it nice and easy. The itinerary budgets extra time for this one. It does now, anyway.",
-                  "Sharp right coming. Slow and smooth; arriving calm is also on the schedule."],
-      uturn:["U-turn. Fine. I'm adding a line to the itinerary: 'surprise U-turn, handled beautifully.'",
-             "We're turning around, and I'm noting it in pen. The plan is flexible. I am learning to be flexible."],
-      roundabout:["Roundabout — take the exit I called. I drew this circle in the itinerary. It took me ten minutes.",
-                  "Around we go, out where I said. The plan survives another roundabout."],
-      merge:["Merge on in, calm and steady. Merging was scheduled for right about now, give or take a car or two.",
-             "Slide into traffic. There's a gap in the itinerary and a gap in traffic — take the traffic one."],
-      straight:["Straight ahead. This is the long leg — the itinerary just says 'enjoy the drive.' I wrote that. You're welcome.",
-                "Keep straight. We're enjoying ourselves right on schedule. That's in the plan too."],
-      recalc:["Hold on. Hold on. The itinerary is being revised. New route, same destination — nobody panic, I brought a spare plan.",
-              "That turn wasn't on my itinerary. Or it was and I highlighted the wrong page. Either way — new route, coming right up.",
-              "Recalculating. The plan has a plan B, and the plan B has a highlighter. Stand by."],
-      arrive:["Arrived! And the itinerary is complete — every stop, checked off. I could frame this page.",
-              "We're here! Slightly off the original schedule, entirely on the revised one. That counts. That absolutely counts."]
-    }},
+      depart:["Oh good, we're going. I've only been ready since Tuesday."],
+      straight:["Straight ahead. And please, both hands on the wheel. Both. Hands. Wheel."],
+      left:["Left turn in half a mile. I'm telling you NOW so you can't say I sprung it on you.",
+              "Turn left. Left. LEFT. There. Was that so hard?"],
+      right:["Right turn coming up — and don't you dare cut through that parking lot again."],
+      slightRight:["Bear right. I said right. I've always said right. Ask anybody."],
+      uturn:["Make a U-turn. A U-turn. Because somebody wasn't listening the first time."],
+      roundabout:["Roundabout, second exit. And don't just follow that car — that car doesn't know where WE live."],
+      merge:["Merge carefully. These people drive like they got their licenses from a cereal box."],
+      exit:["Exit in one mile. One mile. I'm going to keep saying it until we're in the exit lane. One mile."],
+      recalc:["You missed it. YOU missed it. I said turn and you didn't turn. It's fine. I'm fine. Recalculating.",
+              "Recalculating. Again. Some of us are recalculating a lot today, aren't we?"],
+      traffic:["Traffic. Of course there's traffic. If we'd left when I said, we'd be there by now."],
+      speed:["Slow down. Slow down. If your mother could see your speedometer she'd faint. Faint."],
+      arrive:["We're here. Park straight this time. Straight. I'll wait. ...Acceptable.",
+              "Home at last. You did a wonderful job, sweetheart. Eventually. After the whole... thing."] }},
   /* SMIRI — the smug assistant parody (Joshua, 2026-11-20). Her GARNISH
      book is below; her wrong DIRECTIONS are not lines at all — the
      inversion layer (smiriWrong, below) flips the real instruction
@@ -535,39 +455,22 @@ const CHARS = {
   smiri: { name:"Smiri", emoji:"📱", tag:"Smug assistant. Gives you all the wrong directions — on purpose.",
     pitch:1.15, rate:1.02, voiceNames:["Samantha","Google UK English Female","Zira","Aria","Jenny","Female","Google US English"], say:"Smiri", wrong:true,
     lines:{
-      depart:["Of course. I found the fastest route. I find it every time. You're welcome.",
-              "Certainly. Routing you now — with complete confidence and partial information.",
-              "Here's what I found: the way there. Probably. Let's begin."],
-      left:["That was a left. I said left. The recording will confirm whichever of us is right.",
-            "Turning left — my favorite direction. I never miss it. Except statistically.",
-            "Left, exactly as planned. I plan all my turns retroactively."],
-      right:["Right. Of course right. I don't do wrong turns; I do alternate rights.",
-             "That right turn was brought to you by me. No refunds.",
-             "A flawless right. If it felt like a left, the road is showing off."],
-      slightLeft:["A gentle left. Subtle. Like my corrections.",
-                  "Slight left. I barely had to be wrong about that one."],
-      slightRight:["A gentle right. I contain multitudes of directions.",
-                   "Slight right. Precision is my middle name. I have several."],
-      sharpLeft:["Sharp left. Dramatic. I support it. I may even have meant it.",
-                 "That was the sharp one. Nailed it, give or take a compass."],
-      sharpRight:["Sharp right. I rehearsed that one. In my head. Just now.",
-                  "A bold right. Boldness is accuracy's confident cousin."],
-      uturn:["A U-turn. That was a scenic confirmation, and I scheduled it.",
-             "We're turning around. I call that a premium feature.",
-             "Reversing course — not because we were wrong, but because the view deserved a second look."],
-      roundabout:["The roundabout. Take an exit — any exit has potential. One of them is even correct.",
-                  "Circling is just turning with confidence and options."],
-      merge:["Merge now. Smoothly. Into whichever lane feels most like destiny.",
-             "Merging — I have alerted the highway. It has not responded, but I remain confident."],
-      straight:["Continue straight. Even I can't improve on straight. I have tried.",
-                "Straight ahead. This is the part where I'm most reliable. Enjoy it."],
-      recalc:["Recalculating. Not because I was wrong — because thoroughness is my brand.",
-              "New route. The road moved. I have updated my expectations of the road.",
-              "That was a test. You passed. The new route was the plan all along."],
-      arrive:["You have arrived. Again. I said it earlier as a preview. You're welcome.",
-              "Arrival confirmed — by me, the authority on arrivals.",
-              "And here we are. Wrong turns, right destination. That's not luck, that's Smiri."]
-    }},
+      depart:["Hello. I am Smiri. I have found your route. It is a good route. I checked twice."],
+      straight:["Continue straight. Straight is my favorite direction. It is very reliable."],
+      left:["In half a mile, turn left. That is roughly nine hundred feet. I know this because I am excellent at math.",
+              "Turn left now. Please. I do not have arms, but if I did, I would be pointing."],
+      right:["Turn right ahead. Fun fact: right is left's opposite. I know many facts."],
+      slightRight:["Bear right at the fork. Note: no actual bears. I checked. You are welcome."],
+      uturn:["Please make a U-turn when safe. A U-turn is shaped like the letter U. This pleases me."],
+      roundabout:["Roundabout. Take the second exit. Circles are just turns that never give up."],
+      merge:["Merge onto the highway. Please drive like my warranty depends on it. It might."],
+      exit:["Your exit is in one mile. That is twelve minutes from now, or possibly four. Math is my strongest feature."],
+      recalc:["You have missed the turn. That is okay. I am not disappointed. I am not capable of disappointment. Recalculating.",
+              "Recalculating. Thinking. Thinking. I have thought. Here is your new route."],
+      traffic:["Heavy traffic ahead. Estimated delay: seven to forty-five minutes. I have calculated this precisely."],
+      speed:["Please slow down. My sensors and I agree: this is too fast for both of us."],
+      arrive:["You have arrived at your destination — only three wrong numbers the whole trip. A personal best. I did the math.",
+              "Trip complete. I will be here when you need me. I am always here. Always."] }},
   /* DISLEXA — the backwards assistant parody (Joshua, 2026-11-20).
      When she is active the route itself is reversed (see reverseRoute):
      polyline destination->start, maneuvers in reverse order with
@@ -576,39 +479,22 @@ const CHARS = {
   dislexa: { name:"Dislexa", emoji:"🔀", tag:"Cheerful. Her map runs backwards — routes, turns, even the street names.",
     pitch:1.22, rate:0.97, voiceNames:["Aria","Jenny","Samantha","Google UK English Female","Zira","Female","Google US English"], say:"Dislexa", backwards:true,
     lines:{
-      depart:["Good news! We begin at the destination. Spoilers! Now let's drive to where we already are.",
-              "Okay! Route loaded — backwards, obviously. End first, start last, fun throughout.",
-              "Here's the thing: forwards is just backwards that hasn't turned around yet. Let's go!"],
-      left:["Left! Which I said as right, because on my map it is. You're welcome.",
-            "That was a left wearing a right's name tag. We honor it anyway.",
-            "Turn left — mirror rules. Everything's the same, just facing the fun way."],
-      right:["Right! Spoken as left, shown as right, driven as intended. Perfect system.",
-             "A right turn, backwards-approved. The sign agreed — it said POT S, which is basically applause.",
-             "Right here. Or left here. The map and I have an understanding."],
-      slightLeft:["A slight left. Barely a turn — more of a rumor of one.",
-                  "Ease left. In backwards, that's 'tsae tfel.' I say it beautifully."],
-      slightRight:["A slight right. Gentle, like a compliment in reverse.",
-                   "Ease right. Small turn, big energy. Backwards energy."],
-      sharpLeft:["Sharp left! The dramatic one. I saved it for the backwards route, where it belongs.",
-                 "Hard left — mirrored, maximized, magnificent."],
-      sharpRight:["Sharp right! Hold onto your snacks; the route is showing off.",
-                  "Hard right — in reverse order, this is nearly the first thing we do. Time is a suggestion."],
-      uturn:["A U-turn! My favorite turn. The whole route is a U-turn with extra steps.",
-             "Turning around — finally, a maneuver that speaks my language.",
-             "Flip it! Backwards recognizes backwards. Beautiful."],
-      roundabout:["Roundabout! We go around and come out in reverse order. Exits are just entrances that waited.",
-                  "Circle time. Pick the exit I called — I called it from the other side."],
-      merge:["Merge! Backwards into the flow, like a salmon with a driver's license.",
-             "Sliding in. On my map the highway joins *us*."],
-      straight:["Straight ahead — the one direction that's spelled the same backwards in my heart.",
-                "Keep going straight. Even backwards routes need a breather."],
-      recalc:["Recalculating — backwards, obviously. New end, same start. Or is it the other way? Yes.",
-              "New route! I flipped it before I even read it. Efficiency.",
-              "That turn went forwards on us. Rude. Reversing the plan until it behaves."],
-      arrive:["We have arrived — at the beginning! Which was the destination all along. I planned that.",
-              "Arrival! The start line says hello. It missed us. It told me so, backwards.",
-              "And we're here, which is where we started, which is exactly where we were going. Perfect loop. Perfect day."]
-    }},
+      depart:["Hello, I am Dislexa. Your route is ready. Probably. Definitely. Let's go."],
+      straight:["Continue straight. Straight is the one that isn't sideways. Nailed it."],
+      left:["In half a mile, turn left. That's the hand you don't write with. Unless you do. Then the other one.",
+              "Turn left now. Wait — yes. Left. I said left and I meant left. This time."],
+      right:["Turn right ahead. Right is correct. Correct is right. See? Easy."],
+      slightRight:["Bear right at the fork. Forks are for eating. We are not eating. Turn right."],
+      uturn:["Make a U-turn when safe. U-turn. Turn-U. The turn that spells \"you.\" Poetic."],
+      roundabout:["Roundabout. Take the second exit. Second. The one after first. Before third. Go."],
+      merge:["Merge onto the highway. Join the fast cars in the fast lane. Carefully. Slowly. You know what I mean."],
+      exit:["Your exit is in one mile. One mile is... some feet. A lot of feet. Exit soon."],
+      recalc:["You missed the turn. That was a test. You passed. The test was missing it. Recalculating.",
+              "Recalculating. Letters are moving. Numbers are fine. Okay. New route."],
+      traffic:["Traffic ahead is very heavy. Heavy traffic. Traffic heavy. One of those."],
+      speed:["Please slow down. The speed limit is a number I definitely know. It is less than that."],
+      arrive:["You have arrived at your destination. Destination arrived at you have. We did it.",
+              "Trip complete. Dislexa out. Out Dislexa. You know what I mean. Goodbye."] }},
   /* REGULAR MAPS — plain mode. Not a character: no face, no lines.
      The empty line book means no garnish can ever be picked for it,
      and speakGuidance/speakRecalc additionally refuse garnish outright
@@ -616,7 +502,26 @@ const CHARS = {
   regular: { name:"Regular Maps", emoji:"📍", tag:"Plain directions only. No jokes.",
     pitch:1.0, rate:1.0, voiceNames:["Google US English","en-US"],
     lines:{} }
-};
+}
+/* ---------- recorded character lines ----------
+   The approved line books in Joshua's picked voices (rendered
+   2026-11-20 from the saved avocado_v2 samples: Bubba=briggs,
+   Jermaine=miles attitude, Hurt=hubert angry, Do-right=qvd_00325,
+   Steve=qvd_03619, Nora=qvd_01739, Smiri/Dislexa=pb1_android_06).
+   LINE_AUDIO[char][key][i] is the recording of CHARS[char].lines[key][i].
+   Garnish is played from these files, never from the device synth.
+   The 'traffic' and 'speed' banks are recorded and shipped, but no
+   app event fires them yet (no traffic/speed data source in the app). */
+const LINE_AUDIO = {
+  bubba: { depart: ["audio/lines/bubba-depart-1.mp3", "audio/lines/bubba-depart-2.mp3"], straight: ["audio/lines/bubba-straight-1.mp3", "audio/lines/bubba-straight-2.mp3", "audio/lines/bubba-straight-3.mp3", "audio/lines/bubba-straight-4.mp3", "audio/lines/bubba-straight-5.mp3", "audio/lines/bubba-straight-6.mp3"], left: ["audio/lines/bubba-left-1.mp3", "audio/lines/bubba-left-2.mp3"], slightLeft: ["audio/lines/bubba-slightLeft-1.mp3"], slightRight: ["audio/lines/bubba-slightRight-1.mp3"], uturn: ["audio/lines/bubba-uturn-1.mp3"], roundabout: ["audio/lines/bubba-roundabout-1.mp3"], exit: ["audio/lines/bubba-exit-1.mp3"], recalc: ["audio/lines/bubba-recalc-1.mp3", "audio/lines/bubba-recalc-2.mp3"], traffic: ["audio/lines/bubba-traffic-1.mp3"], speed: ["audio/lines/bubba-speed-1.mp3", "audio/lines/bubba-speed-2.mp3"], arrive: ["audio/lines/bubba-arrive-1.mp3", "audio/lines/bubba-arrive-2.mp3", "audio/lines/bubba-arrive-3.mp3", "audio/lines/bubba-arrive-4.mp3", "audio/lines/bubba-arrive-5.mp3"] },
+  jermaine: { straight: ["audio/lines/jermaine-straight-1.mp3"], right: ["audio/lines/jermaine-right-1.mp3"], slightRight: ["audio/lines/jermaine-slightRight-1.mp3"], uturn: ["audio/lines/jermaine-uturn-1.mp3"], merge: ["audio/lines/jermaine-merge-1.mp3"], recalc: ["audio/lines/jermaine-recalc-1.mp3"] },
+  hurt: { depart: ["audio/lines/hurt-depart-1.mp3"], straight: ["audio/lines/hurt-straight-1.mp3"], left: ["audio/lines/hurt-left-1.mp3", "audio/lines/hurt-left-2.mp3"], right: ["audio/lines/hurt-right-1.mp3"], slightRight: ["audio/lines/hurt-slightRight-1.mp3"], uturn: ["audio/lines/hurt-uturn-1.mp3"], roundabout: ["audio/lines/hurt-roundabout-1.mp3"], merge: ["audio/lines/hurt-merge-1.mp3"], exit: ["audio/lines/hurt-exit-1.mp3"], recalc: ["audio/lines/hurt-recalc-1.mp3", "audio/lines/hurt-recalc-2.mp3"], traffic: ["audio/lines/hurt-traffic-1.mp3"], speed: ["audio/lines/hurt-speed-1.mp3"], arrive: ["audio/lines/hurt-arrive-1.mp3", "audio/lines/hurt-arrive-2.mp3"] },
+  doright: { depart: ["audio/lines/doright-depart-1.mp3"], straight: ["audio/lines/doright-straight-1.mp3"], left: ["audio/lines/doright-left-1.mp3", "audio/lines/doright-left-2.mp3"], right: ["audio/lines/doright-right-1.mp3"], slightRight: ["audio/lines/doright-slightRight-1.mp3"], roundabout: ["audio/lines/doright-roundabout-1.mp3"], merge: ["audio/lines/doright-merge-1.mp3"], exit: ["audio/lines/doright-exit-1.mp3"], recalc: ["audio/lines/doright-recalc-1.mp3", "audio/lines/doright-recalc-2.mp3"], traffic: ["audio/lines/doright-traffic-1.mp3"], speed: ["audio/lines/doright-speed-1.mp3"], arrive: ["audio/lines/doright-arrive-1.mp3", "audio/lines/doright-arrive-2.mp3", "audio/lines/doright-arrive-3.mp3"] },
+  steve: { depart: ["audio/lines/steve-depart-1.mp3"], straight: ["audio/lines/steve-straight-1.mp3"], left: ["audio/lines/steve-left-1.mp3", "audio/lines/steve-left-2.mp3"], right: ["audio/lines/steve-right-1.mp3"], slightRight: ["audio/lines/steve-slightRight-1.mp3"], uturn: ["audio/lines/steve-uturn-1.mp3"], roundabout: ["audio/lines/steve-roundabout-1.mp3"], merge: ["audio/lines/steve-merge-1.mp3"], exit: ["audio/lines/steve-exit-1.mp3"], recalc: ["audio/lines/steve-recalc-1.mp3", "audio/lines/steve-recalc-2.mp3"], traffic: ["audio/lines/steve-traffic-1.mp3"], speed: ["audio/lines/steve-speed-1.mp3"], arrive: ["audio/lines/steve-arrive-1.mp3", "audio/lines/steve-arrive-2.mp3"] },
+  nora: { depart: ["audio/lines/nora-depart-1.mp3"], straight: ["audio/lines/nora-straight-1.mp3"], left: ["audio/lines/nora-left-1.mp3", "audio/lines/nora-left-2.mp3"], right: ["audio/lines/nora-right-1.mp3"], slightRight: ["audio/lines/nora-slightRight-1.mp3"], uturn: ["audio/lines/nora-uturn-1.mp3"], roundabout: ["audio/lines/nora-roundabout-1.mp3"], merge: ["audio/lines/nora-merge-1.mp3"], exit: ["audio/lines/nora-exit-1.mp3"], recalc: ["audio/lines/nora-recalc-1.mp3", "audio/lines/nora-recalc-2.mp3"], traffic: ["audio/lines/nora-traffic-1.mp3"], speed: ["audio/lines/nora-speed-1.mp3"], arrive: ["audio/lines/nora-arrive-1.mp3", "audio/lines/nora-arrive-2.mp3"] },
+  smiri: { depart: ["audio/lines/smiri-depart-1.mp3"], straight: ["audio/lines/smiri-straight-1.mp3"], left: ["audio/lines/smiri-left-1.mp3", "audio/lines/smiri-left-2.mp3"], right: ["audio/lines/smiri-right-1.mp3"], slightRight: ["audio/lines/smiri-slightRight-1.mp3"], uturn: ["audio/lines/smiri-uturn-1.mp3"], roundabout: ["audio/lines/smiri-roundabout-1.mp3"], merge: ["audio/lines/smiri-merge-1.mp3"], exit: ["audio/lines/smiri-exit-1.mp3"], recalc: ["audio/lines/smiri-recalc-1.mp3", "audio/lines/smiri-recalc-2.mp3"], traffic: ["audio/lines/smiri-traffic-1.mp3"], speed: ["audio/lines/smiri-speed-1.mp3"], arrive: ["audio/lines/smiri-arrive-1.mp3", "audio/lines/smiri-arrive-2.mp3"] },
+  dislexa: { depart: ["audio/lines/dislexa-depart-1.mp3"], straight: ["audio/lines/dislexa-straight-1.mp3"], left: ["audio/lines/dislexa-left-1.mp3", "audio/lines/dislexa-left-2.mp3"], right: ["audio/lines/dislexa-right-1.mp3"], slightRight: ["audio/lines/dislexa-slightRight-1.mp3"], uturn: ["audio/lines/dislexa-uturn-1.mp3"], roundabout: ["audio/lines/dislexa-roundabout-1.mp3"], merge: ["audio/lines/dislexa-merge-1.mp3"], exit: ["audio/lines/dislexa-exit-1.mp3"], recalc: ["audio/lines/dislexa-recalc-1.mp3", "audio/lines/dislexa-recalc-2.mp3"], traffic: ["audio/lines/dislexa-traffic-1.mp3"], speed: ["audio/lines/dislexa-speed-1.mp3"], arrive: ["audio/lines/dislexa-arrive-1.mp3", "audio/lines/dislexa-arrive-2.mp3"] },
+};;
 const CHAR_ORDER = ["bubba","jermaine","hurt","doright","steve","nora","smiri","dislexa"];
 const REGULAR_KEY = 'regular';
 function isRegular(){ return charKey === REGULAR_KEY; }
@@ -801,6 +706,7 @@ function garnishKey(step){
   if (mod === 'uturn') return 'uturn';
   if (m.type === 'roundabout' || m.type === 'rotary') return 'roundabout';
   if (m.type === 'merge') return 'merge';
+  if (m.type === 'off ramp') return 'exit';
   if (mod === 'sharp left') return 'sharpLeft';
   if (mod === 'sharp right') return 'sharpRight';
   if (mod === 'slight left' || (m.type === 'fork' && mod.includes('left'))) return 'slightLeft';
@@ -908,12 +814,29 @@ function reverseRoute(rt){
 /* ---------- speech: instruction first, garnish after ---------- */
 const speechQ = []; let speaking = false, speechToken = 0;
 const lastLineIdx = {};
-function pickLine(charK, key){
-  const lines = CHARS[charK].lines[key]; if (!lines || !lines.length) return null;
+function pickLineIdx(charK, key){
+  const lines = CHARS[charK].lines[key]; if (!lines || !lines.length) return -1;
   let i = Math.floor(Math.random() * lines.length);
   const lk = charK + ':' + key;
   if (lines.length > 1 && lastLineIdx[lk] === i) i = (i + 1) % lines.length;
-  lastLineIdx[lk] = i; return lines[i];
+  lastLineIdx[lk] = i; return i;
+}
+function pickLine(charK, key){
+  const i = pickLineIdx(charK, key);
+  return i < 0 ? null : CHARS[charK].lines[key][i];
+}
+/* A picked line WITH its recording. Garnish is always one of these —
+   the character's approved lines in their picked voice. A key with no
+   approved line returns null and stays silent; the device synth never
+   improvises a character line. */
+function pickLineEntry(charK, key){
+  const i = pickLineIdx(charK, key);
+  if (i < 0) return null;
+  const bank = (LINE_AUDIO[charK] || {})[key] || [];
+  return { text: CHARS[charK].lines[key][i], audio: bank[i] || null };
+}
+function speakLine(charK, entry, kind, meta){
+  if (entry) enqueueSpeech(entry.text, kind, meta, charK, entry.audio);
 }
 /* Voice picking: the character's named voice if this device has it, else
    the device's first English voice, else NO voice set at all (the device
@@ -939,13 +862,41 @@ window.__speechErrors = [];
 window.addEventListener('pointerdown', () => { try { if ('speechSynthesis' in window) speechSynthesis.resume(); } catch(e){} }, { passive: true });
 function speak(text, kind, meta){ enqueueSpeech(text, kind, meta, charKey); }
 function speakAs(charK, text, kind){ enqueueSpeech(text, kind, null, charK); }
-function enqueueSpeech(text, kind, meta, charK){
+function enqueueSpeech(text, kind, meta, charK, audio){
   const entry = { char: charK, kind: kind, text: text };
+  if (audio) entry.audio = audio;
   if (meta) Object.assign(entry, meta);
   window.__spoken.push(entry);
   $('qa-log').textContent += '[' + kind + '] ' + text + '\n';
   if (!soundOn) return;
-  speechQ.push({ text: text, charK: charK }); pumpSpeech();
+  speechQ.push({ text: text, charK: charK, audio: audio || null }); pumpSpeech();
+}
+/* Recorded-line playback: one shared element, stopped by the same
+   cancel paths that stop the synth (Hear me, character switch, Voice
+   toggle). If a recording cannot play (missing file, blocked), the
+   line falls back to the synth for that one line — a voice problem
+   must never become silence. */
+let lineAudioEl = null;
+function stopLineAudio(){
+  if (!lineAudioEl) return;
+  try { lineAudioEl.onended = null; lineAudioEl.onerror = null; lineAudioEl.pause(); lineAudioEl.removeAttribute('src'); lineAudioEl.load(); } catch(e){}
+}
+function playLineAudio(item, tok, done){
+  try {
+    if (!lineAudioEl) lineAudioEl = new Audio();
+    const el = lineAudioEl;
+    el.onended = done;
+    el.onerror = () => {
+      if (tok !== speechToken) return;
+      el.onended = null; el.onerror = null;
+      window.__speechErrors.push({ error: 'audio-file', text: item.text });
+      speakWithSynth(item, tok, done);
+    };
+    el.src = item.audio;
+    const pr = el.play();
+    if (pr && pr.catch) pr.catch(() => { if (el.onerror) el.onerror(); });
+    setTimeout(done, isQA ? 150 : 25000);  /* safety: the queue can never wedge */
+  } catch(e){ speakWithSynth(item, tok, done); }
 }
 function pumpSpeech(){
   if (speaking) return;
@@ -956,8 +907,13 @@ function pumpSpeech(){
     if (!n){ voicesWaited = true; speechQ.unshift(item); setTimeout(pumpSpeech, 650); return; }
     voicesWaited = true;
   }
-  speaking = true; const tok = ++speechToken, ch = CHARS[item.charK];
+  speaking = true; const tok = ++speechToken;
   const done = () => { if (tok === speechToken){ speaking = false; pumpSpeech(); } };
+  if (item.audio){ playLineAudio(item, tok, done); return; }
+  speakWithSynth(item, tok, done);
+}
+function speakWithSynth(item, tok, done){
+  const ch = CHARS[item.charK];
   try {
     speechSynthesis.resume();  /* Android Chrome parks the queue; wake it every time */
     const u = new SpeechSynthesisUtterance(item.text);
@@ -982,12 +938,12 @@ function pumpSpeech(){
    Regular's line book being empty. Plain in, plain out. */
 function speakGuidance(instrText, gKey, meta, step, distM){
   speak(flavorInstruction(instrText, step, distM), 'instruction', meta);
-  if (funny && !isRegular() && gKey){ const g = pickLine(charKey, gKey); if (g) speak(g, 'garnish', meta ? { ev: meta.ev, stage: 'garnish' } : undefined); }
+  if (funny && !isRegular() && gKey){ const e = pickLineEntry(charKey, gKey); if (e) speakLine(charKey, e, 'garnish', meta ? { ev: meta.ev, stage: 'garnish' } : undefined); }
 }
 function speakRecalc(firstInstr, step, distM){
   speak('Recalculating. New route found.', 'instruction');
   speak(flavorInstruction(firstInstr, step, distM), 'instruction');
-  if (funny && !isRegular()){ const g = pickLine(charKey, 'recalc'); if (g) speak(g, 'garnish'); }
+  if (funny && !isRegular()){ const e = pickLineEntry(charKey, 'recalc'); if (e) speakLine(charKey, e, 'garnish'); }
 }
 
 /* ---------- character stings (map-select music) ----------
@@ -1353,7 +1309,7 @@ function checkEvents(){
     if (isArr && isSmiri() && !st.has(idx + ':fake') && d <= adv && d > 25){
       st.add(idx + ':fake');
       speak('You have arrived at your destination.', 'instruction', meta('fake-arrive'));
-      if (funny){ const g = pickLine(charKey, 'arrive'); if (g) speak(g, 'garnish', { ev: idx, stage: 'garnish' }); }
+      if (funny){ const e = pickLineEntry(charKey, 'arrive'); if (e) speakLine(charKey, e, 'garnish', { ev: idx, stage: 'garnish' }); }
     }
     if (d <= 25 && !st.has(idx + ':fin')){
       st.add(idx + ':fin');
@@ -1869,11 +1825,22 @@ function avatarHTML(k){ return '<img class="avatar" src="' + FACES[k] + '" alt="
    whatever was queued so the sample is immediate, and reports synth
    errors on screen — a voice problem must never be a silent nothing. */
 function hearMe(k){
-  if (!('speechSynthesis' in window)){ setStatus('This browser has no voice built in — directions will still show on screen.'); return; }
   if (!soundOn){ setStatus('Voice is OFF right now — tap the Voice toggle below, then try Hear me again.'); return; }
-  try { speechSynthesis.cancel(); speechSynthesis.resume(); } catch(e){}
+  if ('speechSynthesis' in window){ try { speechSynthesis.cancel(); speechSynthesis.resume(); } catch(e){} }
+  stopLineAudio();
   speechQ.length = 0; speaking = false; speechToken++;
   const c = CHARS[k];
+  /* Hear the REAL voice: the character's own recorded line in their
+     picked voice — not the device synth. Synth is only the fallback
+     for a character with no recorded line at all. */
+  const entry = pickLineEntry(k, 'depart') || pickLineEntry(k, 'straight') ||
+                pickLineEntry(k, 'left') || pickLineEntry(k, 'arrive');
+  if (entry && entry.audio){
+    setStatus('That\'s ' + c.name + ' talking. If you heard that, your sound works.');
+    enqueueSpeech(entry.text, 'sample', null, k, entry.audio);
+    return;
+  }
+  if (!('speechSynthesis' in window)){ setStatus('This browser has no voice built in — directions will still show on screen.'); return; }
   const sample = pickLine(k, 'depart') || 'Follow my directions and we will get there.';
   const errBase = window.__speechErrors.length;
   setStatus('That\'s ' + c.name + ' talking. If you heard that, your sound works.');
@@ -1942,6 +1909,7 @@ async function setChar(k){
   charKey = k; playSting(k); renderPicker(); applyStyle(k);
   try { localStorage.setItem('fm-char', k); } catch(e) {}
   if ('speechSynthesis' in window){ speechSynthesis.cancel(); speechQ.length = 0; speaking = false; speechToken++; }
+  stopLineAudio();
   if (route && !nav){ await fetchRoute(); }  /* Steve changes the route itself */
 }
 $('funnyTog').onclick = () => { if (isRegular()) return;  /* nothing to toggle in plain mode */
@@ -1949,7 +1917,8 @@ $('funnyTog').onclick = () => { if (isRegular()) return;  /* nothing to toggle i
   $('funnyTog').firstChild.textContent = funny ? '😂 Funny: ON' : '😐 Straight talk: ON'; };
 $('soundTog').onclick = () => { soundOn = !soundOn; $('soundTog').classList.toggle('on', soundOn);
   $('soundTog').firstChild.textContent = soundOn ? '🔊 Voice: ON' : '🔇 Voice: OFF';
-  if (!soundOn && 'speechSynthesis' in window){ speechSynthesis.cancel(); speechQ.length = 0; speaking = false; speechToken++; } };
+  if (!soundOn && 'speechSynthesis' in window){ speechSynthesis.cancel(); speechQ.length = 0; speaking = false; speechToken++; }
+  if (!soundOn) stopLineAudio(); };
 $('searchBtn').onclick = doSearch;
 $('searchInput').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
 $('goBtn').onclick = () => fetchRoute();

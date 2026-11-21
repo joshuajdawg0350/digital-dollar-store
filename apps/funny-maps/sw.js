@@ -20,8 +20,12 @@
    Emergency Maps included); its dismissal is now remembered.
    v5 (2026-11-20): theme stings wired for the other six characters
    (Hurt, Doright, Steve, Nora, Smiri, Dislexa) — audio files ride
-   along on demand like Bubba's and Jermaine's, not in the shell. */
-const SHELL_CACHE = 'funny-maps-shell-v5';
+   along on demand like Bubba's and Jermaine's, not in the shell.
+   v6 (2026-11-20): the characters speak their approved line books in
+   Joshua's picked voices — recorded lines under audio/lines/ play on
+   demand (never in the shell); the device synth is no longer any
+   character's voice for those lines. */
+const SHELL_CACHE = 'funny-maps-shell-v6';
 const SHELL = [
   './',
   './index.html',
