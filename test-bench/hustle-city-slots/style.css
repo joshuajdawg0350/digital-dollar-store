@@ -339,7 +339,7 @@ body {
      label width — with plain 1fr the widest label (SOUND) forced its column
      open and hung off the right side of the cabinet on narrow phones
      (Cheryl's report, 2026-11-21). */
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, .8fr) minmax(0, .8fr) minmax(0, .9fr) auto minmax(0, 1.05fr) minmax(0, 1.45fr);
   gap: 8px;
   align-items: center;
 }
@@ -718,3 +718,65 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .fs-banner.on, .cell.win::after, .cell.win img, .spin-btn:not(:disabled) .spin-ring { animation: none; }
 }
+
+/* ---------- celebration screens (2026-11-21) ----------
+   Bonus / free-spins triggers celebrate BEFORE the prize starts:
+   full-cabinet overlay, marquee light-chase, tap to skip ahead. */
+.celeb {
+  position: fixed; inset: 0; z-index: 70;
+  display: none; align-items: center; justify-content: center;
+  background: rgba(2, 6, 14, .82);
+  padding: 18px;
+}
+.celeb.on { display: flex; }
+.celeb-frame {
+  position: relative;
+  width: min(92vw, 430px);
+  text-align: center;
+  padding: 34px 20px 26px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #101b2c, #060b14);
+  border: 2px solid #7fd4ff;
+  box-shadow: 0 0 34px rgba(64, 170, 255, .45), inset 0 0 22px rgba(64, 170, 255, .12);
+}
+.celeb-frame::before {
+  content: ''; position: absolute; inset: -9px; border-radius: 24px;
+  border: 3px dotted #ffd76a;
+  animation: celebChase 0.9s linear infinite;
+  pointer-events: none;
+}
+@keyframes celebChase {
+  0% { border-color: #ffd76a; box-shadow: 0 0 14px rgba(255, 215, 106, .8); }
+  50% { border-color: #40aaff; box-shadow: 0 0 22px rgba(64, 170, 255, .9); }
+  100% { border-color: #ffd76a; box-shadow: 0 0 14px rgba(255, 215, 106, .8); }
+}
+.celeb-kick {
+  font-size: 15px; font-weight: 800; letter-spacing: 4px; color: #ffd76a;
+  text-shadow: 0 0 10px rgba(255, 215, 106, .8);
+}
+.celeb-title {
+  margin-top: 8px;
+  font-size: clamp(30px, 9vw, 46px); font-weight: 900; line-height: 1.05;
+  color: #eaf6ff;
+  text-shadow: 0 0 18px rgba(64, 170, 255, .9), 0 2px 0 #0a2c4a;
+  animation: celebPop 0.45s ease-out;
+}
+@keyframes celebPop { 0% { transform: scale(0.6); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+.celeb-sub { margin-top: 10px; font-size: 15px; color: #bfe3ff; }
+.celeb-tap {
+  margin-top: 18px; font-size: 12px; letter-spacing: 3px; color: #8fb8d8;
+  animation: celebBlink 1s ease-in-out infinite;
+}
+@keyframes celebBlink { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
+.celeb.k-fs .celeb-frame { border-color: #9db4cc; box-shadow: 0 0 22px rgba(120, 170, 220, .35), inset 0 0 16px rgba(120, 170, 220, .1); }
+.celeb.k-fs .celeb-title { font-size: clamp(26px, 8vw, 38px); }
+@media (prefers-reduced-motion: reduce) {
+  .celeb-frame::before, .celeb-title, .celeb-tap { animation: none; }
+}
+
+/* six-button row fit (2026-11-21): with −25/+25 added, labels must fit
+   INSIDE their button — no text spilling onto the neighbor (the Cheryl
+   overflow class). */
+.chrome-btn { overflow: hidden; }
+.controls .btn-top { font-size: clamp(10px, 3vw, 11.5px); letter-spacing: .01em; }
+.controls .btn-sub { font-size: clamp(8px, 2.4vw, 10px); letter-spacing: .03em; }
