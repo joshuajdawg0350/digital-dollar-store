@@ -998,12 +998,25 @@ function speakRecalc(firstInstr, step, distM){
    sting is the chorus hook of his full original country instrumental
    (Joshua's settled direction 2026-11-20: an original country song,
    instrumental — a real commercial song was refused on licensing, and
-   the earlier sting takes were rejected). The Voice toggle mutes the
+   the earlier sting takes were rejected). The other six characters'
+   stings were wired 2026-11-20 to Joshua's directions the same day:
+   Major Hurt = original Reveille-style bugle fanfare, Officer Doright
+   = original reggae cop groove, Stoner Steve = original laid-back
+   West Coast groove, Nagging Nora = broken-record skip loop, Smiri =
+   our own rendition of the public-domain Gran Vals (the Nokia tune),
+   Dislexa = dial-up handshake that mishears itself (Joshua's pick #2
+   of five options). The Voice toggle mutes the
    whole car, music included. A blocked or offline play attempt is
    silence, never an error. */
 const STINGS = {
   jermaine: 'audio/jermaine-hiphop-sting.mp3',
-  bubba: 'audio/bubba-country-sting.mp3'
+  bubba: 'audio/bubba-country-sting.mp3',
+  hurt: 'audio/hurt-reveille-sting.mp3',
+  doright: 'audio/doright-reggae-sting.mp3',
+  steve: 'audio/steve-westcoast-sting.mp3',
+  nora: 'audio/nora-broken-record-sting.mp3',
+  smiri: 'audio/smiri-nokia-sting.mp3',
+  dislexa: 'audio/dislexa-dialup-sting.mp3'
 };
 window.__stingLog = [];
 let stingAudio = null;

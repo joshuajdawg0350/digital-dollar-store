@@ -17,8 +17,11 @@
    from the 2026-11-20 thumbnail board (all 8 characters).
    v4 (2026-11-20): the location-off card no longer covers the control
    panel (it floated over the sheet and froze every panel touch,
-   Emergency Maps included); its dismissal is now remembered. */
-const SHELL_CACHE = 'funny-maps-shell-v4';
+   Emergency Maps included); its dismissal is now remembered.
+   v5 (2026-11-20): theme stings wired for the other six characters
+   (Hurt, Doright, Steve, Nora, Smiri, Dislexa) — audio files ride
+   along on demand like Bubba's and Jermaine's, not in the shell. */
+const SHELL_CACHE = 'funny-maps-shell-v5';
 const SHELL = [
   './',
   './index.html',
