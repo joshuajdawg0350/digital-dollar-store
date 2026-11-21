@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>Design Board — Hustle City Digital Poker · Black + Electric Blue</title>
+<meta name="description" content="Nine black and electric blue design treatments for the Hustle City Digital Poker machine, rendered live from the machine's own code. Pick a number.">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+:root{
+  --blue:#2f8cff; --blue2:#7cc0ff; --blue-hot:#38b6ff;
+  --ink:#eef6ff; --muted:#9db9d9;
+}
+html,body{background:#000}
+body{
+  font-family:"Avenir Next","Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+  color:var(--ink);
+  background:linear-gradient(180deg,#000,#02040a 30%,#000);
+  min-height:100dvh;
+}
+#wrap{max-width:600px;margin:0 auto;padding:14px 10px 30px}
+header.board-head{text-align:center;padding:8px 4px 4px}
+header.board-head .house{font-size:10px;font-weight:900;letter-spacing:.52em;color:var(--blue2);text-shadow:0 0 12px rgba(56,182,255,.8);margin-left:.52em}
+header.board-head h1{
+  font-size:clamp(23px,7.2vw,36px);line-height:1.02;font-weight:1000;letter-spacing:.045em;text-transform:uppercase;margin-top:4px;
+  background:linear-gradient(180deg,#fff 0%,#eaf3ff 30%,#8fb4d8 52%,#f8fdff 56%,#5f7e9f 78%,#d7e7f7 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 2px 1px rgba(0,0,0,.85)) drop-shadow(0 0 14px rgba(56,182,255,.28));
+}
+header.board-head .sub{margin-top:5px;font-size:11px;font-weight:800;letter-spacing:.16em;color:#cfe5ff;text-transform:uppercase}
+header.board-head .pick{margin-top:9px;font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.02em;line-height:1.55}
+header.board-head .pick b{color:#fff}
+
+/* ---------- one option ---------- */
+.opt{margin-top:20px}
+.opt-head{display:flex;align-items:center;gap:10px;padding:0 2px 7px}
+.opt-num{
+  flex:0 0 auto;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:17px;font-weight:1000;color:#04101f;
+  background:linear-gradient(180deg,#fff,#7cc0ff 60%,#2f8cff);border:1.5px solid #fff;
+  box-shadow:0 0 14px rgba(56,182,255,.8), 0 3px 6px rgba(0,0,0,.6);
+}
+.opt-name{font-size:16.5px;font-weight:1000;letter-spacing:.05em;text-transform:uppercase;color:#fff;line-height:1.1}
+.opt-tag{font-size:9.5px;font-weight:800;letter-spacing:.18em;color:var(--blue2);text-transform:uppercase;margin-top:2px}
+
+/* ---------- the cabinet (themed per option) ---------- */
+.cabinet{position:relative;border-radius:20px;padding:12px 10px 13px;overflow:hidden;background:#000;border:2px solid #333}
+.cabinet .gloss{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:linear-gradient(115deg, rgba(255,255,255,.085) 0%, rgba(255,255,255,.012) 30%, transparent 46%);z-index:5}
+
+/* marquee — the game's own */
+.marquee{text-align:center;padding:2px 4px 8px;position:relative;z-index:1}
+.marquee .house{font-size:10px;font-weight:900;letter-spacing:.52em;color:var(--blue2);text-shadow:0 0 12px rgba(56,182,255,.8);margin-left:.52em}
+.marquee h1{
+  font-size:clamp(26px,8vw,40px);line-height:.98;font-weight:1000;letter-spacing:.045em;text-transform:uppercase;
+  background:linear-gradient(180deg,#fff 0%,#eaf3ff 30%,#8fb4d8 52%,#f8fdff 56%,#5f7e9f 78%,#d7e7f7 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 2px 1px rgba(0,0,0,.85)) drop-shadow(0 0 14px rgba(56,182,255,.28));
+}
+.marquee .sub{margin-top:3px;font-size:10.5px;font-weight:800;letter-spacing:.18em;color:#cfe5ff;text-transform:uppercase}
+.marquee .sub b{color:var(--blue2)}
+
+/* screen — the game's own */
+.screen{
+  position:relative;border-radius:18px;padding:10px 9px 11px;overflow:hidden;z-index:1;
+  background:
+    radial-gradient(130% 80% at 50% -10%, rgba(88,178,255,.20), transparent 55%),
+    radial-gradient(100% 70% at 50% 115%, rgba(20,70,140,.24), transparent 60%),
+    linear-gradient(180deg,#071426 0%,#050b16 55%,#03060d 100%);
+  border:2px solid #7288a3;
+  box-shadow:inset 0 0 0 2px rgba(0,0,0,.8), inset 0 0 34px rgba(0,0,0,.82), 0 4px 14px rgba(0,0,0,.65);
+}
+.pay-head .t{font-size:10px;font-weight:1000;letter-spacing:.22em;color:var(--blue2);text-shadow:0 0 10px rgba(56,182,255,.65)}
+.payrow{display:grid;grid-template-columns:1.6fr .8fr 1fr;gap:5px;margin-top:4px}
+.pay{
+  border-radius:9px;padding:5px 7px 6px;min-height:37px;
+  background:linear-gradient(180deg, rgba(50,86,140,.34), rgba(10,22,42,.72));
+  border:1px solid rgba(124,192,255,.28);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10);
+  display:flex;flex-direction:column;justify-content:center;
+}
+.pay .h{font-size:10.5px;font-weight:800;letter-spacing:.045em;color:#dceeff;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pay .v{font-size:16px;font-weight:800;color:#fff;line-height:1.1;text-shadow:0 0 9px rgba(56,182,255,.55)}
+.pay .v small{font-size:8.5px;color:var(--blue2);font-weight:800;letter-spacing:.05em}
+.pay.maxcell{background:linear-gradient(180deg, rgba(56,182,255,.34), rgba(10,60,130,.66));border-color:rgba(160,215,255,.6)}
+/* five card backs — the game's own .face.back treatment */
+.cards{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:9px}
+.bk{
+  position:relative;aspect-ratio:5/7;border-radius:9px;overflow:hidden;
+  border:1.5px solid #c3d4ea;
+  box-shadow:0 7px 14px rgba(0,0,0,.68), 0 2px 3px rgba(0,0,0,.8), inset 0 0 0 1px rgba(230,244,255,.55);
+  background:
+    radial-gradient(circle at 50% 50%, rgba(56,182,255,.5) 0 13%, rgba(10,30,60,0) 30%),
+    repeating-linear-gradient(45deg, rgba(190,220,255,.20) 0 2px, transparent 2px 9px),
+    repeating-linear-gradient(-45deg, rgba(190,220,255,.20) 0 2px, transparent 2px 9px),
+    linear-gradient(160deg,#1b2940,#060b14 60%,#101b2d);
+}
+.bk .medal{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.bk .ring{
+  width:54%;aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:clamp(13px,4.4vw,22px);font-weight:1000;letter-spacing:.04em;color:#eaf7ff;
+  background:radial-gradient(circle,#57c2ff 0 18%, #0d3f78 42%, #0a1626 72%);
+  border:2px solid #cfe4ff; box-shadow:0 0 14px rgba(56,182,255,.9), inset 0 0 10px rgba(0,0,0,.7);
+}
+/* meters + controls — the game's own */
+.meters{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:9px}
+.meter{
+  border-radius:10px;padding:5px 8px 6px;text-align:center;
+  background:linear-gradient(180deg,#0a1526,#040910);
+  border:1px solid rgba(124,192,255,.35); box-shadow:inset 0 0 14px rgba(0,0,0,.85), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.meter .k{font-size:9px;font-weight:800;letter-spacing:.26em;margin-left:.26em;color:var(--blue2)}
+.meter .v{font-size:clamp(19px,6vw,27px);font-weight:800;color:#fff;line-height:1.12;font-variant-numeric:tabular-nums;text-shadow:0 0 12px rgba(56,182,255,.65)}
+.meter.winmeter .v{color:#aee1ff}
+.controls{display:grid;grid-template-columns:1fr 1fr 1.5fr;gap:7px;margin-top:8px}
+.mbtn{
+  font-family:inherit;cursor:pointer;border-radius:13px;min-height:52px;padding:8px 4px;
+  font-size:clamp(12px,3.8vw,15px);font-weight:800;letter-spacing:.07em;color:#f2f8ff;text-transform:uppercase;
+  background:linear-gradient(180deg,#5a708c 0%,#263449 42%,#131f31 58%,#31445e 100%);
+  border:1.5px solid #a9bed6;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.55), inset 0 -3px 0 rgba(0,0,0,.55), 0 5px 10px rgba(0,0,0,.65);
+  text-shadow:0 1px 2px #000;
+}
+.mbtn small{display:block;font-size:8.5px;letter-spacing:.2em;color:var(--blue2);font-weight:800;margin-top:1px}
+.mbtn.primary{
+  color:#fff;background:linear-gradient(180deg,#9fd6ff 0%,#2f8cff 42%,#0f5fd0 60%,#38b6ff 100%);
+  border-color:#e2f2ff; box-shadow:inset 0 2px 0 rgba(255,255,255,.75), inset 0 -3px 0 rgba(0,20,60,.6), 0 5px 12px rgba(0,0,0,.65), 0 0 16px rgba(47,140,255,.45);
+}
+
+/* ================= THEME 2 — black chrome + blue underglow ================= */
+.t2 .cabinet{
+  background:linear-gradient(180deg,#2a2e33 0%,#0a0b0d 22%,#16181c 48%,#050506 55%,#1d2025 82%,#08090b 100%);
+  border:2px solid #9fb2c8;
+  box-shadow:0 22px 38px -8px rgba(47,140,255,.55), 0 14px 26px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.35), inset 0 -14px 26px rgba(56,182,255,.14);
+}
+/* ================= THEME 3 — matte black + blue circuit traces ================= */
+.t3 .cabinet{
+  background:
+    linear-gradient(90deg, transparent 0 46px, rgba(56,182,255,.20) 46px 48px, transparent 48px 118px, rgba(56,182,255,.13) 118px 120px, transparent 120px),
+    linear-gradient(0deg, transparent 0 64px, rgba(56,182,255,.16) 64px 66px, transparent 66px 150px, rgba(56,182,255,.11) 150px 152px, transparent 152px),
+    radial-gradient(circle at 47px 65px, rgba(124,192,255,.85) 0 3px, rgba(56,182,255,.25) 4px 7px, transparent 8px),
+    radial-gradient(circle at 119px 151px, rgba(124,192,255,.8) 0 3px, rgba(56,182,255,.22) 4px 7px, transparent 8px),
+    radial-gradient(circle at 88% 30px, rgba(124,192,255,.7) 0 3px, rgba(56,182,255,.2) 4px 7px, transparent 8px),
+    linear-gradient(0deg, transparent 0 29px, rgba(56,182,255,.14) 29px 31px, transparent 31px),
+    #070707;
+  border:2px solid #1c1c1e;
+  box-shadow:0 6px 16px rgba(0,0,0,.9), inset 0 0 0 1px rgba(124,192,255,.12);
+}
+.t3 .cabinet .gloss{display:none}
+/* ================= THEME 4 — black marble + blue LED edge strips ================= */
+.t4 .cabinet{
+  background:
+    radial-gradient(120% 60% at 12% 0%, rgba(255,255,255,.10), transparent 42%),
+    radial-gradient(90% 55% at 88% 22%, rgba(255,255,255,.07), transparent 46%),
+    radial-gradient(130% 70% at 30% 108%, rgba(255,255,255,.08), transparent 50%),
+    repeating-conic-gradient(from 18deg at 68% 40%, rgba(230,240,255,.05) 0deg 2deg, transparent 2deg 17deg),
+    repeating-conic-gradient(from 200deg at 22% 76%, rgba(230,240,255,.04) 0deg 2deg, transparent 2deg 21deg),
+    linear-gradient(165deg,#101013,#050506 55%,#0b0b0e);
+  border:2px solid #05070c;
+  box-shadow:
+    inset 0 0 0 2px rgba(56,182,255,.9), inset 0 0 18px rgba(56,182,255,.45),
+    inset 0 0 0 4px #000, 0 0 22px rgba(47,140,255,.5), 0 8px 20px rgba(0,0,0,.9);
+}
+/* ================= THEME 5 — carbon fiber + holographic card window ================= */
+.t5 .cabinet{
+  background:
+    repeating-linear-gradient(45deg, rgba(255,255,255,.06) 0 6px, rgba(0,0,0,.55) 6px 12px),
+    repeating-linear-gradient(-45deg, rgba(255,255,255,.05) 0 6px, rgba(0,0,0,.5) 6px 12px),
+    linear-gradient(180deg,#0c0d10,#050506);
+  background-size:14px 14px,14px 14px,100% 100%;
+  border:2px solid #3a3f46;
+  box-shadow:0 8px 20px rgba(0,0,0,.9), inset 0 0 26px rgba(0,0,0,.8);
+}
+.t5 .cards{
+  padding:7px;border-radius:13px;position:relative;
+  background:linear-gradient(125deg, rgba(56,182,255,.34), rgba(124,192,255,.10) 34%, rgba(20,90,200,.30) 55%, rgba(160,220,255,.20) 78%, rgba(56,182,255,.34));
+  border:1px solid rgba(160,215,255,.65);
+  box-shadow:0 0 22px rgba(56,182,255,.5), inset 0 0 18px rgba(56,182,255,.35);
+}
+/* ================= THEME 6 — glossy black + chrome waterfall side trim ================= */
+.t6 .cabinet{
+  background:linear-gradient(180deg,#0d0e11,#020203 60%,#0a0b0d);
+  border:2px solid #6d7d90;
+  box-shadow:0 10px 22px rgba(0,0,0,.9), inset 0 0 30px rgba(0,0,0,.85);
+  padding-left:30px;padding-right:30px;
+}
+.t6 .cabinet::before,.t6 .cabinet::after{
+  content:"";position:absolute;top:0;bottom:0;width:18px;z-index:2;
+  background:repeating-linear-gradient(180deg,#f4f9ff 0 3px,#8fa5bd 3px 7px,#2b3646 7px 11px,#cfe0f2 11px 14px,#5a6c82 14px 18px);
+  box-shadow:inset 0 0 6px rgba(0,0,0,.6);
+}
+.t6 .cabinet::before{left:0;border-right:1.5px solid #0a0f16}
+.t6 .cabinet::after{right:0;border-left:1.5px solid #0a0f16}
+/* ================= THEME 7 — brushed steel industrial + rivets ================= */
+.t7 .cabinet{
+  background:
+    radial-gradient(circle at 14px 14px, #d7e5f5 0 3px, #5d6d80 4px 5px, transparent 6px),
+    radial-gradient(circle at calc(100% - 14px) 14px, #d7e5f5 0 3px, #5d6d80 4px 5px, transparent 6px),
+    radial-gradient(circle at 14px calc(100% - 14px), #d7e5f5 0 3px, #5d6d80 4px 5px, transparent 6px),
+    radial-gradient(circle at calc(100% - 14px) calc(100% - 14px), #d7e5f5 0 3px, #5d6d80 4px 5px, transparent 6px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.045) 0 1px, transparent 1px 3px),
+    linear-gradient(180deg,#17181a,#0a0a0b 55%,#121316);
+  border:2px solid #565e68;
+  box-shadow:0 8px 18px rgba(0,0,0,.92), inset 0 0 0 1px rgba(0,0,0,.7), inset 0 2px 0 rgba(255,255,255,.14);
+}
+.t7 .screen{border-radius:8px}
+.t7 .mbtn,.t7 .pay,.t7 .meter{border-radius:6px}
+/* ================= THEME 8 — mirror gloss + laser-etched skyline header ================= */
+.t8 .cabinet{
+  background:linear-gradient(180deg,#060708,#000 45%,#050607);
+  border:2px solid #232a33;
+  box-shadow:0 12px 26px rgba(0,0,0,.95), inset 0 0 40px rgba(0,0,0,.9);
+}
+.t8 .cabinet .gloss{background:linear-gradient(112deg, rgba(255,255,255,.20) 0%, rgba(255,255,255,.03) 26%, transparent 44%)}
+.t8 .etched{display:flex;justify-content:center;padding:0 4px 2px;position:relative;z-index:1}
+.t8 .etched svg{width:88%;height:30px;filter:drop-shadow(0 0 5px rgba(56,182,255,.75))}
+/* ================= THEME 9 — black + electric-blue neon flames ================= */
+.t9 .cabinet{
+  background:linear-gradient(180deg,#050506,#000 55%,#04060a);
+  border:2px solid #12365e;
+  box-shadow:0 0 24px rgba(47,140,255,.35), 0 10px 22px rgba(0,0,0,.92), inset 0 -26px 34px rgba(47,140,255,.12);
+}
+.t9 .flames{position:absolute;left:0;right:0;bottom:0;height:74px;z-index:0;pointer-events:none;filter:drop-shadow(0 0 9px rgba(56,182,255,.85));opacity:.95}
+.t9 .cabinet .marquee,.t9 .cabinet .screen{position:relative;z-index:1}
+/* ================= THEME 10 — minimal-luxe pinstripes + oversized DEAL ================= */
+.t10 .cabinet{
+  background:#000;
+  border:1px solid rgba(124,192,255,.85);
+  box-shadow:0 0 0 4px #000, 0 0 0 5.5px rgba(124,192,255,.45), 0 14px 26px rgba(0,0,0,.95);
+  border-radius:14px;
+}
+.t10 .cabinet .gloss{display:none}
+.t10 .screen{border-color:#39424e;box-shadow:inset 0 0 0 1px rgba(0,0,0,.9), inset 0 0 26px rgba(0,0,0,.85)}
+.t10 .controls{grid-template-columns:.85fr .85fr 1.9fr}
+.t10 .mbtn.primary{min-height:66px;font-size:clamp(17px,5.4vw,23px);letter-spacing:.14em}
+.t10 .mbtn.primary small{font-size:9.5px}
+
+footer{margin-top:26px;text-align:center;font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--muted);line-height:1.7}
+footer b{color:#dceeff}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <header class="board-head">
+    <div class="house">HUSTLE CITY</div>
+    <h1>Design Board</h1>
+    <div class="sub">Digital Poker · Black + Electric Blue · Options 2–10</div>
+    <div class="pick">Option <b>1</b> is the black glass + blue neon photo from the first set. The nine below are <b>rendered live from the machine's own code</b> — not photos — so the one you pick becomes the real machine skin exactly as shown. Shown in the machine's default font; your font pick layers on top. <b>Pick a number, 2–10.</b></div>
+  </header>
+
+  <section class="opt t2">
+    <div class="opt-head"><div class="opt-num">2</div><div><div class="opt-name">Black Chrome</div><div class="opt-tag">Blue underglow &middot; liquid-metal cabinet</div></div></div>
+    <div class="cabinet"><span class="gloss"></span>
+    <div class="marquee"><div class="house">HUSTLE CITY</div><h1>DIGITAL POKER</h1><div class="sub"><b>9/6 JACKS OR BETTER</b> &middot; THE HUSTLE CITY DECK &middot; PLAY CREDITS ONLY</div></div>
+    <div class="screen">
+      <div class="pay-head"><span class="t">PAYTABLE</span></div>
+      <div class="payrow"><div class="pay"><div class="h">Royal Flush</div></div><div class="pay"><div class="v">250</div></div><div class="pay maxcell"><div class="v">4,000 <small>MAX BET</small></div></div></div>
+      <div class="cards"><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div></div>
+      <div class="meters"><div class="meter"><div class="k">CREDITS</div><div class="v">1,000</div></div><div class="meter"><div class="k">BET</div><div class="v">1</div></div><div class="meter winmeter"><div class="k">WIN</div><div class="v">0</div></div></div>
+      <div class="controls"><button class="mbtn" type="button">Bet One<small>+1 coin</small></button><button class="mbtn" type="button">Max Bet<small>5 coins</small></button><button class="mbtn primary" type="button">Deal<small>Start hand</small></button></div>
+    </div>
+    </div>
+  </section>
+
+  <section class="opt t3">
+    <div class="opt-head"><div class="opt-num">3</div><div><div class="opt-name">Matte Circuit</div><div class="opt-tag">Matte black &middot; electric-blue circuit traces</div></div></div>
+    <div class="cabinet"><span class="gloss"></span>
+    <div class="marquee"><div class="house">HUSTLE CITY</div><h1>DIGITAL POKER</h1><div class="sub"><b>9/6 JACKS OR BETTER</b> &middot; THE HUSTLE CITY DECK &middot; PLAY CREDITS ONLY</div></div>
+    <div class="screen">
+      <div class="pay-head"><span class="t">PAYTABLE</span></div>
+      <div class="payrow"><div class="pay"><div class="h">Royal Flush</div></div><div class="pay"><div class="v">250</div></div><div class="pay maxcell"><div class="v">4,000 <small>MAX BET</small></div></div></div>
+      <div class="cards"><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div></div>
+      <div class="meters"><div class="meter"><div class="k">CREDITS</div><div class="v">1,000</div></div><div class="meter"><div class="k">BET</div><div class="v">1</div></div><div class="meter winmeter"><div class="k">WIN</div><div class="v">0</div></div></div>
+      <div class="controls"><button class="mbtn" type="button">Bet One<small>+1 coin</small></button><button class="mbtn" type="button">Max Bet<small>5 coins</small></button><button class="mbtn primary" type="button">Deal<small>Start hand</small></button></div>
+    </div>
+    </div>
+  </section>
+
+  <section class="opt t4">
+    <div class="opt-head"><div class="opt-num">4</div><div><div class="opt-name">Black Marble</div><div class="opt-tag">Stone veins &middot; blue LED edge strips</div></div></div>
+    <div class="cabinet"><span class="gloss"></span>
+    <div class="marquee"><div class="house">HUSTLE CITY</div><h1>DIGITAL POKER</h1><div class="sub"><b>9/6 JACKS OR BETTER</b> &middot; THE HUSTLE CITY DECK &middot; PLAY CREDITS ONLY</div></div>
+    <div class="screen">
+      <div class="pay-head"><span class="t">PAYTABLE</span></div>
+      <div class="payrow"><div class="pay"><div class="h">Royal Flush</div></div><div class="pay"><div class="v">250</div></div><div class="pay maxcell"><div class="v">4,000 <small>MAX BET</small></div></div></div>
+      <div class="cards"><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div></div>
+      <div class="meters"><div class="meter"><div class="k">CREDITS</div><div class="v">1,000</div></div><div class="meter"><div class="k">BET</div><div class="v">1</div></div><div class="meter winmeter"><div class="k">WIN</div><div class="v">0</div></div></div>
+      <div class="controls"><button class="mbtn" type="button">Bet One<small>+1 coin</small></button><button class="mbtn" type="button">Max Bet<small>5 coins</small></button><button class="mbtn primary" type="button">Deal<small>Start hand</small></button></div>
+    </div>
+    </div>
+  </section>
+
+  <section class="opt t5">
+    <div class="opt-head"><div class="opt-num">5</div><div><div class="opt-name">Carbon Fiber</div><div class="opt-tag">Woven carbon &middot; holographic blue card window</div></div></div>
+    <div class="cabinet"><span class="gloss"></span>
+    <div class="marquee"><div class="house">HUSTLE CITY</div><h1>DIGITAL POKER</h1><div class="sub"><b>9/6 JACKS OR BETTER</b> &middot; THE HUSTLE CITY DECK &middot; PLAY CREDITS ONLY</div></div>
+    <div class="screen">
+      <div class="pay-head"><span class="t">PAYTABLE</span></div>
+      <div class="payrow"><div class="pay"><div class="h">Royal Flush</div></div><div class="pay"><div class="v">250</div></div><div class="pay maxcell"><div class="v">4,000 <small>MAX BET</small></div></div></div>
+      <div class="cards"><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div></div>
+      <div class="meters"><div class="meter"><div class="k">CREDITS</div><div class="v">1,000</div></div><div class="meter"><div class="k">BET</div><div class="v">1</div></div><div class="meter winmeter"><div class="k">WIN</div><div class="v">0</div></div></div>
+      <div class="controls"><button class="mbtn" type="button">Bet One<small>+1 coin</small></button><button class="mbtn" type="button">Max Bet<small>5 coins</small></button><button class="mbtn primary" type="button">Deal<small>Start hand</small></button></div>
+    </div>
+    </div>
+  </section>
+
+  <section class="opt t6">
+    <div class="opt-head"><div class="opt-num">6</div><div><div class="opt-name">Chrome Waterfall</div><div class="opt-tag">Glossy black &middot; chrome waterfall side trim</div></div></div>
+    <div class="cabinet"><span class="gloss"></span>
+    <div class="marquee"><div class="house">HUSTLE CITY</div><h1>DIGITAL POKER</h1><div class="sub"><b>9/6 JACKS OR BETTER</b> &middot; THE HUSTLE CITY DECK &middot; PLAY CREDITS ONLY</div></div>
+    <div class="screen">
+      <div class="pay-head"><span class="t">PAYTABLE</span></div>
+      <div class="payrow"><div class="pay"><div class="h">Royal Flush</div></div><div class="pay"><div class="v">250</div></div><div class="pay maxcell"><div class="v">4,000 <small>MAX BET</small></div></div></div>
+      <div class="cards"><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div></div>
+      <div class="meters"><div class="meter"><div class="k">CREDITS</div><div class="v">1,000</div></div><div class="meter"><div class="k">BET</div><div class="v">1</div></div><div class="meter winmeter"><div class="k">WIN</div><div class="v">0</div></div></div>
+      <div class="controls"><button class="mbtn" type="button">Bet One<small>+1 coin</small></button><button class="mbtn" type="button">Max Bet<small>5 coins</small></button><button class="mbtn primary" type="button">Deal<small>Start hand</small></button></div>
+    </div>
+    </div>
+  </section>
+
+  <section class="opt t7">
+    <div class="opt-head"><div class="opt-num">7</div><div><div class="opt-name">Brushed Steel</div><div class="opt-tag">Industrial black steel &middot; corner rivets</div></div></div>
+    <div class="cabinet"><span class="gloss"></span>
+    <div class="marquee"><div class="house">HUSTLE CITY</div><h1>DIGITAL POKER</h1><div class="sub"><b>9/6 JACKS OR BETTER</b> &middot; THE HUSTLE CITY DECK &middot; PLAY CREDITS ONLY</div></div>
+    <div class="screen">
+      <div class="pay-head"><span class="t">PAYTABLE</span></div>
+      <div class="payrow"><div class="pay"><div class="h">Royal Flush</div></div><div class="pay"><div class="v">250</div></div><div class="pay maxcell"><div class="v">4,000 <small>MAX BET</small></div></div></div>
+      <div class="cards"><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div></div>
+      <div class="meters"><div class="meter"><div class="k">CREDITS</div><div class="v">1,000</div></div><div class="meter"><div class="k">BET</div><div class="v">1</div></div><div class="meter winmeter"><div class="k">WIN</div><div class="v">0</div></div></div>
+      <div class="controls"><button class="mbtn" type="button">Bet One<small>+1 coin</small></button><button class="mbtn" type="button">Max Bet<small>5 coins</small></button><button class="mbtn primary" type="button">Deal<small>Start hand</small></button></div>
+    </div>
+    </div>
+  </section>
+
+  <section class="opt t8">
+    <div class="opt-head"><div class="opt-num">8</div><div><div class="opt-name">Mirror Skyline</div><div class="opt-tag">Mirror gloss &middot; laser-etched blue skyline</div></div></div>
+    <div class="cabinet"><span class="gloss"></span>
+    <div class="etched"><svg viewBox="0 0 300 30" preserveAspectRatio="none" aria-hidden="true"><path d="M0 30 L0 20 L18 20 L18 10 L26 10 L26 20 L44 20 L44 6 L52 6 L52 16 L70 16 L70 12 L84 12 L84 22 L102 22 L102 4 L110 4 L110 18 L128 18 L128 9 L142 9 L142 21 L160 21 L160 13 L176 13 L176 24 L194 24 L194 7 L204 7 L204 17 L222 17 L222 11 L238 11 L238 20 L256 20 L256 14 L272 14 L272 23 L300 23 L300 30 Z" fill="none" stroke="#38b6ff" stroke-width="1.4"/></svg></div>
+    <div class="marquee"><div class="house">HUSTLE CITY</div><h1>DIGITAL POKER</h1><div class="sub"><b>9/6 JACKS OR BETTER</b> &middot; THE HUSTLE CITY DECK &middot; PLAY CREDITS ONLY</div></div>
+    <div class="screen">
+      <div class="pay-head"><span class="t">PAYTABLE</span></div>
+      <div class="payrow"><div class="pay"><div class="h">Royal Flush</div></div><div class="pay"><div class="v">250</div></div><div class="pay maxcell"><div class="v">4,000 <small>MAX BET</small></div></div></div>
+      <div class="cards"><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div></div>
+      <div class="meters"><div class="meter"><div class="k">CREDITS</div><div class="v">1,000</div></div><div class="meter"><div class="k">BET</div><div class="v">1</div></div><div class="meter winmeter"><div class="k">WIN</div><div class="v">0</div></div></div>
+      <div class="controls"><button class="mbtn" type="button">Bet One<small>+1 coin</small></button><button class="mbtn" type="button">Max Bet<small>5 coins</small></button><button class="mbtn primary" type="button">Deal<small>Start hand</small></button></div>
+    </div>
+    </div>
+  </section>
+
+  <section class="opt t9">
+    <div class="opt-head"><div class="opt-num">9</div><div><div class="opt-name">Neon Flames</div><div class="opt-tag">Black cabinet &middot; electric-blue neon flames</div></div></div>
+    <div class="cabinet"><svg class="flames" viewBox="0 0 300 74" preserveAspectRatio="none" aria-hidden="true"><path d="M0 74 L0 52 Q10 30 16 48 Q24 18 34 40 Q40 8 52 36 Q60 20 66 44 Q76 12 88 38 Q96 22 102 46 Q112 16 124 42 Q132 24 138 48 Q148 14 160 40 Q168 22 174 46 Q184 18 196 42 Q204 26 210 48 Q220 20 232 44 Q240 28 246 50 Q256 26 266 48 Q276 32 282 52 Q292 38 300 50 L300 74 Z" fill="rgba(47,140,255,.30)" stroke="#38b6ff" stroke-width="1.6"/></svg>
+<span class="gloss"></span>
+    <div class="marquee"><div class="house">HUSTLE CITY</div><h1>DIGITAL POKER</h1><div class="sub"><b>9/6 JACKS OR BETTER</b> &middot; THE HUSTLE CITY DECK &middot; PLAY CREDITS ONLY</div></div>
+    <div class="screen">
+      <div class="pay-head"><span class="t">PAYTABLE</span></div>
+      <div class="payrow"><div class="pay"><div class="h">Royal Flush</div></div><div class="pay"><div class="v">250</div></div><div class="pay maxcell"><div class="v">4,000 <small>MAX BET</small></div></div></div>
+      <div class="cards"><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div></div>
+      <div class="meters"><div class="meter"><div class="k">CREDITS</div><div class="v">1,000</div></div><div class="meter"><div class="k">BET</div><div class="v">1</div></div><div class="meter winmeter"><div class="k">WIN</div><div class="v">0</div></div></div>
+      <div class="controls"><button class="mbtn" type="button">Bet One<small>+1 coin</small></button><button class="mbtn" type="button">Max Bet<small>5 coins</small></button><button class="mbtn primary" type="button">Deal<small>Start hand</small></button></div>
+    </div>
+    </div>
+  </section>
+
+  <section class="opt t10">
+    <div class="opt-head"><div class="opt-num">10</div><div><div class="opt-name">Minimal Luxe</div><div class="opt-tag">Thin blue pinstripes &middot; oversized chrome DEAL</div></div></div>
+    <div class="cabinet"><span class="gloss"></span>
+    <div class="marquee"><div class="house">HUSTLE CITY</div><h1>DIGITAL POKER</h1><div class="sub"><b>9/6 JACKS OR BETTER</b> &middot; THE HUSTLE CITY DECK &middot; PLAY CREDITS ONLY</div></div>
+    <div class="screen">
+      <div class="pay-head"><span class="t">PAYTABLE</span></div>
+      <div class="payrow"><div class="pay"><div class="h">Royal Flush</div></div><div class="pay"><div class="v">250</div></div><div class="pay maxcell"><div class="v">4,000 <small>MAX BET</small></div></div></div>
+      <div class="cards"><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div><div class="bk"><div class="medal"><div class="ring">HC</div></div></div></div>
+      <div class="meters"><div class="meter"><div class="k">CREDITS</div><div class="v">1,000</div></div><div class="meter"><div class="k">BET</div><div class="v">1</div></div><div class="meter winmeter"><div class="k">WIN</div><div class="v">0</div></div></div>
+      <div class="controls"><button class="mbtn" type="button">Bet One<small>+1 coin</small></button><button class="mbtn" type="button">Max Bet<small>5 coins</small></button><button class="mbtn primary" type="button">Deal<small>Start hand</small></button></div>
+    </div>
+    </div>
+  </section>
+
+  <footer>
+    <b>HUSTLE CITY DIGITAL POKER</b> &middot; Design board &mdash; the game itself is unchanged until a number is picked.<br>
+    Options 2&ndash;10 are live renders of the real machine UI in CSS. Option 1 (black glass + blue neon) is the photo from the first design set. &middot; &copy; 2026 J-Dawgs Industries
+  </footer>
+</div>
+</body>
+</html>
