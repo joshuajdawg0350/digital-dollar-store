@@ -930,17 +930,86 @@ document.getElementById("bgImg").src = "data:image/webp;base64,UklGRqgPAgBXRUJQV
 function say(msg){ $("logLine").textContent = msg; }
 
 /* === Clone commentary — Joshua's play-by-play panel ===
-   Text always carries the specifics (names, amounts). Voice is Joshua's cloned
-   voice only: pre-rendered clips per event type (Voice Lab, Chatterbox, from his
-   Voice Recorder profile). No clip / muted / failed audio = text + face, never
-   another voice, never device TTS. The panel never delays the game. */
+   Every action is narrated out loud (check / fold / call + amount / raise +
+   amount / all-in), plus streets, knockouts and win/lose color. Voice is
+   Joshua's cloned voice only: lines are composed from pre-rendered word
+   fragments (Voice Lab, Chatterbox, from his Voice Recorder profile) and the
+   bubble shows the same line. A line missing any fragment = text + face,
+   never another voice, never device TTS. The panel never delays the game. */
 const COMM_CLIPS = { deal:"comm-deal.mp3", flop:"comm-flop.mp3", turn:"comm-turn.mp3", river:"comm-river.mp3",
   bigraise:"comm-bigraise.mp3", allin:"comm-allin.mp3", knockout:"comm-knockout.mp3", balsey:"comm-balsey.mp3",
   crown:"comm-crown.mp3", bust:"comm-bust.mp3", win:"comm-win.mp3", lose:"comm-lose.mp3" };
-/* clips actually rendered and shipped (Voice Lab, Joshua's clone voice). Types not
-   listed here stay text + face — no request is made, so no 404s and no wrong voice.
-   Rendering the rest is a drop-in: add the file, add the key here. */
+/* legacy whole-clip fallback (the approved deal clip). Fragment-composed lines
+   are the primary voice path now; this stays only as the deal line's backup. */
 const COMM_HAVE = { deal: 1 };
+/* === Fragment voice library — Joshua's cloned voice (Voice Lab renders).
+   Lines are composed from word fragments and played back-to-back with tight
+   gaps. FRAG_HAVE maps each rendered fragment to its duration in seconds;
+   a line missing ANY fragment stays text-only — never a 404, never another
+   voice, never device TTS. === */
+const FRAG_HAVE = { "name-you": 0.334, "name-slick": 0.362, "name-deuce": 0.535, "name-pearl": 0.383, "name-roxy": 0.441, "name-fats": 0.386, "name-balsey": 0.982, "act2-check": 0.331, "act2-fold": 1.046, "act2-call": 0.366, "act2-raise": 0.617, "act2-allin": 1.119, "act3-checks": 0.338, "act3-folds": 0.525, "act3-calls": 0.395, "act3-raises": 0.639, "act3-allin": 1.118, "num-1": 0.399, "num-2": 0.338, "num-3": 0.292, "num-4": 0.249, "num-5": 0.356, "num-6": 0.349, "num-7": 0.363, "num-8": 0.324, "num-9": 0.401, "num-10": 0.382, "num-11": 0.526, "num-12": 0.341, "num-13": 0.555, "num-14": 0.483, "num-15": 0.425, "num-16": 0.551, "num-17": 0.635, "num-18": 0.597, "num-19": 0.531, "num-20": 0.367, "num-30": 0.284, "num-40": 0.333, "num-50": 0.36, "num-60": 0.437, "num-70": 0.523, "num-80": 0.328, "num-90": 0.402, "num-hundred": 0.363, "num-thousand": 0.516, "x-allin": 0.465, "st-flop": 0.49, "st-turn": 0.465, "st-river": 0.503, "rank-two": 0.69, "rank-three": 0.412, "rank-four": 0.498, "rank-five": 0.554, "rank-six": 0.36, "rank-seven": 0.488, "rank-eight": 0.681, "rank-nine": 0.488, "rank-ten": 0.377, "rank-jack": 0.511, "rank-queen": 0.472, "rank-king": 0.375, "rank-ace": 0.486, "suit-spades": 0.619, "suit-hearts": 0.406, "suit-diamonds": 0.578, "suit-clubs": 0.386, "x-and": 0.423, "x-isout": 0.46, "x-areout": 0.487, "x-togo": 0.413, "x-kingawaits": 1.548, "x-dragthe": 0.751, "x-potnice": 0.962, "x-takeking": 2.093, "x-lose1": 2.248, "x-lose2": 2.176, "x-balsey": 2.629, "x-crown": 2.285, "x-bustfinal": 1.854, "x-bust": 2.498, "x-handnum": 0.478, "x-cardsout": 1.724, "x-finalhand": 1.346, "x-youandking": 1.104 };
+const fragURL = k => "frag-" + k + ".mp3";
+const commQ = []; let commPlaying = false, commToken = 0, commCurAudio = null;
+const commSpoken = []; // lines actually voiced, in order (the QA hook reads this)
+const fragPool = [];
+function numFrags(n){
+  const f = []; n = Math.floor(Math.abs(n));
+  if(n <= 0) return f;
+  const th = Math.floor(n / 1000), hu = Math.floor((n % 1000) / 100), rest = n % 100;
+  if(th){ f.push("num-" + th, "num-thousand"); }
+  if(hu){ f.push("num-" + hu, "num-hundred"); }
+  if(rest >= 20){ f.push("num-" + Math.floor(rest / 10) * 10); if(rest % 10) f.push("num-" + (rest % 10)); }
+  else if(rest > 0){ f.push("num-" + rest); }
+  return f;
+}
+function stopComm(){
+  commToken++; commQ.length = 0; commPlaying = false;
+  if(commCurAudio){ try { commCurAudio.pause(); } catch(e){} commCurAudio = null; }
+}
+function speakFrags(frags, text, prio){
+  if(commMuted || !frags || !frags.length) return false;
+  for(const k of frags) if(!FRAG_HAVE[k]) return false; // one missing piece: the whole line stays text + face
+  const item = { frags: frags.slice(), text: text, prio: !!prio };
+  if(prio){
+    // Priority color (knockout / crown / bust) interrupts the line currently
+    // playing, but the queue is PRESERVED: every action line still gets said.
+    commToken++;
+    if(commCurAudio){ try { commCurAudio.pause(); } catch(e){} commCurAudio = null; }
+    commPlaying = false;
+    commQ.unshift(item); playNextLine(); return true;
+  }
+  // Minor lines are NEVER dropped (Joshua's order: every action said out loud).
+  // The queue drains in order; playNextLine speeds up slightly under backlog.
+  commQ.push(item);
+  if(!commPlaying) playNextLine();
+  return true;
+}
+function playNextLine(){
+  const item = commQ.shift();
+  if(!item){ commPlaying = false; return; }
+  commPlaying = true;
+  const my = ++commToken;
+  commSpoken.push(item); if(commSpoken.length > 60) commSpoken.shift();
+  const est = item.frags.reduce((a, k) => a + (FRAG_HAVE[k] || 0.4), 0) + item.frags.length * 0.07;
+  commTalkUntil = Date.now() + est * 1000 + 250;
+  commSetFace(true);
+  let i = 0;
+  const step = ()=>{
+    if(my !== commToken) return; // interrupted by a priority line or a mute
+    if(i >= item.frags.length){ commPlaying = false; commCurAudio = null; playNextLine(); return; }
+    const a = new Audio(fragURL(item.frags[i++]));
+    commCurAudio = a;
+    a.playbackRate = commQ.length >= 3 ? 1.25 : (commQ.length >= 1 ? 1.12 : 1.0); // catch up under backlog, never drop
+    a.onended = ()=> setTimeout(step, 60);
+    a.onerror = ()=> setTimeout(step, 30);
+    const pr = a.play();
+    if(pr && pr.catch) pr.catch(()=> setTimeout(step, 30));
+  };
+  step();
+}
+try { // warm the fragment files so composed lines start without network gaps
+  for(const k in FRAG_HAVE){ const a = new Audio(); a.preload = "auto"; a.src = fragURL(k); fragPool.push(a); }
+} catch(e){ /* offline / restricted webview: fragments load on demand instead */ }
 let commMuted = false, commCollapsed = false, commLast = {type:"", text:""}, commLog = [], commTalkUntil = 0;
 const commAudio = new Audio(); commAudio.preload = "none";
 function commSetFace(talking){
@@ -953,17 +1022,21 @@ function commSetFace(talking){
   } catch(e){ /* video blocked: the poster still underneath keeps the face on screen */ }
 }
 setInterval(()=>{ // settle back to idle once the line is done
-  if(Date.now() > commTalkUntil && (commAudio.paused || commAudio.ended)) commSetFace(false);
+  if(Date.now() > commTalkUntil && (commAudio.paused || commAudio.ended) && !commPlaying && !commQ.length) commSetFace(false);
 }, 600);
 commAudio.addEventListener("ended", ()=>{ commTalkUntil = 0; });
-function commentate(type, text, prio){
+function commentate(type, text, prio, frags){
   commLast = {type:type, text:text}; commLog.push(commLast); if(commLog.length > 40) commLog.shift();
   $("commText").textContent = text;
   const panel = $("commPanel"); panel.classList.remove("pulse"); void panel.offsetWidth; panel.classList.add("pulse");
   commTalkUntil = Date.now() + 2400;
   commSetFace(true);
-  if(commMuted || !COMM_CLIPS[type] || !COMM_HAVE[type]) return;
-  const busyPlaying = !commAudio.paused && !commAudio.ended;
+  if(commMuted) return;
+  // fragment-composed line first: the clone speaks exactly this text
+  if(frags && speakFrags(frags, text, prio)) return;
+  // legacy whole-clip fallback (the approved deal clip) for lines without fragments
+  if(!COMM_CLIPS[type] || !COMM_HAVE[type]) return;
+  const busyPlaying = (!commAudio.paused && !commAudio.ended) || commPlaying || commQ.length;
   if(busyPlaying && !prio) return; // minor lines never talk over a line in flight; text still updates
   try {
     commAudio.src = COMM_CLIPS[type];
@@ -971,26 +1044,63 @@ function commentate(type, text, prio){
     if(pr && pr.catch) pr.catch(()=>{});
     commAudio.onloadedmetadata = ()=>{ if(isFinite(commAudio.duration)) commTalkUntil = Date.now() + commAudio.duration*1000 + 250; };
   } catch(e){ /* restricted webview: text + face carry on */ }
+}/* Every action at the table is narrated out loud — check, fold, call WITH the
+   amount, raise with the amount, all-in with the amount — for the regulars,
+   the King, and the player. Streets name the card(s) that just landed. Each
+   spoken line is composed from the fragment library; the bubble shows the
+   same line. A line whose fragments are not all rendered stays text + face. */
+const NAME_FRAG = { "You":"name-you", "Slick":"name-slick", "Deuce":"name-deuce", "Pearl":"name-pearl",
+  "Roxy":"name-roxy", "Fats":"name-fats", "King Balsey":"name-balsey" };
+const RANK_WORD = { "2":"Two", "3":"Three", "4":"Four", "5":"Five", "6":"Six", "7":"Seven", "8":"Eight",
+  "9":"Nine", "10":"Ten", "J":"Jack", "Q":"Queen", "K":"King", "A":"Ace" };
+const SUIT_WORD = { "\u2660":["spades","suit-spades"], "\u2665":["hearts","suit-hearts"],
+  "\u2666":["diamonds","suit-diamonds"], "\u2663":["clubs","suit-clubs"] };
+function cardNameFrags(cs){
+  const sw = SUIT_WORD[cs.slice(-1)], rk = RANK_WORD[cs.slice(0, -1)];
+  if(!sw || !rk) return null;
+  return { text: rk + " of " + sw[0], frags: ["rank-" + rk.toLowerCase(), sw[1]] };
 }
-/* scan fresh hand events for commentary-worthy moments */
+function narrateAction(ev){
+  const seat = ev.seat, nm = seat === 0 ? "You" : players[seat].name, nf = NAME_FRAG[nm], you = seat === 0;
+  if(ev.action === "check") return { text: nm + (you ? " check." : " checks."), frags: [nf, you ? "act2-check" : "act3-checks"] };
+  if(ev.action === "fold") return { text: nm + (you ? " fold." : " folds."), frags: [nf, you ? "act2-fold" : "act3-folds"] };
+  if(ev.action === "call"){
+    const m = /calls (\d+)/.exec(ev.desc); const amt = m ? Number(m[1]) : 0;
+    const base = [nf, you ? "act2-call" : "act3-calls"].concat(numFrags(amt));
+    // scanComm runs the moment the action lands, so a zero stack now means that call was all-in
+    if(hand && amt > 0 && hand.stack(seat) === 0)
+      return { text: nm + (you ? " call " : " calls ") + fmt(amt) + " \u2014 all-in!", frags: base.concat(["x-allin"]), prio: true };
+    return { text: nm + (you ? " call " : " calls ") + fmt(amt) + ".", frags: base };
+  }
+  if(ev.action === "raise"){
+    const m = /to (\d+)/.exec(ev.desc); const amt = m ? Number(m[1]) : 0;
+    if(/ALL-IN/.test(ev.desc))
+      return { text: nm + (you ? " go all in for " : " goes all in for ") + fmt(amt) + "!", frags: [nf, you ? "act2-allin" : "act3-allin"].concat(numFrags(amt)), prio: true };
+    return { text: nm + (you ? " raise to " : " raises to ") + fmt(amt) + ".", frags: [nf, you ? "act2-raise" : "act3-raises"].concat(numFrags(amt)) };
+  }
+  return null;
+}
 function scanComm(fromIdx){
   if(!hand) return;
   for(let k = fromIdx; k < hand.events.length; k++){
     const ev = hand.events[k];
     if(ev.t === "street"){
+      const cards = ev.board.split(" ");
+      const fresh = ev.stage === "flop" ? cards.slice(0, 3) : cards.slice(-1);
+      const parts = fresh.map(cardNameFrags);
       const label = ev.stage === "flop" ? "The flop" : ev.stage === "turn" ? "The turn" : "The river";
-      commentate(ev.stage, label + ": " + ev.board + ".");
-    } else if(ev.t === "action" && ev.action === "raise"){
-      const nm = ev.seat === 0 ? "You" : players[ev.seat].name;
-      if(/ALL-IN/.test(ev.desc)) commentate("allin", nm + " — " + ev.desc + "!", true);
-      else { const m = /to (\d+)/.exec(ev.desc); const to = m ? Number(m[1]) : 0; if(to >= 160) commentate("bigraise", nm + " raises to " + fmt(to) + " — big bet!"); }
-    } else if(ev.t === "action" && ev.action === "call" && /ALL-IN/.test(ev.desc)){
-      const nm = ev.seat === 0 ? "You" : players[ev.seat].name;
-      commentate("allin", nm + (ev.seat === 0 ? " call" : " calls") + " all-in!", true);
+      if(parts.every(Boolean)){
+        commentate(ev.stage, label + ": " + parts.map(p => p.text).join(", ") + ".",
+          false, ["st-" + ev.stage].concat(parts.reduce((a, p) => a.concat(p.frags), [])));
+      } else {
+        commentate(ev.stage, label + ": " + ev.board + ".");
+      }
+    } else if(ev.t === "action"){
+      const line = narrateAction(ev);
+      if(line) commentate("action", line.text, line.prio, line.frags);
     }
   }
-}
-$("commFaceWrap").addEventListener("click", ()=>{
+}$("commFaceWrap").addEventListener("click", ()=>{
   commCollapsed = !commCollapsed;
   $("commPanel").classList.toggle("collapsed", commCollapsed);
 });
@@ -998,7 +1108,7 @@ $("commMute").addEventListener("click", (e)=>{
   e.stopPropagation();
   commMuted = !commMuted;
   $("commMute").innerHTML = commMuted ? "&#128263;" : "&#128266;";
-  if(commMuted){ try { commAudio.pause(); } catch(err){} commTalkUntil = 0; }
+  if(commMuted){ try { commAudio.pause(); } catch(err){} stopComm(); commTalkUntil = 0; }
 });
 try { commSetFace(false); } catch(e){}
 function chipHTML(amt){
@@ -1206,8 +1316,8 @@ function dealHand(){
   AudioFX.ensure(); AudioFX.card(); setTimeout(()=>AudioFX.card(), 160);
   say(stage===2 ? "Hand #" + handNo + " \u2014 FINAL TABLE. Heads-up with King Balsey."
                 : "Hand #" + handNo + " \u2014 blinds in. Your move is coming up.");
-  commentate("deal", stage===2 ? "Final table, hand #" + handNo + " — you and the King."
-                               : "Hand #" + handNo + " — cards are out. What've you got?");
+  if(stage===2) commentate("deal", "Final table, hand number " + handNo + " \u2014 you and the King.", false, ["x-finalhand"].concat(numFrags(handNo), ["x-youandking"]));
+  else commentate("deal", "Hand number " + handNo + " \u2014 cards are out. What've you got?", false, ["x-handnum"].concat(numFrags(handNo), ["x-cardsout"]));
   render();
   stepAI();
 }
@@ -1241,7 +1351,7 @@ function afterHand(){
    failure falls back to the still for ~3s, then proceeds either way. */
 let clipDone = false, clipTimer = null;
 function playBalseyIntro(){
-  commentate("balsey", "The King takes his seat. The final is on.", true);
+  commentate("balsey", "The King takes his seat. The final is on.", true, ["x-balsey"]);
   const ov = $("balseyClipOverlay"), vid = $("balseyVideo"), img = $("balseyStill");
   clipDone = false;
   img.style.display = "none"; vid.style.display = "block";
@@ -1276,7 +1386,7 @@ function showBust(){
     : "The table took your stack on hand #" + handNo + ". The run is over \u2014 the crown goes unclaimed this time.";
   $("bustOverlay").classList.add("open");
   AudioFX.lose();
-  commentate("bust", stage === 2 ? "Busted in the final — run it back." : "That's the last chip — busted. Run it back.", true);
+  commentate("bust", stage === 2 ? "Busted in the final — run it back." : "That's the last chip — busted. Run it back.", true, stage === 2 ? ["x-bustfinal"] : ["x-bust"]);
 }
 function showCrown(){
   crowns += 1; saveCrowns();
@@ -1287,7 +1397,7 @@ function showCrown(){
   $("titleCrowns").textContent = "Crowns won: " + crowns;
   $("crownOverlay").classList.add("open");
   AudioFX.win();
-  commentate("crown", "You dethroned the King! The crown is yours!", true);
+  commentate("crown", "You dethroned the King! The crown is yours!", true, ["x-crown"]);
 }
 function finishHand(){
   const R = hand.results; showdownReveal = true;
@@ -1331,14 +1441,19 @@ function finishHand(){
     for(let i=1;i<=5;i++) if(!out[i] && players[i].stack<=0) fresh.push(players[i].name);
     if(fresh.length){
       const leftAfter = 5 - out.filter(Boolean).length - fresh.length;
+      const koFrags = [];
+      fresh.forEach((n, ix)=>{ if(ix) koFrags.push("x-and"); koFrags.push(NAME_FRAG[n]); });
+      koFrags.push(fresh.length > 1 ? "x-areout" : "x-isout");
+      if(leftAfter > 0) koFrags.push.apply(koFrags, numFrags(leftAfter).concat(["x-togo"]));
+      else koFrags.push("x-kingawaits");
       commentate("knockout", fresh.join(" and ") + (fresh.length>1 ? " are" : " is") + " OUT! " +
-        (leftAfter > 0 ? leftAfter + " to go." : "All five — the King awaits."), true);
+        (leftAfter > 0 ? leftAfter + " to go." : "All five — the King awaits."), true, koFrags);
     }
-    else if(myWin && amt>=150) commentate("win", "You drag the " + fmt(amt) + " pot. Nice one.");
-    else if(!myWin && !R.foldOut && totalPot>=220) commentate("lose", "That pot got away. Next hand's yours.");
+    else if(myWin && amt>=150) commentate("win", "You drag the " + fmt(amt) + " pot. Nice one.", false, ["x-dragthe"].concat(numFrags(amt), ["x-potnice"]));
+    else if(!myWin && !R.foldOut && totalPot>=220) commentate("lose", "That pot got away. Next hand's yours.", false, ["x-lose1"]);
   } else if(players[1].stack>0){
-    if(myWin && amt>=200) commentate("win", "You take a pot off the King — " + fmt(amt) + ".");
-    else if(!myWin && !R.foldOut && totalPot>=300) commentate("lose", "The King takes that one. Your spot's coming.");
+    if(myWin && amt>=200) commentate("win", "You take a pot off the King — " + fmt(amt) + ".", false, ["x-takeking"].concat(numFrags(amt)));
+    else if(!myWin && !R.foldOut && totalPot>=300) commentate("lose", "The King takes that one. Your spot's coming.", false, ["x-lose2"]);
   }
   $("bannerTitle").textContent = title;
   $("bannerAmt").textContent = myWin ? "+" + fmt(amt) : (R.foldOut && R.winners[0].seat!==0 ? "" : "");
@@ -1370,7 +1485,7 @@ window.__HC_POKER = {
   get crowns(){ return crowns; },
   totalChips(){ let t = players.reduce((a,p)=>a+p.stack,0); if(hand) t += hand.pot(); return t; },
   handNo(){ return handNo; },
-  comm(){ return { last: commLast, muted: commMuted, collapsed: commCollapsed, log: commLog.slice() }; }
+  comm(){ return { last: commLast, muted: commMuted, collapsed: commCollapsed, log: commLog.slice(), spoken: commSpoken.slice(), queued: commQ.length, playing: commPlaying, fragHave: Object.keys(FRAG_HAVE).length }; }
 };
 </script>
 </body>
