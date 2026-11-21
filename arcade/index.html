@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hustle City Arcade — Digital Dollar Store</title>
+<meta name="description" content="Every Hustle City game in one room. A $1 day pass plays them all, right in your browser — nothing to download.">
+<script>document.documentElement.className+=" js"</script>
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="../assets/favicon.ico" sizes="any">
+<meta name="theme-color" content="#05080E">
+<style>
+  :root{
+    --eb:#0096FF; --eb-bright:#6FC3FF; --eb-deep:#2B7FD4;
+    --red:#FF1E3C; --red-deep:#E01E37;
+    --chrome1:#F4F7FB; --chrome2:#C7CEDA; --chrome3:#7E8CA3;
+  }
+  .wrap{max-width:76rem;margin:0 auto;padding:0 1.1rem}
+
+  /* ---------- header (mirrors the storefront) ---------- */
+  .site-header{background:#05080e;color:#fff;position:relative;z-index:40;border-bottom:1px solid var(--line)}
+  .site-header .wrap{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:60px;padding-top:6px;padding-bottom:6px}
+  .brand{display:flex;align-items:center;gap:.6rem;text-decoration:none;color:#fff}
+  .brand img{width:40px;height:40px;object-fit:cover;border-radius:8px}
+  .brand-name{font-family:var(--font-display);font-weight:800;letter-spacing:.04em;font-size:1rem}
+  .brand-name span{color:var(--eb-bright)}
+  .brand-name .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red);margin-left:7px;box-shadow:0 0 9px var(--red)}
+  .nav-toggle{background:var(--panel-2);color:var(--ink);border:1px solid var(--line-strong);border-radius:10px;min-height:44px;padding:.5rem 1rem;font-weight:700;cursor:pointer}
+  .site-nav ul{list-style:none;margin:0;padding:0;display:flex;gap:1.1rem}
+  .site-nav a{color:var(--body);text-decoration:none;font-weight:600;font-size:.95rem}
+  .site-nav a:hover,.site-nav a[aria-current]{color:#fff}
+  .site-nav a[aria-current]{text-decoration:underline;text-decoration-color:var(--red);text-decoration-thickness:3px;text-underline-offset:5px}
+  @media (max-width:899px){
+    .site-nav{display:none;position:absolute;top:100%;left:0;right:0;background:#05080e;border-bottom:1px solid var(--line-strong);padding:.8rem 1.1rem 1.1rem}
+    .site-nav.open{display:block}
+    .site-nav ul{flex-direction:column;gap:.9rem}
+  }
+  @media (min-width:900px){ .nav-toggle{display:none} }
+
+  /* ---------- arcade marquee ---------- */
+  .marquee{position:relative;text-align:center;padding:2.6rem 1rem 1.4rem;overflow:hidden}
+  .marquee::before{content:"";position:absolute;inset:10px 6px auto 6px;height:calc(100% - 20px);border:2px solid rgba(111,195,255,.35);border-radius:22px;pointer-events:none;
+    box-shadow:0 0 34px rgba(0,150,255,.22), inset 0 0 34px rgba(0,150,255,.10)}
+  .bulbs{position:absolute;top:16px;left:14px;right:14px;display:flex;justify-content:space-between;pointer-events:none}
+  .bulbs i{width:9px;height:9px;border-radius:50%;background:var(--eb-bright);box-shadow:0 0 12px var(--eb-bright);animation:chase 1.6s infinite}
+  .bulbs i:nth-child(even){background:var(--red);box-shadow:0 0 12px var(--red);animation-delay:.8s}
+  @keyframes chase{0%,100%{opacity:1}50%{opacity:.35}}
+  @media (prefers-reduced-motion: reduce){ .bulbs i{animation:none} }
+  .marquee .over{color:var(--eb-bright);font-weight:800;letter-spacing:.32em;text-transform:uppercase;font-size:.78rem;margin:0}
+  .marquee h1{font-family:var(--font-display);font-weight:900;line-height:.98;margin:.45rem 0 .2rem;
+    font-size:clamp(2.6rem,11vw,5.2rem);letter-spacing:.01em;text-transform:uppercase;
+    background:linear-gradient(180deg,var(--chrome1) 20%,var(--chrome2) 48%,var(--chrome3) 55%,var(--chrome1) 90%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 3px 14px rgba(0,150,255,.35))}
+  .marquee h1 .arc{color:transparent;background:linear-gradient(180deg,#BFE3FF 15%,var(--eb-bright) 50%,var(--eb-deep) 60%,#BFE3FF 95%);-webkit-background-clip:text;background-clip:text}
+  .marquee .sub{color:var(--body);font-size:clamp(1rem,3.6vw,1.2rem);line-height:1.5;max-width:40rem;margin:.6rem auto 0}
+  .marquee .sub b{color:#fff}
+
+  /* ---------- pass panel ---------- */
+  .pass{max-width:46rem;margin:1.4rem auto 0;background:linear-gradient(180deg,var(--panel-2),var(--panel));
+    border:1px solid var(--line-strong);border-radius:18px;padding:1.4rem 1.3rem 1.3rem;text-align:center;
+    box-shadow:0 12px 40px rgba(0,0,0,.5)}
+  .pass .price-line{font-family:var(--font-display);font-weight:900;font-size:clamp(1.7rem,6.5vw,2.4rem);color:#fff;line-height:1.1;margin:.1rem 0 .3rem}
+  .pass .price-line .red{color:var(--red)}
+  .pass p{color:var(--body);line-height:1.55;margin:.35rem auto;max-width:34rem}
+  .pass .fine{color:var(--muted);font-size:.9rem}
+  .passbuy{display:flex;align-items:center;justify-content:center;width:100%;max-width:26rem;min-height:58px;margin:1rem auto .4rem;
+    padding:.8rem 1.2rem;font-size:1.18rem;font-weight:800;border-radius:12px;text-decoration:none;cursor:pointer;
+    background:linear-gradient(180deg,var(--eb-bright),var(--eb-deep));color:#04101F;border:1px solid rgba(111,195,255,.65)}
+  .passbuy:active{transform:translateY(1px)}
+  .passbuy:hover{box-shadow:0 0 0 3px rgba(255,30,60,.55),0 0 22px rgba(255,30,60,.35)}
+  .guarantees{display:flex;flex-wrap:wrap;gap:.4rem .9rem;justify-content:center;margin-top:.9rem;color:var(--muted);font-size:.88rem}
+  .guarantees span::before{content:"✓ ";color:var(--eb-bright);font-weight:800}
+  .passstate-live{color:#fff;font-weight:800;font-size:1.15rem}
+  .passstate-live .clock{color:var(--eb-bright)}
+  .ownerline{margin-top:1rem;font-size:.92rem}
+  .ownerline a{color:var(--eb-bright);font-weight:700}
+  .pulse{animation:pulse 1s ease 2}
+  @keyframes pulse{0%,100%{box-shadow:0 12px 40px rgba(0,0,0,.5)}50%{box-shadow:0 0 0 4px var(--red),0 12px 40px rgba(0,0,0,.5)}}
+
+  /* ---------- sections + cabinets ---------- */
+  .sec-head{max-width:76rem;margin:2.6rem auto 0;padding:0 1.1rem}
+  .sec-head .eyebrow{color:var(--eb-bright);font-weight:800;letter-spacing:.22em;text-transform:uppercase;font-size:.75rem;margin:0}
+  .sec-head .eyebrow::before{content:"";display:inline-block;width:14px;height:3px;border-radius:2px;background:var(--red);vertical-align:middle;margin-right:8px}
+  .sec-head h2{font-family:var(--font-display);font-size:clamp(1.6rem,6vw,2.2rem);font-weight:800;color:#fff;margin:.3rem 0 .2rem;
+    text-decoration:underline;text-decoration-color:var(--red);text-decoration-thickness:3px;text-underline-offset:7px}
+  .sec-head p{color:var(--muted);margin:.2rem 0 0;max-width:44rem;line-height:1.55}
+  .grid{max-width:76rem;margin:1.1rem auto 0;padding:0 1.1rem;display:grid;gap:16px;grid-template-columns:1fr}
+  @media (min-width:640px){ .grid{grid-template-columns:1fr 1fr} }
+  @media (min-width:1024px){ .grid{grid-template-columns:1fr 1fr 1fr} }
+  .cab{background:linear-gradient(180deg,#0C1B30,var(--panel));border:1px solid var(--line-strong);border-top:3px solid var(--eb);
+    border-radius:16px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+  .cab .cover{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;background:#02040a}
+  .cab .cover-tall{object-position:center 18%}
+  .cab .body{padding:1rem 1.1rem 1.15rem;display:flex;flex-direction:column;gap:.45rem;flex:1}
+  .cab h3{font-family:var(--font-display);color:#fff;font-size:1.28rem;margin:0;line-height:1.2}
+  .cab p{color:var(--body);margin:0;line-height:1.5;font-size:.97rem;flex:1}
+  .badge{display:inline-block;font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:.16rem .6rem;width:fit-content}
+  .badge.soon{background:var(--red);color:#fff}
+  .badge.free{background:var(--eb-bright);color:#04101F}
+  .badge.new{background:#fff;color:#04101F}
+  .doors{display:flex;flex-direction:column;gap:.55rem;margin-top:.5rem}
+  .play{display:flex;align-items:center;justify-content:center;min-height:52px;padding:.7rem 1rem;border-radius:12px;
+    font-size:1.08rem;font-weight:800;text-decoration:none;text-align:center;
+    background:linear-gradient(180deg,var(--eb-bright),var(--eb-deep));color:#04101F;border:1px solid rgba(111,195,255,.65)}
+  .play:active{transform:translateY(1px)}
+  .play.locked{background:var(--panel-2);color:var(--muted);border:1px solid var(--line-strong)}
+  .play.disabled{background:var(--panel-2);color:var(--muted);border:1px dashed var(--line-strong);pointer-events:none}
+  .keep{display:flex;align-items:center;justify-content:center;min-height:48px;padding:.6rem 1rem;border-radius:12px;
+    font-size:.98rem;font-weight:700;text-decoration:none;text-align:center;color:var(--eb-bright);
+    background:transparent;border:1px solid var(--line-strong)}
+  .keep:hover{border-color:var(--eb)}
+  .keep .kp{color:#fff;font-weight:800}
+
+  /* ---------- samples ---------- */
+  .cab.sample{border-top-color:var(--red)}
+  .cab .priceline{color:#fff;font-weight:800;font-size:1.05rem}
+  .cab .priceline small{color:var(--muted);font-weight:600}
+  .cover-art{display:flex;align-items:center;justify-content:center;aspect-ratio:16/10;background:
+    radial-gradient(120% 140% at 50% 0%,#123C63 0%,#05080E 70%);border-bottom:1px solid var(--line)}
+  .cover-art span{font-family:var(--font-display);font-weight:900;text-transform:uppercase;letter-spacing:.05em;text-align:center;
+    font-size:clamp(1.3rem,5vw,1.7rem);padding:0 1rem;line-height:1.15;
+    background:linear-gradient(180deg,var(--chrome1) 20%,var(--chrome2) 50%,var(--chrome3) 58%,var(--chrome1) 95%);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+
+  /* ---------- proof strip + footer ---------- */
+  .proofband{max-width:76rem;margin:2.8rem auto 0;padding:0 1.1rem}
+  .proofband .inner{border:1px solid var(--line);border-top:3px solid var(--red);border-radius:16px;background:var(--panel);padding:1.2rem 1.3rem}
+  .proofband h2{color:#fff;font-family:var(--font-display);font-size:1.25rem;margin:0 0 .4rem}
+  .proofband p{color:var(--body);margin:.3rem 0;line-height:1.6}
+  .proofband a{color:var(--eb-bright);font-weight:700}
+  footer{margin-top:3rem;border-top:1px solid var(--line);padding:1.6rem 1.1rem 2.4rem;text-align:center;color:var(--muted)}
+  footer .visit{color:#fff;font-weight:800;font-size:1.05rem}
+  footer a{color:var(--eb-bright)}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../index.html" aria-label="Digital Dollar Store — home">
+      <img src="../assets/digital-dollar-store-logo.webp" alt="" width="1920" height="1280">
+      <span class="brand-name">DIGITAL <span>DOLLAR</span> STORE<span class="dot" aria-hidden="true"></span></span>
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav class="site-nav" id="site-nav" aria-label="Main">
+      <ul>
+        <li><a href="../index.html#games">Games</a></li>
+        <li><a href="index.html" aria-current="page">Hustle City Arcade</a></li>
+        <li><a href="../play-midas/">Play Midas — Free</a></li>
+        <li><a href="../index.html#apps">Apps</a></li>
+        <li><a href="../index.html#tools">Tools</a></li>
+        <li><a href="../catalog.html">Catalog</a></li>
+        <li><a href="https://jdawgsindustries.com/support.html">Support</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- ================= MARQUEE ================= -->
+  <div class="marquee">
+    <div class="bulbs" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <p class="over">Digital Dollar Store presents</p>
+    <h1>Hustle City <span class="arc">Arcade</span></h1>
+    <p class="sub">Every Hustle City game in one room — the street games, the drag strip, the dice, the slots.
+      <b>Walk in and play them all, right in your browser.</b> Nothing to download, nothing to install.</p>
+  </div>
+
+  <!-- ================= DAY PASS ================= -->
+  <section class="pass" id="passPanel" aria-label="Arcade day pass">
+    <div id="passLocked">
+      <p class="price-line">$1 DAY PASS <span class="red">— 24 HOURS</span></p>
+      <p>One dollar opens the whole room for a full day: every game below, as much as you can play.
+        When the day runs out, the room locks again — grab another pass for $1 any time.</p>
+      <a class="passbuy" id="passBuyBtn" href="#">GET THE DAY PASS — $1.00</a>
+      <p class="fine" id="passWiringNote" hidden>Day-pass checkout opens today — the payment link is being wired right now. The room, the games and the samples below are all real and ready.</p>
+      <p class="fine">Your pass lives on the browser you pay on — pay here, then play here on this device. After you pay, Stripe brings you right back and the room unlocks.</p>
+    </div>
+    <div id="passActive" hidden>
+      <p class="passstate-live">🕹️ Your day pass is live — <span class="clock" id="passClock"></span> left. Every cabinet below is open.</p>
+    </div>
+    <div id="passExpired" hidden>
+      <p class="price-line">YOUR DAY PASS <span class="red">ENDED</span></p>
+      <p>Hope it was a good run. Another full day in the room is $1, same as before.</p>
+      <a class="passbuy" id="passBuyBtn2" href="#">GET ANOTHER DAY PASS — $1.00</a>
+    </div>
+    <div class="guarantees">
+      <span>No ads, ever</span><span>We never sell your information</span><span>If we can't fix it, we refund you</span><span>Games you buy are yours forever</span>
+    </div>
+    <p class="ownerline">Owner? <a href="../owner-access/">Enter free →</a></p>
+  </section>
+
+  <!-- ================= THE GAMES ================= -->
+  <div class="sec-head">
+    <p class="eyebrow">The room</p>
+    <h2>Pick a cabinet</h2>
+    <p>PLAY opens the game right here in your browser — the day pass unlocks every PLAY button in the room.
+      Fall for one? KEEP IT buys your own copy at its regular store price — yours forever, no pass needed.</p>
+  </div>
+
+  <div class="grid" id="gameGrid">
+    <article class="cab">
+      <img class="cover" src="../assets/hc1-cover.webp" alt="Hustle City — chrome lettering over a black Charger on a rainy neon street" width="1920" height="1120" loading="lazy">
+      <div class="body"><h3>Hustle City</h3>
+      <p>The original street-trading game. Buy low, sell high, stay ahead of the law — 30 days to turn a little cash into a lot.</p>
+      <div class="doors">
+        <a class="play locked" data-game="hc1" href="#passPanel">🔒 PLAY — DAY PASS</a>
+        <a class="keep" href="https://buy.stripe.com/bJe7sL0dP4A44BTfpz3kt1g">KEEP IT — <span class="kp">&nbsp;$1.00</span></a>
+      </div></div>
+    </article>
+
+    <article class="cab">
+      <img class="cover" src="../assets/hc2-cover.webp" alt="Hustle City 2 — chrome Hustle City lettering over the black Charger on a rainy neon street" width="1920" height="1120" loading="lazy">
+      <div class="body"><h3>Hustle City 2</h3>
+      <p>The sequel. Seven cities, a street market, and a dice game against King Balsey — work your way up to a million dollars.</p>
+      <div class="doors">
+        <a class="play locked" data-game="hc2" href="#passPanel">🔒 PLAY — DAY PASS</a>
+        <a class="keep" href="https://buy.stripe.com/7sYfZh2lXfeIecta5f3kt1h">KEEP IT — <span class="kp">&nbsp;$1.00</span></a>
+      </div></div>
+    </article>
+
+    <article class="cab">
+      <img class="cover" src="../assets/hustle-city-drag-racing-cover.webp" alt="Hustle City Drag Racing — a blown black muscle car crossing the finish line under the WIN board" width="2048" height="1152" loading="lazy">
+      <div class="body"><h3>Hustle City Drag Racing</h3>
+      <p>Heads-up drag racing — stage up, launch on green, build your car across 87 upgrade steps. Sixteen rivals, and Scotty — the wall — at the end.</p>
+      <div class="doors">
+        <a class="play locked" data-game="dragRacing" href="#passPanel">🔒 PLAY — DAY PASS</a>
+        <a class="keep" href="https://buy.stripe.com/3cI6oH9Op3w0gkBcdn3kt1A">KEEP IT — <span class="kp">&nbsp;$1.99</span></a>
+      </div></div>
+    </article>
+
+    <article class="cab">
+      <img class="cover" src="../assets/hustle-city-craps-cover.webp" alt="Hustle City Craps — street craps under the neon, dice in the air" width="1920" height="1280" loading="lazy" style="object-position:center top">
+      <div class="body"><h3>Hustle City Craps</h3>
+      <p>Street craps, Hustle City style — the same dice hand and money rules as the street game in Hustle City 2, with a full four-handed Spades table built in.</p>
+      <div class="doors">
+        <a class="play locked" data-game="craps" href="#passPanel">🔒 PLAY — DAY PASS</a>
+        <a class="keep" href="https://buy.stripe.com/6oU9AT1hTc2wgkB91b3kt1w">KEEP IT — <span class="kp">&nbsp;$1.00</span></a>
+      </div></div>
+    </article>
+
+    <article class="cab">
+      <img class="cover" src="../assets/hustle-city-solitaire-cover.webp" alt="Hustle City Solitaire — a chrome tray of big, easy-to-read cards with the Queen of Spades lifted in a blue glow" width="1920" height="760" loading="lazy" style="object-position:center 30%">
+      <div class="body"><h3>Hustle City Solitaire</h3>
+      <p>Classic Klondike solitaire rebuilt with the biggest, easiest-to-read cards that fit a phone screen. Plain clean faces, full-width board.</p>
+      <div class="doors">
+        <a class="play locked" data-game="solitaire" href="#passPanel">🔒 PLAY — DAY PASS</a>
+        <a class="keep" href="https://buy.stripe.com/aFabJ17Gh3w0gkBb9j3kt1B">KEEP IT — <span class="kp">&nbsp;$1.00</span></a>
+      </div></div>
+    </article>
+
+    <article class="cab">
+      <img class="cover" src="../test-bench/hustle-city-slots/assets/marquee.webp" alt="Casino Classics slots — the machine's own marquee sign" loading="lazy">
+      <div class="body"><h3>Casino Classics — Slots</h3>
+      <p>The classic Hustle City slot machine: electric cherries, a working pull arm, free spins, and the Pick-a-Garage bonus — open a trunk, win the prize, dodge Scotty.</p>
+      <div class="doors">
+        <a class="play locked" data-game="slotsClassics" href="#passPanel">🔒 PLAY — DAY PASS</a>
+      </div></div>
+    </article>
+
+    <article class="cab">
+      <img class="cover" src="../test-bench/hustle-city-slots-skyline/assets/marquee.webp" alt="Midnight Skyline slots — the machine's own marquee sign" loading="lazy">
+      <div class="body"><h3>Midnight Skyline — Slots</h3>
+      <p>Neon-noir slots over the midnight city: vault doors, skyscrapers, free spins, and the Dice Roll bonus — bank the pot or roll again, but a 7 busts it.</p>
+      <div class="doors">
+        <a class="play locked" data-game="slotsSkyline" href="#passPanel">🔒 PLAY — DAY PASS</a>
+      </div></div>
+    </article>
+
+    <article class="cab">
+      <img class="cover cover-tall" src="assets/poker-luxe-cover.webp" alt="Poker Luxe slots — a screenshot of the machine itself, cards and chrome" loading="lazy">
+      <div class="body"><h3>Poker Luxe — Slots</h3>
+      <p>The poker-room machine: aces and kings, free spins, and the Bonus Wheel — chrome wedges, one jackpot, one BANKRUPT. Spin it if you dare.</p>
+      <div class="doors">
+        <a class="play locked" data-game="slotsLuxe" href="#passPanel">🔒 PLAY — DAY PASS</a>
+      </div></div>
+    </article>
+
+    <article class="cab">
+      <img class="cover" src="../assets/play-midas-cover.png" alt="Play Midas — two cards, an ace and a king of spades, chrome letters: 10 hands, heads-up, free" width="1920" height="1120" loading="lazy">
+      <div class="body"><h3>Play Midas — 10 Hands</h3>
+      <span class="badge free">Free — no pass needed</span>
+      <p>Heads-up poker against Midas himself. Ten hands, play chips — then Midas gives you his honest first read on how you play.</p>
+      <div class="doors">
+        <a class="play" data-game="playMidas" data-free="1" href="#">▶ PLAY — FREE</a>
+      </div></div>
+    </article>
+
+    <article class="cab">
+      <div class="cover-art" role="img" aria-label="Hustle City Hold'em — coming soon"><span>Hustle City<br>Hold'em</span></div>
+      <div class="body"><h3>Hustle City Hold'em</h3>
+      <span class="badge soon">Coming soon</span>
+      <p>The player poker game: knock out all five regulars, then face King Balsey heads-up for the crown. Still being built — its cabinet is reserved.</p>
+      <div class="doors">
+        <a class="play disabled" aria-disabled="true">COMING SOON</a>
+      </div></div>
+    </article>
+  </div>
+
+  <!-- ================= PROOF ================= -->
+  <div class="proofband">
+    <div class="inner">
+      <h2>Real games, really tested</h2>
+      <p>Every cabinet in this room is a finished, playable build — played end-to-end and tested before it earned its spot here.
+        The covers above are the games themselves, not mock-ups. Want the receipts?
+        <a href="../proof-hustle-city-drag-racing.html">Drag Racing's measured test races</a> ·
+        <a href="../proof-hustle-city-solitaire.html">Solitaire's proof page</a></p>
+    </div>
+  </div>
+
+  <!-- ================= SAMPLES ================= -->
+  <div class="sec-head">
+    <p class="eyebrow">The showroom</p>
+    <h2>Samples</h2>
+    <p>Not games — a look at the rest of the store. Samples are free to look at, no pass needed.
+      Like what you see? The buy door is right there — bought items are yours forever.</p>
+  </div>
+
+  <div class="grid">
+    <article class="cab sample">
+      <img class="cover" src="../assets/templates-pack-cover.webp" alt="Top 25 Templates Pack — budget spreadsheet, weekly planner, resume and invitation templates in chrome and electric blue" width="1920" height="1120" loading="lazy">
+      <div class="body"><h3>Top 25 Templates Pack</h3>
+      <p>The 25 templates people actually buy — paycheck budget spreadsheet, life planner, resume pack, bookkeeping and more, in one download.</p>
+      <p class="priceline">$1.00 <small>one-time</small></p>
+      <div class="doors">
+        <a class="play" href="../proof-templates-pack.html">👀 SEE A SAMPLE</a>
+        <a class="keep" href="https://buy.stripe.com/eVq00j3q15E8b0h4KV3kt1u">KEEP IT — <span class="kp">&nbsp;$1.00</span></a>
+      </div></div>
+    </article>
+
+    <article class="cab sample">
+      <img class="cover" src="../assets/scottys-calculator-cover.webp" alt="Scotty's Job Site Calculator — a chunky chrome job-site calculator next to a chrome framing hammer" width="1920" height="1280" loading="lazy">
+      <div class="body"><h3>Scotty's Job Site Calculator</h3>
+      <p>Feet-inch-fraction math with no decimal converting — rafters, stairs, concrete, board feet. Tested on a real job site.</p>
+      <p class="priceline">$0.99 <small>one-time</small></p>
+      <div class="doors">
+        <a class="play" href="../proof-scottys-job-site-calculator.html">👀 SEE A SAMPLE</a>
+        <a class="keep" href="https://buy.stripe.com/7sYbJ11hTc2w2tLcdn3kt1z">KEEP IT — <span class="kp">&nbsp;$0.99</span></a>
+      </div></div>
+    </article>
+
+    <article class="cab sample">
+      <img class="cover" src="../assets/draw-pad-cover.webp" alt="Draw Pad — a chrome pen drawing a glowing electric-blue swirl" width="2736" height="912" loading="lazy">
+      <div class="body"><h3>Draw Pad</h3>
+      <p>The simple drawing pad. Eight colors, three brush sizes, an eraser and an undo button — nothing else in your way.</p>
+      <p class="priceline">$1.00 <small>one-time</small></p>
+      <div class="doors">
+        <a class="play" href="../proof-draw-pad.html">👀 SEE A SAMPLE</a>
+        <a class="keep" href="https://buy.stripe.com/14A28r6CdaYsd8p6T33kt1x">KEEP IT — <span class="kp">&nbsp;$1.00</span></a>
+      </div></div>
+    </article>
+
+    <article class="cab sample">
+      <img class="cover" src="../assets/create-with-j-dawg-cover.webp" alt="Create with J-Dawg — the Electric Color Chart, stacked layers, a palette and brushes in chrome and electric blue" width="2736" height="912" loading="lazy">
+      <div class="body"><h3>Create with J-Dawg</h3>
+      <p>The full drawing studio — the Electric Color Chart, stacked layers, a palette and brushes, in chrome and electric blue.</p>
+      <p class="priceline">$1.00 <small>one-time</small></p>
+      <div class="doors">
+        <a class="play" href="../proof-create-with-j-dawg.html">👀 SEE A SAMPLE</a>
+        <a class="keep" href="https://buy.stripe.com/fZuaEXgcNeaE7O5elv3kt1y">KEEP IT — <span class="kp">&nbsp;$1.00</span></a>
+      </div></div>
+    </article>
+
+    <article class="cab sample">
+      <div class="cover-art" role="img" aria-label="J-Dawgs Prompt Generator"><span>J-Dawgs<br>Prompt Generator</span></div>
+      <div class="body"><h3>J-Dawgs Prompt Generator</h3>
+      <p>Answer a few plain questions about what you want — a picture, a video, an ad, some writing — and it writes a strong, detailed prompt for any AI tool.</p>
+      <p class="priceline">$2.99 <small>one-time</small></p>
+      <div class="doors">
+        <a class="play" href="https://jdawgsindustries.com/proof-prompt-generator.html">👀 SEE A SAMPLE</a>
+        <a class="keep" href="https://buy.stripe.com/cNi9AT8Kl0jO2tL5OZ3kt0N">KEEP IT — <span class="kp">&nbsp;$2.99</span></a>
+      </div></div>
+    </article>
+
+    <article class="cab sample">
+      <div class="cover-art" role="img" aria-label="The AI Translator"><span>The AI<br>Translator</span></div>
+      <div class="body"><h3>The AI Translator</h3>
+      <p>Talk rough, get a finished prompt back. It fills the fields from your own words and asks about the rest — never invents. Try the live sample on the test bench.</p>
+      <p class="priceline">On the test bench <small>— price not set yet</small></p>
+      <div class="doors">
+        <a class="play" href="https://digitaldollarstore.org/test-bench/apps/ai-translator/">👀 TRY THE SAMPLE</a>
+      </div></div>
+    </article>
+  </div>
+</main>
+
+<footer>
+  <p class="visit">Visit us at digitaldollarstore.org</p>
+  <p>Hustle City Arcade — a room inside the Digital Dollar Store, by J-Dawgs Industries.<br>
+  Bought games are yours forever. The day pass rents the room for 24 hours.<br>
+  Owner? <a href="../owner-access/">Enter free →</a> · <a href="../index.html">Back to the store</a></p>
+</footer>
+
+<script>
+/* ============================================================================
+   HUSTLE CITY ARCADE — CONFIG · THE ONE PLACE EVERY DOOR LIVES
+   ----------------------------------------------------------------------------
+   - STRIPE_DAY_PASS_LINK: the $1 day-pass Stripe payment link. Midas wires the
+     real link here (one line) when it lands; "#" = checkout not open yet.
+     The Stripe link's success URL must return buyers to /arcade/?pass=1 .
+   - DOORS: the playable build behind every PLAY button. When the free public
+     demos come down (the teardown pass), each game moves to its final path —
+     change the URL here and nowhere else.
+   ============================================================================ */
+const ARCADE_CONFIG = {
+  STRIPE_DAY_PASS_LINK: "https://buy.stripe.com/cNi9AT4u58Qk4BT7X73kt1C",
+  PASS_HOURS: 24,
+  PASS_KEY: "hcArcadePassUntil",
+  OWNER_KEY: "hcArcadeOwner",
+  DOORS: {
+    hc1:           "https://jdawgsindustries.com/games/hc1-demo/",
+    hc2:           "https://jdawgsindustries.com/games/hc2-demo/",
+    craps:         "https://jdawgsindustries.com/hustle-city-craps/",
+    dragRacing:    "https://digitaldollarstore.org/test-bench/hustle-city-racing/",
+    solitaire:     "https://digitaldollarstore.org/test-bench/hustle-city-solitaire/",
+    slotsClassics: "https://digitaldollarstore.org/test-bench/hustle-city-slots/",
+    slotsSkyline:  "https://digitaldollarstore.org/test-bench/hustle-city-slots-skyline/",
+    slotsLuxe:     "https://digitaldollarstore.org/test-bench/hustle-city-slots-luxe/",
+    playMidas:     "https://digitaldollarstore.org/play-midas/"
+  }
+};
+</script>
+<script>
+(function(){
+  "use strict";
+  var cfg = ARCADE_CONFIG;
+
+  /* nav toggle (same behavior as the storefront) */
+  var toggle = document.querySelector(".nav-toggle"), nav = document.getElementById("site-nav");
+  if (toggle && nav) toggle.addEventListener("click", function(){
+    var open = nav.classList.toggle("open");
+    toggle.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+
+  /* ---- pass state ---- */
+  var qs = new URLSearchParams(location.search);
+  try {
+    if (qs.get("pass") === "1") {
+      localStorage.setItem(cfg.PASS_KEY, String(Date.now() + cfg.PASS_HOURS * 3600 * 1000));
+    }
+    if (qs.get("owner") === "1") {
+      localStorage.setItem(cfg.OWNER_KEY, "1");
+    }
+    if (qs.has("pass") || qs.has("owner")) {
+      history.replaceState(null, "", location.pathname);
+    }
+  } catch (e) {}
+
+  function passState(){
+    var owner = false, until = 0;
+    try {
+      owner = localStorage.getItem(cfg.OWNER_KEY) === "1";
+      until = parseInt(localStorage.getItem(cfg.PASS_KEY) || "0", 10) || 0;
+    } catch (e) {}
+    if (owner) return { mode: "owner", until: 0 };
+    if (until > Date.now()) return { mode: "active", until: until };
+    if (until > 0) return { mode: "expired", until: until };
+    return { mode: "locked", until: 0 };
+  }
+
+  var elLocked = document.getElementById("passLocked"),
+      elActive = document.getElementById("passActive"),
+      elExpired = document.getElementById("passExpired"),
+      elClock = document.getElementById("passClock"),
+      panel = document.getElementById("passPanel");
+
+  /* wire the buy buttons from the config constant */
+  ["passBuyBtn", "passBuyBtn2"].forEach(function(id){
+    var b = document.getElementById(id);
+    if (!b) return;
+    if (cfg.STRIPE_DAY_PASS_LINK && cfg.STRIPE_DAY_PASS_LINK !== "#") {
+      b.href = cfg.STRIPE_DAY_PASS_LINK;
+    } else {
+      b.addEventListener("click", function(ev){
+        ev.preventDefault();
+        var n = document.getElementById("passWiringNote");
+        if (n) n.hidden = false;
+        b.textContent = "CHECKOUT OPENS TODAY — LINK BEING WIRED";
+      });
+    }
+  });
+
+  function fmtLeft(ms){
+    var s = Math.max(0, Math.floor(ms / 1000));
+    var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
+    if (h >= 1) return h + "h " + m + "m";
+    var sec = s % 60;
+    return m + "m " + sec + "s";
+  }
+
+  function render(){
+    var st = passState();
+    var unlocked = (st.mode === "active" || st.mode === "owner");
+    elLocked.hidden = unlocked || st.mode === "expired";
+    elExpired.hidden = unlocked || st.mode !== "expired";
+    elActive.hidden = !unlocked;
+    if (st.mode === "owner") elClock.textContent = "owner — no clock on you";
+    else if (st.mode === "active") elClock.textContent = fmtLeft(st.until - Date.now());
+
+    document.querySelectorAll("a.play[data-game]").forEach(function(a){
+      var door = cfg.DOORS[a.getAttribute("data-game")];
+      if (!door) return;
+      if (a.hasAttribute("data-free") || unlocked) {
+        a.href = door;
+        a.classList.remove("locked");
+        if (!a.hasAttribute("data-free")) a.textContent = "▶ PLAY";
+      } else {
+        a.href = "#passPanel";
+        a.classList.add("locked");
+        a.textContent = "🔒 PLAY — DAY PASS";
+      }
+    });
+  }
+
+  /* locked PLAY buttons point at the pass panel — give it a pulse on arrival */
+  document.querySelectorAll("a.play").forEach(function(a){
+    a.addEventListener("click", function(){
+      if (a.classList.contains("locked")) {
+        panel.classList.remove("pulse"); void panel.offsetWidth; panel.classList.add("pulse");
+      }
+    });
+  });
+
+  render();
+  setInterval(render, 30000);
+})();
+</script>
+</body>
+</html>
