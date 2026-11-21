@@ -90,8 +90,9 @@
   @media (min-width:1024px){ .grid{grid-template-columns:1fr 1fr 1fr} }
   .cab{background:linear-gradient(180deg,#0C1B30,var(--panel));border:1px solid var(--line-strong);border-top:3px solid var(--eb);
     border-radius:16px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 10px 30px rgba(0,0,0,.45)}
-  .cab .cover{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;background:#02040a}
+  .cab .cover{width:100%;height:124px;object-fit:cover;display:block;background:#02040a}
   .cab .cover-tall{object-position:center 18%}
+  .cab .cover.fit{object-fit:contain}
   .cab .body{padding:1rem 1.1rem 1.15rem;display:flex;flex-direction:column;gap:.45rem;flex:1}
   .cab h3{font-family:var(--font-display);color:#fff;font-size:1.28rem;margin:0;line-height:1.2}
   .cab p{color:var(--body);margin:0;line-height:1.5;font-size:.97rem;flex:1}
@@ -116,7 +117,7 @@
   .cab.sample{border-top-color:var(--red)}
   .cab .priceline{color:#fff;font-weight:800;font-size:1.05rem}
   .cab .priceline small{color:var(--muted);font-weight:600}
-  .cover-art{display:flex;align-items:center;justify-content:center;aspect-ratio:16/10;background:
+  .cover-art{display:flex;align-items:center;justify-content:center;height:124px;background:
     radial-gradient(120% 140% at 50% 0%,#123C63 0%,#05080E 70%);border-bottom:1px solid var(--line)}
   .cover-art span{font-family:var(--font-display);font-weight:900;text-transform:uppercase;letter-spacing:.05em;text-align:center;
     font-size:clamp(1.3rem,5vw,1.7rem);padding:0 1rem;line-height:1.15;
@@ -201,7 +202,7 @@
 
   <div class="grid" id="gameGrid">
     <article class="cab">
-      <img class="cover" src="../assets/hc1-cover.webp" alt="Hustle City — chrome lettering over a black Charger on a rainy neon street" width="1920" height="1120" loading="lazy">
+      <img class="cover" src="../assets/hc1-cover.webp" alt="Hustle City — chrome lettering over a black Charger on a rainy neon street" width="1920" height="1120" loading="lazy" style="object-position:center top">
       <div class="body"><h3>Hustle City</h3>
       <p>The original street-trading game. Buy low, sell high, stay ahead of the law — 30 days to turn a little cash into a lot.</p>
       <div class="doors">
@@ -221,7 +222,7 @@
     </article>
 
     <article class="cab">
-      <img class="cover" src="../assets/hustle-city-drag-racing-cover.webp" alt="Hustle City Drag Racing — a blown black muscle car crossing the finish line under the WIN board" width="2048" height="1152" loading="lazy">
+      <img class="cover" src="../assets/hustle-city-drag-racing-cover.webp" alt="Hustle City Drag Racing — a blown black muscle car crossing the finish line under the WIN board" width="2048" height="1152" loading="lazy" style="object-position:center top">
       <div class="body"><h3>Hustle City Drag Racing</h3>
       <p>Heads-up drag racing — stage up, launch on green, build your car across 87 upgrade steps. Sixteen rivals, and Scotty — the wall — at the end.</p>
       <div class="doors">
@@ -318,7 +319,7 @@
 
   <div class="grid">
     <article class="cab sample">
-      <img class="cover" src="../assets/templates-pack-cover.webp" alt="Top 25 Templates Pack — budget spreadsheet, weekly planner, resume and invitation templates in chrome and electric blue" width="1920" height="1120" loading="lazy">
+      <img class="cover" src="../assets/templates-pack-cover.webp" alt="Top 25 Templates Pack — budget spreadsheet, weekly planner, resume and invitation templates in chrome and electric blue" width="1920" height="1120" loading="lazy" style="object-position:center top">
       <div class="body"><h3>Top 25 Templates Pack</h3>
       <p>The 25 templates people actually buy — paycheck budget spreadsheet, life planner, resume pack, bookkeeping and more, in one download.</p>
       <p class="priceline">$1.00 <small>one-time</small></p>
@@ -340,7 +341,7 @@
     </article>
 
     <article class="cab sample">
-      <img class="cover" src="../assets/draw-pad-cover.webp" alt="Draw Pad — a chrome pen drawing a glowing electric-blue swirl" width="2736" height="912" loading="lazy">
+      <img class="cover fit" src="../assets/draw-pad-cover.webp" alt="Draw Pad — a chrome pen drawing a glowing electric-blue swirl" width="2736" height="912" loading="lazy">
       <div class="body"><h3>Draw Pad</h3>
       <p>The simple drawing pad. Eight colors, three brush sizes, an eraser and an undo button — nothing else in your way.</p>
       <p class="priceline">$1.00 <small>one-time</small></p>
@@ -351,7 +352,7 @@
     </article>
 
     <article class="cab sample">
-      <img class="cover" src="../assets/create-with-j-dawg-cover.webp" alt="Create with J-Dawg — the Electric Color Chart, stacked layers, a palette and brushes in chrome and electric blue" width="2736" height="912" loading="lazy">
+      <img class="cover fit" src="../assets/create-with-j-dawg-cover.webp" alt="Create with J-Dawg — the Electric Color Chart, stacked layers, a palette and brushes in chrome and electric blue" width="2736" height="912" loading="lazy">
       <div class="body"><h3>Create with J-Dawg</h3>
       <p>The full drawing studio — the Electric Color Chart, stacked layers, a palette and brushes, in chrome and electric blue.</p>
       <p class="priceline">$1.00 <small>one-time</small></p>
