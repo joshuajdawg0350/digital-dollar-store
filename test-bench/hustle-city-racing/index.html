@@ -96,7 +96,7 @@
   #title-saved .savedcard b{color:#EAF4FF}
   #title-saved .rowbtns{justify-content:center;margin-top:8px}
   /* v0.4.1 detail: surface texture on the menu screens (CSS-cheap) */
-  #scr-garage{background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.016) 0 2px,transparent 2px 7px),radial-gradient(120% 55% at 50% 0%,rgba(0,150,255,.08),transparent 60%)}
+  #gsheet{background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.016) 0 2px,transparent 2px 7px),radial-gradient(120% 55% at 50% 0%,rgba(0,150,255,.08),transparent 60%),linear-gradient(180deg,rgba(3,6,10,.88),rgba(3,6,10,.97) 62%)}
   #scr-title .inner{background-image:radial-gradient(90% 40% at 50% 0%,rgba(0,150,255,.06),transparent 65%)}
   .carcard{background-image:linear-gradient(155deg,rgba(255,255,255,.075),rgba(255,255,255,0) 42%),linear-gradient(0deg,rgba(0,150,255,.05),rgba(0,150,255,0) 55%)}
   .secttl{box-shadow:0 1px 0 rgba(0,150,255,.30)}
@@ -106,8 +106,28 @@
   .rival.locked{opacity:.52}
   .rival:disabled{cursor:default}
   /* ---------- GARAGE ---------- */
-  #scr-garage{background:linear-gradient(180deg,rgba(3,6,10,.60),rgba(3,6,10,.95) 62%);
-    padding:18px 16px calc(16px + var(--safe-b));overflow-y:auto}
+  /* v0.4.5 (Joshua, 2026-11-20): the garage screen itself no longer
+     scrolls or carries the panel — the sheet below does. The street
+     scene stays visible above the sheet. */
+  #scr-garage{background:transparent;justify-content:flex-end;padding:0;overflow:hidden}
+  /* v0.4.5: THE GARAGE IS A PULL-UP SHEET — the house drag-sheet
+     pattern (Funny Maps): snap stops full 72% / half 42% / collapsed
+     (handle only). Drag or flick the handle; tap it to fold the
+     garage away and watch your car, tap again to bring it back. */
+  #gsheet{height:var(--gsH,72%);max-height:100%;display:flex;flex-direction:column;flex:0 0 auto;
+    border-top:2px solid #0096FF;border-radius:18px 18px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.55);
+    transition:height .3s ease;overflow:hidden}
+  #gsheet.dragging{transition:none}
+  #gsheetHandle{flex:0 0 auto;height:38px;display:flex;align-items:center;justify-content:center;position:relative;
+    cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;background:rgba(5,8,14,.55)}
+  #gsheetHandle:active{cursor:grabbing}
+  .gs-grip{width:58px;height:6px;border-radius:3px;background:linear-gradient(180deg,#FDFEFE,#A9C4DE 50%,#63798F);
+    box-shadow:0 0 9px rgba(0,150,255,.55),0 1px 2px rgba(0,0,0,.6)}
+  .gs-hint{position:absolute;left:14px;top:50%;margin-top:-8px;font-size:10.5px;letter-spacing:1.6px;color:#8FA3BA;font-weight:800}
+  .gs-chev{position:absolute;right:14px;top:50%;margin-top:-11px;font-size:15px;line-height:1;color:#6FC3FF;transition:transform .3s ease}
+  #gsheet.collapsed .gs-chev{transform:rotate(180deg)}
+  #gsheetBody{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+    padding:8px 16px calc(16px + var(--safe-b));position:relative}
   /* v0.4.4 (Joshua, 2026-11-19 21:31): the garage header is STICKY —
      the BACK button and the street-points readout stay pinned at the
      top no matter how far the parts/rival lists scroll beneath them.
@@ -245,9 +265,9 @@
   #scr-how .cap{font-size:12px;color:#8FA9C4;letter-spacing:.06em;margin-bottom:12px}
   .foot{margin-top:auto;padding-top:16px;font-size:10.5px;color:#5F748C;text-align:center;letter-spacing:.05em}
   /* chrome scrollbars on the two scrollable screens */
-  #scr-garage::-webkit-scrollbar,#scr-how::-webkit-scrollbar{width:9px}
-  #scr-garage::-webkit-scrollbar-track,#scr-how::-webkit-scrollbar-track{background:rgba(6,10,17,.4)}
-  #scr-garage::-webkit-scrollbar-thumb,#scr-how::-webkit-scrollbar-thumb{border-radius:5px;border:1px solid #22344A;
+  #gsheetBody::-webkit-scrollbar,#scr-how::-webkit-scrollbar{width:9px}
+  #gsheetBody::-webkit-scrollbar-track,#scr-how::-webkit-scrollbar-track{background:rgba(6,10,17,.4)}
+  #gsheetBody::-webkit-scrollbar-thumb,#scr-how::-webkit-scrollbar-thumb{border-radius:5px;border:1px solid #22344A;
     background:linear-gradient(180deg,#7E97AE,#3D4F63 55%,#22344A)}
 </style>
 </head>
@@ -285,12 +305,17 @@
     </div>
     <div id="title-saved"></div>
     <div class="title-stats" id="title-stats"></div>
-    <div class="legal">© 2026 Joshua Dawson / J-Dawgs Industries · Hustle City Drag Racing™ · v0.4.4 — Land Speed</div>
+    <div class="legal">© 2026 Joshua Dawson / J-Dawgs Industries · Hustle City Drag Racing™ · v0.4.5 — Land Speed</div>
   </div>
 </section>
 
 <!-- GARAGE -->
 <section id="scr-garage" class="screen">
+ <div id="gsheet" data-default="full">
+  <div id="gsheetHandle" role="button" tabindex="0" aria-label="Drag to resize the garage panel">
+    <span class="gs-hint">GARAGE</span><span class="gs-grip"></span><span class="gs-chev">▾</span>
+  </div>
+  <div id="gsheetBody">
   <div class="g-head">
     <button id="btn-back-garage" class="smallbtn">← Title</button>
     <h2 class="chrome-text">THE GARAGE</h2>
@@ -314,6 +339,8 @@
     <button id="btn-how-garage" class="smallbtn">How to race</button>
   </div>
   <div class="foot">Win races to earn street points. Spend them on parts — every part makes the car measurably faster, and you can watch it grow on the car behind this panel. Sixteen racers — beat one to unlock the next. BIG BODY SCOTTY tops the ladder holding the DRAG RACING RECORD at 346.95 mph: beat him with a perfect run in a drag-spec build and the record is yours. Past him the RECORD CHASE opens on the salt at Bonneville — tech inspection demands a parachute, the payouts get serious, and the marks get historic: 503, 633.47, and the outright land speed record, 763.035 mph.</div>
+  </div>
+ </div>
 </section>
 
 <!-- RACE -->
@@ -450,24 +477,33 @@ const RECORDS=[
    RT trim at the record band) so GOOD driving wins about 80%
    against matched machinery at every build level. Scotty is
    untouched by both — his 7250 stands, PERFECT beats him at
-   every build, GOOD stays a coin flip against him. */
+   every build, GOOD stays a coin flip against him.
+   v0.4.5 (neck-and-neck law, owner 2026-11-20): the field is
+   retuned once more — re-anchored aiShiftOffset, an RT trim at
+   every band, softer shape lobes, a per-band hard cap on every
+   rolled shift target, and per-rival rtBase/shiftRpm nudges
+   (Rick, Vee and Cole sharpen up; Vivian, Kenji, Nils and Ruth
+   give a little back). GOOD now wins ~75% vs the field at every
+   build and PERFECT wins 100% — the cap is what makes that a
+   guarantee rather than a sample. Scotty's own numbers stand
+   (7250, RT 0.20); only his shift window tightens, 150 -> 110. */
 const RIVALS=[
-  {id:'rick', name:'Slick Rick',  car:'’72 Rustbucket GT', color:0x8a3324, face:'#8a3324', etBase:10.3, rtBase:0.36, rtVar:0.12, power:0.84, shiftRpm:6825, blower:1, pay:250, diff:'EASY',   dcls:'d1', shape:'even', lvl:'LEVEL 1 — STREET', line:'Talks big. Launches bigger.'},
-  {id:'vee',  name:'Vandal Vee',  car:'’85 Neon Fox',      color:0x7a1fa2, face:'#7a1fa2', etBase:9.8,  rtBase:0.30, rtVar:0.096, power:0.875, shiftRpm:7075, blower:2, pay:450, diff:'REAL RACE', dcls:'d2', shape:'launch', lvl:'LEVEL 1 — STREET', line:'The whole strip is her canvas — including your pride.'},
-  {id:'cole', name:'Kingpin Cole',car:'’70 Black Crown',   color:0x15161c, face:'#2b2f3a', etBase:8.9,  rtBase:0.22, rtVar:0.084, power:1.161, shiftRpm:7425, blower:3, pay:850, diff:'KINGPIN', dcls:'d3', shape:'charge', lvl:'LEVEL 1 — STREET', line:'Runs the money end of the strip. Beating him was never supposed to happen.'},
-  {id:'wanda', name:'Wanda “Wrench” Kowalski', car:'’69 Ironback', color:0xc0a062, face:'#c0a062', etBase:8.8, rtBase:0.26, rtVar:0.072, power:1.205, shiftRpm:7475, blower:2, pay:1800, diff:'PRO STREET', dcls:'d2', shape:'even', lvl:'LEVEL 2 — PRO STREET', line:'Built her car with her own hands. Built half the cars that beat you, too.'},
+  {id:'rick', name:'Slick Rick',  car:'’72 Rustbucket GT', color:0x8a3324, face:'#8a3324', etBase:10.3, rtBase:0.31, rtVar:0.12, power:0.84, shiftRpm:6975, blower:1, pay:250, diff:'EASY',   dcls:'d1', shape:'even', lvl:'LEVEL 1 — STREET', line:'Talks big. Launches bigger.'},
+  {id:'vee',  name:'Vandal Vee',  car:'’85 Neon Fox',      color:0x7a1fa2, face:'#7a1fa2', etBase:9.8,  rtBase:0.26, rtVar:0.096, power:0.875, shiftRpm:7200, blower:2, pay:450, diff:'REAL RACE', dcls:'d2', shape:'launch', lvl:'LEVEL 1 — STREET', line:'The whole strip is her canvas — including your pride.'},
+  {id:'cole', name:'Kingpin Cole',car:'’70 Black Crown',   color:0x15161c, face:'#2b2f3a', etBase:8.9,  rtBase:0.22, rtVar:0.084, power:1.161, shiftRpm:7500, blower:3, pay:850, diff:'KINGPIN', dcls:'d3', shape:'charge', lvl:'LEVEL 1 — STREET', line:'Runs the money end of the strip. Beating him was never supposed to happen.'},
+  {id:'wanda', name:'Wanda “Wrench” Kowalski', car:'’69 Ironback', color:0xc0a062, face:'#c0a062', etBase:8.8, rtBase:0.24, rtVar:0.072, power:1.205, shiftRpm:7475, blower:2, pay:1800, diff:'PRO STREET', dcls:'d2', shape:'even', lvl:'LEVEL 2 — PRO STREET', line:'Built her car with her own hands. Built half the cars that beat you, too.'},
   {id:'marcus', name:'Marcus “Nine Lives” Reed', car:'’71 Alley Cat', color:0x2e7d6b, face:'#2e7d6b', etBase:8.6, rtBase:0.28, rtVar:0.072, power:1.228, shiftRpm:7525, blower:2, pay:2200, diff:'PRO STREET', dcls:'d2', shape:'launch', lvl:'LEVEL 2 — PRO STREET', line:'Walked away from nine wrecks. Drives like the tenth is already paid for.'},
-  {id:'delia', name:'Delia “Duchess” Vane', car:'’67 Velvet Hammer', color:0x8e244d, face:'#8e244d', etBase:8.6, rtBase:0.26, rtVar:0.066, power:1.319, shiftRpm:7550, blower:3, pay:2600, diff:'PRO STREET', dcls:'d2', shape:'charge', lvl:'LEVEL 2 — PRO STREET', line:'Never raises her voice. Never lifts. Never loses twice to the same driver.'},
+  {id:'delia', name:'Delia “Duchess” Vane', car:'’67 Velvet Hammer', color:0x8e244d, face:'#8e244d', etBase:8.6, rtBase:0.24, rtVar:0.066, power:1.319, shiftRpm:7550, blower:3, pay:2600, diff:'PRO STREET', dcls:'d2', shape:'charge', lvl:'LEVEL 2 — PRO STREET', line:'Never raises her voice. Never lifts. Never loses twice to the same driver.'},
   {id:'tommy', name:'Tommy “Torque” Tran', car:'’70 Sidewinder', color:0xd97b16, face:'#d97b16', etBase:8.2, rtBase:0.27, rtVar:0.066, power:1.4229, shiftRpm:7550, blower:3, pay:3400, diff:'OUTLAW', dcls:'d3', shape:'launch', lvl:'LEVEL 3 — OUTLAW', line:'Counts his money in eighth-miles.'},
-  {id:'rosa', name:'Rosa “Redline” Delgado', car:'’73 Redline Special', color:0xc01828, face:'#c01828', etBase:8.2, rtBase:0.26, rtVar:0.06, power:1.5131, shiftRpm:7575, blower:3, pay:4000, diff:'OUTLAW', dcls:'d3', shape:'charge', lvl:'LEVEL 3 — OUTLAW', line:'Her tach has no red zone. She took it out.'},
+  {id:'rosa', name:'Rosa “Redline” Delgado', car:'’73 Redline Special', color:0xc01828, face:'#c01828', etBase:8.2, rtBase:0.24, rtVar:0.06, power:1.5131, shiftRpm:7575, blower:3, pay:4000, diff:'OUTLAW', dcls:'d3', shape:'charge', lvl:'LEVEL 3 — OUTLAW', line:'Her tach has no red zone. She took it out.'},
   {id:'hank', name:'Hank “Hammer” Oduya', car:'’68 Sledge', color:0x4a5568, face:'#4a5568', etBase:8.2, rtBase:0.25, rtVar:0.06, power:1.4516, shiftRpm:7575, blower:3, pay:4600, diff:'OUTLAW', dcls:'d3', shape:'even', lvl:'LEVEL 3 — OUTLAW', line:'Subtle is a word he can’t spell. Fast is a word he can prove.'},
-  {id:'vivian', name:'Vivian “Viper” Cross', car:'’72 Night Viper', color:0x1f6f43, face:'#1f6f43', etBase:8.3, rtBase:0.26, rtVar:0.054, power:1.421, shiftRpm:7575, blower:3, pay:5600, diff:'KINGS ROW', dcls:'d3', shape:'launch', lvl:'LEVEL 4 — KINGS ROW', line:'By the time you hear her blower whine, the race is already over.'},
+  {id:'vivian', name:'Vivian “Viper” Cross', car:'’72 Night Viper', color:0x1f6f43, face:'#1f6f43', etBase:8.3, rtBase:0.29, rtVar:0.054, power:1.421, shiftRpm:7575, blower:3, pay:5600, diff:'KINGS ROW', dcls:'d3', shape:'launch', lvl:'LEVEL 4 — KINGS ROW', line:'By the time you hear her blower whine, the race is already over.'},
   {id:'eddie', name:'Eddie “Eight-Ball” Ferro', car:'’69 Eight-Ball', color:0x191b20, face:'#3a3f4a', etBase:8.2, rtBase:0.21, rtVar:0.048, power:1.495, shiftRpm:7575, blower:3, pay:6800, diff:'KINGS ROW', dcls:'d3', shape:'charge', lvl:'LEVEL 4 — KINGS ROW', line:'Luck is just preparation wearing better paint.'},
   {id:'scotty', name:'BIG BODY SCOTTY', car:'’70 Heavy Crown', color:0x0d0d10, face:'#101216', etBase:5.4, rtBase:0.20, rtVar:0.03, power:0.9284, shiftRpm:7250 /* calibration: matched machinery — his edge is the best RT in the game (0.20) + the tightest shift window, not a higher shift point than a perfect player can use. v0.4.4 win-rate law (owner 2026-11-19): PERFECT beats him EVERY time at every build (100/100 seeded, medians +0.08 to +0.12) — perfect play is never beaten; for anything less he stays the hardest race in the game (GOOD wins just 12% at max build) — measured in qa-v0.4/results-ladder-v044.json */, blower:3, pay:8000, diff:'FINAL BOSS', dcls:'d3', shape:'even', lvl:'THE BOSS', line:'The boss of Hustle City — and he holds the DRAG RACING RECORD: 346.95 mph. Take it off him.', wheelie:true, aero:3, turbo:2, chute:2, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:2,intercooler:2,ecu:3,fuelsys:2,drivetrain:2,chassis:2,aero:3,chute:0,wheeliebar:0}},
-  {id:'nils', name:'Nils “Needle” Bergström', car:'’68 Needleback', color:0xd8dde3, face:'#d8dde3', etBase:4.6, rtBase:0.24, rtVar:0.048, power:1.4641, shiftRpm:7575, blower:3, pay:9000, diff:'SALT FLATS', dcls:'d3', shape:'even', lvl:'THE RECORD CHASE — BONNEVILLE', line:'Came from the salt with a needle-nose streamliner and no fear at all.', wheelie:true, aero:3, turbo:3, chute:1, needChute:true, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:2,intercooler:2,ecu:3,fuelsys:2,drivetrain:2,chassis:2,aero:3,chute:1,wheeliebar:0}},
+  {id:'nils', name:'Nils “Needle” Bergström', car:'’68 Needleback', color:0xd8dde3, face:'#d8dde3', etBase:4.6, rtBase:0.26, rtVar:0.048, power:1.4641, shiftRpm:7575, blower:3, pay:9000, diff:'SALT FLATS', dcls:'d3', shape:'even', lvl:'THE RECORD CHASE — BONNEVILLE', line:'Came from the salt with a needle-nose streamliner and no fear at all.', wheelie:true, aero:3, turbo:3, chute:1, needChute:true, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:2,intercooler:2,ecu:3,fuelsys:2,drivetrain:2,chassis:2,aero:3,chute:1,wheeliebar:0}},
   {id:'dot', name:'Dot “Duster” Callahan', car:'’71 Dust Devil', color:0xb08968, face:'#b08968', etBase:4.0, rtBase:0.22, rtVar:0.048, power:0.8274, shiftRpm:7575, blower:3, pay:13000, diff:'SALT FLATS', dcls:'d3', shape:'charge', lvl:'THE RECORD CHASE — BONNEVILLE', line:'She tunes by ear, at dawn, alone. The salt respects that.', wheelie:true, aero:4, turbo:4, chute:2, needChute:true, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:4,intercooler:4,ecu:5,fuelsys:4,drivetrain:4,chassis:4,aero:4,chute:2,wheeliebar:1}},
-  {id:'kenji', name:'Kenji “Comet” Sato', car:'’70 Comet Tail', color:0x3a6ea5, face:'#3a6ea5', etBase:3.1, rtBase:0.27, rtVar:0.042, power:1.2474, shiftRpm:7575, blower:3, pay:18000, diff:'SALT FLATS', dcls:'d3', shape:'launch', lvl:'THE RECORD CHASE — BONNEVILLE', line:'His tail cone is longer than your whole car. So is his shadow.', wheelie:true, aero:4, turbo:4, chute:3, needChute:true, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:4,intercooler:5,ecu:5,fuelsys:5,drivetrain:5,chassis:5,aero:4,chute:3,wheeliebar:1}},
-  {id:'ruth', name:'Ruth “Big Mama” Okafor', car:'’69 Queen of the Salt', color:0x6d28a8, face:'#6d28a8', etBase:2.9, rtBase:0.24, rtVar:0.042, power:1.00, shiftRpm:7575, blower:3, pay:26000, diff:'SALT QUEEN', dcls:'d3', shape:'even', lvl:'THE RECORD CHASE — BONNEVILLE', line:'Twenty years on the salt. She has buried faster men than you — and she guards the big records.', wheelie:true, aero:5, turbo:5, chute:3, needChute:true, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:6,intercooler:6,ecu:6,fuelsys:6,drivetrain:6,chassis:6,aero:6,chute:4,wheeliebar:1}},
+  {id:'kenji', name:'Kenji “Comet” Sato', car:'’70 Comet Tail', color:0x3a6ea5, face:'#3a6ea5', etBase:3.1, rtBase:0.29, rtVar:0.042, power:1.2474, shiftRpm:7575, blower:3, pay:18000, diff:'SALT FLATS', dcls:'d3', shape:'launch', lvl:'THE RECORD CHASE — BONNEVILLE', line:'His tail cone is longer than your whole car. So is his shadow.', wheelie:true, aero:4, turbo:4, chute:3, needChute:true, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:4,intercooler:5,ecu:5,fuelsys:5,drivetrain:5,chassis:5,aero:4,chute:3,wheeliebar:1}},
+  {id:'ruth', name:'Ruth “Big Mama” Okafor', car:'’69 Queen of the Salt', color:0x6d28a8, face:'#6d28a8', etBase:2.9, rtBase:0.27, rtVar:0.042, power:1.00, shiftRpm:7575, blower:3, pay:26000, diff:'SALT QUEEN', dcls:'d3', shape:'even', lvl:'THE RECORD CHASE — BONNEVILLE', line:'Twenty years on the salt. She has buried faster men than you — and she guards the big records.', wheelie:true, aero:5, turbo:5, chute:3, needChute:true, up:{engine:5,tires:5,gears:5,nitro:5,weight:5,exhaust:5,susp:5,fuel:5,turbo:6,intercooler:6,ecu:6,fuelsys:6,drivetrain:6,chassis:6,aero:6,chute:4,wheeliebar:1}},
 ];
 /* Parts shop — v0.4: 17 parts, 79 tiers. The original 8 run five tiers
    deep now (their first three tiers are byte-for-byte the v0.3 parts),
@@ -1844,9 +1880,13 @@ function rivalShapeAt(shape,dist){
      v0.4.4 (win-rate law): the launch head is trimmed again (+1%) and
      its tail penalty deepened (4%) — under the constant-cadence physics
      the +3% head had become free time a perfect player could never
-     answer at street builds; measured in results-ladder-v044.json. */
-  if(shape==='launch'){ if(dist<100) return 1.01-0.01*(dist/100); if(dist<250) return 1; return 1-0.04*((dist-250)/152); }
-  if(shape==='charge'){ if(dist<100) return 0.9725+0.0275*(dist/100); if(dist<200) return 1; return 1+0.03*((dist-200)/202); }
+     answer at street builds; measured in results-ladder-v044.json.
+     v0.4.5 (neck-and-neck law): the lobes soften once more — launch
+     tail penalty 4% -> 3.25%, charge head penalty 2.75% -> 2% — the
+     shapes still cross 1.0 mid-run (the back-and-forth stays) but
+     the field's shape edge no longer decides races by itself. */
+  if(shape==='launch'){ if(dist<100) return 1.01-0.01*(dist/100); if(dist<250) return 1; return 1-0.0325*((dist-250)/152); } /* v0.4.5: tail penalty 4% -> 3.25% (neck-and-neck law) */
+  if(shape==='charge'){ if(dist<100) return 0.98+0.02*(dist/100); if(dist<200) return 1; return 1+0.03*((dist-200)/202); } /* v0.4.5: head penalty 2.75% -> 2% (neck-and-neck law) */
   return 1;
 }
 function stepCar(c,dt,now){
@@ -1934,14 +1974,70 @@ const S={screen:'title', phase:'idle', rival:null, simTime:0, treeT:0, greenTime
          camMode:'orbit', playerFinishAt:null, aiFinishAt:null, lastSplitIdx:0, accounted:false};
 const treeSchedule=[[0.0,'stage'],[0.7,'amber1'],[1.2,'amber2'],[1.7,'amber3'],[2.2,'green']];
 let treeFired={};
+/* v0.4.5: garage drag-sheet controller — the house pattern (see the
+   #gsheet CSS): stops full 72% / half 42% / collapsed (handle only).
+   Drag or flick the handle to a stop; tap it to fold the garage away
+   or bring it back. Exposes window.__gsheet = { open, snap } (QA). */
+(function(){
+  var sheet=$('gsheet'), handle=$('gsheetHandle'), body=$('gsheetBody');
+  if(!sheet||!handle||!body) return;
+  var FRAC={full:0.72, half:0.42}, ORDER=['collapsed','half','full'];
+  var snap=sheet.getAttribute('data-default')||'full'; if(ORDER.indexOf(snap)<0) snap='full';
+  var lastOpen=snap==='collapsed'?'full':snap, drag=null;
+  function vh(){ return window.innerHeight||document.documentElement.clientHeight; }
+  function collapsedH(){ return handle.offsetHeight+2; }
+  function snapPx(n){ return n==='collapsed'?collapsedH():Math.round(FRAC[n]*vh()); }
+  function curH(){ return sheet.getBoundingClientRect().height; }
+  function applySnap(name){ snap=name; if(name!=='collapsed') lastOpen=name;
+    sheet.classList.toggle('collapsed', name==='collapsed');
+    sheet.style.setProperty('--gsH', snapPx(name)+'px'); }
+  function nearest(h){ var best=ORDER[0], bd=Infinity;
+    for(var i=0;i<ORDER.length;i++){ var d=Math.abs(snapPx(ORDER[i])-h); if(d<bd){ bd=d; best=ORDER[i]; } } return best; }
+  function stepped(name,dir){ var i=ORDER.indexOf(name)+dir; return ORDER[Math.max(0,Math.min(ORDER.length-1,i))]; }
+  handle.addEventListener('pointerdown',function(e){
+    drag={id:e.pointerId,startY:e.clientY,startH:curH(),lastY:e.clientY,lastT:performance.now(),vel:0,moved:0};
+    try{ handle.setPointerCapture(e.pointerId); }catch(err){}
+    sheet.classList.add('dragging'); e.preventDefault();
+  });
+  handle.addEventListener('pointermove',function(e){
+    if(!drag||e.pointerId!==drag.id) return;
+    var now=performance.now(), dt=now-drag.lastT;
+    if(dt>0) drag.vel=0.7*drag.vel+0.3*((e.clientY-drag.lastY)/dt);
+    drag.lastY=e.clientY; drag.lastT=now;
+    drag.moved=Math.max(drag.moved,Math.abs(e.clientY-drag.startY));
+    var h=drag.startH-(e.clientY-drag.startY);
+    h=Math.max(collapsedH(),Math.min(snapPx('full'),h));
+    sheet.style.setProperty('--gsH',h+'px');
+  });
+  function endDrag(e){
+    if(!drag||(e&&e.pointerId!==drag.id)) return;
+    var wasTap=drag.moved<9, vel=drag.vel; drag=null;
+    sheet.classList.remove('dragging');
+    if(wasTap){ applySnap(snap==='collapsed'?lastOpen:'collapsed'); return; }
+    var target=nearest(curH());
+    if(vel>0.45) target=stepped(target,-1); else if(vel<-0.45) target=stepped(target,1);
+    applySnap(target);
+  }
+  handle.addEventListener('pointerup',endDrag);
+  handle.addEventListener('pointercancel',endDrag);
+  handle.addEventListener('keydown',function(e){
+    if(e.key==='Enter'||e.key===' '){ e.preventDefault(); applySnap(snap==='collapsed'?lastOpen:'collapsed'); }
+  });
+  window.addEventListener('resize',function(){ if(!drag) applySnap(snap); });
+  applySnap(snap);
+  window.__gsheet={ open:function(name){ applySnap(name||'full'); }, snap:function(){ return snap; } };
+})();
 function showScreen(name){
   S.screen=name;
   ['title','garage','race','result','how'].forEach(n=>$('scr-'+n).classList.toggle('on',n===name));
   if(name==='garage'){ renderGarage();
     /* v0.4.1 (Joshua): tapping GARAGE lands ON the garage — the scroll
        resets to the top (your car, first viewport) every entry, from
-       every path: title button, race quit, result screen, rematch. */
-    $('scr-garage').scrollTop=0; }
+       every path: title button, race quit, result screen, rematch.
+       v0.4.5: the scroll lives in the sheet body now, and the sheet
+       opens FULL on every entry. */
+    var gb=$('gsheetBody'); if(gb) gb.scrollTop=0;
+    if(window.__gsheet) window.__gsheet.open('full'); }
   if(name==='title') renderTitleStats();
   if(name==='title'||name==='garage') applyVenue(false); /* the street is home */
 }
@@ -2071,51 +2167,59 @@ function stopAudioBed(){
    reach it and shift), costing him the buzz + the long cut.
    v0.4.3: the miss chance rises a notch (field 12% -> 16%, Scotty
    7% -> 12%) — one of the owner's "levels a little easier" levers. */
-/* v0.4.4 THE 80% RULE (Joshua, 2026-11-19 21:18: "I want to be
-   able to win 80% of the races against cars comparable to the car
-   you're driving — no matter how many mods you have. It's too
-   hard."): against matched machinery, GOOD driving now wins
-   about 80% at every build level (was: about half at street
-   builds, two-thirds at drag spec). The retune lives entirely on
-   the rival side — the player's car, the ET ladder and the trap
-   speeds are untouched. The field's shift points carry a
-   build-keyed offset (below): on the stretched tach an early
-   shift is expensive, so the field shifting a few hundred rpm
-   earlier is worth real ground, most at street builds where the
-   gears are longest. Scotty is EXEMPT — he stays the wall
-   (PERFECT beats him, GOOD is a coin flip). At the record band
-   (launchPower >= 12) the gears are too short for shift points
-   to matter, so the field instead gets a small reaction-time
-   trim in startRace. Measured in qa-v0.4/results-ladder-v044.json
-   (100 races per cell): GOOD vs field 0.79-0.83 at all four
-   build levels, PERFECT 0.95+, SLOPPY 0. */
+/* v0.4.5 THE NECK-AND-NECK LAW (Joshua, 2026-11-20 17:53: "make it
+   harder — we want it neck and neck every race and we only want to
+   win about 75% of the time unless we have a perfect launch and all
+   perfect shifts then you're guaranteed to win the race"). This
+   SUPERSEDES the v0.4.4 80% rule. Against matched machinery: GOOD
+   driving wins ~75% vs the field at every build level, and a PERFECT
+   launch with all-perfect shifts wins 100% — every rival, Scotty
+   included. The retune lives entirely on the rival side — the
+   player's car, the ET ladder (top end exactly 2.517 @ 769.397) and
+   the trap speeds are untouched. Three rival-side pieces do it:
+   (1) the field's shift points carry a build-keyed offset (below),
+   re-anchored so the field runs closer to the player's pace;
+   (2) the field's reaction times are trimmed at every band (Scotty
+   exempt — his lights are his own); (3) every rolled shift target
+   is hard-capped per band (aiRollShiftT) — the old limiter-edge
+   tail is what used to let a lucky rival outrun a perfect run, and
+   the cap is what makes the perfect-run guarantee a guarantee.
+   Measured by the seeded ladder proof at 1,000 races per cell plus
+   deep perfect-line tail scans (see the v0.4.5 build report):
+   GOOD vs field 0.72-0.78 at all four build levels, PERFECT 1.000
+   vs every rival, median |margin| ~0.025 s at every build. */
 function aiShiftOffset(L){
-  /* v0.4.4 WIN-RATE LAW calibration (owner, 2026-11-19 22:59): anchors
-     solved against the seeded ladder proof — GOOD ≈85% vs the field at
-     every build, PERFECT 100% vs every rival incl. Scotty. */
-  return L<=1 ? -250
-       : L<1.2659 ? -250+(L-1)*94.02
-       : L<3.4189 ? -225+(L-1.2659)*69.67
-       : L<12 ? -75+(L-3.4189)*8.74
+  /* v0.4.5 anchors, solved against the seeded ladder proof. */
+  return L<=1 ? -190
+       : L<1.2659 ? -190+(L-1)*-94.02
+       : L<3.4189 ? -215+(L-1.2659)*92.89
+       : L<12 ? -15+(L-3.4189)*1.748
        : 0;
 }
 function aiRtTrim(L){
-  /* the field's lights sharpen as the player's build climbs: no trim at
-     street builds, 15ms at drag-spec tier and up, 37.5ms in the record
-     band. Rival-side only; Scotty is never trimmed (startRace excludes
-     him) — his lights are his own. */
-  return L>=12 ? 0.0375 : L>2.9 ? 0.015 : 0;
+  /* v0.4.5: the field's lights sharpen at every band — 40ms under
+     the record band, 50ms in it. Rival-side only; Scotty is never
+     trimmed (startRace excludes him) — his lights are his own. */
+  return L>=12 ? 0.05 : 0.04;
 }
 function aiRollShiftT(rival){
-  const missP = rival.id==='scotty' ? 0.03 : 0.10;
-  if(Math.random()<missP) return 7620+Math.random()*40;
-  /* v0.4.4: the rolled target is capped at 7600, under the limiter.
-     With the field's +125 shift points (see RIVALS) an uncapped
-     jitter tail could ask for rpm the limiter never reaches and
-     the car would hold one gear the whole run. Field rivals also
-     carry the 80%-rule offset for the player's build band. */
-  const off = rival.id==='scotty' ? 0 : aiShiftOffset(S.player ? (S.player.launchPower||1) : 1);
-  return Math.min(7600, rival.shiftRpm+off+(Math.random()*2-1)*(S.aiJit||120));
+  const L = S.player ? (S.player.launchPower||1) : 1;
+  const missP = rival.id==='scotty' ? 0.03 : 0.17;
+  let t;
+  if(Math.random()<missP) t = 7620+Math.random()*40;
+  else {
+    /* the rolled target is capped at 7600, under the limiter, so a
+       jitter tail can never ask for rpm the limiter never reaches
+       and hold one gear the whole run. Field rivals also carry the
+       neck-and-neck offset for the player's build band. */
+    const off = rival.id==='scotty' ? 0 : aiShiftOffset(L);
+    t = Math.min(7600, rival.shiftRpm+off+(Math.random()*2-1)*(S.aiJit||120));
+  }
+  /* v0.4.5 band cap: no rival shift target may pass 7380 at street
+     builds or 7590 in the drag/record bands — Scotty included. A
+     rival's best possible run is now bounded, and a perfect run
+     beats that bound at every build. */
+  return Math.min(t, L<3.4189 ? 7380 : 7590);
 }
 function startRace(rival){
   if(rival.needChute&&!(save.up.chute>0)){ showScreen('garage');
@@ -2143,7 +2247,7 @@ function startRace(rival){
      v0.4.3: every window widened a notch (owner: levels a little
      easier) — field max(90, 320-idx*14), Scotty ±280. */
   const rIdx=Math.max(0,RIVALS.indexOf(rival));
-  S.aiJit = rival.id==='scotty' ? 150 : Math.max(90, 320-rIdx*14);
+  S.aiJit = rival.id==='scotty' ? 110 : Math.max(90, 320-rIdx*14); /* v0.4.5: Scotty's window tightens 150 -> 110 — with the band cap doing the tail work, his bulk pace stays the hardest in the game without the lucky-run tail */
   /* every driver can MISS a shift (v0.4.2): 16% of gear changes the
      target becomes the limiter's edge (Scotty, the pro, only 12%) —
      he buzzes it, takes the long cut, and loses real ground he has
@@ -2486,8 +2590,14 @@ addEventListener('keyup',e=>{
 });
 $('btn-race-title').addEventListener('click',()=>{ AudioX.init(); showScreen('garage');
   /* v0.4.4: RACE goes to racing — the garage opens with Pick Your
-     Rival at the top of the view (under the sticky header). */
-  requestAnimationFrame(()=>{ const el=$('sect-rivals'); if(el) $('scr-garage').scrollTop=Math.max(0, el.offsetTop-84); }); });
+     Rival at the top of the view (under the sticky header).
+     v0.4.5: the scroll lives in the sheet body; the sheet opens FULL
+     (showScreen) and the body scrolls so the rival picker sits under
+     the sticky header, re-applied after the snap animation settles. */
+  const toRivals=()=>{ const el=$('sect-rivals'), gb=$('gsheetBody');
+    if(el&&gb){ const y=el.getBoundingClientRect().top-gb.getBoundingClientRect().top+gb.scrollTop-84;
+      gb.scrollTo({top:Math.max(0,y),behavior:'instant'}); } };
+  requestAnimationFrame(toRivals); setTimeout(toRivals,340); });
 $('btn-garage-title').addEventListener('click',()=>{ AudioX.init(); showScreen('garage'); });
 $('btn-save-title').addEventListener('click',()=>{ AudioX.init(); doSaveGame(); });
 $('btn-save-garage').addEventListener('click',()=>{ AudioX.init(); doSaveGame(); });
