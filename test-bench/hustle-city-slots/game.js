@@ -3,7 +3,13 @@
    Engine (logic.js) + strips/paytable (machines.js): 5x3, 20 paylines, weighted
    strips, WILD substitutes, X2/X3 line multipliers, SCATTER free spins, BONUS
    Pick-a-Garage (3+ garage doors on a paid spin), NO blank stops (every reel
-   position is a real symbol), total RTP 94.61% incl. the bonus game's share.
+   position is a real symbol), total RTP 98.02% incl. the bonus game's share.
+   v2.3 (2026-11-21, Joshua's orders): photoreal garage art with the real HC3
+   Big Body Scotty on the bust reveal; garage fires ~1 in 38.6 paid spins (the
+   ~1-in-40 bonus standard), free spins at the same rate; SPIN becomes STOP
+   while the reels turn; NEW GAME restarts a broke player at 1,000 credits;
+   the max bet climbs tiers as the balance grows; the reels ROLL — a noise-bed
+   rolling/clatter sound tracks reel speed instead of synth ticks.
    Cabinet wears the v2 chrome + electric-blue treatment (restored at Joshua's
    order 2026-11-21); cherries are electric red, the dollar sign electric green.
    Reels spin with real-machine motion: spin-up acceleration, motion blur at
@@ -32,25 +38,38 @@
   const reelsEl = [$('reel0'), $('reel1'), $('reel2'), $('reel3'), $('reel4')];
   const creditsEl = $('credits'), betEl = $('bet'), winEl = $('win'), msgEl = $('msg');
   const spinBtn = $('spinBtn'), betOneBtn = $('betOneBtn'), maxBetBtn = $('maxBetBtn');
-  const fsBanner = $('fsBanner'), refillBtn = $('refillBtn'), soundBtn = $('soundBtn');
+  const fsBanner = $('fsBanner'), newGameBtn = $('newGameBtn'), soundBtn = $('soundBtn');
+  const spinFace = spinBtn.querySelector('.spin-face'), tierLineEl = $('tierLine');
   const soundStateEl = $('soundState'), winFlash = $('winFlash');
   const paySheet = $('paySheet'), sheetBackdrop = $('sheetBackdrop');
   const bonusGame = $('bonusGame'), bonusBackdrop = $('bonusBackdrop');
   const trunksEl = $('trunks'), bonusBankEl = $('bonusBank');
   const bonusResultEl = $('bonusResult'), bonusCollectBtn = $('bonusCollect');
 
-  let credits = 1000, betPerLine = 1, spinning = false;
+  const START_CREDITS = 1000;
+  /* Max-bet progression (Joshua, 2026-11-21: "the more money you get, the
+     higher the max bet goes"): the per-line bet cap steps up as the balance
+     crosses a threshold. Once unlocked, a tier stays unlocked until NEW GAME
+     starts the machine over. */
+  const TIERS = [
+    { at: 0, cap: 5 }, { at: 2500, cap: 10 }, { at: 5000, cap: 15 },
+    { at: 10000, cap: 25 }, { at: 25000, cap: 50 }
+  ];
+  let credits = START_CREDITS, betPerLine = 1, spinning = false, unlockedTier = 0;
   let freeSpinsLeft = 0, freeSpinTotal = 0, soundOn = true;
   let stops = [4, 9, 2, 14, 7];
   try {
     const saved = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
     if (saved && typeof saved.credits === 'number') credits = saved.credits;
     if (saved && typeof saved.sound === 'boolean') soundOn = saved.sound;
+    if (saved && typeof saved.tier === 'number') unlockedTier = Math.min(TIERS.length - 1, Math.max(0, saved.tier | 0));
   } catch (e) { /* restricted webview: play without persistence */ }
 
   function save() {
-    try { localStorage.setItem(LS_KEY, JSON.stringify({ credits, sound: soundOn })); } catch (e) {}
+    try { localStorage.setItem(LS_KEY, JSON.stringify({ credits, sound: soundOn, tier: unlockedTier })); } catch (e) {}
   }
+  function maxBetPerLine() { return TIERS[unlockedTier].cap; }
+  function totalBetCap() { return maxBetPerLine() * core.PAYLINES.length; }
   function fmt(n) { return n.toLocaleString('en-US'); }
   function totalBet() { return betPerLine * core.PAYLINES.length; }
 
@@ -77,6 +96,79 @@
   const sCoin = () => { tone(988, 0.09, 'square', 0.05); tone(1319, 0.14, 'square', 0.05, 0.07); };
   const sWin = big => { const n = big ? 9 : 5; for (let i = 0; i < n; i++) tone(523 + i * 131, 0.12, 'triangle', 0.07, i * 0.07); };
   const sScatter = () => { [392, 523, 659, 784, 1046].forEach((f, i) => tone(f, 0.16, 'triangle', 0.08, i * 0.09)); };
+
+  /* ---------- rolling reel sound ----------
+     Joshua (2026-11-21): the reels must ROLL — a mechanical rolling/clatter
+     that tracks the spin, not synth blips. A looped noise bed (low rumble +
+     grit) runs through a band-pass filter; its loudness, filter pitch and
+     playback rate follow the fastest reel's speed — rising on spin-up,
+     rolling through cruise, falling as each reel brakes. Every symbol that
+     passes adds a short ratchet clack, and each reel landing keeps the low
+     mechanical clunk (sStop). When the last reel lands — naturally or via
+     STOP — the roll cuts with it. Win jingles are untouched. */
+  const RollSound = (() => {
+    let graph = null, activeReels = 0, level = 0;
+    function ensure() {
+      const a = ac(); if (!a) return null;
+      if (graph) return graph;
+      const len = a.sampleRate;
+      const buf = a.createBuffer(1, len, a.sampleRate);
+      const d = buf.getChannelData(0);
+      let last = 0;
+      for (let i = 0; i < len; i++) { const w = Math.random() * 2 - 1; last = (last + 0.04 * w) / 1.04; d[i] = (last * 3.2 + w * 0.28) * 0.7; }
+      const src = a.createBufferSource(); src.buffer = buf; src.loop = true;
+      const filt = a.createBiquadFilter(); filt.type = 'bandpass'; filt.frequency.value = 420; filt.Q.value = 0.7;
+      const g = a.createGain(); g.gain.value = 0;
+      src.connect(filt); filt.connect(g); g.connect(a.destination);
+      src.start();
+      graph = { a, src, filt, g, buf };
+      return graph;
+    }
+    function reelStart() {
+      activeReels++;
+      if (!soundOn) return;
+      const gr = ensure(); if (!gr) return;
+      gr.g.gain.setTargetAtTime(Math.max(gr.g.gain.value, 0.015), gr.a.currentTime, 0.05);
+    }
+    function setSpeed(norm) {
+      if (!graph || !soundOn) return;
+      const n = Math.max(0, Math.min(1, norm));
+      level = n > level ? n : level + (n - level) * 0.25;
+      const t = graph.a.currentTime;
+      graph.g.gain.setTargetAtTime(0.015 + 0.085 * level, t, 0.06);
+      graph.filt.frequency.setTargetAtTime(320 + 780 * level, t, 0.06);
+      graph.src.playbackRate.setTargetAtTime(0.72 + 0.55 * level, t, 0.06);
+    }
+    function clack(v) {
+      if (!soundOn || !graph) return;
+      const a = graph.a;
+      const s = a.createBufferSource(); s.buffer = graph.buf;
+      s.playbackRate.value = 1.4 + Math.random() * 0.5;
+      const f = a.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 1500 + Math.random() * 500; f.Q.value = 1.1;
+      const g = a.createGain();
+      const t = a.currentTime;
+      g.gain.setValueAtTime(Math.min(0.05, 0.014 + v / 24000), t);
+      g.gain.exponentialRampToValueAtTime(0.0008, t + 0.045);
+      s.connect(f); f.connect(g); g.connect(a.destination);
+      s.start(t, Math.random() * 0.4, 0.06);
+    }
+    function reelDone() {
+      activeReels = Math.max(0, activeReels - 1);
+      if (activeReels === 0 && graph) {
+        level = 0;
+        graph.g.gain.setTargetAtTime(0, graph.a.currentTime, 0.045);
+      }
+    }
+    function cut() { /* sound toggled off mid-spin: silence the roll at once */
+      activeReels = 0; level = 0;
+      if (graph) graph.g.gain.setTargetAtTime(0, graph.a.currentTime, 0.02);
+    }
+    return { reelStart, setSpeed, clack, reelDone, cut, isActive: () => activeReels > 0, level: () => level };
+  })();
+  /* STOP support: every spinning reel registers its finisher here; STOP
+     calls them all and each reel lands cleanly on its dealt stop. */
+  const activeReelStops = new Set();
+  function stopAllReels() { for (const f of [...activeReelStops]) f(); }
 
   /* ---------- reel rendering (generated art cells) ---------- */
   function cellHTML(sym, h) {
@@ -130,13 +222,17 @@
         if (finished) return;
         finished = true;
         clearTimeout(hardStop);
+        activeReelStops.delete(finish);
         track.style.filter = '';
         track.innerHTML = grid[r].map(s => cellHTML(s, H)).join('');
         track.style.transform = 'translateY(0px)';
         sStop();
+        RollSound.reelDone();
         resolve();
       };
       const hardStop = setTimeout(finish, duration + 1600);
+      activeReelStops.add(finish);
+      RollSound.reelStart();
       function frame(now) {
         if (finished) return;
         /* dt clamp is generous (0.25s) so a slow device still spins in
@@ -145,6 +241,7 @@
         last = now;
         const { p, v, done } = motion.step(dt);
         if (done) { finish(); return; }
+        RollSound.setSpeed(v / motion.vmax);
         track.style.transform = `translateY(${-p}px)`;
         const blur = v > 320 ? Math.min(3.2, (v - 320) / 260) : 0;
         if (Math.abs(blur - lastBlur) >= 0.3 || (blur === 0 && lastBlur !== 0)) {
@@ -154,7 +251,7 @@
         const cell = Math.floor(p / H);
         if (cell !== lastCell) {
           lastCell = cell;
-          if (now - lastTick >= 45) { sTick(); lastTick = now; }
+          if (now - lastTick >= 45) { RollSound.clack(v); lastTick = now; }
         }
         requestAnimationFrame(frame);
       }
@@ -172,6 +269,40 @@
     spinBtn.disabled = !on; betOneBtn.disabled = !on; maxBetBtn.disabled = !on;
     const lv = $('lever');
     if (lv) { lv.classList.toggle('off', !on); lv.setAttribute('aria-disabled', String(!on)); }
+  }
+  /* While the reels turn, SPIN becomes STOP (Joshua, 2026-11-21): tapping it
+     lands every reel on its dealt stop at once — results and payouts are
+     exactly the ones the spin dealt. */
+  function setStopMode(on) {
+    if (on) {
+      spinBtn.disabled = false;
+      spinBtn.classList.add('stop');
+      spinFace.textContent = 'STOP';
+      spinBtn.setAttribute('aria-label', 'Stop the reels');
+    } else {
+      spinBtn.classList.remove('stop');
+      spinFace.textContent = 'SPIN';
+      spinBtn.setAttribute('aria-label', 'Spin the reels');
+    }
+  }
+  function renderTier() {
+    const next = TIERS[unlockedTier + 1];
+    tierLineEl.textContent = next
+      ? `MAX BET ${fmt(totalBetCap())} · NEXT ${fmt(next.cap * core.PAYLINES.length)} AT ${fmt(next.at)}`
+      : `MAX BET ${fmt(totalBetCap())} · TOP TIER UNLOCKED`;
+  }
+  let levelUpMsg = null;
+  function checkTierUnlock(announce) {
+    let rose = false;
+    while (unlockedTier + 1 < TIERS.length && credits >= TIERS[unlockedTier + 1].at) { unlockedTier++; rose = true; }
+    if (!rose) return;
+    renderTier();
+    save();
+    tierLineEl.classList.remove('bump'); void tierLineEl.offsetWidth; tierLineEl.classList.add('bump');
+    if (announce) {
+      sWin(false);
+      levelUpMsg = `LEVEL UP! Your balance unlocked a higher max bet — now up to ${fmt(totalBetCap())} a spin.`;
+    }
   }
   function countUp(el, from, to, dur) {
     return new Promise(res => {
@@ -219,14 +350,15 @@
     winEl.textContent = '0';
     if (!isFree) {
       if (credits < totalBet()) {
-        msgEl.textContent = credits <= 0 ? 'Out of credits — grab 1,000 free play credits below.' : 'Not enough credits for that bet — lower the bet or refill.';
-        refillBtn.classList.toggle('on', credits < core.PAYLINES.length);
+        msgEl.textContent = credits < core.PAYLINES.length ? 'Out of credits — hit NEW GAME below to start over with 1,000.' : 'Not enough credits for that bet — lower the bet.';
+        newGameBtn.classList.toggle('on', credits < core.PAYLINES.length);
         spinning = false; setControlsEnabled(true);
         return;
       }
       credits -= totalBet();
       renderReadouts();
     }
+    setStopMode(true);
     msgEl.textContent = isFree ? `Free spin — ${freeSpinsLeft} left after this one. Wins pay double!` : 'Good luck!';
     const finalStops = core.randomStops(Math.random, cfg.strips);
     const durations = [1900, 2220, 2540, 2860, 3180]; /* staggered stops, reel 1 first */
@@ -252,6 +384,7 @@
       sCoin();
       await countUp(winEl, 0, totalWin, Math.min(1400, 350 + totalWin));
       credits += totalWin;
+      checkTierUnlock(true);
       if (isFree) freeSpinTotal += totalWin;
     }
     renderReadouts(totalWin);
@@ -267,6 +400,7 @@
         fsBanner.classList.add('on');
         msgEl.textContent = `${ev.scatterCount} scatters! ${ev.freeSpins} free spins${isFree ? ' added' : ''} — here they come!`;
         spinning = false;
+        setStopMode(false);
         setTimeout(runFreeSpins, 1600);
         return;
       }
@@ -275,21 +409,25 @@
         if (freeSpinsLeft > 0) {
           msgEl.textContent = `Free spins left: ${freeSpinsLeft} — session win so far: ${fmt(freeSpinTotal)}.`;
           spinning = false;
+          setStopMode(false);
           setTimeout(runFreeSpins, 1100);
           return;
         }
         fsBanner.classList.remove('on');
         msgEl.textContent = freeSpinTotal > 0 ? `Free spins done — you won ${fmt(freeSpinTotal)} credits!` : 'Free spins done. Spin again!';
         freeSpinTotal = 0;
+        levelUpMsg = null;
       } else {
-        msgEl.textContent = lastBonusPaid > 0
+        msgEl.textContent = levelUpMsg || (lastBonusPaid > 0
           ? `Pick-a-Garage paid ${fmt(lastBonusPaid)} credits!`
           : totalWin > 0
             ? (ev.lineWins.length ? `Winner! ${ev.lineWins.map(w => `${w.count}× ${NAMES[w.symbol]}${w.mult > 1 ? ` (×${w.mult})` : ''}`).join(' · ')}` : 'Scatter pay!')
-            : 'Set your bet, then press SPIN — or pull the arm.';
+            : 'Set your bet, then press SPIN — or pull the arm.');
+        levelUpMsg = null;
         lastBonusPaid = 0;
       }
-      refillBtn.classList.toggle('on', credits < core.PAYLINES.length);
+      newGameBtn.classList.toggle('on', credits < core.PAYLINES.length);
+      setStopMode(false);
       spinning = false;
       setControlsEnabled(true);
     };
@@ -364,6 +502,7 @@
     const collect = () => {
       bonusCollectBtn.removeEventListener('click', collect);
       credits += banked;
+      checkTierUnlock(false);
       renderReadouts(banked);
       save();
       bonusGame.classList.remove('on');
@@ -375,11 +514,16 @@
     };
     bonusCollectBtn.addEventListener('click', collect);
   }
-  /* QA hook: force the bonus open / inspect the shuffled deck */
-  window.__slotsDebug = { openBonus: tb => openBonus(tb || totalBet(), () => setControlsEnabled(true)), deck: () => bonusDeck };
+  /* QA hook: force the bonus open / inspect the shuffled deck / drive state */
+  window.__slotsDebug = {
+    openBonus: tb => openBonus(tb || totalBet(), () => setControlsEnabled(true)),
+    deck: () => bonusDeck,
+    setCredits: n => { credits = Math.max(0, n | 0); checkTierUnlock(false); renderReadouts(); newGameBtn.classList.toggle('on', credits < core.PAYLINES.length); save(); },
+    getState: () => ({ credits, betPerLine, maxBetPerLine: maxBetPerLine(), tier: unlockedTier, spinning, rolling: RollSound.isActive(), rollLevel: Math.round(RollSound.level() * 100) / 100, stops: stops.slice() })
+  };
   function runFreeSpins() { if (freeSpinsLeft > 0 && !spinning) doSpin(true); }
 
-  spinBtn.addEventListener('click', () => { ac(); doSpin(false); });
+  spinBtn.addEventListener('click', () => { if (spinning) { stopAllReels(); return; } ac(); doSpin(false); });
 
   /* ---------- pull arm (lever): drag it down, it springs back and spins.
      Tap = scripted full pull. Both paths fire the exact SPIN button path. ---------- */
@@ -390,7 +534,7 @@
     leverArm.style.transition = animate ? 'transform .5s cubic-bezier(.25,1.35,.4,1)' : 'none';
     leverArm.style.transform = `translateY(${y}px)`;
   }
-  function leverFire() { if (!spinBtn.disabled) spinBtn.click(); }
+  function leverFire() { if (!spinning && !spinBtn.disabled) spinBtn.click(); }
   function leverScriptedPull() {
     leverArm.style.transition = 'transform .16s ease-in';
     leverArm.style.transform = `translateY(${LEVER_MAX}px)`;
@@ -398,7 +542,7 @@
   }
   if (leverEl && leverArm) {
     leverEl.addEventListener('pointerdown', e => {
-      if (spinBtn.disabled) return;
+      if (spinning || spinBtn.disabled) return;
       e.preventDefault();
       try { leverEl.setPointerCapture(e.pointerId); } catch (err) {}
       leverDrag = { y0: e.clientY, travel: 0, t0: performance.now() };
@@ -428,17 +572,25 @@
     leverEl.addEventListener('pointerup', leverRelease);
     leverEl.addEventListener('pointercancel', () => { leverDrag = null; leverSet(0, true); });
     leverEl.addEventListener('keydown', e => {
-      if ((e.key === 'Enter' || e.key === ' ') && !spinBtn.disabled) { e.preventDefault(); leverScriptedPull(); }
+      if ((e.key === 'Enter' || e.key === ' ') && !spinning && !spinBtn.disabled) { e.preventDefault(); leverScriptedPull(); }
     });
   }
-  betOneBtn.addEventListener('click', () => { betPerLine = betPerLine >= 5 ? 1 : betPerLine + 1; renderReadouts(); buildPaytable(); sTick(); });
-  maxBetBtn.addEventListener('click', () => { betPerLine = 5; renderReadouts(); buildPaytable(); sTick(); });
-  refillBtn.addEventListener('click', () => { credits += 1000; refillBtn.classList.remove('on'); renderReadouts(); save(); msgEl.textContent = '1,000 play credits added. Good luck!'; });
+  betOneBtn.addEventListener('click', () => { betPerLine = betPerLine >= maxBetPerLine() ? 1 : betPerLine + 1; renderReadouts(); buildPaytable(); sTick(); });
+  maxBetBtn.addEventListener('click', () => { betPerLine = maxBetPerLine(); renderReadouts(); buildPaytable(); sTick(); });
+  /* NEW GAME (Joshua, 2026-11-21): a broke player restarts clean — the
+     machine's standard 1,000 starting credits, base bet, base max-bet tier. */
+  newGameBtn.addEventListener('click', () => {
+    credits = START_CREDITS; betPerLine = 1; unlockedTier = 0;
+    newGameBtn.classList.remove('on');
+    renderReadouts(0); renderTier(); buildPaytable(); save();
+    msgEl.textContent = 'New game — 1,000 credits on the house. Good luck!';
+    sCoin();
+  });
   soundBtn.addEventListener('click', () => {
     soundOn = !soundOn;
     soundStateEl.textContent = soundOn ? 'ON' : 'OFF';
     save();
-    if (soundOn) sTick();
+    if (soundOn) sTick(); else RollSound.cut();
   });
   soundStateEl.textContent = soundOn ? 'ON' : 'OFF';
 
@@ -449,8 +601,10 @@
     resizeTimer = setTimeout(() => { if (!spinning) showWindow(); }, 180);
   });
 
+  checkTierUnlock(false);
   showWindow();
   renderReadouts(0);
+  renderTier();
   buildPaytable();
-  refillBtn.classList.toggle('on', credits < core.PAYLINES.length);
+  newGameBtn.classList.toggle('on', credits < core.PAYLINES.length);
 })();

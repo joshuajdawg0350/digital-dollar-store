@@ -1,5 +1,5 @@
-/* Hustle City Slots — Casino Classics v2 service worker. (c) 2026 J-Dawgs Industries. */
-const CACHE = 'hc-slots-classics-v2-3';
+/* Hustle City Slots — Casino Classics v2.3 service worker. (c) 2026 J-Dawgs Industries. */
+const CACHE = 'hc-slots-classics-v2-4';
 const ASSETS = [
   './', './index.html', './style.css', './game.js', './logic.js', './machines.js',
   './manifest.webmanifest', './icon-192.png', './icon-512.png',
