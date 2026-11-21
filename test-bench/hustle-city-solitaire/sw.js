@@ -1,5 +1,5 @@
 /* Hustle City Solitaire — offline cache */
-const CACHE = "hc-solitaire-v5";
+const CACHE = "hc-solitaire-v6";
 const ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
