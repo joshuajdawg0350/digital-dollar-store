@@ -218,6 +218,14 @@ section.view.on{display:block;}
 .phead .pt{font-weight:900; font-size:18px; letter-spacing:.3px;}
 .phead .pt small{display:block; font-size:10px; letter-spacing:1.6px; text-transform:uppercase; color:var(--eblue); font-weight:800;}
 .phead button{margin-left:auto; background:linear-gradient(180deg,var(--chrome1),var(--chrome2)); border:1px solid #d7e3ee; color:#12293f; font-weight:900; border-radius:10px; padding:9px 13px;}
+/* ---------- BACK BUTTON — one standard on every screen (Joshua 2026-11-21:
+   "it needs a simple back button on everything") ---------- */
+.backbtn{display:inline-flex; align-items:center; gap:6px; min-height:48px; padding:10px 18px 10px 13px; border-radius:14px; border:3px solid #bfe0f7; background:#fff; color:var(--ink); font-weight:900; font-size:16.5px; box-shadow:0 3px 0 rgba(31,90,140,.2); font-family:var(--kidfont); cursor:pointer;}
+.backbtn:active{transform:translateY(2px); box-shadow:0 1px 0 rgba(31,90,140,.2);}
+.backbtn.dark{border-color:#d7e3ee; background:linear-gradient(180deg,var(--chrome1),var(--chrome2)); color:#12293f; box-shadow:inset 0 1px 0 #fff, 0 3px 0 rgba(0,0,0,.35);}
+.backrow{text-align:left; margin:-2px 0 10px;}
+.phead .backbtn{margin:0; flex:none; min-height:48px; padding:10px 16px 10px 12px;}
+#parentApp .phead, #snapshotView .phead{position:sticky; top:8px; z-index:20;}
 .ptabs{display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;}
 .ptabs button{flex:1; min-width:70px; padding:11px 6px; border-radius:12px; border:1px solid #3d5a76; background:#16283c; color:#cfe6f7; font-weight:800; font-size:14.5px;}
 .ptabs button.on{background:linear-gradient(180deg,#2b9fd8,#1778b8); color:#fff; border-color:#5ec2f2; box-shadow:0 0 12px rgba(37,194,255,.35);}
@@ -376,7 +384,7 @@ select.pinput{appearance:none;}
     <h1>J-Dawgs Lil Spotters</h1>
     <div class="chip" id="scoreChip" title="Your score">⭐ 0</div>
     <div class="chip streak" id="streakChip" title="Find streak">🔥 0</div>
-    <button id="grownBtn" aria-label="Grown-ups area — press and hold">Grown-ups</button>
+    <button id="grownBtn" aria-label="Grown-ups area">Grown-ups</button>
   </div>
   <main>
     <section class="view on" id="view-home">
@@ -427,17 +435,18 @@ select.pinput{appearance:none;}
 <!-- action sheet: photo choices -->
 <div class="scrim" id="sheetScrim">
   <div class="sheet">
+    <div class="backrow"><button class="backbtn" id="btnSheetBack">← Back</button></div>
     <h3 id="sheetTitle">Found it?</h3>
     <p id="sheetSub">Snap a picture to prove it!</p>
     <button class="rowbtn primary" id="btnCamera">📸 Take a Photo</button>
     <button class="rowbtn" id="btnGallery">🖼️ Pick from Photos</button>
-    <button class="rowbtn cancel" id="btnSheetCancel">Not yet</button>
   </div>
 </div>
 
 <!-- photo viewer -->
 <div class="scrim center-modal" id="photoScrim">
   <div class="dialog">
+    <div class="backrow"><button class="backbtn" id="btnPhotoBack">← Back</button></div>
     <img class="bigphoto" id="bigPhoto" alt="Your find photo">
     <h3 id="photoTitle" style="margin:0 0 4px; font-size:21px; font-weight:900;"></h3>
     <p id="photoMeta" style="margin:0 0 14px; font-weight:700; opacity:.75; font-size:14px;"></p>
@@ -448,15 +457,16 @@ select.pinput{appearance:none;}
 <!-- PIN pad -->
 <div class="scrim center-modal" id="pinScrim">
   <div class="dialog">
+    <div class="backrow"><button class="backbtn" id="btnPinBack">← Back</button></div>
     <h3 style="margin:0; font-size:21px; font-weight:900;" id="pinTitle">Grown-ups only</h3>
     <p style="font-weight:700; opacity:.75; font-size:14px; margin:6px 0 0;" id="pinSub">Type your 4-number PIN</p>
     <div class="pinpad-dots" id="pinDots"><i></i><i></i><i></i><i></i></div>
     <div class="pinpad" id="pinPad"></div>
-    <button class="rowbtn cancel" id="btnPinCancel" style="width:100%; margin-top:14px; padding:10px; border:none; background:transparent; font-weight:900; font-size:16px; opacity:.7;">Cancel</button>
   </div>
 </div>
 
 <div id="celebrate"><div class="card2">
+  <div class="backrow"><button class="backbtn" id="btnCelebBack">← Back</button></div>
   <div style="font-size:64px;">🎉</div>
   <h2>YOU FOUND THEM ALL!</h2>
   <p id="celebText" style="font-weight:800; font-size:16.5px; line-height:1.45;"></p>
@@ -467,10 +477,10 @@ select.pinput{appearance:none;}
 <!-- map style picker -->
 <div class="scrim center-modal" id="themeScrim">
   <div class="dialog wide">
+    <div class="backrow"><button class="backbtn" id="btnThemeBack">← Back</button></div>
     <h3 style="margin:0; font-size:23px; font-weight:900;">🎨 Pick your map style!</h3>
     <p style="font-weight:700; opacity:.75; font-size:14.5px; margin:6px 0 0;">Same treasure map — 16 different looks. Tap one and watch the map change!</p>
     <div class="themegrid" id="themeGrid"></div>
-    <button class="rowbtn cancel" id="btnThemeClose" style="width:100%; margin-top:12px; padding:12px; border:none; background:transparent; font-weight:900; font-size:16px; opacity:.7;">Keep this one</button>
   </div>
 </div>
 
@@ -480,8 +490,8 @@ select.pinput{appearance:none;}
 <div id="parentApp">
   <div class="pwrap">
     <div class="phead">
+      <button id="btnExitParent" class="backbtn dark">← Back</button>
       <div class="pt">Parent View<small>J-Dawgs Lil Spotters</small></div>
-      <button id="btnExitParent">← Back to game</button>
     </div>
     <p class="small" style="margin:0 2px 12px;">🚗 Passenger use only while the car is moving — drivers, eyes on the road, always.</p>
     <div class="ptabs">
@@ -594,7 +604,7 @@ select.pinput{appearance:none;}
       </div>
       <div class="pcard">
         <h3>5 · Parent PIN</h3>
-        <p id="pinStateText">No PIN set yet. The Grown-ups area opens with a press-and-hold. Set a PIN to lock it properly.</p>
+        <p id="pinStateText">No PIN set yet. The Grown-ups area opens with a tap. Set a PIN to lock it properly.</p>
         <button class="pbtn" id="btnSetPin">Set / change PIN</button>
       </div>
       <div class="pcard">
@@ -622,7 +632,7 @@ select.pinput{appearance:none;}
           <li>1. Pick the age tier above and a hunt deck.</li>
           <li>2. Say “yes” when the phone asks for camera and location — that's what lets finds land on the map. If you say no, the game still works: photos save without pins, and you can check finds off by hand in Finds.</li>
           <li>3. Hand the phone to your hunter. They tap a card when they spot the thing, then snap its picture.</li>
-          <li>4. Open this Parent View any time (press-and-hold “Grown-ups”) to watch the treasure map fill in.</li>
+          <li>4. Open this Parent View any time (tap “Grown-ups”) to watch the treasure map fill in.</li>
         </ul>
         <p class="small">J-Dawgs Lil Spotters™ · © 2026 J-Dawgs Industries. Big dreams for a small world.</p>
       </div>
@@ -633,7 +643,7 @@ select.pinput{appearance:none;}
 <!-- SNAPSHOT VIEW (from parent link) -->
 <div id="snapshotView">
   <div class="pwrap">
-    <div class="phead"><div class="pt">Parent Snapshot<small>J-Dawgs Lil Spotters · read-only</small></div></div>
+    <div class="phead"><button id="btnSnapBack" class="backbtn dark">← Back</button><div class="pt">Parent Snapshot<small>J-Dawgs Lil Spotters · read-only</small></div></div>
     <div class="snapbanner">📸 This is a snapshot of the hunt from <span id="snapWhen"></span>. It doesn't update live and doesn't include photos — those stay on the hunter's device. The map pins and the found list below are exactly what was shared.</div>
     <div class="kidmap-in-parent"><div class="mapframe"><div class="mapbox tall" id="snapMap"></div></div></div>
     <div id="snapFinds" style="margin-top:12px;"></div>
@@ -1009,7 +1019,7 @@ function openSheet(id){
   $('#sheetScrim').classList.add('on');
 }
 function closeSheet(){ $('#sheetScrim').classList.remove('on'); }
-$('#btnSheetCancel').addEventListener('click', closeSheet);
+$('#btnSheetBack').addEventListener('click', closeSheet);
 $('#sheetScrim').addEventListener('click', e=>{ if(e.target.id==='sheetScrim') closeSheet(); });
 $('#btnCamera').addEventListener('click', ()=>{ closeSheet(); $('#camInput').click(); });
 $('#btnGallery').addEventListener('click', ()=>{ closeSheet(); $('#galInput').click(); });
@@ -1105,6 +1115,7 @@ function celebrate(){
   speak('You found them all! Amazing!');
 }
 $('#celebBtn').addEventListener('click', ()=> $('#celebrate').classList.remove('on'));
+$('#btnCelebBack').addEventListener('click', ()=> $('#celebrate').classList.remove('on'));
 $('#celebPrintBtn').addEventListener('click', ()=>{ $('#celebrate').classList.remove('on'); openPrint('both'); });
 
 /* photo viewer */
@@ -1117,6 +1128,7 @@ function openPhoto(id){
   $('#photoScrim').classList.add('on');
 }
 $('#btnPhotoClose').addEventListener('click', ()=> $('#photoScrim').classList.remove('on'));
+$('#btnPhotoBack').addEventListener('click', ()=> $('#photoScrim').classList.remove('on'));
 $('#photoScrim').addEventListener('click', e=>{ if(e.target.id==='photoScrim') $('#photoScrim').classList.remove('on'); });
 
 function renderAll(){ renderHeader(); renderTiers(); renderDecks(); renderHunt(); renderFinds(); }
@@ -1414,7 +1426,7 @@ function buildThemeGrid(){
 function openThemePicker(){ buildThemeGrid(); $('#themeScrim').classList.add('on'); }
 $('#btnMapStyle').addEventListener('click', openThemePicker);
 $('#btnMapStyleParent').addEventListener('click', openThemePicker);
-$('#btnThemeClose').addEventListener('click', ()=> $('#themeScrim').classList.remove('on'));
+$('#btnThemeBack').addEventListener('click', ()=> $('#themeScrim').classList.remove('on'));
 $('#themeScrim').addEventListener('click', e=>{ if(e.target.id==='themeScrim') $('#themeScrim').classList.remove('on'); });
 updateThemeLabels();
 </script>
@@ -1497,12 +1509,37 @@ function updateZoneUI(){
   if(cb) cb.classList.toggle('hidden', !(S.watchOn && S.boundary && S.tier==='t3'));
 }
 
-/* ================= PARENT UNLOCK (hold + PIN) ================= */
-let holdTimer=null, suppressClick=false;
+/* ================= PARENT UNLOCK (tap + PIN) =================
+   Was press-and-hold (2 s) until 2026-11-21. On a real phone the hold kept
+   dying silently: the timer was cancelled by pointerleave/pointercancel,
+   which real thumbs trigger constantly — a few px of drift off the small
+   pill, or the OS long-press callout/selection gesture — and a working
+   hold gave zero feedback for the full 2 s, so it read as broken
+   (Joshua's report: "the grown-ups area doesn't work"). Synthetic-mouse
+   QA held perfectly still for 2300 ms, so it never reproduced. Now a
+   plain TAP opens the area; the PIN (when a family sets one) is the lock. */
 const grownBtn=$('#grownBtn');
-grownBtn.addEventListener('pointerdown', e=>{ e.preventDefault(); holdTimer=setTimeout(()=>{ holdTimer=null; suppressClick=true; unlockFlow(); }, 2000); });
-['pointerup','pointerleave','pointercancel'].forEach(ev=> grownBtn.addEventListener(ev, ()=>{ if(holdTimer){ clearTimeout(holdTimer); holdTimer=null; } }));
-grownBtn.addEventListener('click', ()=>{ if(suppressClick){ suppressClick=false; return; } toast('Grown-ups: press and HOLD the button 🚸'); });
+/* Drift hardening (same bug family, one layer deeper): a tap whose finger
+   slides more than the browser's tap slop (~15px) before release gets NO
+   click synthesized at all — verified headlessly: pointerup fires, click
+   never does, page never scrolls (touch-action:none). A real thumb on a
+   small pill drifts that far easily. So a press that starts on the button
+   and ends on/near it also activates via pointerup — but 120 ms later:
+   activating instantly on pointerup lets the trailing click land on the
+   just-opened PIN pad's scrim, whose tap-outside handler then closes the
+   pad it just opened (probe-verified). The delay lets a real click win
+   the race; only a click-less press falls through to the timer. */
+let grownDown=false, grownClickAt=0;
+grownBtn.addEventListener('click', ()=>{ grownClickAt=Date.now(); unlockFlow(); });
+grownBtn.addEventListener('pointerdown', ()=>{ grownDown=true; });
+grownBtn.addEventListener('pointercancel', ()=>{ grownDown=false; });
+grownBtn.addEventListener('pointerup', e=>{
+  if(!grownDown) return; grownDown=false;
+  const r=grownBtn.getBoundingClientRect();
+  if(e.clientX<r.left-12 || e.clientX>r.right+12 || e.clientY<r.top-12 || e.clientY>r.bottom+12) return;
+  const t=Date.now();
+  setTimeout(()=>{ if(grownClickAt<t) unlockFlow(); }, 120);
+});
 function unlockFlow(){
   if(S.pin) openPinPad('unlock');
   else { enterParent(); toast('Welcome! Set a PIN in Setup to lock this area.', 3400); }
@@ -1541,7 +1578,7 @@ function finishPin(){
     else { toast('❌ PINs did not match — try again'); pinBuf=''; pinStage=null; renderPinDots(); $('#pinSub').textContent='Type a 4-number PIN'; }
   }
 }
-$('#btnPinCancel').addEventListener('click', ()=> $('#pinScrim').classList.remove('on'));
+$('#btnPinBack').addEventListener('click', ()=> $('#pinScrim').classList.remove('on'));
 $('#pinScrim').addEventListener('click', e=>{ if(e.target.id==='pinScrim') $('#pinScrim').classList.remove('on'); });
 
 /* ================= PARENT VIEW SHELL ================= */
@@ -1674,8 +1711,8 @@ function renderParentSetup(){
   }));
   /* PIN state */
   $('#pinStateText').textContent = S.pin
-    ? 'A PIN is set. The Grown-ups area asks for it after the press-and-hold.'
-    : 'No PIN set yet. The Grown-ups area opens with a press-and-hold. Set a PIN to lock it properly.';
+    ? 'A PIN is set. The Grown-ups area asks for it when you tap.'
+    : 'No PIN set yet. The Grown-ups area opens with a tap. Set a PIN to lock it properly.';
   /* boundary state */
   const b=$('#boundaryCard');
   if(b){
@@ -1768,6 +1805,15 @@ $('#btnCopyLink').addEventListener('click', async ()=>{
   const v=$('#linkOut').value;
   try{ await navigator.clipboard.writeText(v); toast('📋 Link copied!'); }
   catch(e){ $('#linkOut').select(); document.execCommand('copy'); toast('📋 Link copied!'); }
+});
+/* snapshot view's way out (it had none — a dead end until 2026-11-21):
+   back returns to the game and strips the snapshot hash so a reload
+   doesn't drop the next reader straight back into the snapshot */
+$('#btnSnapBack').addEventListener('click', ()=>{
+  $('#snapshotView').classList.remove('on');
+  $('#app').style.display='';
+  document.querySelector('.kidnav').style.display='';
+  try{ history.replaceState(null, '', location.pathname + location.search); }catch(e){}
 });
 function bootSnapshot(payload){
   $('#app').style.display='none';
