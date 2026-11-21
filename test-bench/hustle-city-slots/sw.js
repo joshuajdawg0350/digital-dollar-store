@@ -1,12 +1,14 @@
 /* Hustle City Slots — Casino Classics v2 service worker. (c) 2026 J-Dawgs Industries. */
-const CACHE = 'hc-slots-classics-v2-2';
+const CACHE = 'hc-slots-classics-v2-3';
 const ASSETS = [
   './', './index.html', './style.css', './game.js', './logic.js', './machines.js',
   './manifest.webmanifest', './icon-192.png', './icon-512.png',
   './assets/marquee.webp', './assets/sym-dl.webp', './assets/sym-sv.webp',
   './assets/sym-ch.webp', './assets/sym-hs.webp', './assets/sym-bl.webp',
   './assets/sym-b1.webp', './assets/sym-wd.webp', './assets/sym-sc.webp',
-  './assets/sym-x2.webp', './assets/sym-x3.webp'
+  './assets/sym-x2.webp', './assets/sym-x3.webp', './assets/sym-bn.webp',
+  './assets/garage-bg.webp', './assets/trunk-closed.webp',
+  './assets/trunk-open.webp', './assets/scotty.webp'
 ];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));

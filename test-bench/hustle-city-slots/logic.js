@@ -80,15 +80,54 @@ function evaluateGrid(grid, lineBet, cfg) {
       lineWinTotal += credits;
     }
   }
-  let scatterCount = 0;
-  for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) if (grid[r][row] === 'SC') scatterCount++;
+  let scatterCount = 0, bonusCount = 0;
+  for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) {
+    if (grid[r][row] === 'SC') scatterCount++;
+    if (grid[r][row] === 'BN') bonusCount++;
+  }
   const totalBet = lineBet * PAYLINES.length;
   const capped = Math.min(scatterCount, 5);
   const scatterPay = scatterCount >= 3 ? cfg.scatterPay[capped] * totalBet : 0;
   const freeSpins = scatterCount >= 3 ? cfg.scatterSpins[capped] : 0;
-  return { lineWins, lineWinTotal, scatterCount, scatterPay, freeSpins };
+  return { lineWins, lineWinTotal, scatterCount, scatterPay, freeSpins, bonusCount };
 }
 
-const coreApi = { PAYLINES, FREE_SPIN_MULTIPLIER, MULTIPLIERS, lineMultiplier, windowForStops, randomStops, evaluateLine, evaluateGrid };
+/* Reel motion model (pure + node-testable): spin-up acceleration (~0.30s to
+   full speed), cruise, firm braking to a creep, then a spring settle over
+   the last fraction of a cell — zeta ~0.48 gives ONE small recoil onto the
+   stop. step(dtSeconds) advances the integrator in <=4ms substeps and
+   returns { p, v, done } with p in pixels travelled toward D. */
+function createReelMotion(D, H, durationMs) {
+  const springDist = Math.min(0.85 * H, D * 0.2);
+  const vmax = Math.max(500, (D - springDist) / Math.max(0.4, durationMs / 1000 - 0.89));
+  const ACC = vmax / 0.30, DEC = vmax / 0.55, CREEP = 120, K = 520, C = 21.9;
+  let p = 0, v = 0, mode = 'accel', springT = 0, done = false;
+  function step(dt) {
+    let remaining = dt;
+    while (remaining > 0 && !done) {
+      const h = Math.min(0.004, remaining);
+      remaining -= h;
+      if (mode === 'accel') { v += ACC * h; if (v >= vmax) { v = vmax; mode = 'cruise'; } }
+      if (mode === 'cruise') {
+        const brake = (v * v - CREEP * CREEP) / (2 * DEC) + springDist;
+        if (D - p <= brake) mode = 'decel';
+      }
+      if (mode === 'decel') { v -= DEC * h; if (v <= CREEP) { v = CREEP; mode = 'spring'; } }
+      if (mode === 'spring') {
+        springT += h;
+        v += (K * (D - p) - C * v) * h;
+        p += v * h;
+        if ((Math.abs(D - p) < 0.5 && Math.abs(v) < 16) || springT > 0.9) { p = D; done = true; }
+      } else {
+        p += v * h;
+        if (p >= D) mode = 'spring';
+      }
+    }
+    return { p, v, done };
+  }
+  return { step, vmax, get done() { return done; } };
+}
+
+const coreApi = { PAYLINES, FREE_SPIN_MULTIPLIER, MULTIPLIERS, lineMultiplier, windowForStops, randomStops, evaluateLine, evaluateGrid, createReelMotion };
 if (typeof module !== 'undefined' && module.exports) module.exports = coreApi;
 if (typeof window !== 'undefined') window.SlotCore = coreApi;
