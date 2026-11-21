@@ -221,7 +221,6 @@ main section{scroll-margin-top:150px}
      --dsLine top border / accent color  --dsInk  hint text color
      --dsChev chevron color
    ============================================================ */
-@media (max-width:899px){html,body{overscroll-behavior:none}}
 .dsheet{--dsBar:#05080e;--dsBg:#05080e;--dsLine:#0096ff;--dsInk:#93a1b5;--dsChev:#6fc3ff}
 .dsheet-handle{display:none}
 @media (max-width:899px){
@@ -330,7 +329,7 @@ main section{scroll-margin-top:150px}
   <section class="arcade-band" id="free-wallpapers" data-shelf="extra" style="padding:2.2rem 0">
   <div class="wrap">
     <h2 style="font-size:clamp(1.6rem,5vw,2.2rem);text-transform:uppercase">Free Wallpapers</h2>
-    <p style="max-width:56ch;color:#C3CEDD">988 phone wallpapers — Hustle City art, futuristic cities, cyborgs, AI robots, NASA space photos, muscle cars, wolves, skulls, gothic whimsy, dark gothic art and more. <b style="color:#fff">100% free — no ads, no catch.</b></p>
+    <p style="max-width:56ch;color:#C3CEDD">1088 phone wallpapers — Hustle City art, futuristic cities, cyborgs, AI robots, NASA space photos, muscle cars, wolves, skulls, gothic whimsy, dark gothic art and more. <b style="color:#fff">100% free — no ads, no catch.</b></p>
     <p><a class="btn btn-primary" href="free-wallpapers.html">Get free wallpapers →</a></p>
   </div>
 </section>
@@ -1009,13 +1008,6 @@ main section{scroll-margin-top:150px}
   }
   wire();
 })();
-</script>
-<script>/* ptr-guard (2026-11-21): pull-to-refresh must never steal a sheet drag */
-(function(){var b=document.getElementById('dsheetBody'),s=document.getElementById('dsheet'),y=0;
-document.addEventListener('touchstart',function(e){if(e.touches[0])y=e.touches[0].clientY;},{passive:true});
-document.addEventListener('touchmove',function(e){if(!e.touches[0])return;
-if(s&&s.classList.contains('dragging')){e.preventDefault();return;}
-if(b&&e.target&&b.contains&&b.contains(e.target)&&b.scrollTop<=0&&e.touches[0].clientY>y)e.preventDefault();},{passive:false});})();
 </script>
 </body>
 </html>

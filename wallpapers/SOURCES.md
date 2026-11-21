@@ -48,3 +48,27 @@ license are recorded in `manifest.json` (title, source, license, creator).
   and regenerated before inclusion (5 generations culled on that rule).
   Processed to the section standard (1080x2400 full, 360x800 thumbs, WebP)
   with 128-bit dhash entries appended to the manifest.
+
+- **Batch 3 — the Newest 100 (Joshua's order, 2026-11-21)** — 100 wallpapers
+  under a new "★ Newest 100" shelf, in three themes:
+  - **Dollar Signs & Money (40, new shelf "money"):** 6 Wikimedia Commons
+    photographs (CC0 ×3, Public Domain ×3 — gold bars, ingots and treasure
+    coins, license read from each file's Commons extmetadata) + 34 J-Dawgs
+    in-house procedural originals (chrome / gold / electric-blue dollar-sign
+    art in the house look, PIL pipeline).
+  - **Cool Cars (40, added to Muscle Cars & Bikes):** 1 Wikimedia Commons
+    CC0 photograph (vintage sedan, LostplanetKD73) + 39 J-Dawgs in-house
+    AI-generated originals — unbranded vehicle designs, no logos/badges.
+    (Wikimedia's image host rate-limited bulk downloads mid-run with HTTP
+    429, so this theme leaned on in-house generation to fill the count
+    exactly, per the standing fill rule.)
+  - **Motorcycles (20, new shelf "bikes"):** 16 Wikimedia Commons CC0
+    photographs + 4 J-Dawgs in-house AI-generated originals (unbranded).
+  Per-image source/license/creator for every batch-3 piece is in
+  manifest.json; raw source logs are kept with the batch build records
+  (~/workspace/free-wallpapers-batch3/). Same gates as batches 1–2:
+  1080×2400 WebP, post-crop sharpness/brightness filters, aHash dedupe.
+  Count reconciliation 2026-11-21: the page, manifest and files all agree —
+  988 before batch 3, 1,088 after. (A count of 759 seen earlier in the day
+  was a stale figure from before the dark-wing batch landed; the live page
+  itself read 988.)
