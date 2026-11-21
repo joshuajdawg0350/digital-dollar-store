@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Digital Dollar Store — Everything $1</title>
-<meta name="description" content="The Digital Dollar Store — every game and app on the shelf is $1, one-time, yours forever (the J-Dawgs Prompt Generator is $2.99; the featured game, Hustle City Drag Racing, is $1.99). No ads. Ever. We never sell your information. Real apps with their own icons, installed straight from here. No accounts, no extra steps.">
+<meta name="description" content="The Digital Dollar Store — every game and app on the shelf is $1, one-time, yours forever (Scotty's Job Site Calculator is 99¢; the J-Dawgs Prompt Generator is $2.99 and Hustle City Drag Racing is $1.99). No ads. Ever. We never sell your information. Real apps with their own icons, installed straight from here. No accounts, no extra steps.">
 <link rel="canonical" href="https://digitaldollarstore.org/">
 <meta property="og:title" content="Digital Dollar Store — everything $1">
 <meta property="og:description" content="Every game and app on the shelf: $1, one-time, yours forever. No ads. Ever. We never sell your information.">
@@ -112,6 +112,7 @@ p.secsub{color:#5a6b80;font-size:.93rem;margin-bottom:16px;max-width:62ch}
 .btn{display:inline-block;background:#0096FF;color:#fff;text-decoration:none;font-weight:800;border-radius:10px;padding:13px 22px;margin-top:10px}
 .btn:hover{background:#0073cc}
 .btn.ghost{background:#fff;color:#0073cc;border:1px solid #bcd9f5}
+.feat.stack{grid-template-columns:1fr}
 .feat .art{background:linear-gradient(140deg,#05080e,#0d2138);display:flex;align-items:center;justify-content:center;padding:22px}
 .feat .art img{width:150px;height:150px;border-radius:50%;box-shadow:0 8px 30px rgba(0,150,255,.4)}
 .feat .proof{display:block;margin-top:12px;font-size:.82rem}
@@ -222,6 +223,7 @@ main section{scroll-margin-top:76px}
     <nav class="site-nav" id="site-nav" aria-label="Main">
       <ul>
         <li><a href="#games">Games</a></li>
+        <li><a href="play-midas/">Play Midas — Free</a></li>
         <li><a href="#apps">Apps</a></li>
         <li><a href="#tools">Tools</a></li>
         <li><a href="catalog.html">Catalog</a></li>
@@ -253,22 +255,28 @@ main section{scroll-margin-top:76px}
     </div>
     <div class="hero-games">
       <div class="hg-row">
-        <img src="assets/hc1-cover.webp" alt="" width="1920" height="1120">
-        <div class="hg-main"><b>Hustle City</b><span>The original</span>
-          <a class="hg-buy" id="buy-hc1" href="https://buy.stripe.com/bJe7sL0dP4A44BTfpz3kt1g" aria-label="Buy Hustle City — $1">Buy — $1</a>
-          <a class="open-link" href="https://jdawgsindustries.com/games/hc1-demo/">▶ Play the free demo first</a></div>
+        <img src="assets/create-with-j-dawg-cover.webp" alt="" width="2736" height="912">
+        <div class="hg-main"><b>Create with J-Dawg</b><span>The full drawing studio</span>
+          <a class="hg-buy" id="buy-create-hero" href="https://buy.stripe.com/fZuaEXgcNeaE7O5elv3kt1y" aria-label="Buy Create with J-Dawg — $1">Buy — $1</a>
+          <a class="open-link" href="https://digitaldollarstore.org/apps/create-with-j-dawg/">▶ Open the app</a></div>
       </div>
       <div class="hg-row">
-        <img src="assets/hc2-cover.webp" alt="" width="1920" height="1120">
-        <div class="hg-main"><b>Hustle City 2</b><span>The interactive sequel</span>
-          <a class="hg-buy" id="buy-hc2" href="https://buy.stripe.com/7sYfZh2lXfeIecta5f3kt1h" aria-label="Buy Hustle City 2 — $1">Buy — $1</a>
-          <a class="open-link" href="https://jdawgsindustries.com/games/hc2-demo/">▶ Play the free demo first</a></div>
+        <img src="assets/scottys-calculator-cover.webp" alt="" width="1920" height="1280">
+        <div class="hg-main"><b>Scotty's Job Site Calculator</b><span>Job site tested</span>
+          <a class="hg-buy" id="buy-scottys-hero" href="https://buy.stripe.com/7sYbJ11hTc2w2tLcdn3kt1z" aria-label="Buy Scotty's Job Site Calculator — 99 cents">Buy — 99¢</a>
+          <a class="open-link" href="scottys-job-site-calculator.html">Details + how to use it</a></div>
+      </div>
+      <div class="hg-row">
+        <img src="assets/draw-pad-cover.webp" alt="" width="2736" height="912">
+        <div class="hg-main"><b>Draw Pad</b><span>The simple drawing pad</span>
+          <a class="hg-buy" id="buy-draw-pad-hero" href="https://buy.stripe.com/14A28r6CdaYsd8p6T33kt1x" aria-label="Buy Draw Pad — $1">Buy — $1</a>
+          <a class="open-link" href="https://digitaldollarstore.org/apps/draw-pad/">▶ Open the app</a></div>
       </div>
     </div>
     <p class="tap-note">Tap to pay with Apple Pay, Google Pay, or Link — whichever your phone offers.<br>
     No account. No sign-up. Pay and download — payments are processed by Stripe; we never see or store your card number.</p>
     <div class="hero-facts">
-      <span><b>2 games</b> headlining</span>
+      <span><b>3 apps</b> headlining</span>
       <span><b>0</b> ads · subscriptions · accounts</span>
       <span><b>Real apps</b> — own icon, play offline</span>
     </div>
@@ -300,7 +308,7 @@ main section{scroll-margin-top:76px}
   <div class="dsheet-body" id="dsheetBody">
 <main class="wrap">
 
-<section><h2 class="sec">Shop by category</h2><p class="secsub">Four shelves. Everything on them is $1 — except the two featured picks below, marked plainly: a $2.99 tool and a $1.99 game.</p>
+<section><h2 class="sec">Shop by category</h2><p class="secsub">Four shelves. Everything on them is $1 — except a few picks marked plainly where they sit: the calculator is 99¢, the prompt tool is $2.99, and Drag Racing is $1.99.</p>
 <div class="cats">
 <a class="cat" href="#games"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9h4M8 7v4M15 10h.01M18 8h.01M17.3 5H6.7a4.7 4.7 0 0 0-4.6 5.6l.9 4.6A3 3 0 0 0 7.3 17L9 15h5.9l1.7 2a3 3 0 0 0 4.3-1.8l.9-4.6A4.7 4.7 0 0 0 17.3 5Z"/></svg><b>Games</b><span>Hustle City &amp; more</span></a>
 <a class="cat" href="#apps"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg><b>Apps</b><span>Simple, single-purpose</span></a>
@@ -309,25 +317,29 @@ main section{scroll-margin-top:76px}
 </div></section>
 
 <!-- ================= FEATURED ================= -->
-<section id="featured" data-search-group data-shelf="extra"><p class="eyebrow">Featured</p><h2 class="sec">Our best, up front.</h2><p class="secsub">Priced plainly — these featured picks are the exceptions to the $1 shelf: the tool is $2.99, the game is $1.99.</p>
-<div class="feat" data-search-item><div class="txt"><span class="tag">Featured tool</span><h3>J-Dawgs Prompt Generator</h3>
-<p>Tell it what you want in your own words — a picture, a video, an ad, a story, some code. It asks a few short questions, then writes a strong, detailed prompt for you, ready to paste into any AI tool. Good words in, better results out — no prompt know-how needed.</p>
-<div class="price">$2.99 <small>one-time</small></div><a class="btn" href="https://buy.stripe.com/cNi9AT8Kl0jO2tL5OZ3kt0N">Buy — $2.99</a>
-<a class="open-link proof" href="https://jdawgsindustries.com/proof-prompt-generator.html">See real runs — proof page</a></div>
-<div class="art"><img src="assets/badge-1dollar.webp" alt="$1 store badge" width="1600" height="1600" loading="lazy"></div></div>
-<div class="feat" data-search-item style="margin-top:14px"><div class="txt"><span class="tag">★ Featured game</span><h3>Hustle City Drag Racing</h3>
-<p>Heads-up drag racing — stage up, launch on green, and build your car across 87 upgrade steps, from a 12-second stocker to a MAX build that runs 2.517 seconds at 769 mph. Sixteen rivals, and Scotty — the wall — at the end. The owner played this build on his own phone: "it works good."</p>
-<div class="price">$1.99 <small>one-time</small></div><a class="btn" id="buy-drag-racing-featured" href="https://buy.stripe.com/3cI6oH9Op3w0gkBcdn3kt1A">Buy — $1.99</a>
-<a class="open-link proof" href="proof-hustle-city-drag-racing.html">See the measured test races — proof page</a></div>
-<div class="art"><img src="assets/hustle-city-drag-racing-cover.webp" alt="Hustle City Drag Racing — a blown black muscle car crossing the finish line under the WIN board" width="2048" height="1152" loading="lazy" style="width:100%;height:auto;border-radius:12px;box-shadow:0 8px 30px rgba(0,150,255,.35)"></div></div></section>
+<section id="featured" data-search-group data-shelf="extra"><p class="eyebrow">Featured</p><h2 class="sec">Our best, up front.</h2><p class="secsub">Our top three apps, up front — two are $1, and Scotty's calculator is 99¢. Priced plainly, one-time each.</p>
+<div class="feat" data-search-item><div class="txt"><span class="tag">★ Featured app</span><h3>Create with J-Dawg</h3>
+<p>The full drawing studio. 13 tools, the Electric Color Chart with 66 colors, templates under your drawing, layers, mirror drawing, and a SAVE PICTURE button that keeps your finished work.</p>
+<div class="price">$1.00 <small>one-time</small></div><a class="btn" id="buy-create-featured" href="https://buy.stripe.com/fZuaEXgcNeaE7O5elv3kt1y">Buy — $1.00</a>
+<a class="open-link proof" href="proof-create-with-j-dawg.html">Proof: 20 of 20 real checks passed — see the runs</a></div>
+<div class="art"><img src="assets/create-with-j-dawg-cover.webp" alt="Create with J-Dawg — the Electric Color Chart, stacked layers, a palette and brushes in chrome and electric blue" width="2736" height="912" loading="lazy" style="width:100%;height:auto;border-radius:12px;box-shadow:0 8px 30px rgba(0,150,255,.35)"></div></div>
+<div class="feat" data-search-item style="margin-top:14px"><div class="txt"><span class="tag">★ Featured app</span><h3>Scotty's Job Site Calculator</h3>
+<p><strong>✓ JOB SITE TESTED.</strong> Feet-inch-fraction math with no decimal converting — roof rafters, framing, stairs, concrete, board feet and squaring, with big glove-friendly keys. The name-brand ones cost a lot of money — this one is 99 cents.</p>
+<div class="price">$0.99 <small>one-time</small></div><a class="btn" id="buy-scottys-featured" href="https://buy.stripe.com/7sYbJ11hTc2w2tLcdn3kt1z">Buy — $0.99</a>
+<a class="open-link proof" href="proof-scottys-job-site-calculator.html">Proof: tested on a real job site — see the test</a></div>
+<div class="art"><img src="assets/scottys-calculator-cover.webp" alt="Scotty's Job Site Calculator — a chunky chrome job-site calculator crackling with electric-blue energy next to a chrome framing hammer" width="1920" height="1280" loading="lazy" style="width:100%;height:auto;border-radius:12px;box-shadow:0 8px 30px rgba(0,150,255,.35)"></div></div>
+<div class="feat" data-search-item style="margin-top:14px"><div class="txt"><span class="tag">★ Featured app</span><h3>Draw Pad</h3>
+<p>The simple drawing pad. Eight colors, three brush sizes, an eraser and an undo button — nothing else in your way. Your drawing saves itself on your device as you go.</p>
+<div class="price">$1.00 <small>one-time</small></div><a class="btn" id="buy-draw-pad-featured" href="https://buy.stripe.com/14A28r6CdaYsd8p6T33kt1x">Buy — $1.00</a>
+<a class="open-link proof" href="proof-draw-pad.html">Proof: 18 of 18 real checks passed — see the runs</a></div>
+<div class="art"><img src="assets/draw-pad-cover.webp" alt="Draw Pad — a chrome pen drawing a glowing electric-blue swirl" width="2736" height="912" loading="lazy" style="width:100%;height:auto;border-radius:12px;box-shadow:0 8px 30px rgba(0,150,255,.35)"></div></div></section>
 
 <!-- ================= GAMES ================= -->
 <section id="games" data-search-group data-shelf="games"><p class="eyebrow">The games</p><h2 class="sec">Hustle City</h2><p class="secsub">Plays right in your browser — add it to your home screen like an app.</p>
-<div class="feat" data-search-item style="margin-bottom:14px"><div class="txt"><span class="tag">★ Featured game</span><h3>Hustle City Drag Racing</h3>
+<div class="feat stack" data-search-item style="margin-bottom:14px"><div class="art"><img src="assets/hustle-city-drag-racing-cover.webp" alt="Hustle City Drag Racing — a blown black muscle car crossing the finish line under the WIN board" width="2048" height="1152" loading="lazy" style="width:100%;height:auto;border-radius:12px;box-shadow:0 8px 30px rgba(0,150,255,.35)"></div><div class="txt"><span class="tag">★ Featured game</span><h3>Hustle City Drag Racing</h3>
 <p>Heads-up drag racing — stage up, launch on green, and build your car across 87 upgrade steps, from a 12-second stocker to a MAX build that runs 2.517 seconds at 769 mph. Sixteen rivals, and Scotty — the wall — at the end. The owner played this build on his own phone: "it works good."</p>
 <div class="price">$1.99 <small>one-time</small></div><a class="btn" id="buy-drag-racing-games" href="https://buy.stripe.com/3cI6oH9Op3w0gkBcdn3kt1A">Buy — $1.99</a>
-<a class="open-link proof" href="proof-hustle-city-drag-racing.html">See the measured test races — proof page</a></div>
-<div class="art"><img src="assets/hustle-city-drag-racing-cover.webp" alt="Hustle City Drag Racing — a blown black muscle car crossing the finish line under the WIN board" width="2048" height="1152" loading="lazy" style="width:100%;height:auto;border-radius:12px;box-shadow:0 8px 30px rgba(0,150,255,.35)"></div></div>
+<a class="open-link proof" href="proof-hustle-city-drag-racing.html">See the measured test races — proof page</a></div></div>
 <div class="grid">
 
 <article class="card" data-search-item>
@@ -367,7 +379,7 @@ main section{scroll-margin-top:76px}
 </article>
 
 <article class="card" data-search-item>
-  <img class="cover" src="assets/hc2-cover.webp" alt="Hustle City Bundle — Hustle City 1 and Hustle City 2 together" width="1920" height="1120" loading="lazy">
+  <img class="cover" src="assets/hc-bundle-cover.webp" alt="Hustle City Bundle — both black muscle cars on a rainy neon street, games 1 + 2 together" width="1920" height="1120" loading="lazy">
   <div class="body"><h3>Hustle City Bundle — HC1 + HC2</h3>
   <p>Both games for one price — Hustle City and Hustle City 2. Start with $2,000 and work your way up to the final dice game against King Balsey.</p>
   <div class="buyrow"><span class="p">$1.00<small>one-time</small></span><a class="buy" id="buy-bundle-card" href="https://buy.stripe.com/aFadR98Kl6Icb0h6T33kt1v" aria-label="Buy the Hustle City Bundle — $1">Get the Bundle — $1.00</a></div>
@@ -574,6 +586,7 @@ main section{scroll-margin-top:76px}
 <div class="grid">
 
 <article class="card" data-search-item>
+  <img class="cover" src="assets/templates-pack-cover.webp" alt="Top 25 Templates Pack — budget spreadsheet, weekly planner, resume and invitation templates in chrome and electric blue" width="1920" height="1120" loading="lazy">
   <div class="body"><h3>Top 25 Templates Pack</h3>
   <p>The 25 templates people actually buy — paycheck budget spreadsheet, digital life planner, resume pack, wedding invitation suite, small-business bookkeeping, debt payoff tracker and more — in one download, plus 5 novelty joke certificates in a bonus folder. Step-by-step instructions included in every folder.</p>
   <div class="buyrow"><span class="p">$1.00<small>one-time</small></span><a class="buy" href="https://buy.stripe.com/eVq00j3q15E8b0h4KV3kt1u" aria-label="Buy Top 25 Templates Pack — $1">Buy</a></div>
