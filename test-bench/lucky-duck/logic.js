@@ -5,8 +5,10 @@
    (c) 2026 J-Dawgs Industries — personal build, not for sale. */
 'use strict';
 
-/* Symbols: DUCK (logo), SEVEN (red/blue variants on the strips, one pay),
-   BAR3, BAR2, BAR1, CHERRY, BLANK. */
+/* Symbols: DUCK (logo), SEVEN (RED only — Joshua's ruling 2026-11-21 23:53 CT
+   settles the red/blue question: "Red sevens"), BAR3, BAR2, BAR1, CHERRY,
+   BLANK. Faces evidenced from floor photos — see RESEARCH.md (2026-11-21
+   rebuild section). */
 const SYMBOLS = ['DUCK', 'SEVEN', 'BAR3', 'BAR2', 'BAR1', 'CHERRY', 'BLANK'];
 const BARS = ['BAR1', 'BAR2', 'BAR3'];
 
@@ -246,6 +248,22 @@ function pickDuckPrize(triggerWin, coins, rng) {
   return Math.round(raw / 5) * 5;
 }
 
-const api = { SYMBOLS, BARS, PAYTABLE, TIER_ORDER, TIER_WEIGHTS, TOTAL_WEIGHT, RED_CHANCE, RED_CHAIN_CHANCE, RED_MAX, PICK_CHANCE, STRIPS, PATTERNS, LINES, evaluateCombo, payFor, pickTier, pickTierAtLeast, comboForTier, stopFor, genCard, newGoldSet, pickDuckPrize };
+/* ---------- Jewel Hunt ----------
+   SEEN on a floor install (Joshua's TikTok still, 2026-11-21): a row of 10
+   diamond slots across the top screen, "COLLECT 1 MORE DIAMOND!" prompts,
+   and "COLLECT 10 JEWELS TO TRIGGER THE JEWEL HUNT BONUS" printed above the
+   reels. The collection/prize mechanics below are RECONSTRUCTED (never
+   published): one jewel per duck landing on the payline; at 10 the hunt
+   opens a pick-a-jewel screen paying one prize from this table. */
+const JEWELS_TO_TRIGGER = 10;
+function jewelPrize(coins, rng) {
+  const table = [10, 15, 20, 25, 40, 50, 75, 100, 150, 250];
+  const weights = [22, 20, 18, 14, 10, 7, 5, 2.5, 1, 0.5];
+  let r = rng() * 100;
+  for (let i = 0; i < table.length; i++) { r -= weights[i]; if (r < 0) return table[i] * coins; }
+  return 10 * coins;
+}
+
+const api = { SYMBOLS, BARS, PAYTABLE, TIER_ORDER, TIER_WEIGHTS, TOTAL_WEIGHT, RED_CHANCE, RED_CHAIN_CHANCE, RED_MAX, PICK_CHANCE, STRIPS, PATTERNS, LINES, evaluateCombo, payFor, pickTier, pickTierAtLeast, comboForTier, stopFor, genCard, newGoldSet, pickDuckPrize, JEWELS_TO_TRIGGER, jewelPrize };
 if (typeof module !== 'undefined' && module.exports) module.exports = api;
 if (typeof window !== 'undefined') window.LuckyLogic = api;

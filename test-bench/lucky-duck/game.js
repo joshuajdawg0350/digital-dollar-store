@@ -1,24 +1,91 @@
 /* Lucky Duck — personal machine UI/engine. Presentation cloned from the VGT
-   Lucky Ducky $1 floor machine (Downstream Casino): bingo screen on top,
-   three mechanical reels below, BET 1 / SPIN-CASH OUT / BET 3 deck,
-   BET·WON·PAID·CASH meters, Red Screen re-spins, Pick a Duck.
+   Lucky Ducky $1 floor machine (Downstream Casino): TWO-PART cabinet — a
+   compact top video screen (small bingo card left, duck medallion + bill art
+   right, Won/Paid/Bet/Cash meters along its bottom) over THREE BIG
+   mechanical reels behind glass that dominate the lower half.
+   Rebuilt 2026-11-21 to Joshua's four points + his three reference photos:
+   reels way bigger · the REAL duck (white duck, top hat, green bow tie,
+   coins, medallion) · RED sevens · the real machine's symbol faces.
    All art drawn in code; all sounds synthesized. Play credits only. */
 'use strict';
 const L = window.LuckyLogic;
 const $ = id => document.getElementById(id);
 const rng = Math.random;
 
-/* ---------------- our drawn art (in the original's likeness) ---------------- */
-function duckSVG(cls, withHat) {
-  return `<svg class="${cls || ''}" viewBox="0 0 100 84" aria-hidden="true">
-    ${withHat ? '<rect x="34" y="2" width="34" height="7" rx="3" fill="#191919"/><rect x="41" y="-6" width="20" height="12" rx="2" fill="#232323" transform="translate(0,6)"/><rect x="41" y="12" width="20" height="4" fill="#c8102e"/>' : ''}
-    <ellipse cx="46" cy="56" rx="34" ry="22" fill="#ffd21f"/>
-    <ellipse cx="46" cy="60" rx="30" ry="17" fill="#ffda3d"/>
-    <path d="M14 52 Q2 44 8 34 Q18 40 20 48 Z" fill="#f4b400"/>
-    <circle cx="72" cy="34" r="16" fill="#ffd21f"/>
-    <ellipse cx="86" cy="38" rx="9" ry="5.5" fill="#ff8a00"/>
-    <circle cx="76" cy="31" r="2.6" fill="#191919"/>
-    <path d="M30 50 Q46 40 62 50 Q46 56 30 50Z" fill="#f4b400" opacity=".65"/>
+/* ---------------- the duck — the real character, drawn in code ----------------
+   White duck, black top hat with a gold band, big orange bill open in a
+   grin, green bow tie, gold coins in his wing, chest coin — inside a gold
+   medallion on green money art. Matches Joshua's logo reference. */
+function duckFaceSVG() {
+  /* THE duck, as he appears in Joshua's references: three-quarter/profile
+     head facing LEFT, one long sweeping bill with a grin crease and an open
+     red grin at its base, one big eye under an arched brow, tilted black top
+     hat with a gold band, green bow tie at the front of his neck, wing
+     holding gold coins, big coin at his chest. */
+  return `<svg viewBox="0 0 120 120" aria-hidden="true">
+    <path d="M40 82 Q62 72 88 80 Q97 94 93 113 L46 113 Q35 97 40 82 Z" fill="#ffffff"/>
+    <path d="M87 34 q11 -5 13 3 q-6 2 -10 6 Z" fill="#ffffff"/>
+    <path d="M90 46 q10 -2 11 5 q-6 1 -10 4 Z" fill="#ffffff"/>
+    <ellipse cx="66" cy="52" rx="27" ry="26" fill="#ffffff"/>
+    <path d="M42 62 Q36 74 44 82" stroke="rgba(0,0,0,.10)" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <g transform="rotate(-11 68 22)">
+      <path d="M43 20 L47 0 Q68 -5 87 0 L91 20 Q68 25 43 20 Z" fill="#232327"/>
+      <path d="M44.5 13 L89.5 13 L90.7 19.4 Q68 24 43.3 19.4 Z" fill="#c9a227"/>
+      <ellipse cx="68" cy="21" rx="32" ry="5.5" fill="#19191c"/>
+    </g>
+    <path d="M45 32 Q57 24 71 29" stroke="#2b2b2b" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+    <ellipse cx="57" cy="43" rx="8" ry="11.5" fill="#ffffff" stroke="#cfd4d8" stroke-width=".6"/>
+    <circle cx="53.8" cy="41" r="4.6" fill="#7a4a12"/>
+    <circle cx="52.9" cy="40.2" r="2.3" fill="#14100a"/>
+    <circle cx="51.5" cy="37.8" r="1.1" fill="#ffffff"/>
+    <path d="M38 57 Q48 54 54 57 Q52 68 43 70.5 Q37 65 38 57 Z" fill="#7c1710"/>
+    <ellipse cx="44" cy="66.5" rx="5.5" ry="2.2" fill="#e2574c"/>
+    <path d="M52 39 Q30 34 12 44 Q1 50 3 56.5 Q5 62 20 62.5 Q40 63 54 55 Q60 46 52 39 Z" fill="url(#billG)" stroke="#cf7a0d" stroke-width="1"/>
+    <path d="M9 53.5 Q28 51.5 50 48.5" stroke="rgba(120,60,0,.42)" stroke-width="1.5" fill="none"/>
+    <ellipse cx="15" cy="47.5" rx="2.3" ry="1.3" fill="rgba(120,60,0,.45)"/>
+    <path d="M22 62.5 Q38 62.5 53 56.5 Q51 66 39 69.5 Q27 70 22 62.5 Z" fill="#f59b1d" stroke="#cf7a0d" stroke-width=".8"/>
+    <path d="M47 86 L31 78.5 Q28.5 88 31 97.5 Z" fill="#22a355" stroke="#0d6e33" stroke-width="1"/>
+    <path d="M47 86 L63 78.5 Q65.5 88 63 97.5 Z" fill="#22a355" stroke="#0d6e33" stroke-width="1"/>
+    <rect x="40.5" y="79.5" width="13" height="13" rx="3.5" fill="#178a43" stroke="#0d6e33" stroke-width="1"/>
+    <path d="M56 92 Q74 86 84 94 Q88 104 80 110 Q64 114 56 106 Q52 98 56 92 Z" fill="#ffffff" stroke="#d5d5d5" stroke-width="1"/>
+    <path d="M60 98 Q70 94 79 98" stroke="rgba(0,0,0,.12)" stroke-width="1.6" fill="none"/>
+    <path d="M59 104 Q69 100 77 103" stroke="rgba(0,0,0,.12)" stroke-width="1.6" fill="none"/>
+    <circle cx="50" cy="101" r="6.6" fill="url(#coinG)" stroke="#9a6b0d" stroke-width="1"/>
+    <circle cx="62" cy="107.5" r="5.9" fill="url(#coinG)" stroke="#9a6b0d" stroke-width="1"/>
+    <text x="50" y="104.2" font-size="7.6" text-anchor="middle" fill="#7a5205" font-family="Georgia,serif" font-weight="bold">$</text>
+    <text x="62" y="110.4" font-size="6.8" text-anchor="middle" fill="#7a5205" font-family="Georgia,serif" font-weight="bold">$</text>
+    <circle cx="88" cy="93" r="8.4" fill="url(#coinG)" stroke="#9a6b0d" stroke-width="1.2"/>
+    <text x="88" y="97.2" font-size="10.2" text-anchor="middle" fill="#7a5205" font-family="Georgia,serif" font-weight="bold">$</text>
+  </svg>`;
+}
+function duckMedallionSVG() {
+  let rays = '';
+  for (let a = 0; a < 360; a += 30) rays += `<path d="M60 60 L55.5 7 L64.5 7 Z" fill="#ffffff" opacity=".10" transform="rotate(${a} 60 60)"/>`;
+  return `<svg viewBox="0 0 120 120" aria-hidden="true">
+    <circle cx="60" cy="60" r="56" fill="url(#medBg)"/>
+    ${rays}
+    <g transform="translate(4,3) scale(0.93)">${duckFaceSVG().replace(/<\/?svg[^>]*>/g, '')}</g>
+    <circle cx="60" cy="60" r="56.5" fill="none" stroke="#8a6d1f" stroke-width="5.5"/>
+    <circle cx="60" cy="60" r="52.8" fill="none" stroke="#e8c85a" stroke-width="1.8"/>
+  </svg>`;
+}
+function gemSVG() {
+  return `<svg viewBox="0 0 100 100" aria-hidden="true">
+    <polygon points="50,4 88,34 50,96 12,34" fill="url(#gemG)" stroke="#1d6f9e" stroke-width="3"/>
+    <polygon points="50,4 70,34 50,96 30,34" fill="#ffffff" opacity=".28"/>
+    <polyline points="12,34 88,34" stroke="#eaf9ff" stroke-width="2.4" fill="none"/>
+    <polyline points="30,34 50,4 70,34" stroke="#eaf9ff" stroke-width="1.8" fill="none"/>
+  </svg>`;
+}
+function coinPileSVG() {
+  return `<svg class="coinPile" viewBox="0 0 100 44" aria-hidden="true">
+    <rect x="56" y="2" width="34" height="17" rx="2.5" fill="#3f9e4d" stroke="#1d6b41" stroke-width="1.6" transform="rotate(9 73 10)"/>
+    <text x="73" y="15.5" font-size="11.5" text-anchor="middle" fill="#d9f2dc" font-family="Georgia,serif" font-weight="bold" transform="rotate(9 73 10)">$</text>
+    <g fill="url(#coinG)" stroke="#9a6b0d" stroke-width="1.3">
+      <ellipse cx="24" cy="36" rx="15" ry="5.2"/><ellipse cx="24" cy="30.5" rx="15" ry="5.2"/><ellipse cx="24" cy="25" rx="15" ry="5.2"/>
+      <ellipse cx="52" cy="38" rx="14" ry="4.8"/><ellipse cx="52" cy="33" rx="14" ry="4.8"/>
+      <ellipse cx="76" cy="39" rx="13" ry="4.5"/><ellipse cx="38" cy="40" rx="12" ry="4.2"/><ellipse cx="64" cy="42" rx="11" ry="4"/>
+    </g>
   </svg>`;
 }
 function cherrySVG() {
@@ -30,12 +97,15 @@ function cherrySVG() {
     <circle cx="40" cy="48" r="14" fill="#b30f27"/><circle cx="35" cy="42" r="4.5" fill="#ff8f9d" opacity=".8"/>
   </svg>`;
 }
-$('marqueeDuck').innerHTML = duckSVG('', true);
+$('marqueeDuck').innerHTML = duckMedallionSVG();
+$('billDuck').innerHTML = duckFaceSVG();
+$('redBillDuck').innerHTML = duckFaceSVG();
+document.querySelectorAll('.badgeDuck').forEach(el => { el.innerHTML = duckMedallionSVG(); el.style.display = 'block'; el.style.width = '24px'; el.style.height = '24px'; el.firstChild.style.width = '100%'; });
 
-function symHTML(sym, reelIdx) {
+function symHTML(sym) {
   switch (sym) {
-    case 'DUCK': return `<div class="sym">${duckSVG('duckSym', true)}<div class="duckWord">LUCKY DUCKY</div></div>`;
-    case 'SEVEN': return `<div class="sym"><div class="seven ${reelIdx === 1 ? 'blue' : 'red'}">7</div></div>`;
+    case 'DUCK': return `<div class="sym"><div class="duckMedal">${duckMedallionSVG()}</div><div class="duckLogoText">LUCKY DUCKY</div></div>`;
+    case 'SEVEN': return `<div class="sym"><div class="sevenWrap"><div class="sevenRed">7<span class="emboss">$</span></div>${coinPileSVG()}</div></div>`;
     case 'BAR3': return `<div class="sym"><div class="bar"><small>BAR</small><small>BAR</small><small>BAR</small></div></div>`;
     case 'BAR2': return `<div class="sym"><div class="bar"><small>BAR</small><small>BAR</small></div></div>`;
     case 'BAR1': return `<div class="sym"><div class="bar">BAR</div></div>`;
@@ -67,15 +137,67 @@ function jingle(big) {
 function quack() { beep(620, .13, 'sawtooth', .09, 0, 240); beep(660, .11, 'sawtooth', .08, .16, 260); }
 function siren() { for (let i = 0; i < 3; i++) { beep(520, .22, 'sawtooth', .05, i * .42, 940); beep(940, .2, 'sawtooth', .05, i * .42 + .21, 520); } }
 function splash() { beep(300, .25, 'sine', .12, 0, 90); beep(1200, .05, 'square', .03, .05); }
+function gemSnd() { beep(1318, .12, 'sine', .07); beep(1760, .16, 'sine', .06, .09); beep(2217, .2, 'sine', .045, .18); }
 
 /* ---------------- state ---------------- */
 const SAVE_KEY = 'luckyDuckPersonalV1';
-let save = { cash: 1000, progressive: 250000, sound: true };
-try { const s = JSON.parse(localStorage.getItem(SAVE_KEY)); if (s && typeof s.cash === 'number') save = s; } catch (e) {}
+let save = { cash: 1000, progressive: 250000, sound: true, jewels: 0 };
+try { const s = JSON.parse(localStorage.getItem(SAVE_KEY)); if (s && typeof s.cash === 'number') save = Object.assign(save, s); } catch (e) {}
 soundOn = save.sound !== false;
 let coinsBet = 3, busy = false, sessionPaid = 0;
-function persist() { save.cash = state.cash; save.progressive = state.progressive; save.sound = soundOn; try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {} }
-const state = { cash: save.cash, progressive: save.progressive, lastWon: 0 };
+const state = { cash: save.cash, progressive: save.progressive, lastWon: 0, jewels: Math.min(L.JEWELS_TO_TRIGGER - 1, Math.max(0, save.jewels | 0)) };
+function persist() { save.cash = state.cash; save.progressive = state.progressive; save.sound = soundOn; save.jewels = state.jewels; try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {} }
+
+/* ---------------- bonus minimum-view lock ----------------
+   Joshua's standing rule (2026-11-22 00:07 CT): "Make sure you have to see
+   a couple seconds at least of the bonus screen before it goes away. It's
+   easy to accidentally push it right past it." Every tap-advanced bonus
+   screen ignores taps for its first 2 seconds — ignored, not queued. */
+const BONUS_MIN_VIEW_MS = 2000;
+const bonusLocked = openedAt => Date.now() - openedAt < BONUS_MIN_VIEW_MS;
+
+/* ---------------- jewel hunt ---------------- */
+function renderJewels(justIdx) {
+  $('jewels').innerHTML = Array.from({ length: L.JEWELS_TO_TRIGGER }, (_, i) =>
+    `<div class="jewel ${i < state.jewels ? 'on' : 'off'}${i === justIdx ? ' just' : ''}">${gemSVG()}</div>`).join('');
+  const left = L.JEWELS_TO_TRIGGER - state.jewels;
+  $('jewelStrip').textContent = state.jewels === 0
+    ? 'COLLECT 10 JEWELS TO TRIGGER THE JEWEL HUNT BONUS'
+    : `COLLECT ${left} MORE JEWEL${left === 1 ? '' : 'S'} TO TRIGGER THE JEWEL HUNT BONUS`;
+}
+function jewelHunt() {
+  return new Promise(resolve => {
+    let openedAt = Date.now() + 1e9; // locked until the screen is actually up
+    const grid = $('jewelGrid');
+    grid.innerHTML = '';
+    $('jewelResult').style.display = 'none';
+    const prize = L.jewelPrize(coinsBet, rng);
+    for (let i = 0; i < 10; i++) {
+      const b = document.createElement('button');
+      b.className = 'jewelPick';
+      b.innerHTML = gemSVG() + `<div class="amt">$${prize}</div>`;
+      b.setAttribute('aria-label', 'Pick this jewel');
+      b.onclick = async () => {
+        if (bonusLocked(openedAt)) return; // minimum-view lock: early taps ignored
+        if (b.classList.contains('picked')) return;
+        document.querySelectorAll('.jewelPick').forEach(d => { d.onclick = null; if (d !== b) d.classList.add('dim'); });
+        b.classList.add('picked'); gemSnd(); jingle(true);
+        $('jewelAmt').textContent = `YOUR JEWEL HIDES $${prize}!`;
+        $('jewelResult').style.display = 'block';
+        $('jewelCollectBtn').onclick = async () => {
+          $('jewelOverlay').classList.remove('on');
+          await countUp(prize, 1000);
+          sessionPaid += prize; state.lastWon = sessionPaid;
+          renderMeters(state.lastWon, sessionPaid); persist();
+          resolve();
+        };
+      };
+      grid.appendChild(b);
+    }
+    $('jewelOverlay').classList.add('on');
+    openedAt = Date.now();
+  });
+}
 
 /* ---------------- bingo game (continuous live call) ---------------- */
 const bingo = { gameNo: 1, gold: L.newGoldSet(rng), called: [], order: [], idx: 0, card: null };
@@ -89,7 +211,7 @@ function startBingoGame() {
   bingo.gameNo++;
   renderCalled(); renderGameState();
 }
-function renderGameState() { $('gameState').textContent = `GAME ${bingo.gameNo} · ${bingo.called.length + 38}/75`; }
+function renderGameState() { $('gameState').textContent = `G${bingo.gameNo} · ${bingo.called.length + 38}/75`; }
 function renderCalled() {
   const last = bingo.called.slice(-9);
   $('calledBalls').innerHTML = last.map((n, i) => `<div class="ball${i === last.length - 1 ? ' latest' : ''}">${n}</div>`).join('');
@@ -113,7 +235,6 @@ function dealCard(tier) {
   }
   card.innerHTML = html;
   markWhites();
-  // daub gold pattern cells with a stagger, like the floor display lighting up
   bingo.card.goldCells.forEach((cell, i) => {
     setTimeout(() => { const el = card.querySelector(`[data-cell="${cell}"]`); if (el) el.classList.add('gold'); }, 130 * i + 60);
   });
@@ -134,10 +255,8 @@ const ATTRACT = [
 ];
 let attractIdx = 0, attractTimer = null;
 function setPattern(pat, tier) {
-  const name = pat ? pat.name : '—';
-  $('patternName').textContent = tier ? `PATTERN: ${name}` : name;
-  const cells = pat ? pat.cells : null;
-  $('patternGrid').innerHTML = Array.from({ length: 25 }, (_, i) => `<i class="${cells && cells.includes(i) ? 'on' : ''}"></i>`).join('');
+  /* the pattern shows on the card itself — the gold cells ARE the diagram */
+  $('patternName').textContent = pat ? pat.name : '—';
 }
 function startAttract() {
   stopAttract();
@@ -146,14 +265,17 @@ function startAttract() {
 function stopAttract() { if (attractTimer) clearInterval(attractTimer); attractTimer = null; }
 
 /* ---------------- reels ---------------- */
-const CELL_H = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cell'));
+/* Measure a rendered symbol: getComputedStyle returns the --cell clamp()
+   UNRESOLVED, and parseFloat of it is NaN — that silently killed every reel
+   transform in the first v2 pass. The rendered height is the truth. */
+const CELL_H = () => { const s = document.querySelector('#reel0 .strip .sym'); return s ? s.getBoundingClientRect().height : 100; };
 const reelEls = [$('reel0'), $('reel1'), $('reel2')];
 const strips = [];
 reelEls.forEach((el, ri) => {
   const strip = document.createElement('div');
   strip.className = 'strip';
   let html = '';
-  for (let rep = 0; rep < 3; rep++) for (const s of L.STRIPS[ri]) html += symHTML(s, ri);
+  for (let rep = 0; rep < 3; rep++) for (const s of L.STRIPS[ri]) html += symHTML(s);
   strip.innerHTML = html;
   el.appendChild(strip);
   strips.push({ el: strip, pos: 0 }); // pos = stop index at payline
@@ -169,10 +291,7 @@ function spinReelTo(ri, stopIdx, dur) {
   return new Promise(res => {
     const st = strips[ri], h = CELL_H();
     const stripLen = L.STRIPS[ri].length;
-    // target in the third repetition so motion is always forward (downward roll)
     let cur = st.pos;
-    // land on the next position (mod strip) that is > cur + 8, within our
-    // 3 rendered repetitions (absolute index <= 44 keeps the window covered)
     const candidates = [stopIdx, stopIdx + stripLen, stopIdx + stripLen * 2].filter(p => p > cur + 8);
     const finalPos = candidates.length ? candidates[0] : stopIdx + stripLen * 2;
     const fromY = -(cur + stripLen - 1) * h;
@@ -243,7 +362,7 @@ async function doSpin(isRed, minPay) {
   let pay = L.payFor(tier, coinsBet);
   let jackpot = false;
   if (tier === 'DUCK' && coinsBet === 3) { pay = Math.floor(state.progressive); jackpot = true; }
-  return { tier, pay, jackpot };
+  return { tier, pay, jackpot, combo };
 }
 
 async function playSpin() {
@@ -254,11 +373,25 @@ async function playSpin() {
   state.progressive += coinsBet * 0.01;
   sessionPaid = 0; state.lastWon = 0;
   renderMeters(0, 0);
-  msg(isRedMsg());
-  function isRedMsg() { return 'GOOD LUCK!'; }
+  msg('GOOD LUCK!');
 
-  let { tier, pay, jackpot } = await doSpin(false, 0);
+  let { tier, pay, jackpot, combo } = await doSpin(false, 0);
   let totalWon = 0;
+
+  /* jewel collection — one jewel per duck on the payline (reconstructed) */
+  const ducks = combo.filter(s => s === 'DUCK').length;
+  let huntPending = false;
+  if (ducks > 0) {
+    const before = state.jewels;
+    state.jewels = Math.min(L.JEWELS_TO_TRIGGER, state.jewels + ducks);
+    renderJewels(before);
+    gemSnd();
+    if (state.jewels >= L.JEWELS_TO_TRIGGER) { huntPending = true; msg('JEWEL HUNT! TEN JEWELS COLLECTED!'); }
+    else msg(`${ducks} JEWEL${ducks === 1 ? '' : 'S'} COLLECTED — ${state.jewels} OF 10!`);
+    persist();
+    await wait(650);
+  }
+
   if (pay > 0) {
     totalWon += pay;
     banner('win', jackpot ? 'JACKPOT!' : 'WINNER!');
@@ -268,15 +401,27 @@ async function playSpin() {
     if (jackpot) { state.progressive = 250000; }
     sessionPaid = totalWon; state.lastWon = totalWon; renderMeters(totalWon, sessionPaid);
 
-    /* red screen family */
+    /* red screen family — the top screen floods red, BARs glow (floor still) */
     let chain = 0, triggerPay = pay;
     while (chain < L.RED_MAX && rng() < (chain === 0 ? L.RED_CHANCE : L.RED_CHAIN_CHANCE)) {
       chain++;
       $('redSub').textContent = chain > 1 ? `RE-SPIN ${chain} — STILL GUARANTEED` : 'GUARANTEED WIN — NO CHARGE';
-      $('redFlash').classList.add('on'); siren();
-      await wait(1250);
+      $('redJewels').innerHTML = Array.from({ length: L.JEWELS_TO_TRIGGER }, (_, i) =>
+        `<div class="jewel ${i < state.jewels ? 'on' : 'off'}">${gemSVG()}</div>`).join('');
+      $('redJewelText').textContent = state.jewels >= L.JEWELS_TO_TRIGGER ? 'JEWEL HUNT!' :
+        `COLLECT ${L.JEWELS_TO_TRIGGER - state.jewels} MORE DIAMOND${L.JEWELS_TO_TRIGGER - state.jewels === 1 ? '' : 'S'}!`;
+      $('redFlash').classList.add('on');
+      $('screen').classList.add('redflood');
+      document.body.classList.add('redspin');
+      siren();
+      /* the red screen is a bonus screen — Joshua's minimum-view rule: it
+         stays up a full couple of seconds before anything can move past it */
+      await wait(2150);
       $('redFlash').classList.remove('on');
-      if (chain === 1 && rng() < L.PICK_CHANCE) { await pickADuck(triggerPay); break; }
+      if (chain === 1 && rng() < L.PICK_CHANCE) {
+        document.body.classList.remove('redspin'); $('screen').classList.remove('redflood');
+        await pickADuck(triggerPay); break;
+      }
       msg(`RED SCREEN RE-SPIN ${chain}!`);
       const r = await doSpin(true, triggerPay);
       totalWon += r.pay; triggerPay = r.pay;
@@ -285,11 +430,20 @@ async function playSpin() {
       await countUp(r.pay, r.pay >= 100 ? 1400 : 650);
       if (r.jackpot) state.progressive = 250000;
       sessionPaid = totalWon; state.lastWon = totalWon; renderMeters(totalWon, sessionPaid);
+      document.body.classList.remove('redspin'); $('screen').classList.remove('redflood');
     }
   } else {
     banner('over', 'GAME OVER');
-    msg('NO WIN — SPIN AGAIN');
+    if (!huntPending && ducks === 0) msg('NO WIN — SPIN AGAIN');
   }
+
+  if (huntPending) {
+    banner(null);
+    await jewelHunt();
+    state.jewels = 0; renderJewels(-1); persist();
+    totalWon = state.lastWon;
+  }
+
   state.lastWon = totalWon;
   renderMeters(totalWon, sessionPaid);
   persist();
@@ -304,6 +458,7 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
 /* ---------------- pick a duck ---------------- */
 function pickADuck(triggerPay) {
   return new Promise(resolve => {
+    let openedAt = Date.now() + 1e9; // locked until the pond is actually up
     const pond = $('pond');
     pond.innerHTML = '';
     $('pickResult').style.display = 'none';
@@ -316,9 +471,10 @@ function pickADuck(triggerPay) {
       b.style.left = (3 + col * 32 + (row % 2) * 2) + '%';
       b.style.animationDuration = (2.2 + (i % 4) * 0.7) + 's';
       b.style.animationDelay = (i * 0.3) + 's';
-      b.innerHTML = duckSVG('', false) + `<div class="amt">$${prize}</div>`;
+      b.innerHTML = `<span class="ripple"></span>` + duckFaceSVG() + `<div class="amt">$${prize}</div>`;
       b.setAttribute('aria-label', 'Pick this duck');
       b.onclick = async () => {
+        if (bonusLocked(openedAt)) return; // minimum-view lock: early taps ignored
         if (b.classList.contains('picked')) return;
         document.querySelectorAll('.pondDuck').forEach(d => { d.onclick = null; if (d !== b) d.classList.add('dim'); });
         b.classList.add('picked'); splash(); quack();
@@ -335,6 +491,7 @@ function pickADuck(triggerPay) {
       pond.appendChild(b);
     }
     $('pickOverlay').classList.add('on');
+    openedAt = Date.now();
   });
 }
 
@@ -362,6 +519,7 @@ $('soundBtn').textContent = soundOn ? 'SOUND ON' : 'SOUND OFF';
 startBingoGame();
 dealCard(null);
 renderMeters(0, 0);
+renderJewels(-1);
 setPattern(ATTRACT[0], null);
 startAttract();
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});

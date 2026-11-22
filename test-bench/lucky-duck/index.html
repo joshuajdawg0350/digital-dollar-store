@@ -6,224 +6,386 @@
 <title>Lucky Duck — Personal Machine</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#4a0d12">
+<meta name="theme-color" content="#0b3520">
 <style>
 @font-face { font-family: 'Bebas Neue'; src: url('assets/fonts/bebas-neue.woff2') format('woff2'); font-display: swap; }
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-:root { --cell: 92px; }
+:root { --cell: clamp(64px, 9.6dvh, 88px); --gold:#c9a227; --goldlt:#e8c85a; }
 html, body { height:100%; }
 body {
   font-family:'Bebas Neue', 'Arial Narrow', sans-serif;
-  background:#16060a radial-gradient(120% 90% at 50% 0%, #2b0d13 0%, #16060a 60%);
-  color:#f5eeda; display:flex; justify-content:center; min-height:100dvh;
+  background:#04170d radial-gradient(120% 90% at 50% 0%, #0d3520 0%, #04170d 62%);
+  color:#f5eeda; min-height:100dvh;
   user-select:none; -webkit-user-select:none; overflow-x:hidden;
 }
 #cabinet {
-  width:min(430px, 100vw); min-height:100dvh; display:flex; flex-direction:column;
-  background:linear-gradient(180deg, #6d1420 0%, #8c1d2c 30%, #6d1420 55%, #4a0d12 100%);
-  box-shadow: inset 0 0 0 3px #2a0508, inset 0 0 34px rgba(0,0,0,.55);
-  padding:8px 8px calc(10px + env(safe-area-inset-bottom));
-  gap:7px; position:relative;
+  width:min(430px, 100vw); min-height:100dvh; margin:0 auto; display:flex; flex-direction:column;
+  background:
+    radial-gradient(90% 40% at 50% 0%, rgba(255,215,120,.10), transparent 60%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,.014) 0 6px, transparent 6px 12px),
+    linear-gradient(180deg, #175433 0%, #0e3a24 48%, #082416 100%);
+  box-shadow: inset 0 0 0 3px #051f12, inset 0 0 0 5px rgba(201,162,39,.55), inset 0 0 38px rgba(0,0,0,.55);
+  padding:7px 8px calc(8px + env(safe-area-inset-bottom));
+  gap:4px; position:relative;
 }
-/* ---------- marquee ---------- */
+/* ---------- logo panel (the bill / marquee art) ---------- */
 #marquee {
-  position:relative; border-radius:14px; overflow:hidden;
-  background:radial-gradient(130% 160% at 50% -20%, #ffe9a8 0%, #f7b731 38%, #d97b16 62%, #8c3c07 100%);
-  border:3px solid #2a0508; box-shadow: inset 0 0 0 2px #ffedb5, 0 3px 0 rgba(0,0,0,.4);
-  display:flex; align-items:center; gap:6px; padding:6px 10px 6px 6px;
+  position:relative; border-radius:13px; overflow:hidden;
+  background:radial-gradient(130% 170% at 50% -25%, #22703f 0%, #14532d 52%, #0a2e1a 100%);
+  border:2.5px solid var(--gold);
+  box-shadow: inset 0 0 0 2px #06230f, inset 0 0 0 4px rgba(232,200,90,.35), inset 0 0 26px rgba(0,0,0,.5), 0 3px 0 rgba(0,0,0,.4);
+  padding:4px 9px 3px;
 }
-#marquee .duckArt { width:74px; height:74px; flex:0 0 auto; filter:drop-shadow(0 2px 2px rgba(0,0,0,.35)); }
-#marqueeText { flex:1; text-align:center; line-height:.92; }
-#marqueeText .lucky {
-  font-size:44px; letter-spacing:2px; color:#7a1016;
-  text-shadow: 0 2px 0 #ffe9a8, 0 4px 0 rgba(0,0,0,.25);
+#marquee::before, #marquee::after {
+  content:'✦'; position:absolute; font-size:11px; color:rgba(232,200,90,.75); top:4px;
 }
-#marqueeText .sub { font-size:14px; letter-spacing:4px; color:#5c2a05; }
+#marquee::before { left:7px; } #marquee::after { right:7px; }
+#frenzy {
+  text-align:center; font-style:italic; font-size:13.5px; letter-spacing:2.5px; line-height:1;
+  color:#ffd21f; text-shadow: 1.5px 1.5px 0 #6d28a8, -0.5px -0.5px 0 #6d28a8, 0 2px 3px rgba(0,0,0,.5);
+}
+#frenzy .ball {
+  display:inline-block; width:13px; height:13px; border-radius:50%; margin:0 3px; vertical-align:-1px;
+  background:radial-gradient(circle at 35% 30%, #ff9d8a, #e01e1e 55%, #8f0f0f);
+  box-shadow: 0 0 0 2px var(--gold), 0 0 7px rgba(255,60,40,.8);
+}
+#logoRow { display:flex; align-items:center; gap:5px; margin-top:0; }
+#marqueeDuck { width:76px; height:76px; flex:0 0 auto; filter:drop-shadow(0 2px 3px rgba(0,0,0,.45)); }
+#marqueeDuck svg { width:100%; height:100%; display:block; }
+.logoSide {
+  flex:1; font-size:31px; letter-spacing:1px; line-height:1; white-space:nowrap;
+  background:linear-gradient(180deg, #fff7ae 0%, #ffe14d 34%, #b5e048 68%, #57ab2d 100%);
+  -webkit-background-clip:text; background-clip:text; color:#ffe14d; -webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 2px 0 #0d3319) drop-shadow(0 3px 2px rgba(0,0,0,.45));
+}
+.logoSide.left { text-align:right; } .logoSide.right { text-align:left; }
 #denomBadge {
-  flex:0 0 auto; width:46px; height:46px; border-radius:50%;
-  background:radial-gradient(circle at 35% 30%, #fff6d8, #e8b93c 55%, #9a6b0d);
-  border:2px solid #5c2a05; color:#5c2a05; display:flex; flex-direction:column;
+  position:absolute; top:24px; right:7px; z-index:3;
+  width:40px; height:40px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #7fd4de, #1b7f8e 55%, #0b4a56);
+  border:2px solid #d9f2f5; color:#fff; display:flex; flex-direction:column;
   align-items:center; justify-content:center; line-height:1;
-  box-shadow: 0 2px 4px rgba(0,0,0,.4);
+  box-shadow: 0 2px 4px rgba(0,0,0,.45), inset 0 0 8px rgba(0,0,0,.3);
 }
-#denomBadge .d1 { font-size:20px; } #denomBadge .d2 { font-size:8.5px; letter-spacing:1px; }
+#denomBadge .d1 { font-size:16px; text-shadow:0 1px 2px rgba(0,0,0,.5); } #denomBadge .d2 { font-size:6.5px; letter-spacing:.5px; }
 #progressive {
-  text-align:center; background:#12040a; border:2px solid #2a0508; border-radius:9px;
-  box-shadow: inset 0 0 0 2px #57131d, inset 0 0 18px rgba(0,0,0,.8);
-  padding:3px 6px 5px;
+  margin-top:3px; text-align:center; background:#0a0503; border:1.5px solid #3a2c07; border-radius:8px;
+  box-shadow: inset 0 0 14px rgba(0,0,0,.85);
+  padding:1px 6px 2px; display:flex; align-items:baseline; justify-content:center; gap:9px;
 }
-#progressive .plabel { font-size:12px; letter-spacing:5px; color:#ffb3a0; }
-#progressiveAmt { font-size:31px; letter-spacing:1px; color:#ffd94d; text-shadow:0 0 12px rgba(255,180,0,.65); line-height:1; }
-/* ---------- video / bingo screen ---------- */
+#progressive .plabel { font-size:11px; letter-spacing:4px; color:#e8c85a; }
+#progressiveAmt { font-size:20px; letter-spacing:1px; color:#ffd94d; text-shadow:0 0 11px rgba(255,180,0,.6); line-height:1; }
+/* ---------- top video screen ---------- */
 #screen {
-  background:linear-gradient(180deg, #0d2136, #081426);
-  border:3px solid #2a0508; border-radius:12px; padding:7px 8px 8px;
-  box-shadow: inset 0 0 0 2px #274b6b, inset 0 0 26px rgba(0,0,0,.65);
+  position:relative; overflow:hidden;
+  background:linear-gradient(180deg, #10402a, #082a1a);
+  border:2.5px solid #2a1f05; border-radius:12px; padding:6px 7px 6px;
+  box-shadow: inset 0 0 0 2px rgba(201,162,39,.4), inset 0 0 26px rgba(0,0,0,.6);
 }
-#patternBar { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
-#patternName { flex:1; font-size:19px; letter-spacing:2px; color:#ffe9a8; text-shadow:0 0 8px rgba(255,190,0,.4); white-space:nowrap; overflow:hidden; }
-#patternGrid { display:grid; grid-template-columns:repeat(5, 9px); gap:2px; flex:0 0 auto; }
-#patternGrid i { width:9px; height:9px; border-radius:2px; background:#1d3857; display:block; }
-#patternGrid i.on { background:#ffb62e; box-shadow:0 0 5px rgba(255,182,46,.8); }
-#gameState { font-size:12.5px; letter-spacing:1.5px; color:#9fc6e8; text-align:right; flex:0 0 auto; }
-#bingoCard { display:grid; grid-template-columns:repeat(5, 1fr); gap:3px; }
-#bingoCard .bh { text-align:center; font-size:17px; color:#fff; letter-spacing:1px; padding:1px 0; }
-#bingoCard .bh:nth-child(1){color:#ff8f7a}#bingoCard .bh:nth-child(2){color:#ffd94d}#bingoCard .bh:nth-child(3){color:#9fe870}#bingoCard .bh:nth-child(4){color:#7ac7ff}#bingoCard .bh:nth-child(5){color:#e2a6ff}
+#screen::after {
+  content:''; position:absolute; inset:0; background:rgba(255,26,8,.34);
+  opacity:0; pointer-events:none; transition:opacity .18s; z-index:6;
+}
+#screen.redflood::after { opacity:1; }
+#jewelRow { display:flex; align-items:center; gap:5px; margin-bottom:5px; }
+#jewelRow .jlabel { font-size:10.5px; letter-spacing:1.5px; color:#ffe9a8; flex:0 0 auto; text-shadow:0 0 6px rgba(255,190,0,.35); }
+#jewels { display:flex; gap:3px; flex:1; justify-content:space-between; }
+.jewel { width:19px; height:19px; flex:0 0 auto; }
+.jewel svg { width:100%; height:100%; display:block; }
+.jewel.off { opacity:.28; filter:grayscale(.6); }
+.jewel.just { animation:jewelPop .8s ease; }
+@keyframes jewelPop { 0% { transform:scale(.4); } 55% { transform:scale(1.45); } 100% { transform:scale(1); } }
+#screenMain { display:flex; gap:7px; }
+#cardCol { flex:1.25; min-width:0; }
+#patternBar { display:flex; align-items:center; gap:6px; margin-bottom:3px; }
+#patternName { flex:1; min-width:0; font-size:13px; letter-spacing:1px; color:#ffe9a8; text-shadow:0 0 7px rgba(255,190,0,.4); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#patternGrid { display:grid; grid-template-columns:repeat(5, 7px); gap:1.5px; flex:0 0 auto; }
+#patternGrid i { width:7px; height:7px; border-radius:1.5px; background:#175133; display:block; }
+#patternGrid i.on { background:#ffb62e; box-shadow:0 0 4px rgba(255,182,46,.85); }
+#gameState { font-size:9.5px; letter-spacing:.5px; color:#9fd8b4; text-align:right; flex:0 0 auto; white-space:nowrap; }
+#bingoCard { display:grid; grid-template-columns:repeat(5, 1fr); gap:2px; background:linear-gradient(180deg,#ffe95c,#f2c230); padding:2px; border-radius:6px; border:1.5px solid #8a6d1f; }
+#bingoCard .bh { text-align:center; font-size:10.5px; color:#14532d; letter-spacing:1px; line-height:1.15; }
 #bingoCard .cell {
-  position:relative; text-align:center; font-size:19px; line-height:1; padding:6px 0 5px;
-  background:#122c47; color:#dceefc; border-radius:6px; border:1px solid #274b6b;
+  position:relative; text-align:center; font-size:10.5px; line-height:1; padding:1px 0;
+  background:rgba(255,255,255,.38); color:#191919; border-radius:3.5px; border:1px solid rgba(138,109,31,.55);
+  font-family:Arial, sans-serif; font-weight:700;
 }
-#bingoCard .cell.free { color:#ffe9a8; font-size:13px; letter-spacing:1px; background:#1b3a5c; }
+#bingoCard .cell.free { color:#7a1016; font-size:8.5px; letter-spacing:.5px; background:rgba(255,255,255,.55); padding-top:3.5px; }
 #bingoCard .cell.marked::after {
-  content:''; position:absolute; inset:3px; border-radius:50%;
-  background:radial-gradient(circle at 40% 35%, rgba(255,255,255,.5), rgba(160,200,255,.28) 60%);
-  border:1.5px solid rgba(190,220,255,.65);
+  content:''; position:absolute; inset:1.5px; border-radius:50%;
+  background:radial-gradient(circle at 40% 35%, rgba(255,255,255,.65), rgba(255,255,255,.18) 62%);
+  border:1.5px solid rgba(255,255,255,.75);
 }
-#bingoCard .cell.gold { background:#5c3405; border-color:#ffb62e; color:#ffe9a8; }
+#bingoCard .cell.gold { background:#e8760d; border-color:#ffb62e; color:#fff; }
 #bingoCard .cell.gold::after {
-  content:''; position:absolute; inset:2px; border-radius:50%;
+  content:''; position:absolute; inset:1px; border-radius:50%;
   background:radial-gradient(circle at 40% 35%, #fff3c4, #ffb62e 55%, #d97b16);
-  box-shadow:0 0 9px rgba(255,182,46,.85); opacity:.92;
+  box-shadow:0 0 7px rgba(255,182,46,.9); opacity:.95;
 }
 #bingoCard .cell.gold span { position:relative; z-index:1; color:#3a1c00; }
-#calledStrip { display:flex; align-items:center; gap:4px; margin-top:7px; min-height:26px; }
-#calledStrip .clabel { font-size:11.5px; letter-spacing:1.5px; color:#9fc6e8; flex:0 0 auto; }
-#calledBalls { display:flex; gap:3px; flex-wrap:nowrap; overflow:hidden; flex:1; }
+#calledStrip { display:flex; align-items:center; gap:4px; margin-top:4px; min-height:17px; }
+#calledStrip .clabel { font-size:10px; letter-spacing:1.5px; color:#9fd8b4; flex:0 0 auto; }
+#calledBalls { display:flex; gap:2.5px; flex-wrap:nowrap; overflow:hidden; flex:1; }
 .ball {
-  flex:0 0 auto; width:24px; height:24px; border-radius:50%; font-size:12.5px;
+  flex:0 0 auto; width:16px; height:16px; border-radius:50%; font-size:9.5px;
   display:flex; align-items:center; justify-content:center; color:#081426;
   background:radial-gradient(circle at 35% 30%, #ffffff, #b9d4ea 60%, #7ea6c9);
-  border:1px solid #0d2136;
+  border:1px solid #04170d; font-family:Arial, sans-serif; font-weight:700;
 }
-.ball.latest { background:radial-gradient(circle at 35% 30%, #fff3c4, #ffb62e 60%, #d97b16); box-shadow:0 0 8px rgba(255,182,46,.8); }
-#meters { display:grid; grid-template-columns:repeat(4, 1fr); gap:5px; margin-top:8px; }
-.meter { background:#0a0a0c; border:1.5px solid #3a3f46; border-radius:7px; padding:3px 4px 4px; text-align:center; box-shadow: inset 0 0 12px rgba(0,0,0,.85); }
-.meter .mlabel { font-size:11px; letter-spacing:3px; color:#c8ccd2; }
-.meter .mval { font-size:19px; color:#ff5d47; text-shadow:0 0 7px rgba(255,60,30,.55); line-height:1.05; font-variant-numeric:tabular-nums; }
-.meter .mval.money { color:#ffd94d; text-shadow:0 0 7px rgba(255,190,0,.5); font-size:16.5px; }
-/* ---------- reels ---------- */
+.ball.latest { background:radial-gradient(circle at 35% 30%, #fff3c4, #ffb62e 60%, #d97b16); box-shadow:0 0 7px rgba(255,182,46,.85); }
+#billCol { flex:1; min-width:0; display:flex; }
+.billArt {
+  position:relative; flex:1; border-radius:8px; overflow:hidden;
+  background:linear-gradient(135deg, #2e8b57 0%, #1d6b41 55%, #14532d 100%);
+  border:2px solid var(--gold); box-shadow: inset 0 0 0 2px rgba(6,35,15,.8), inset 0 0 0 4px rgba(232,200,90,.35), inset 0 0 18px rgba(0,0,0,.35);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4px 5px; text-align:center;
+}
+.billArt .b1000 { position:absolute; font-size:10.5px; color:#ffe9a8; letter-spacing:1px; opacity:.9; }
+.billArt .b1000.tl { top:3px; left:6px; } .billArt .b1000.tr { top:3px; right:6px; }
+.billArt .b1000.bl { bottom:3px; left:6px; } .billArt .b1000.br { bottom:3px; right:6px; }
+.billArt .bduck { width:74px; height:74px; }
+.billArt .bduck svg { width:100%; height:100%; display:block; }
+.billArt .btitle {
+  font-size:17px; letter-spacing:1.5px; line-height:1;
+  background:linear-gradient(180deg, #fff7ae 0%, #ffe14d 38%, #b5e048 72%, #57ab2d 100%);
+  -webkit-background-clip:text; background-clip:text; color:#ffe14d; -webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 1.5px 0 #0d3319);
+}
+.billArt .bmoney { font-size:10px; letter-spacing:6px; color:#ffe9a8; margin-top:1px; }
+.billArt .bducky { font-size:8.5px; letter-spacing:3px; color:rgba(255,233,168,.85); }
+#meters { display:grid; grid-template-columns:repeat(4, 1fr); gap:5px; margin-top:4px; }
+.meter { background:#070708; border:1.5px solid #3a3f46; border-radius:7px; padding:1px 4px 2px; text-align:center; box-shadow: inset 0 0 11px rgba(0,0,0,.9); }
+.meter .mlabel { font-size:10px; letter-spacing:2.5px; color:#c99ae0; }
+.meter .mval { font-size:17px; color:#ffd21f; text-shadow:0 0 7px rgba(255,205,0,.55); line-height:1.05; font-variant-numeric:tabular-nums; }
+.meter .mval.money { font-size:15.5px; }
+#screenPrint { font-size:7.5px; letter-spacing:1.2px; color:rgba(245,238,218,.5); margin-top:4px; font-family:Arial, sans-serif; }
+/* ---------- jewel strip above the reels ---------- */
+#jewelStrip {
+  text-align:center; font-size:11px; letter-spacing:2px; color:#0d3319;
+  background:linear-gradient(180deg, #f3d267, #c9a227 60%, #a87e0c);
+  border-radius:6px; padding:2px 4px 1px; box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 2px 0 rgba(0,0,0,.35);
+}
+/* ---------- reel glass ---------- */
+#reelGlass {
+  position:relative; border-radius:13px;
+  background:repeating-linear-gradient(0deg, #f6f3e8 0 3px, #eae6d4 3px 4px);
+  border:3px solid #6d5510;
+  box-shadow: inset 0 0 0 2px #2e5c40, inset 0 0 0 4.5px rgba(201,162,39,.75), inset 0 0 30px rgba(0,0,0,.16), 0 4px 0 rgba(0,0,0,.35);
+  padding:6px 6px 4px;
+}
 #reelWindow {
-  position:relative; background:linear-gradient(180deg, #d8d3c3, #f4efdf 18%, #fbf7ea 50%, #f4efdf 82%, #cfc9b8);
-  border:3px solid #2a0508; border-radius:12px; box-shadow: inset 0 0 0 2px #8f887a, inset 0 14px 22px rgba(0,0,0,.28), inset 0 -14px 22px rgba(0,0,0,.28);
-  display:grid; grid-template-columns:1fr 1fr 1fr; overflow:hidden; height:calc(var(--cell) * 3);
+  position:relative; display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;
+  margin:0 31px; height:calc(var(--cell) * 3);
 }
-.reel { position:relative; overflow:hidden; border-right:2px solid #57503f; }
-.reel:last-child { border-right:none; }
+.reel {
+  position:relative; overflow:hidden; border:3px solid #b98a1e; border-radius:8px;
+  background:linear-gradient(180deg, #fdfdf6, #f4f1e0);
+  box-shadow: inset 0 15px 18px rgba(0,0,0,.20), inset 0 -15px 18px rgba(0,0,0,.20), inset 0 0 0 1.5px #6d5510;
+}
 .strip { position:absolute; left:0; right:0; top:0; will-change:transform; }
 .strip.spinning { filter:blur(2px) brightness(1.04); }
-.sym { height:var(--cell); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; }
-.sym .seven { font-size:64px; line-height:.9; font-weight:900; font-family:Georgia, 'Times New Roman', serif; }
-.sym .seven.red { color:#c8102e; text-shadow:0 2px 0 rgba(0,0,0,.18); }
-.sym .seven.blue { color:#1447c8; text-shadow:0 2px 0 rgba(0,0,0,.18); }
-.sym .bar { background:#151312; color:#f4efdf; border-radius:5px; padding:2px 10px; font-size:21px; letter-spacing:2px; line-height:1.02; text-align:center; box-shadow:0 2px 0 rgba(0,0,0,.25); }
-.sym .bar small { display:block; font-size:21px; }
-.sym .duckSym { width:64px; height:52px; }
-.sym .duckWord { font-size:11.5px; letter-spacing:1.5px; color:#7a1016; }
-.sym .cherry { width:52px; height:52px; }
-#payline { position:absolute; left:0; right:0; top:50%; height:0; border-top:3px solid rgba(200,16,46,.85); transform:translateY(-1.5px); pointer-events:none; z-index:3; }
-#payline::before, #payline::after { content:''; position:absolute; top:-8px; border:8px solid transparent; }
-#payline::before { left:-2px; border-left-color:#c8102e; }
-#payline::after { right:-2px; border-right-color:#c8102e; }
+.sym { height:var(--cell); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; padding:2px; }
+.sym .sevenWrap { position:relative; display:flex; flex-direction:column; align-items:center; }
+.sym .sevenRed {
+  font-size:calc(var(--cell) * .62); line-height:.92; font-weight:900;
+  font-family:Georgia, 'Times New Roman', serif; color:#c8102e;
+  text-shadow: 0 2px 0 rgba(0,0,0,.16), 0 0 2px rgba(200,16,46,.4); position:relative; z-index:1;
+}
+.sym .sevenRed .emboss { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:.42em; color:rgba(255,255,255,.38); text-shadow:none; transform:translateY(.06em); }
+.sym .coinPile { width:calc(var(--cell) * .52); margin-top:calc(var(--cell) * -.14); z-index:0; }
+.sym .bar { background:#151312; color:#f4efdf; border-radius:5px; padding:2px 12px; font-size:calc(var(--cell) * .20); letter-spacing:2px; line-height:1.04; text-align:center; box-shadow:0 2px 0 rgba(0,0,0,.25); }
+.sym .bar small { display:block; font-size:inherit; }
+body.redspin .sym .bar { background:#3d0605; color:#ff8d7d; box-shadow:0 0 13px rgba(255,40,20,.75), 0 2px 0 rgba(0,0,0,.25); }
+.sym .duckMedal { width:calc(var(--cell) * .86); height:calc(var(--cell) * .86); }
+.sym .duckMedal svg { width:100%; height:100%; display:block; }
+.sym .duckLogoText {
+  font-size:calc(var(--cell) * .125); letter-spacing:1px; line-height:1; margin-top:1px;
+  background:linear-gradient(180deg, #fff7ae 0%, #ffe14d 38%, #b5e048 72%, #57ab2d 100%);
+  -webkit-background-clip:text; background-clip:text; color:#c8102e; -webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 1px 0 rgba(13,51,25,.65));
+}
+.sym .cherry { width:calc(var(--cell) * .55); height:calc(var(--cell) * .55); }
+#payline { position:absolute; left:-31px; right:-31px; top:50%; height:0; border-top:3px solid rgba(200,16,46,.8); transform:translateY(-1.5px); pointer-events:none; z-index:3; }
+.payTag {
+  position:absolute; top:50%; transform:translateY(-50%); z-index:4;
+  width:29px; text-align:center; background:#141414; color:#fff; font-size:8.5px; letter-spacing:.5px;
+  padding:3.5px 0 2.5px; border-radius:3px; box-shadow:0 1px 3px rgba(0,0,0,.4); pointer-events:none;
+}
+.payTag.l { left:-30px; } .payTag.r { right:-30px; }
 #banner {
-  position:absolute; inset:auto 0 6px 0; text-align:center; z-index:4; pointer-events:none;
+  position:absolute; left:0; right:0; bottom:8px; text-align:center; z-index:5; pointer-events:none;
   font-size:34px; letter-spacing:4px; display:none;
 }
-#banner.win { display:block; color:#ffe9a8; text-shadow:0 0 14px rgba(255,170,0,.9), 0 2px 0 rgba(0,0,0,.5); animation:bannerPop .5s ease infinite alternate; }
-#banner.over { display:block; color:#5a5148; text-shadow:none; font-size:24px; letter-spacing:5px; }
+#banner.win { display:block; color:#ffe9a8; text-shadow:0 0 14px rgba(255,170,0,.9), 0 2px 0 rgba(0,0,0,.55); animation:bannerPop .5s ease infinite alternate; }
+#banner.over { display:block; color:#5a5148; text-shadow:none; font-size:23px; letter-spacing:5px; }
 @keyframes bannerPop { from { transform:scale(1); } to { transform:scale(1.07); } }
+#glassBadges { display:flex; align-items:flex-end; gap:4px; margin-top:5px; padding:0 1px; }
+.helpOval {
+  flex:1.25; background:radial-gradient(ellipse at 50% 40%, #ffe95c, #f2c230); color:#4a3503;
+  border:1.5px solid #8a6d1f; border-radius:50%; font-size:7.5px; line-height:1.25; text-align:center;
+  padding:5px 6px 4px; font-family:Arial, sans-serif; font-weight:700;
+}
+.badgeMed { flex:0 0 auto; display:flex; flex-direction:column; align-items:center; width:44px; }
+.badgeMed svg { width:24px; height:24px; }
+.badgeMed .blab { font-size:7px; letter-spacing:.4px; color:#7a1016; text-align:center; line-height:1.1; margin-top:1px; }
+.denomPlaque {
+  flex:0 0 auto; background:linear-gradient(180deg,#fffdf4,#f1ead2); border:2.5px solid #b98a1e; border-radius:6px;
+  color:#c8102e; font-size:27px; line-height:1; padding:3px 13px 1px; box-shadow: inset 0 0 0 1.5px #6d5510, 0 2px 3px rgba(0,0,0,.25);
+}
+#glassPrint { text-align:center; font-size:6.5px; letter-spacing:.5px; color:rgba(60,50,30,.62); margin-top:2px; line-height:1.15; font-family:Arial, sans-serif; }
 /* ---------- buttons ---------- */
 #deck { display:grid; grid-template-columns:1fr 1.35fr 1fr; gap:8px; align-items:stretch; }
 .pbtn {
-  font-family:inherit; border:none; cursor:pointer; border-radius:12px; color:#fff;
-  letter-spacing:1.5px; padding:11px 4px 9px; line-height:1;
-  box-shadow: 0 5px 0 rgba(0,0,0,.45), inset 0 2px 3px rgba(255,255,255,.45), inset 0 -6px 10px rgba(0,0,0,.3);
+  font-family:inherit; border:none; cursor:pointer; border-radius:11px;
+  letter-spacing:1.5px; padding:6px 4px 5px; line-height:1;
+  box-shadow: 0 5px 0 rgba(0,0,0,.45), inset 0 2px 3px rgba(255,255,255,.5), inset 0 -6px 10px rgba(0,0,0,.22);
 }
 .pbtn:active { transform:translateY(3px); box-shadow:0 2px 0 rgba(0,0,0,.45), inset 0 2px 3px rgba(255,255,255,.4); }
 .pbtn:disabled { opacity:.45; }
-#betOneBtn { background:linear-gradient(180deg, #3f9be0, #1665ad); font-size:23px; }
-#betMaxBtn { background:linear-gradient(180deg, #3f9be0, #1665ad); font-size:23px; }
-#spinBtn { background:linear-gradient(180deg, #e8452f, #a3121f); font-size:27px; }
-.pbtn .bsub { display:block; font-size:11.5px; letter-spacing:2px; opacity:.85; margin-top:2px; }
+#betOneBtn, #betMaxBtn { background:linear-gradient(180deg, #fbfbf7, #c3c9d1); color:#1c2733; font-size:22px; border:2px solid #6d7278; }
+#spinBtn { background:linear-gradient(180deg, #e8452f, #a3121f); color:#fff; font-size:26px; }
+.pbtn .bsub { display:block; font-size:10px; letter-spacing:2px; opacity:.8; margin-top:1px; }
 #miniRow { display:flex; gap:8px; }
 .mini {
-  flex:1; font-family:inherit; font-size:15px; letter-spacing:2px; cursor:pointer;
+  flex:1; font-family:inherit; font-size:14.5px; letter-spacing:2px; cursor:pointer;
   background:linear-gradient(180deg, #4c5158, #26292e); color:#e8eaed; border:1.5px solid #101215;
-  border-radius:9px; padding:7px 0 6px; box-shadow:0 3px 0 rgba(0,0,0,.4);
+  border-radius:9px; padding:4px 0 3px; box-shadow:0 3px 0 rgba(0,0,0,.4);
 }
 .mini:active { transform:translateY(2px); box-shadow:0 1px 0 rgba(0,0,0,.4); }
 #refillBtn { display:none; background:linear-gradient(180deg, #39b54a, #1c7a30); border-color:#0d3d18; color:#fff; }
-#msg { text-align:center; font-size:15.5px; letter-spacing:1.5px; color:#ffe9a8; min-height:20px; text-shadow:0 1px 2px rgba(0,0,0,.6); }
+#msg { text-align:center; font-size:14px; letter-spacing:1.5px; color:#ffe9a8; min-height:17px; text-shadow:0 1px 2px rgba(0,0,0,.6); }
 /* ---------- paytable sheet ---------- */
 #paySheet {
-  display:none; background:#fdf6dd; color:#2b2118; border:3px solid #2a0508; border-radius:12px;
+  display:none; background:#fdf6dd; color:#2b2118; border:3px solid #2a1f05; border-radius:12px;
   padding:10px 12px; box-shadow:0 8px 24px rgba(0,0,0,.5);
 }
 #paySheet.open { display:block; }
-#paySheet h2 { font-size:21px; letter-spacing:2px; text-align:center; color:#7a1016; margin-bottom:6px; }
+#paySheet h2 { font-size:21px; letter-spacing:2px; text-align:center; color:#14532d; margin-bottom:6px; }
 #paySheet table { width:100%; border-collapse:collapse; font-size:16.5px; }
 #paySheet td, #paySheet th { padding:2.5px 4px; border-bottom:1px solid #d8c9a3; text-align:right; font-variant-numeric:tabular-nums; }
 #paySheet td:first-child, #paySheet th:first-child { text-align:left; letter-spacing:1px; }
 #paySheet tr.top td { color:#a3121f; font-size:18.5px; }
 #paySheet .note { font-size:12.5px; text-align:center; margin-top:6px; color:#6b5a35; letter-spacing:.5px; font-family:Arial, sans-serif; }
 /* ---------- overlays ---------- */
-#redFlash { position:fixed; inset:0; background:radial-gradient(circle, rgba(255,40,30,.88), rgba(160,0,0,.94)); display:none; z-index:40; align-items:center; justify-content:center; flex-direction:column; gap:6px; }
+#redFlash { position:fixed; inset:0; background:radial-gradient(circle at 50% 32%, rgba(255,64,44,.93), rgba(158,4,4,.97)); display:none; z-index:40; align-items:center; justify-content:center; flex-direction:column; gap:10px; padding:18px; }
 #redFlash.on { display:flex; animation:redPulse .28s ease-in-out infinite alternate; }
-@keyframes redPulse { from { filter:brightness(.92); } to { filter:brightness(1.15); } }
-#redFlash .rt { font-size:47px; letter-spacing:3px; color:#fff; text-shadow:0 0 22px rgba(255,255,255,.7), 0 3px 0 rgba(0,0,0,.4); text-align:center; line-height:1; }
-#redFlash .rs { font-size:19px; letter-spacing:4px; color:#ffe9a8; }
-#pickOverlay { position:fixed; inset:0; background:linear-gradient(180deg, #7a1016 0 64px, #0e4d73 64px); display:none; z-index:50; flex-direction:column; }
-#pickOverlay.on { display:flex; }
-#pickOverlay .ptitle { text-align:center; color:#ffe9a8; font-size:32px; letter-spacing:2px; padding:12px 8px 8px; text-shadow:0 2px 0 rgba(0,0,0,.4); }
+@keyframes redPulse { from { filter:brightness(.93); } to { filter:brightness(1.14); } }
+#redFlash .billArt { width:min(360px, 88vw); flex:none; filter:sepia(1) saturate(5) hue-rotate(-50deg) brightness(.92) contrast(1.08); box-shadow:0 0 44px rgba(255,30,10,.55); }
+#redJewels { display:flex; gap:5px; }
+#redJewels .jewel { width:22px; height:22px; }
+#redJewelText { font-size:13px; letter-spacing:2.5px; color:#ffe9a8; text-shadow:0 1px 2px rgba(0,0,0,.45); }
+#redFlash .billArt .bduck { width:74px; height:74px; }
+#redFlash .billArt .btitle { font-size:27px; }
+#redFlash .rt { font-size:44px; letter-spacing:3px; color:#fff; text-shadow:0 0 22px rgba(255,255,255,.7), 0 3px 0 rgba(0,0,0,.4); text-align:center; line-height:1; }
+#redFlash .rs { font-size:18px; letter-spacing:4px; color:#ffe9a8; }
+#pickOverlay, #jewelOverlay { position:fixed; inset:0; background:linear-gradient(180deg, #7a1016 0 60px, #0e4d73 60px); display:none; z-index:50; flex-direction:column; }
+#jewelOverlay { background:linear-gradient(180deg, #0a2e1a 0 60px, #123f27 60px); }
+#pickOverlay.on, #jewelOverlay.on { display:flex; }
+#pickOverlay .ptitle, #jewelOverlay .ptitle { text-align:center; color:#ffe9a8; font-size:31px; letter-spacing:2px; padding:12px 8px 8px; text-shadow:0 2px 0 rgba(0,0,0,.4); }
 #pond { position:relative; flex:1; overflow:hidden; background:linear-gradient(180deg, #2f8fc4, #1665ad 70%, #0d4a75); }
 #pond::before { content:''; position:absolute; inset:0; background:radial-gradient(60% 30% at 30% 20%, rgba(255,255,255,.25), transparent 70%), radial-gradient(50% 26% at 75% 60%, rgba(255,255,255,.16), transparent 70%); }
-.pondDuck { position:absolute; width:96px; cursor:pointer; background:none; border:none; padding:0; animation:swim linear infinite alternate; }
-.pondDuck svg { width:100%; filter:drop-shadow(0 4px 4px rgba(0,0,0,.35)); }
-.pondDuck .amt { position:absolute; left:50%; transform:translateX(-50%); bottom:-24px; font-size:24px; color:#ffe9a8; text-shadow:0 0 10px rgba(255,170,0,.8); display:none; white-space:nowrap; }
+.pondDuck { position:absolute; width:98px; cursor:pointer; background:none; border:none; padding:0; animation:swim linear infinite alternate; }
+.pondDuck .ripple { position:absolute; left:50%; bottom:-7px; transform:translateX(-50%); width:84px; height:17px; border-radius:50%; background:radial-gradient(ellipse, rgba(255,255,255,.5), rgba(255,255,255,0) 68%); }
+.pondDuck svg { width:100%; filter:drop-shadow(0 4px 4px rgba(0,0,0,.35)); position:relative; }
+.pondDuck .amt { position:absolute; left:50%; transform:translateX(-50%); bottom:-26px; font-size:24px; color:#ffe9a8; text-shadow:0 0 10px rgba(255,170,0,.8); display:none; white-space:nowrap; z-index:2; }
 .pondDuck.picked .amt { display:block; }
 .pondDuck.dim { opacity:.45; }
-@keyframes swim { from { margin-left:-14px; } to { margin-left:14px; } }
-#pickResult { text-align:center; padding:12px; display:none; }
-#pickResult .prAmt { font-size:38px; color:#ffe9a8; letter-spacing:2px; }
-#collectBtn { font-family:inherit; font-size:23px; letter-spacing:2px; background:linear-gradient(180deg, #39b54a, #1c7a30); color:#fff; border:none; border-radius:11px; padding:10px 30px 8px; cursor:pointer; box-shadow:0 4px 0 rgba(0,0,0,.4); }
-#foot { text-align:center; font-size:11px; letter-spacing:1.5px; color:rgba(245,238,218,.55); font-family:Arial, sans-serif; padding-bottom:2px; }
-@media (max-width:380px) { :root { --cell: 82px; } #marqueeText .lucky { font-size:38px; } .meter .mval { font-size:16.5px; } .meter .mval.money { font-size:14px; } }
+@keyframes swim { from { margin-left:-13px; } to { margin-left:13px; } }
+#jewelGrid { flex:1; display:grid; grid-template-columns:repeat(5, 1fr); align-content:center; gap:12px; padding:16px; }
+.jewelPick { background:none; border:none; cursor:pointer; padding:0; display:flex; flex-direction:column; align-items:center; gap:2px; }
+.jewelPick svg { width:58px; height:58px; filter:drop-shadow(0 3px 5px rgba(0,0,0,.5)); }
+.jewelPick .amt { font-size:19px; color:#ffe9a8; text-shadow:0 0 9px rgba(255,170,0,.8); visibility:hidden; white-space:nowrap; }
+.jewelPick.picked .amt { visibility:visible; }
+.jewelPick.dim { opacity:.4; }
+#pickResult, #jewelResult { text-align:center; padding:12px; display:none; }
+#pickResult .prAmt, #jewelResult .prAmt { font-size:37px; color:#ffe9a8; letter-spacing:2px; }
+#collectBtn, #jewelCollectBtn { font-family:inherit; font-size:23px; letter-spacing:2px; background:linear-gradient(180deg, #39b54a, #1c7a30); color:#fff; border:none; border-radius:11px; padding:10px 30px 8px; cursor:pointer; box-shadow:0 4px 0 rgba(0,0,0,.4); }
+#foot { text-align:center; font-size:10px; letter-spacing:1.5px; color:rgba(245,238,218,.5); font-family:Arial, sans-serif; padding-bottom:2px; }
+@media (max-width:380px) { .logoSide { font-size:26px; } #marqueeDuck { width:64px; height:64px; } .meter .mval { font-size:16.5px; } .meter .mval.money { font-size:13.5px; } .jewel { width:16px; height:16px; } }
+/* short screens: shrink reel cells + shed trim so the cabinet fits one screen */
+@media (max-height:820px) { :root { --cell:76px; } #screenPrint, #foot { display:none; } #cabinet { gap:3px; } #progressiveAmt { font-size:18px; } #frenzy { font-size:12.5px; } }
+@media (max-height:760px) { :root { --cell:68px; } #calledStrip { display:none; } #marqueeDuck { width:56px; height:56px; } .logoSide { font-size:24px; } .billArt .bduck { width:64px; height:64px; } }
 </style>
 </head>
 <body>
+<!-- shared SVG gradient defs (referenced by all inline duck/coin art) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <radialGradient id="medBg" cx="50%" cy="36%" r="78%">
+    <stop offset="0%" stop-color="#2e9e5b"/><stop offset="68%" stop-color="#14532d"/><stop offset="100%" stop-color="#0a2e1a"/>
+  </radialGradient>
+  <linearGradient id="billG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#ffc93d"/><stop offset="100%" stop-color="#f28c13"/>
+  </linearGradient>
+  <linearGradient id="coinG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#ffe27a"/><stop offset="100%" stop-color="#d99a16"/>
+  </linearGradient>
+  <linearGradient id="gemG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#d8f6ff"/><stop offset="55%" stop-color="#5fc3ec"/><stop offset="100%" stop-color="#1d7fb8"/>
+  </linearGradient>
+</defs></svg>
+
 <div id="cabinet">
   <div id="marquee">
-    <div class="duckArt" id="marqueeDuck"></div>
-    <div id="marqueeText">
-      <div class="lucky">LUCKY DUCKY</div>
-      <div class="sub">★ ★ ★</div>
+    <div id="frenzy">FRENZY <span class="ball"></span> JACKPOTS</div>
+    <div id="logoRow">
+      <div class="logoSide left">LUCKY</div>
+      <div id="marqueeDuck"></div>
+      <div class="logoSide right">DUCKY</div>
     </div>
     <div id="denomBadge"><div class="d1">$1</div><div class="d2">PER CREDIT</div></div>
+    <div id="progressive"><div class="plabel">PROGRESSIVE</div><div id="progressiveAmt">$250,000.00</div></div>
   </div>
-
-  <div id="progressive"><div class="plabel">PROGRESSIVE</div><div id="progressiveAmt">$250,000.00</div></div>
 
   <div id="screen">
-    <div id="patternBar">
-      <div id="patternName">SIX PACK</div>
-      <div id="patternGrid"></div>
-      <div id="gameState">GAME 1 · 0/75</div>
+    <div id="jewelRow"><div class="jlabel">JEWEL HUNT</div><div id="jewels"></div><div id="gameState">GAME 1 · 0/75</div></div>
+    <div id="screenMain">
+      <div id="cardCol">
+        <div id="patternBar">
+          <div id="patternName">SIX PACK</div>
+        </div>
+        <div id="bingoCard"></div>
+        <div id="calledStrip"><div class="clabel">CALLED</div><div id="calledBalls"></div></div>
+      </div>
+      <div id="billCol">
+        <div class="billArt">
+          <span class="b1000 tl">1000</span><span class="b1000 tr">1000</span>
+          <span class="b1000 bl">1000</span><span class="b1000 br">1000</span>
+          <div class="bducky">· DUCKY ·</div>
+          <div class="bduck" id="billDuck"></div>
+          <div class="btitle">LUCKY DUCKY</div>
+          <div class="bmoney">MONEY</div>
+        </div>
+      </div>
     </div>
-    <div id="bingoCard"></div>
-    <div id="calledStrip"><div class="clabel">CALLED</div><div id="calledBalls"></div></div>
     <div id="meters">
-      <div class="meter"><div class="mlabel">BET</div><div class="mval" id="mBet">3</div></div>
       <div class="meter"><div class="mlabel">WON</div><div class="mval" id="mWon">0</div></div>
       <div class="meter"><div class="mlabel">PAID</div><div class="mval" id="mPaid">0</div></div>
+      <div class="meter"><div class="mlabel">BET</div><div class="mval" id="mBet">3</div></div>
       <div class="meter"><div class="mlabel">CASH</div><div class="mval money" id="mCash">$1,000</div></div>
     </div>
+    <div id="screenPrint">PRIZES AWARDED FOR BINGO CARD ONLY</div>
   </div>
 
-  <div id="reelWindow">
-    <div class="reel" id="reel0"></div>
-    <div class="reel" id="reel1"></div>
-    <div class="reel" id="reel2"></div>
-    <div id="payline"></div>
-    <div id="banner"></div>
+  <div id="jewelStrip">COLLECT 10 JEWELS TO TRIGGER THE JEWEL HUNT BONUS</div>
+
+  <div id="reelGlass">
+    <div id="reelWindow">
+      <div class="reel" id="reel0"></div>
+      <div class="reel" id="reel1"></div>
+      <div class="reel" id="reel2"></div>
+      <div id="payline"></div>
+      <div class="payTag l">PAYLINE</div>
+      <div class="payTag r">PAYLINE</div>
+      <div id="banner"></div>
+    </div>
+    <div id="glassBadges">
+      <div class="helpOval">To view Player Help, hold down the CASH OUT button for 5 seconds.</div>
+      <div class="badgeMed"><span class="badgeDuck"></span><div class="blab">LUCKY DUCKY DOUBLES</div></div>
+      <div class="denomPlaque">$1</div>
+      <div class="badgeMed"><span class="badgeDuck"></span><div class="blab">LUCKY DUCKY IS WILD</div></div>
+      <div class="badgeMed"><span class="badgeDuck"></span><div class="blab">LUCKY DUCKY PAYS 4X</div></div>
+    </div>
+    <div id="glassPrint">MALFUNCTION VOIDS ALL PAYS AND PLAYS · REELS ARE FOR ENTERTAINING PURPOSES ONLY</div>
   </div>
 
   <div id="deck">
@@ -241,18 +403,37 @@ body {
   <div id="paySheet">
     <h2>PAYTABLE — CREDITS</h2>
     <table id="payTable"></table>
-    <div class="note">3 DUCKS ON MAX BET ALSO TAKES THE PROGRESSIVE. RED SCREEN RE-SPINS GUARANTEE AT LEAST THE WIN THAT TRIGGERED THEM. PERSONAL PLAY MACHINE — CREDITS ONLY, NO CASH VALUE.</div>
+    <div class="note">3 DUCKS ON MAX BET ALSO TAKES THE PROGRESSIVE. RED SCREEN RE-SPINS GUARANTEE AT LEAST THE WIN THAT TRIGGERED THEM. DUCKS ON THE PAYLINE COLLECT JEWELS — 10 TRIGGERS THE JEWEL HUNT. PERSONAL PLAY MACHINE — CREDITS ONLY, NO CASH VALUE.</div>
   </div>
 
-  <div id="foot">PERSONAL MACHINE · BUILT FOR HOME PLAY · © 2026 J-DAWGS INDUSTRIES</div>
+  <div id="foot">PERSONAL MACHINE · © 2026 J-DAWGS INDUSTRIES</div>
 </div>
 
-<div id="redFlash"><div class="rt">RED SCREEN<br>RE-SPIN!</div><div class="rs" id="redSub">GUARANTEED WIN</div></div>
+<div id="redFlash">
+  <div id="redJewels"></div>
+  <div id="redJewelText"></div>
+  <div class="billArt">
+    <span class="b1000 tl">1000</span><span class="b1000 tr">1000</span>
+    <span class="b1000 bl">1000</span><span class="b1000 br">1000</span>
+    <div class="bducky">· DUCKY ·</div>
+    <div class="bduck" id="redBillDuck"></div>
+    <div class="btitle">LUCKY DUCKY</div>
+    <div class="bmoney">MONEY</div>
+  </div>
+  <div class="rt">RED SCREEN<br>RE-SPIN!</div>
+  <div class="rs" id="redSub">GUARANTEED WIN</div>
+</div>
 
 <div id="pickOverlay">
   <div class="ptitle">PICK A DUCK, ANY DUCK!</div>
   <div id="pond"></div>
   <div id="pickResult"><div class="prAmt" id="pickAmt"></div><button id="collectBtn">COLLECT</button></div>
+</div>
+
+<div id="jewelOverlay">
+  <div class="ptitle">JEWEL HUNT!</div>
+  <div id="jewelGrid"></div>
+  <div id="jewelResult"><div class="prAmt" id="jewelAmt"></div><button id="jewelCollectBtn">COLLECT</button></div>
 </div>
 
 <script src="logic.js"></script>
