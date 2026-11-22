@@ -647,17 +647,54 @@ body {
   aspect-ratio: 1;
   margin: 16px auto 6px;
 }
+/* the wheel sits in a machined metal housing ring (2026-11-21 realism pass) */
+.wheel-wrap::before {
+  content: ""; position: absolute; inset: -11px; border-radius: 50%; z-index: 0;
+  background: conic-gradient(from 210deg, #525f73, #131922 25%, #75839a 50%, #0d1119 75%, #525f73);
+  box-shadow: 0 18px 34px rgba(0, 0, 0, .75), inset 0 2px 3px rgba(255, 255, 255, .35), inset 0 -3px 7px rgba(0, 0, 0, .75);
+}
 .wheel {
   position: absolute; inset: 0;
+  z-index: 1;
   border-radius: 50%;
   border: 6px solid #d7dee7;
   box-shadow:
     0 0 0 3px #39424f,
     0 0 34px rgba(46, 155, 255, .5),
+    0 14px 22px rgba(0, 0, 0, .55),
     inset 0 0 0 3px rgba(0, 0, 0, .55),
     inset 0 0 44px rgba(0, 0, 0, .5);
   will-change: transform;
   overflow: hidden;
+}
+/* separator grooves + rim vignette, and the chrome pegs — children of the
+   wheel (built in buildWheel) so they spin with it */
+.wheel-lines {
+  position: absolute; inset: 0; border-radius: 50%;
+  pointer-events: none;
+}
+.wheel-peg {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 0; height: 0;
+  pointer-events: none;
+}
+.wheel-peg span {
+  position: absolute;
+  left: 0; top: 0;
+  width: 11px; height: 11px; border-radius: 50%;
+  transform: translate(-50%, -50%);
+  translate: 0 calc(min(76vw, 320px) * -0.458);
+  background: radial-gradient(circle at 35% 30%, #ffffff 0%, #c3cedd 38%, #79879a 68%, #333d4a 100%);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .85), inset 0 -1px 2px rgba(0, 0, 0, .55);
+}
+/* a still sheen of light over the spinning wheel — light doesn't rotate */
+.wheel-gloss {
+  position: absolute; inset: 0; border-radius: 50%;
+  z-index: 2; pointer-events: none;
+  background:
+    radial-gradient(ellipse 65% 42% at 32% 16%, rgba(255, 255, 255, .20) 0%, rgba(255, 255, 255, .05) 46%, transparent 70%),
+    radial-gradient(ellipse 120% 120% at 50% 50%, transparent 72%, rgba(0, 0, 0, .16) 100%);
 }
 .wheel-label {
   position: absolute;
@@ -690,6 +727,15 @@ body {
   border-right: 13px solid transparent;
   border-top: 22px solid #ff1e3c; /* electric-red pointer — Classics/DDS red family hint */
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8));
+  z-index: 4;
+}
+/* the pointer's chrome mounting stud */
+.wheel-pointer::before {
+  content: ""; position: absolute; left: 50%; top: -8px;
+  transform: translateX(-50%);
+  width: 15px; height: 15px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffffff 0%, #aeb9c7 52%, #39424f 100%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .8), inset 0 -1px 2px rgba(0, 0, 0, .5);
 }
 .wheel-pointer.flick { animation: pegFlick .12s ease-out; }
 @keyframes pegFlick { 30% { transform: translateX(-50%) rotate(-14deg); } }
@@ -703,7 +749,7 @@ body {
   overflow: hidden;
   border: 3px solid #d7dee7;
   box-shadow: 0 4px 14px rgba(0, 0, 0, .8), 0 0 18px rgba(232, 194, 104, .5);
-  z-index: 2;
+  z-index: 3;
   background: #000;
 }
 .wheel-hub img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -1000,6 +1046,17 @@ body {
 }
 @media (max-width: 400px) { .cab-base { height: 56px; } }
 
+/* Poker Luxe tint: gold bezel ring + warm belly glow */
+.spin-btn::before { border-color: #a8873f; border-top-color: #f0d48a; border-bottom-color: #5e4a17; }
+.belly-frame {
+  box-shadow:
+    0 0 0 2px #05070a,
+    0 0 24px rgba(232, 194, 104, .22),
+    0 5px 14px rgba(0, 0, 0, .72),
+    inset 0 0 0 1px rgba(0, 0, 0, .85);
+}
+.belly-glowfx { box-shadow: inset 0 0 36px rgba(232, 194, 104, .20), inset 0 0 8px rgba(0, 0, 0, .45); }
+
 /* ---------- REALISM CABINET — UPPER (2026-11-21) ----------
    Joshua's standard, his words: "That's what I want is a realism cabinet on
    them" + "With realism buttons, reels that roll real." The WHOLE cabinet
@@ -1084,13 +1141,3 @@ body {
     linear-gradient(180deg, rgba(255, 255, 255, .22) 0%, rgba(255, 255, 255, 0) 46%),
     linear-gradient(180deg, #eef2f7 0%, #b4bfcc 28%, #67727f 50%, #39424e 53%, #828fa0 76%, #dde4ec 100%);
 }
-/* Poker Luxe tint: gold bezel ring + warm belly glow */
-.spin-btn::before { border-color: #a8873f; border-top-color: #f0d48a; border-bottom-color: #5e4a17; }
-.belly-frame {
-  box-shadow:
-    0 0 0 2px #05070a,
-    0 0 24px rgba(232, 194, 104, .22),
-    0 5px 14px rgba(0, 0, 0, .72),
-    inset 0 0 0 1px rgba(0, 0, 0, .85);
-}
-.belly-glowfx { box-shadow: inset 0 0 36px rgba(232, 194, 104, .20), inset 0 0 8px rgba(0, 0, 0, .45); }
