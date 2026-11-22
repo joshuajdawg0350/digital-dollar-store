@@ -26,22 +26,17 @@ function gemSVG() {
     <polyline points="30,34 50,4 70,34" stroke="#eaf9ff" stroke-width="1.8" fill="none"/>
   </svg>`;
 }
-/* The red 7 drawn to Joshua's photos of the real machine (R10/R11,
-   2026-11-22): a heavy slab-form red 7 — bright red gradient, dark red
-   outline, pale top highlight — standing in a pile of gold coins at its
-   base. Our own drawing; the look is the photo's. */
-function sevenSVG() {
-  return `<svg class="sevenSVG" viewBox="0 0 100 100" aria-hidden="true">
-    <defs><linearGradient id="sevenG" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#ff6a4d"/><stop offset="45%" stop-color="#ec1c24"/><stop offset="100%" stop-color="#b30f1d"/>
-    </linearGradient></defs>
-    <g fill="url(#coinG)" stroke="#9a6b0d" stroke-width="1.4">
-      <ellipse cx="29" cy="90" rx="16" ry="6.8"/><ellipse cx="52" cy="93" rx="18" ry="7.4"/><ellipse cx="75" cy="90" rx="15" ry="6.8"/>
-      <ellipse cx="41" cy="85" rx="14" ry="6.2"/><ellipse cx="64" cy="85" rx="14" ry="6.2"/>
-    </g>
-    <path d="M14 12 L90 8 L48 84 L30 84 L60 26 L14 30 Z" fill="url(#sevenG)" stroke="#7a0d16" stroke-width="2.5" stroke-linejoin="round"/>
-    <path d="M19 17 L83 13 L79 19 L19 23 Z" fill="#ffffff" opacity=".28"/>
-  </svg>`;
+/* The red 7 COPIED from Joshua's photo of the real machine
+   (2026-11-22, his order: "Don't redraw — copy the shit"): the 7 and
+   its gold coin pile were cropped straight out of his photo
+   (~/workspace/user/files/1000009618_23_e9td.jpg, middle reel), the
+   reel-glass background lifted off, and the cutout ships as the
+   symbol — same shape, same proportions, same red, same shading,
+   same coin pile. assets/seven-photo.png. No redraw, no likeness
+   approximation. */
+const SEVEN_IMG = 'assets/seven-photo.png';
+function sevenHTML() {
+  return `<img class="sevenImg" src="${SEVEN_IMG}" alt="7">`;
 }
 function cherrySVG() {
   return `<svg class="cherry" viewBox="0 0 60 60" aria-hidden="true">
@@ -60,7 +55,7 @@ document.querySelectorAll('.badgeDuck').forEach(el => { el.innerHTML = `<img src
 function symHTML(sym) {
   switch (sym) {
     case 'DUCK': return `<div class="sym"><div class="duckMedal"><img src="${MEDAL_IMG}" alt="Lucky Ducky"></div><div class="duckLogoText">LUCKY<br>DUCKY</div></div>`;
-    case 'SEVEN': return `<div class="sym">${sevenSVG()}</div>`;
+    case 'SEVEN': return `<div class="sym">${sevenHTML()}</div>`;
     case 'BAR3': return `<div class="sym"><div class="barStack"><div class="barPlate">BAR</div><div class="barPlate">BAR</div><div class="barPlate">BAR</div></div></div>`;
     case 'BAR2': return `<div class="sym"><div class="barStack"><div class="barPlate">BAR</div><div class="barPlate">BAR</div></div></div>`;
     case 'BAR1': return `<div class="sym"><div class="barStack one"><div class="barPlate">BAR</div></div></div>`;
@@ -236,18 +231,23 @@ const REEL_BORDER = 3; // .reel's border width: the strip's containing box start
 const CELL_H = () => { const s = document.querySelector('#reel0 .strip .sym'); return s ? s.getBoundingClientRect().height : 100; };
 const reelEls = [$('reel0'), $('reel1'), $('reel2')];
 const strips = [];
+/* The strip carries FIVE repetitions and rests in the middle one
+   (rep 2, offset 44). A spin travels DOWNWARD (FIX B, below), landing
+   in a lower repetition, and finish() renormalizes back to the home
+   repetition — the same picture, so the snap is invisible. */
+const REPS = 5, HOME_OFF = 44;
 reelEls.forEach((el, ri) => {
   const strip = document.createElement('div');
   strip.className = 'strip';
   let html = '';
-  for (let rep = 0; rep < 3; rep++) for (const s of L.STRIPS[ri]) html += symHTML(s);
+  for (let rep = 0; rep < REPS; rep++) for (const s of L.STRIPS[ri]) html += symHTML(s);
   strip.innerHTML = html;
   el.appendChild(strip);
   strips.push({ el: strip, pos: 0 }); // pos = stop index at payline
 });
 function setReelInstant(ri, stopIdx) {
   const st = strips[ri], h = CELL_H();
-  const m = stopIdx + 22; // middle repetition: cell m sits on the payline
+  const m = stopIdx + HOME_OFF; // home repetition: cell m sits on the payline
   st.el.style.transform = `translateY(${-(m - ROW_OFF) * h - REEL_BORDER}px)`;
   st.pos = stopIdx;
 }
@@ -256,25 +256,35 @@ function spinReelTo(ri, stopIdx, dur) {
   return new Promise(res => {
     const st = strips[ri], h = CELL_H();
     const stripLen = L.STRIPS[ri].length;
-    let cur = st.pos;
-    const candidates = [stopIdx, stopIdx + stripLen, stopIdx + stripLen * 2].filter(p => p > cur + 8);
-    const finalPos = candidates.length ? candidates[0] : stopIdx + stripLen * 2;
-    const fromY = -(cur + stripLen - ROW_OFF) * h - REEL_BORDER;
-    const toY = -(finalPos + stripLen - ROW_OFF) * h - REEL_BORDER;
+    const cur = st.pos;
+    /* FIX B — THE REELS FALL DOWNWARD (Joshua, 2026-11-22: he ordered
+       "spin down" and reported the reels still going UP — he was
+       right: the old code animated the strip to MORE negative
+       translateY, which drags every symbol UP the window). Downward
+       travel means the strip's translateY INCREASES toward its stop:
+       the target cell sits in a LOWER repetition than the home cell.
+       Pick the lower-rep landing that gives a real run (16+ cells);
+       the rep-0 landing always gives 23+, so one always qualifies. */
+    const homePos = cur + HOME_OFF;
+    const lower = [stopIdx + stripLen, stopIdx].filter(p => homePos - p >= 16);
+    const finalPos = lower.length ? lower[0] : stopIdx;
+    const fromY = -(homePos - ROW_OFF) * h - REEL_BORDER;
+    const toY = -(finalPos - ROW_OFF) * h - REEL_BORDER;
     st.el.classList.add('spinning');
     /* Mechanical reel profile (Joshua, 2026-11-22: "make it spin down"):
        SPIN UP (accelerating, first 15% of the travel time, ~10% of the
        distance) -> ROLL (full speed, linear) -> SPIN DOWN (a long strong
-       deceleration over the last ~40%) -> SETTLE (the reel lands ~7px
-       past its stop and eases back onto it, like a real reel's weight
-       settling). The motion blur sharpens away as it slows. */
-    const dist = toY - fromY;
+       deceleration over the last ~40%) -> SETTLE (falling downward, the
+       reel lands ~7px PAST its stop — below it — and eases back up onto
+       it, like a real reel's weight settling). The motion blur sharpens
+       away as it slows. */
+    const dist = toY - fromY; // positive: the strip moves DOWN the window
     const anim = st.el.animate(
       [
         { transform: `translateY(${fromY}px)`, easing: 'cubic-bezier(.55,.06,.68,.19)' },
         { transform: `translateY(${fromY + dist * 0.10}px)`, offset: 0.15, easing: 'linear' },
         { transform: `translateY(${fromY + dist * 0.72}px)`, offset: 0.58, easing: 'cubic-bezier(.23,1,.32,1)' },
-        { transform: `translateY(${toY - 7}px)`, offset: 0.94, easing: 'ease-out' },
+        { transform: `translateY(${toY + 7}px)`, offset: 0.94, easing: 'ease-out' },
         { transform: `translateY(${toY}px)`, offset: 1 }
       ],
       { duration: dur, fill: 'forwards' }
