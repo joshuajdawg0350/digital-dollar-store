@@ -47,6 +47,11 @@
   const bonusGame = $('bonusGame'), bonusBackdrop = $('bonusBackdrop');
   const trunksEl = $('trunks'), bonusBankEl = $('bonusBank');
   const bonusResultEl = $('bonusResult'), bonusCollectBtn = $('bonusCollect');
+  const fetchGame = $('fetchGame'), fetchBackdrop = $('fetchBackdrop');
+  const fetchPotEl = $('fetchPot'), fetchBankEl = $('fetchBank'), fetchBallNoEl = $('fetchBallNo');
+  const fetchResultEl = $('fetchResult'), fetchThrowBtn = $('fetchThrowBtn'), fetchBankBtn = $('fetchBankBtn'), fetchCollectBtn = $('fetchCollect');
+  const fetchBuster = $('fetchBuster'), fetchBallImg = $('fetchBallImg'), fetchButterfly = $('fetchButterfly');
+  const fetchMarkers = Array.from(document.querySelectorAll('#fetchLadder .fetch-marker'));
 
   const START_CREDITS = 1000;
   /* Bet ladder (Joshua, 2026-11-21 13:02 CT): the bet is a TOTAL bet per
@@ -380,6 +385,7 @@
       `<div class="payrow"><div class="thumb"><img src="${ART.SC}" alt="SCATTER"></div><div class="nm">SCATTER</div><span class="pv wide">3+ anywhere: pays 2× / 8× / 40× total bet + 7 / 10 / 15 FREE SPINS at 2× line wins</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.BN}" alt="BONUS"></div><div class="nm">BONUS — BUSTER'S BONES</div><span class="pv wide">3+ dog houses anywhere on a paid spin opens the yard: 9 houses — 8 hide BONES with amounts on them (½×–4× total bet), 1 hides BIG AL, the tall redheaded cowboy — pick him and the round ends (banked bones are kept). Clear all 8 bone houses for a 6× BUSTER BONUS</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.WH}" alt="WHEEL"></div><div class="nm">WHEEL — PEARL'S PAWS</div><span class="pv wide">The chrome WHEEL token rides reels 2, 3 and 4 — one in each of those windows on a paid spin opens Pearl's wheel. Every wedge pays little PAWS with amounts (× your total bet): MINI 8× · MINOR 15× · MAJOR 30× · GRAND 50× — and the GRAND wedge carries BIG AL himself: land on him for the top prize. Every wedge pays. Not the scatter: the plain chrome PAW is free spins, the WHEEL medallion is the wheel</span></div>` +
+      `<div class="payrow"><div class="thumb"><img src="${ART.BA}" alt="BALL"></div><div class="nm">BALL — FETCH!</div><span class="pv wide">3+ red balls anywhere on a paid spin can open FETCH! (about 1 in 162 spins): Buster chases the ball past 5 bone markers and the pot climbs 1× · 2× · 3× · 5× · 8× your total bet with every good throw. After each throw, BRING IT BACK to bank the pot safe or THROW AGAIN to grow it — a butterfly can make Buster drop the ball and that pot is gone (banked pots are always safe). 3 balls — bank all 3 at the full 8× and a 15× PERFECT GAME bonus makes 39× in all</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.GP}" alt="BET"></div><div class="nm">BET</div><span class="pv wide">Bets run in $25 steps: $25, $50, $75 … all the way up to $2,500 a spin. A step unlocks the first time your balance reaches it — and stays unlocked even if your balance dips. Use the −25 / +25 buttons or MAX BET. NEW GAME resets you to a $25 bet</span></div>`;
   }
 
@@ -397,9 +403,9 @@
      while locked, a tap that would skip / advance / dismiss it is
      IGNORED — never queued, so a stray tap at 0.5s does not fire at
      2.0s. After 2 seconds every tap works exactly as before. Deliberate
-     play inside a bonus (picking a house, spinning the wheel) is
-     untouched once its screen has been up the 2 seconds, and
-     auto-advance timers are not taps — they run as they always did.
+     play inside a bonus (picking a house, throwing the ball, spinning
+     the wheel) is untouched once its screen has been up the 2 seconds,
+     and auto-advance timers are not taps — they run as they always did.
      Presentation only: no math, logic or sound changes. */
   const BONUS_MIN_VIEW_MS = 2000;
   const mkViewLock = () => ({
@@ -408,7 +414,8 @@
     locked() { return performance.now() - this.t < BONUS_MIN_VIEW_MS; }
   });
   const celebLock = mkViewLock(), wheelLock = mkViewLock(),
-        bonusLock = mkViewLock(), bonusCollectLock = mkViewLock();
+        bonusLock = mkViewLock(), bonusCollectLock = mkViewLock(),
+        fetchLock = mkViewLock(), fetchCollectLock = mkViewLock();
 
   /* ---------- celebration screens (Joshua, 2026-11-21 12:52–12:54 CT) ----------
      A bonus or free-spins trigger NEVER cuts straight in: a full-cabinet
@@ -704,6 +711,13 @@
     if (bonusHit) for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) if (grid[r][row] === 'BN') markCell(r, row, 'bonushit');
     const wheelHit = !isFree && ev.wheelHit; /* Pearl's Paws wheel: paid spins only */
     if (wheelHit) for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) if (grid[r][row] === 'WH') markCell(r, row, 'bonushit');
+    /* FETCH! (2026-11-21): the concept's trigger — 3+ red balls anywhere on
+       a paid spin — with a WEIGHTED award: BA is a common line symbol, so
+       3+ balls land on ~59% of spins; cfg.fetch.weight is what lands the
+       game itself ~1 in 176 spins (see the machines.js header). */
+    let fetchHit = !isFree && ev.ballCount >= 3 && Math.random() < cfg.fetch.weight;
+    if (debugForceFetch && !isFree) { fetchHit = true; debugForceFetch = false; }
+    if (fetchHit) for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) if (grid[r][row] === 'BA') markCell(r, row, 'bonushit');
 
     if (totalWin > 0) {
       winFlash.classList.add('on');
@@ -767,27 +781,30 @@
     if (w5) {
       await celebrate('win', 'FIVE OF A KIND!', `Five ${NAMES[w5.symbol]} on one line — celebration time!`, celebDur());
     }
-    if (bonusHit || wheelHit) {
+    if (bonusHit || fetchHit || wheelHit) {
       /* celebrate first, THEN the bonus games; any free spins won on this
          spin run after them (platform order: bonuses first, free spins
-         after). Both bonuses on one spin: Buster's Bones, then the wheel. */
+         after). Several on one spin run in order: Buster's Bones, then
+         Fetch!, then the wheel. */
       const tb = totalBet();
-      if (bonusHit) {
-        msgEl.textContent = `${ev.bonusCount} BONUS dog houses — the yard is open!`;
-        await celebrate('bonus', "BUSTER'S BONES!", `${ev.bonusCount} BONUS dog houses hit — pick your houses!`, celebDur());
-        openBonus(tb, async () => {
-          if (wheelHit) {
-            await celebrate('bonus', "PEARL'S PAWS!", 'The wheel tokens lit all three middle reels — spin the wheel!', celebDur());
-            await runBonusWheel(tb);
-          }
-          finishTurn();
-        });
-        return;
-      }
-      msgEl.textContent = 'WHEEL tokens on reels 2, 3 and 4 — the wheel is open!';
-      await celebrate('bonus', "PEARL'S PAWS!", 'The wheel tokens lit all three middle reels — spin the wheel!', celebDur());
-      await runBonusWheel(tb);
-      finishTurn();
+      (async () => {
+        if (bonusHit) {
+          msgEl.textContent = `${ev.bonusCount} BONUS dog houses — the yard is open!`;
+          await celebrate('bonus', "BUSTER'S BONES!", `${ev.bonusCount} BONUS dog houses hit — pick your houses!`, celebDur());
+          await new Promise(res => openBonus(tb, res));
+        }
+        if (fetchHit) {
+          msgEl.textContent = `${ev.ballCount} red balls — Fetch!`;
+          await celebrate('bonus', 'FETCH!', `${ev.ballCount} red balls landed — throw the ball and watch Buster run!`, celebDur());
+          await runFetch(tb);
+        }
+        if (wheelHit) {
+          msgEl.textContent = 'WHEEL tokens on reels 2, 3 and 4 — the wheel is open!';
+          await celebrate('bonus', "PEARL'S PAWS!", 'The wheel tokens lit all three middle reels — spin the wheel!', celebDur());
+          await runBonusWheel(tb);
+        }
+        finishTurn();
+      })();
       return;
     }
     finishTurn();
@@ -877,6 +894,153 @@
     };
     bonusCollectBtn.addEventListener('click', collect);
   }
+  /* ---------- FETCH! bonus (2026-11-21, Joshua's pick #2 from the second
+     bonus board) ----------
+     Buster chases the red ball past 5 bone markers; every good throw climbs
+     the pot ladder (1x/2x/3x/5x/8x of the triggering spin's total bet).
+     After each throw Pam chooses BRING IT BACK (bank the pot — banked money
+     is ALWAYS safe) or THROW AGAIN. Each throw, a butterfly may distract
+     Buster (cfg.fetch.drop): he drops the ball and the UNBANKED pot is
+     gone. 3 balls. Banking all three balls at the full 8x adds the 15x
+     PERFECT GAME bonus — a perfect game pays 3x8 + 15 = 39x, the concept's
+     headline number. No timers, no pressure: the game waits for her tap.
+     forcedDrops (QA only): array of booleans, one per throw (true = drop). */
+  let debugForceFetch = false;
+  function runFetch(tb, forcedDrops) {
+    const F = cfg.fetch;
+    return new Promise(resolve => {
+      setControlsEnabled(false);
+      Kit.trunkOpen();
+      let banked = 0, ball = 1, rung = 0, fullBalls = 0, busy = false, over = false;
+      const queue = Array.isArray(forcedDrops) ? forcedDrops.slice() : null;
+      const POS = [13, 27, 41, 55, 69, 83]; /* Buster's left % at rung 0..5 */
+      const potNow = () => (rung > 0 ? Math.round(F.ladder[rung - 1] * tb) : 0);
+      const wait = ms => new Promise(r => setTimeout(r, ms));
+
+      function render() {
+        fetchPotEl.textContent = fmt(potNow());
+        fetchBankEl.textContent = fmt(banked);
+        fetchBallNoEl.textContent = `${Math.min(ball, F.balls)} / ${F.balls}`;
+        fetchMarkers.forEach((m, i) => m.classList.toggle('lit', i < rung));
+        fetchBuster.style.left = POS[rung] + '%';
+        fetchBallImg.style.left = (POS[rung] + 6) + '%'; /* at Buster's paws, drawn over the photo */
+        fetchThrowBtn.disabled = busy || over;
+        fetchThrowBtn.textContent = rung === 0 ? 'THROW THE BALL' : 'THROW AGAIN';
+        fetchBankBtn.disabled = busy || over || rung === 0;
+        fetchBankBtn.textContent = rung === 0 ? 'BRING IT BACK' : `BRING IT BACK — BANK ${fmt(potNow())}`;
+      }
+      function say(html) { fetchResultEl.innerHTML = html; }
+
+      function nextBallOrEnd() {
+        if (ball >= F.balls) { endGame(); return; }
+        ball++; rung = 0;
+        fetchButterfly.classList.remove('on');
+        say(`Ball ${ball} of ${F.balls} — throw it when you're ready! Banked so far: <b>${fmt(banked)}</b>.`);
+        render();
+      }
+      function endGame() {
+        over = true;
+        if (fullBalls === F.balls) {
+          const bonus = Math.round(F.perfectBonus * tb);
+          banked += bonus;
+          Kit.jackpot();
+          say(`<span class="clear-title">PERFECT GAME!</span><br>All 3 balls brought back at the full 8× — the ${F.perfectBonus}× PERFECT GAME bonus adds <b>${fmt(bonus)}</b>!<br>Fetch pays <b>${fmt(banked)}</b> in all — 39× your bet!`);
+        } else if (banked > 0) {
+          Kit.fanfare();
+          say(`That's all 3 balls — Fetch pays <b>${fmt(banked)}</b>! Tap COLLECT to take it.`);
+        } else {
+          say(`That's all 3 balls — the butterflies won this round. Nothing was banked, so nothing was lost but the pots. Tap COLLECT to head back.`);
+        }
+        render();
+        fetchCollectBtn.textContent = banked > 0 ? `COLLECT ${fmt(banked)}` : 'COLLECT';
+        fetchCollectBtn.classList.add('on');
+        fetchCollectLock.arm(); /* the end screen + COLLECT get their own 2s */
+        syncBroke();
+      }
+      async function bankPot(auto) {
+        if (fetchLock.locked()) return; /* screen must be seen 2s before a tap lands */
+        if (over || rung === 0) return;
+        busy = true;
+        const p = potNow();
+        banked += p;
+        if (rung === F.ladder.length) fullBalls++;
+        Kit.bankIt(p / tb);
+        say(auto
+          ? `Buster brought it ALL the way back — <b>${fmt(p)}</b> banked safe!`
+          : `Good call — <b>${fmt(p)}</b> banked safe. It's yours no matter what.`);
+        rung = 0;
+        render();
+        await wait(1250);
+        busy = false;
+        nextBallOrEnd();
+      }
+      async function doThrow() {
+        if (fetchLock.locked()) return; /* screen must be seen 2s before a tap lands */
+        if (busy || over) return;
+        busy = true; render();
+        Kit.play('diceRoll'); /* the ball rolls out across the yard */
+        fetchBallImg.classList.add('rolling');
+        await wait(820);
+        fetchBallImg.classList.remove('rolling');
+        const dropped = queue && queue.length ? !!queue.shift() : Math.random() < F.drop;
+        if (dropped) {
+          const lost = potNow();
+          fetchButterfly.classList.add('on');
+          fetchBuster.classList.add('dropped');
+          Kit.bust();
+          say(lost > 0
+            ? `A butterfly! Buster dropped the ball — that <b>${fmt(lost)}</b> pot is gone.${banked > 0 ? ` Your banked <b>${fmt(banked)}</b> is safe.` : ''}`
+            : `A butterfly right away! Buster dropped the ball — no pot built yet, so nothing lost.`);
+          rung = 0;
+          render(); /* busy stays true through the pause: buttons stay locked */
+          await wait(1500);
+          fetchBuster.classList.remove('dropped');
+          busy = false;
+          nextBallOrEnd();
+          return;
+        }
+        rung++;
+        Kit.risingDing(rung);
+        if (rung >= F.ladder.length) {
+          render();
+          await wait(650);
+          bankPot(true);
+          return;
+        }
+        busy = false;
+        say(`He's got it — past marker ${rung}! The pot is <b>${fmt(potNow())}</b>. Bank it safe, or throw again to grow it?`);
+        render();
+      }
+      fetchThrowBtn.onclick = () => { ac(); doThrow(); };
+      fetchBankBtn.onclick = () => { ac(); bankPot(false); };
+      fetchCollectBtn.onclick = () => {
+        if (!over) return;
+        if (fetchCollectLock.locked()) return; /* an early tap on COLLECT is ignored, not queued */
+        fetchGame.classList.remove('on');
+        fetchGame.setAttribute('aria-hidden', 'true');
+        fetchBackdrop.classList.remove('on');
+        fetchCollectBtn.classList.remove('on');
+        credits += banked;
+        checkTierUnlock(false);
+        renderReadouts(banked);
+        lastBonusPaid = banked;
+        save();
+        syncBroke();
+        resolve();
+      };
+      fetchCollectBtn.classList.remove('on');
+      fetchButterfly.classList.remove('on');
+      fetchBuster.classList.remove('dropped');
+      say(`Ball 1 of ${F.balls} — tap THROW THE BALL and watch Buster run!`);
+      render();
+      fetchBackdrop.classList.add('on');
+      fetchGame.classList.add('on');
+      fetchGame.setAttribute('aria-hidden', 'false');
+      fetchLock.arm(); /* minimum-view lock starts as the Fetch! yard appears */
+      fetchGame.scrollTop = 0;
+      syncBroke();
+    });
+  }
   /* QA hook: force the bonus open / inspect the shuffled deck / drive state */
   window.__slotsDebug = {
     openBonus: tb => openBonus(tb || totalBet(), () => setControlsEnabled(true)),
@@ -884,8 +1048,10 @@
     setCredits: n => { credits = Math.max(0, n | 0); notePeak(false); renderReadouts(); newGameBtn.classList.toggle('on', credits < totalBet()); save(); },
     celebrate: (kind, title, sub, dur) => celebrate(kind || 'bonus', title || "BUSTER'S BONES!", sub || '', dur || 5000),
     wheel: forceIdx => runBonusWheel(totalBet(), forceIdx),
+    fetch: drops => runFetch(totalBet(), drops).then(() => setControlsEnabled(true)),
+    forceFetch: () => { debugForceFetch = true; },
     kit: Kit,
-    getState: () => ({ credits, bet: betSel, betPerLine: lineBet(), maxBet: unlockedMax(), peak, spinning, wheelArmed: !!wheelArmed, wheelSpinning, rolling: RollSound.isActive(), rollLevel: Math.round(RollSound.level() * 100) / 100, stops: stops.slice() })
+    getState: () => ({ credits, bet: betSel, betPerLine: lineBet(), maxBet: unlockedMax(), peak, spinning, wheelArmed: !!wheelArmed, wheelSpinning, fetchOn: fetchGame.classList.contains('on'), rolling: RollSound.isActive(), rollLevel: Math.round(RollSound.level() * 100) / 100, stops: stops.slice() })
   };
   function runFreeSpins() { if (freeSpinsLeft > 0 && !spinning) doSpin(true); }
 
@@ -896,6 +1062,26 @@
     if (wheelArmed) { if (wheelLock.locked()) return; const f = wheelArmed; ac(); f(); return; }
     if (spinning) { stopAllReels(); return; }
     ac(); doSpin(false);
+  });
+
+  /* ---------- TAP-TO-SPIN (Joshua, 2026-11-22 00:31 CT — his option B over
+     shrinking the machine) ----------
+     Tapping the machine itself — reels, marquee, belly, readouts, deck
+     background — spins, exactly like the SPIN button: one big forgiving
+     tap target for Pam. IDLE BASE GAME ONLY: never mid-spin (a machine
+     tap is never a STOP), never during free spins, never under a bonus /
+     Fetch / wheel / celebration / paytable screen (those overlays live
+     outside the cabinet, and the guards below belt-and-brace it). Real
+     controls keep their own taps: anything landing on a button, the
+     lever, or the out-of-coins panel is filtered by target, so nothing
+     ever double-fires. */
+  const cabinetEl = $('cabinet');
+  cabinetEl.addEventListener('click', e => {
+    if (e.target.closest('button, a, input, select, textarea, #lever, #brokePanel')) return;
+    if (spinning || freeSpinsLeft > 0 || wheelArmed || wheelSpinning) return;
+    if (spinBtn.disabled) return;
+    if (document.querySelector('.bonus.on, .wheel-overlay.on, .celeb.on, .sheet.on')) return;
+    spinBtn.click();
   });
 
   /* ---------- pull arm (lever): drag it down, it springs back and spins.

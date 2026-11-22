@@ -51,7 +51,47 @@
    1 in 35.0. Final measured base game after both passes: line RTP
    72.43%, base-game share 94.12%, TOTAL theoretical RTP 108.77%
    (Monte Carlo 108.53% over 200k paid spins); net-positive base spins
-   25.5%; average line win per hit 22.9 credits at 1/line. */
+   25.5%; average line win per hit 22.9 credits at 1/line.
+   FETCH RETUNE (2026-11-21, Joshua picked bonus concept #2 "Fetch!"):
+   a FOURTH feature joins — free spins, Puppy Houses and the wheel all
+   stay. Strips lengthened once more by +2 regular stops per strip
+   (26/26/27/27/27; every special keeps its exact count and window
+   coverage), carving Fetch its share so the combined frequency holds
+   Joshua's 1-in-35 instead of stacking on top. FETCH trigger is the
+   concept's own: 3+ RED BALLS (BA) anywhere on a paid spin. BA is a
+   common line symbol by design (pays 5/16/35), so 3+ balls land on
+   59.3% of spins — far too often to open the game outright; the award
+   is WEIGHTED (fetch.weight 0.0096), the standard real-machine way a
+   common symbol gates a bonus, landing Fetch itself 1 in 175.8.
+   Inside: pot ladder 1x/2x/3x/5x/8x per good throw, 3 balls, butterfly
+   drop chance 0.1725 per throw loses only the UNBANKED pot (banked is
+   always safe); banking all three balls at the full 8x adds the 15x
+   PERFECT GAME bonus — perfect game = 3x8 + 15 = 39x, the concept's
+   headline. EV is policy-dependent by design (press-your-luck):
+   Monte Carlo 200k games per policy, cross-checked analytic — bank
+   at >=3x: 5.10x; bank at >=5x (reference): 7.03x; ride every ball
+   to 8x: 10.19x (perfect game lands 5.8% of such plays). NEW EXACT
+   RATES: free spins 1 in 83.1, Fetch 1 in 175.8, Puppy Houses 1 in
+   193.4, wheel 1 in 175.5 — ALL FEATURES COMBINED 1 in 35.0. New
+   totals: line RTP 76.30%, base game 93.95%, TOTAL theoretical RTP
+   109.57% (Monte Carlo 109.35% over 300k paid spins) — still
+   deliberately hot under the owner's feel ruling above.
+   BONUS PACE RETUNE (2026-11-22 00:36 CT, Joshua: "Make it easier to
+   hit a bonus on my mom's"): one regular stop per strip comes back out
+   (lengths 25/25/26/26/26; specials' counts and window coverage again
+   unchanged) and the Fetch weight moves 0.0096 -> 0.0099. FREQUENCY
+   ONLY — every bonus keeps its own EV (houses 7.42x, wheel 13.67x,
+   Fetch 7.03x reference). Before (the build Pam had): free spins
+   1 in 83.1, Fetch 1 in 175.8, Puppy Houses 1 in 193.4, wheel 1 in
+   175.5, combined 1 in 35.0. After: free spins 1 in 74.6, Fetch 1 in
+   162.0, Puppy Houses 1 in 173.1, wheel 1 in 156.5 — ALL FEATURES
+   COMBINED 1 in 31.5, past Joshua's 1-in-32 floor for the other
+   machines, with the three pick/press games clustered together so
+   they all show up in a session. Monte Carlo (300k paid spins)
+   agrees: 4,020 FS sessions, 1,727 house rounds, 1,933 wheel rounds,
+   1,840 Fetch rounds. New totals: line RTP 77.19%, base game 97.30%,
+   TOTAL theoretical RTP 114.65% (MC 114.67%) — hotter because the
+   bonuses fire more often, per the owner's standing feel ruling. */
 'use strict';
 
 const PEARLS = {
@@ -74,6 +114,14 @@ const PEARLS = {
      base-game line RTP — the retune holds the machine total at 98%). */
   wheel: [50, 5, 15, 7, 30, 11, 6, 13, 8, 2, 14, 3],
   wheelTiers: { 50: 'GRAND', 30: 'MAJOR', 15: 'MINOR', 8: 'MINI' },
+  /* FETCH! (2026-11-21, Joshua's pick #2 from the second bonus board):
+     trigger 3+ red balls (BA) anywhere on a paid spin, WEIGHTED award —
+     BA is a common line symbol, so 3+ balls land on ~59% of spins and the
+     weight is what lands the feature itself at ~1/162 (see header). Pot
+     ladder is x total bet per successful throw; drop = butterfly chance
+     per throw (loses only the unbanked pot); banking all 3 balls at the
+     full 8x adds perfectBonus — perfect game = 3x8 + 15 = 39x. */
+  fetch: { ladder: [1, 2, 3, 5, 8], balls: 3, perfectBonus: 15, drop: 0.1725, weight: 0.0099 },
   paytable: {
     GP: { 3: 54, 4: 194, 5: 2209 },
     WD: { 3: 32, 4: 109, 5: 442 },
@@ -84,11 +132,11 @@ const PEARLS = {
     PW: { 3: 4, 4: 11, 5: 22 }
   },
   strips: [
-    ['PW', 'PW', 'BO', 'PW', 'BO', 'CP', 'PW', 'BA', 'BA', 'WD', 'X2', 'SC', 'GP', 'BA', 'BA', 'SP', 'PW', 'BA', 'BO', 'BO', 'BO', 'CP', 'PW', 'BA'],
-    ['PW', 'SC', 'BO', 'WH', 'BO', 'PW', 'GP', 'PW', 'BA', 'BA', 'BN', 'X3', 'WH', 'BO', 'BO', 'CP', 'WD', 'BO', 'BA', 'PW', 'BO', 'BA', 'PW', 'BO'],
-    ['PW', 'PW', 'CP', 'PW', 'SP', 'GP', 'BA', 'X2', 'SC', 'BO', 'BO', 'PW', 'BA', 'PW', 'WD', 'PW', 'BA', 'BA', 'WH', 'BO', 'BN', 'PW', 'BO', 'BA', 'PW'],
-    ['WH', 'CP', 'WD', 'BA', 'GP', 'PW', 'BO', 'BO', 'WH', 'BO', 'SP', 'PW', 'BO', 'BN', 'BA', 'BO', 'BA', 'WD', 'SC', 'PW', 'BO', 'CP', 'BA', 'PW', 'BO'],
-    ['BA', 'BO', 'BA', 'BO', 'PW', 'WD', 'CP', 'SP', 'PW', 'BO', 'X2', 'BO', 'BA', 'BA', 'BO', 'SC', 'BN', 'PW', 'GP', 'BA', 'BA', 'BO', 'PW', 'BA', 'BO']
+    ['PW', 'PW', 'BO', 'PW', 'BO', 'CP', 'PW', 'BA', 'BA', 'WD', 'X2', 'SC', 'GP', 'BA', 'BA', 'SP', 'PW', 'BA', 'BO', 'BO', 'BO', 'BO', 'CP', 'PW', 'BA'],
+    ['PW', 'SC', 'BO', 'WH', 'BO', 'PW', 'GP', 'PW', 'BA', 'BA', 'BN', 'X3', 'WH', 'BO', 'BO', 'BO', 'CP', 'WD', 'BO', 'BA', 'PW', 'BO', 'BA', 'PW', 'BO'],
+    ['PW', 'PW', 'CP', 'PW', 'SP', 'GP', 'BA', 'X2', 'SC', 'BO', 'BO', 'BO', 'PW', 'BA', 'PW', 'WD', 'PW', 'BA', 'BA', 'WH', 'BO', 'BN', 'PW', 'BO', 'BA', 'PW'],
+    ['WH', 'CP', 'WD', 'BA', 'GP', 'PW', 'BO', 'BO', 'BO', 'WH', 'BO', 'SP', 'PW', 'BO', 'BN', 'BA', 'BO', 'BA', 'WD', 'SC', 'PW', 'BO', 'CP', 'BA', 'PW', 'BO'],
+    ['BA', 'BO', 'BA', 'BO', 'PW', 'WD', 'CP', 'SP', 'PW', 'BO', 'X2', 'BO', 'BA', 'BA', 'BO', 'BO', 'SC', 'BN', 'PW', 'GP', 'BA', 'BA', 'BO', 'PW', 'BA', 'BO']
   ]
 };
 

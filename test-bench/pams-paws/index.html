@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0d0703">
 <title>Pearl's Paws and Buster's Bones — A Puppy Slot Machine</title>
-<meta name="description" content="Pearl's Paws and Buster's Bones. A warm puppy slot machine — 5 reels, 20 lines, puppy heads, paw prints, dog bones, free spins and the Pick a Puppy House bonus. Play credits only — no cash value, no prizes.">
+<meta name="description" content="Pearl's Paws and Buster's Bones. A warm puppy slot machine — 5 reels, 20 lines, puppy heads, paw prints, dog bones, free spins, the Pick a Puppy House bonus, the Fetch bonus and a bonus wheel. Play credits only — no cash value, no prizes.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -186,6 +186,41 @@
   </div>
 </div>
 
+<!-- FETCH! bonus (2026-11-21, Joshua's pick #2): Buster runs the red ball
+     down the yard past 5 bone markers; bank the pot or throw again. -->
+<div class="bonus-backdrop" id="fetchBackdrop"></div>
+<section class="bonus fetch" id="fetchGame" aria-hidden="true" aria-label="Fetch bonus game">
+  <div class="bonus-inner">
+    <h2 class="bonus-title">FETCH!</h2>
+    <p class="bonus-sub">Buster chases the red ball past the bone markers — the pot climbs <b>1× · 2× · 3× · 5× · 8×</b> your total bet.</p>
+    <p class="bonus-rule">Tap <b>THROW THE BALL</b> — then after every throw it's your call: <b>BRING IT BACK</b> banks the pot safe, <b>THROW AGAIN</b> grows it. A butterfly may distract Buster and he drops the ball: that pot is gone, but <b>banked money is always safe</b>. You get <b>3 balls</b>. Bank all 3 balls at the full 8× and a <b>15× PERFECT GAME</b> bonus makes <b>39×</b> in all!</p>
+    <div class="fetch-stage" id="fetchStage">
+      <img class="fetch-pearl" src="assets/sym-sp.webp" alt="Pearl" draggable="false">
+      <img class="fetch-buster" id="fetchBuster" src="assets/sym-gp.webp" alt="Buster" draggable="false">
+      <img class="fetch-ball" id="fetchBallImg" src="assets/sym-ba.webp" alt="" draggable="false">
+      <div class="fetch-butterfly" id="fetchButterfly" aria-hidden="true">🦋</div>
+    </div>
+    <div class="fetch-ladder" id="fetchLadder">
+      <div class="fetch-marker"><img src="assets/sym-bo.webp" alt="" draggable="false"><span>1×</span></div>
+      <div class="fetch-marker"><img src="assets/sym-bo.webp" alt="" draggable="false"><span>2×</span></div>
+      <div class="fetch-marker"><img src="assets/sym-bo.webp" alt="" draggable="false"><span>3×</span></div>
+      <div class="fetch-marker"><img src="assets/sym-bo.webp" alt="" draggable="false"><span>5×</span></div>
+      <div class="fetch-marker"><img src="assets/sym-bo.webp" alt="" draggable="false"><span>8×</span></div>
+    </div>
+    <div class="fetch-meters">
+      <div class="bonus-bank">POT <span id="fetchPot">0</span></div>
+      <div class="bonus-bank">BANKED <span id="fetchBank">0</span></div>
+      <div class="bonus-bank">BALL <span id="fetchBallNo">1 / 3</span></div>
+    </div>
+    <div class="bonus-result" id="fetchResult" aria-live="polite"></div>
+    <div class="fetch-actions">
+      <button class="btn fetch-btn fetch-bank-btn" id="fetchBankBtn" type="button">BRING IT BACK</button>
+      <button class="btn fetch-btn fetch-throw-btn" id="fetchThrowBtn" type="button">THROW THE BALL</button>
+    </div>
+    <button class="btn bonus-collect" id="fetchCollect" type="button">COLLECT</button>
+  </div>
+</section>
+
 <section class="sheet" id="paySheet" aria-hidden="true" aria-label="Paytable and how to play">
   <div class="sheet-handle" id="sheetHandle"><span></span></div>
   <div class="sheet-body">
@@ -204,9 +239,10 @@
       <li><b>BONE</b> pays from just 2 on a line.</li>
       <li>3+ <b>SCATTER</b> (the chrome paw) anywhere pays 2× / 8× / 40× your total bet and awards 7 / 10 / 15 <b>FREE SPINS</b> — line wins pay <b>double</b> in free spins, and free spins can retrigger.</li>
       <li>3+ <b>BONUS</b> dog houses anywhere on a paid spin opens <b>BUSTER'S BONES</b>: 9 dog houses, 8 hide white bones with amounts on them (½×–4× your total bet) and 1 hides <b>BIG AL</b>, the tall redheaded cowboy. Bones you find are banked and kept; find Big Al and the bonus ends — un-picked houses are lost. Clear all 8 and a 6× BUSTER BONUS is added.</li>
-      <li>One <b>WHEEL</b> token (the chrome wheel medallion) in each of the reel 2, 3 and 4 windows on a paid spin opens <b>PEARL'S PAWS</b>, the bonus wheel: 12 wedges pay black paws with amounts — MINI 8×, MINOR 15×, MAJOR 30× your total bet — and the GRAND 50× wedge carries BIG AL himself, the biggest win on the wheel. The two bonus games land about once every 41 spins between them. Don't mix the tokens up: the plain chrome <b>PAW</b> is the free-spins scatter; the <b>WHEEL</b> medallion is the wheel.</li>
+      <li>One <b>WHEEL</b> token (the chrome wheel medallion) in each of the reel 2, 3 and 4 windows on a paid spin opens <b>PEARL'S PAWS</b>, the bonus wheel: 12 wedges pay black paws with amounts — MINI 8×, MINOR 15×, MAJOR 30× your total bet — and the GRAND 50× wedge carries BIG AL himself, the biggest win on the wheel. Don't mix the tokens up: the plain chrome <b>PAW</b> is the free-spins scatter; the <b>WHEEL</b> medallion is the wheel.</li>
+      <li>3+ red <b>BALLS</b> anywhere on a paid spin can open <b>FETCH!</b> (about 1 in 162 spins): Buster chases the red ball past 5 bone markers and the pot climbs <b>1× · 2× · 3× · 5× · 8×</b> your total bet with every good throw. After each throw, <b>BRING IT BACK</b> to bank the pot safe or <b>THROW AGAIN</b> to grow it — but a butterfly may distract Buster, and a dropped ball loses that pot (banked pots are always safe). You get 3 balls; bank all 3 at the full 8× and a 15× <b>PERFECT GAME</b> bonus makes <b>39×</b> in all. Between them, the free spins, Fetch!, the dog houses and the wheel land about once every 32 spins.</li>
       <li>Credits are saved on this device. Out of credits? Hit <b>NEW GAME</b> to start over with a fresh 1,000.</li>
-      <li><b>Art:</b> every puppy, paw and dog house on this machine is original artwork made for Pearl's Paws and Buster's Bones by J-Dawgs Industries. Sounds are real recordings. The celebration clip is the "Puppy Party" show picked for this machine.</li>
+      <li><b>Art:</b> every puppy, paw and dog house on this machine is original artwork made for Pearl's Paws and Buster's Bones by J-Dawgs Industries. Sounds are real recordings. Bonus rounds open with a celebration clip picked for this machine.</li>
     </ul>
     <p class="sheet-legal">Play credits only — no cash value, no prizes. © 2026 J-Dawgs Industries</p>
   </div>

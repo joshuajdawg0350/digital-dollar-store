@@ -787,6 +787,109 @@ body {
 }
 .bonus-collect.on { display: block; }
 
+/* ---------- FETCH! bonus (2026-11-21) ----------
+   Buster runs the red ball down the yard. Big stylus-friendly buttons,
+   no timers, banked money always safe. Chrome / dark blue + red accent. */
+.fetch-stage {
+  position: relative;
+  margin-top: 14px;
+  height: 96px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #2b3a4f;
+  background: linear-gradient(180deg, rgba(6, 10, 18, .18), rgba(6, 10, 18, .52));
+  box-shadow: inset 0 2px 12px rgba(0, 0, 0, .6);
+}
+.fetch-pearl {
+  position: absolute; left: 4px; bottom: 5px;
+  width: 50px; height: 50px; object-fit: contain;
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .6));
+}
+.fetch-buster {
+  position: absolute; bottom: 7px; left: 13%;
+  width: 64px; height: 64px; object-fit: contain; z-index: 2;
+  transition: left .8s cubic-bezier(.3, .7, .3, 1);
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .65));
+}
+.fetch-buster.dropped { animation: fetchShake .5s ease-in-out; }
+@keyframes fetchShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px) rotate(-3deg); }
+  75% { transform: translateX(5px) rotate(3deg); }
+}
+.fetch-ball {
+  position: absolute; bottom: 3px; left: 19%;
+  width: 30px; height: 30px; object-fit: contain; z-index: 3;
+  transition: left .8s cubic-bezier(.3, .7, .3, 1);
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .55));
+}
+.fetch-ball.rolling { animation: fetchSpin .8s linear; }
+@keyframes fetchSpin { from { transform: rotate(0deg); } to { transform: rotate(320deg); } }
+.fetch-butterfly {
+  position: absolute; top: 4px; left: 56%;
+  font-size: 30px; line-height: 1;
+  opacity: 0; transform: translateY(-6px);
+  transition: opacity .3s ease, transform .3s ease;
+  z-index: 4; pointer-events: none;
+}
+.fetch-butterfly.on { opacity: 1; transform: translateY(0); animation: fetchFlutter .9s ease-in-out infinite alternate; }
+@keyframes fetchFlutter { from { margin-left: -7px; margin-top: 0; } to { margin-left: 7px; margin-top: 5px; } }
+.fetch-ladder { margin-top: 10px; display: flex; justify-content: space-between; gap: 6px; }
+.fetch-marker {
+  flex: 1; text-align: center;
+  padding: 6px 2px 5px;
+  border-radius: 10px;
+  border: 1px solid #2b3a4f;
+  background: rgba(1, 4, 9, .55);
+  opacity: .45;
+  transition: opacity .3s ease, box-shadow .3s ease, border-color .3s ease;
+}
+.fetch-marker img { width: 30px; height: 30px; object-fit: contain; display: block; margin: 0 auto; }
+.fetch-marker span {
+  display: block; margin-top: 2px;
+  font-family: 'Bebas Neue', 'Arial Narrow', Arial, sans-serif;
+  font-size: 16px; letter-spacing: .06em; color: #cfe5ff;
+}
+.fetch-marker.lit { opacity: 1; border-color: #2e9bff; box-shadow: 0 0 12px rgba(46, 155, 255, .45); }
+.fetch-marker.lit span { color: #ffffff; }
+.fetch-meters { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.fetch-meters .bonus-bank { margin: 12px 0 0; }
+.fetch-actions { display: flex; gap: 10px; margin-top: 14px; }
+.fetch-btn {
+  flex: 1;
+  min-height: 64px;
+  padding: 12px 6px;
+  border-radius: 14px;
+  font-family: 'Bebas Neue', 'Arial Narrow', Arial, sans-serif;
+  font-size: 20px;
+  letter-spacing: .08em;
+  cursor: pointer;
+  touch-action: manipulation;
+  border: 1px solid #59667a;
+  color: #eaf3fc;
+  background: linear-gradient(180deg, #2c4a73, #12233c);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 255, 255, .28);
+}
+.fetch-btn:disabled { opacity: .38; cursor: default; box-shadow: none; }
+.fetch-btn:not(:disabled):active { transform: translateY(2px); }
+.fetch-throw-btn {
+  background: linear-gradient(180deg, #e0483c, #a11a12 60%, #7d130c);
+  border-color: #ff8a7d;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .55);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, .6), 0 0 16px rgba(224, 72, 60, .35), inset 0 1px 0 rgba(255, 255, 255, .35);
+}
+.fetch-bank-btn {
+  background: linear-gradient(180deg, var(--blue-hot), var(--blue) 60%, var(--blue-deep));
+  border-color: #7d9cc4;
+  color: #03101f;
+  box-shadow: 0 5px 14px rgba(0, 0, 0, .6), 0 0 16px rgba(46, 155, 255, .35), inset 0 1px 0 rgba(255, 255, 255, .6);
+}
+@media (prefers-reduced-motion: reduce) {
+  .fetch-buster, .fetch-ball { transition: none; }
+  .fetch-buster.dropped, .fetch-ball.rolling, .fetch-butterfly.on { animation: none; }
+}
+
 @media (min-width: 700px) {
   .room { align-items: center; }
   .reel { max-height: 238px; }
@@ -801,7 +904,10 @@ body {
 .celeb {
   position: fixed; inset: 0; z-index: 70;
   display: none; align-items: center; justify-content: center;
-  background: rgba(2, 6, 14, .82);
+  /* Joshua (2026-11-22 00:29 CT): celebration words are TEXT laid over the
+     celebration — no big black box covering the screen. The overlay itself
+     is transparent; the clip (and the cabinet under it) is the picture. */
+  background: transparent;
   padding: 18px;
 }
 .celeb.on { display: flex; }
@@ -810,16 +916,12 @@ body {
   width: min(92vw, 430px);
   text-align: center;
   padding: 34px 20px 26px;
-  border-radius: 18px;
-  background: linear-gradient(180deg, #101b2c, #060b14);
-  border: 2px solid #7fd4ff;
-  box-shadow: 0 0 34px rgba(64, 170, 255, .45), inset 0 0 22px rgba(64, 170, 255, .12);
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 .celeb-frame::before {
-  content: ''; position: absolute; inset: -9px; border-radius: 24px;
-  border: 3px dotted #e8eef5;
-  animation: celebChase 0.9s linear infinite;
-  pointer-events: none;
+  display: none; /* the dotted chase ring belonged to the old panel — gone with it */
 }
 @keyframes celebChase {
   0% { border-color: #e8eef5; box-shadow: 0 0 14px rgba(178, 198, 220, .8); }
@@ -828,23 +930,24 @@ body {
 }
 .celeb-kick {
   font-size: 15px; font-weight: 800; letter-spacing: 4px; color: #e8eef5;
-  text-shadow: 0 0 10px rgba(178, 198, 220, .8);
+  text-shadow: 0 0 10px rgba(178, 198, 220, .8), 0 2px 6px rgba(0, 0, 0, .95), 0 0 24px rgba(0, 0, 0, .65);
 }
 .celeb-title {
   margin-top: 8px;
   font-size: clamp(30px, 9vw, 46px); font-weight: 900; line-height: 1.05;
   color: #eaf6ff;
-  text-shadow: 0 0 18px rgba(64, 170, 255, .9), 0 2px 0 #0a2c4a;
+  text-shadow: 0 0 18px rgba(64, 170, 255, .9), 0 2px 0 #0a2c4a, 0 3px 12px rgba(0, 0, 0, .9), 0 0 34px rgba(0, 0, 0, .55);
   animation: celebPop 0.45s ease-out;
 }
 @keyframes celebPop { 0% { transform: scale(0.6); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-.celeb-sub { margin-top: 10px; font-size: 15px; color: #bfe3ff; }
+.celeb-sub { margin-top: 10px; font-size: 15px; color: #bfe3ff; text-shadow: 0 1px 6px rgba(0, 0, 0, .95), 0 0 16px rgba(0, 0, 0, .7); }
 .celeb-tap {
   margin-top: 18px; font-size: 12px; letter-spacing: 3px; color: #8fb8d8;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, .95), 0 0 12px rgba(0, 0, 0, .7);
   animation: celebBlink 1s ease-in-out infinite;
 }
 @keyframes celebBlink { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
-.celeb.k-fs .celeb-frame { border-color: #9db4cc; box-shadow: 0 0 22px rgba(120, 170, 220, .35), inset 0 0 16px rgba(120, 170, 220, .1); }
+.celeb.k-fs .celeb-frame { border: none; box-shadow: none; }
 .celeb.k-fs .celeb-title { font-size: clamp(26px, 8vw, 38px); }
 @media (prefers-reduced-motion: reduce) {
   .celeb-frame::before, .celeb-title, .celeb-tap { animation: none; }
@@ -1083,7 +1186,7 @@ body {
   pointer-events: none;
 }
 .celeb-video.dead { display: none; }
-.celeb .celeb-frame { position: relative; z-index: 2; background: linear-gradient(180deg, rgba(16, 10, 2, .55), rgba(6, 3, 0, .72)); }
+.celeb .celeb-frame { position: relative; z-index: 2; background: transparent; }
 /* the cabinet light-chase runs with the show */
 body.celebrating .marquee-wrap { animation: cabChase .8s linear infinite; }
 @keyframes cabChase {
@@ -1091,7 +1194,7 @@ body.celebrating .marquee-wrap { animation: cabChase .8s linear infinite; }
   50% { filter: brightness(1.22) drop-shadow(0 0 18px rgba(245, 248, 251, .72)); }
   100% { filter: brightness(1) drop-shadow(0 0 6px rgba(240, 244, 248, .32)); }
 }
-.celeb.k-grand .celeb-frame { border-color: #eef3f8; box-shadow: 0 0 54px rgba(178, 198, 220, .85), inset 0 0 30px rgba(178, 198, 220, .25); }
+.celeb.k-grand .celeb-frame { border: none; box-shadow: none; }
 .celeb.k-grand .celeb-title { color: #f7fafc; text-shadow: 0 0 26px rgba(178, 198, 220, .95), 0 2px 0 #26303c; }
 
 /* ---------- BUSTER'S BONES prize reveal: a white bone carrying its amount ---------- */

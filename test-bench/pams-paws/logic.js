@@ -80,10 +80,11 @@ function evaluateGrid(grid, lineBet, cfg) {
       lineWinTotal += credits;
     }
   }
-  let scatterCount = 0, bonusCount = 0;
+  let scatterCount = 0, bonusCount = 0, ballCount = 0;
   for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) {
     if (grid[r][row] === 'SC') scatterCount++;
     if (grid[r][row] === 'BN') bonusCount++;
+    if (grid[r][row] === 'BA') ballCount++;
   }
   const totalBet = lineBet * PAYLINES.length;
   const capped = Math.min(scatterCount, 5);
@@ -91,7 +92,7 @@ function evaluateGrid(grid, lineBet, cfg) {
   const freeSpins = scatterCount >= 3 ? cfg.scatterSpins[capped] : 0;
   /* BONUS WHEEL trigger: a WHEEL token in each of the reel 2, 3 and 4 windows */
   const wheelHit = [1, 2, 3].every(r => grid[r].includes('WH'));
-  return { lineWins, lineWinTotal, scatterCount, scatterPay, freeSpins, bonusCount, wheelHit };
+  return { lineWins, lineWinTotal, scatterCount, scatterPay, freeSpins, bonusCount, wheelHit, ballCount };
 }
 
 /* Reel motion model (pure + node-testable) — the SAME physics on all
