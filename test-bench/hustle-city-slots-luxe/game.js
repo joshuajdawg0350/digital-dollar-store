@@ -542,6 +542,11 @@
       const lv = $('lever');
       if (lv) { lv.classList.remove('off'); lv.setAttribute('aria-disabled', 'false'); }
       vaultState = null;
+      /* final re-assert (fix, 2026-11-22): whatever happened during the
+         celebration, the closing balance is rendered and saved as the
+         vault hands control back to the main game. */
+      renderReadouts();
+      save();
       st.resolve(st.pay || 0);
     }, delayMs);
   }
@@ -551,7 +556,14 @@
     st.pay = pay;
     if (pay > 0) {
       const before = parseInt(winEl.textContent.replace(/[^0-9]/g, ''), 10) || 0;
+      /* MONEY FIRST (fix, 2026-11-22 — vault "played but didn't pay" on real
+         phones): credit the balance and SAVE it synchronously, before any
+         count-up animation or celebration video runs, then save again after
+         the animation. The award can no longer be lost to a celebration
+         hang, a tab kill, or a render error between winning and banking. */
       credits += pay;
+      save();
+      renderReadouts(before + pay);
       await countUp(winEl, before, before + pay, Math.min(1500, 400 + pay));
       renderReadouts(before + pay);
       save();
@@ -765,7 +777,11 @@
         }
         if (pay > 0) {
           const before = parseInt(winEl.textContent.replace(/[^0-9]/g, ''), 10) || 0;
+          /* MONEY FIRST (fix, 2026-11-22): same rule as the vault award —
+             credit + save synchronously, animation after. */
           credits += pay;
+          save();
+          renderReadouts(before + pay);
           await countUp(winEl, before, before + pay, Math.min(1500, 400 + pay));
           renderReadouts(before + pay);
           save();
@@ -977,7 +993,7 @@
     renderReadouts(0);
     buildPaytable();
     save();
-    msgEl.textContent = 'New game — 1,000 credits on the house. Good luck!';
+    msgEl.textContent = 'You bought back in — 1,000 credits on the house. Good luck!';
     Kit.coin();
   });
   soundBtn.addEventListener('click', () => {

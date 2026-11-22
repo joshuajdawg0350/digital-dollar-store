@@ -1,5 +1,11 @@
 /* Hustle City Slots — Poker Luxe service worker. (c) 2026 J-Dawgs Industries. */
-const CACHE = 'hc-slots-luxe-v13';
+/* v14 (fix, 2026-11-22): code files (HTML/JS/CSS) are NETWORK-FIRST — a phone
+   can never be stuck running a stale or mixed build again (the Skull Vault
+   paid in the current code but older cached builds on real phones did not
+   reflect it, and the BUY BACK IN button never appeared). Media/assets stay
+   cache-first for speed. The precache is fault-tolerant: one missing file
+   can no longer fail the whole install and freeze a phone on an old build. */
+const CACHE = 'hc-slots-luxe-v14';
 const ASSETS = [
   './', './index.html', './style.css', './game.js', './logic.js', './machines.js', './soundkit.js', './cabinet-life.js',
   './assets/sfx/bell.mp3', './assets/sfx/win-small.mp3', './assets/sfx/win-med.mp3',
@@ -22,13 +28,32 @@ const ASSETS = [
   './assets/vault-door.webp', './assets/vault-chips.webp', './assets/vault-skullroom.webp', './assets/vault-led.webp', './assets/vault-wall.webp'
 ];
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+  e.waitUntil(
+    caches.open(CACHE)
+      .then(c => Promise.all(ASSETS.map(a => c.add(a).catch(() => {}))))
+      .then(() => self.skipWaiting())
+  );
 });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
 });
+const CODE_FILE = /\.(?:html|js|css)$/;
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
+  const url = new URL(e.request.url);
+  const isCode = e.request.mode === 'navigate' || CODE_FILE.test(url.pathname);
+  if (isCode) {
+    /* network-first: always serve the current build when online; the cache
+       is only an offline fallback, refreshed on every successful fetch. */
+    e.respondWith(
+      fetch(e.request).then(res => {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, copy)).catch(() => {});
+        return res;
+      }).catch(() => caches.match(e.request, { ignoreSearch: true }).then(hit => hit || caches.match('./index.html')))
+    );
+    return;
+  }
   e.respondWith(
     caches.match(e.request, { ignoreSearch: true }).then(hit => hit || fetch(e.request).then(res => {
       const copy = res.clone();
