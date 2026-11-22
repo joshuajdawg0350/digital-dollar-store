@@ -67,6 +67,16 @@ const CLASSICS = {
      Random-pick EV = (sum of prizes)/2 + completion/9 = 8.90x total bet
      (was 7.42x before the 2026-11-21 x1.2 payout scale below). */
   bonus: { prizes: [0.6, 0.6, 1.2, 1.2, 1.8, 2.4, 3.6, 4.8], completion: 7.2 },
+  /* BONUS WHEEL (2026-11-22, ported from Pearl's Paws): when the garage
+     would open, wheelShare of the time the BONUS WHEEL opens instead —
+     the bonus-door frequency itself is unchanged, so the combined
+     feature frequency is exactly as before. 12 wedges, every wedge pays
+     (multiples of the TOTAL bet of the triggering spin, in wheel order).
+     EV = 89/12 = 7.42x total bet, matching the garage's design EV.
+     tunable — unification pass owns final numbers. */
+  wheel: [30, 2, 8, 3, 15, 5, 3, 8, 4, 2, 6, 3],
+  wheelTiers: { 30: 'GRAND', 15: 'MAJOR', 8: 'MINOR', 4: 'MINI' },
+  wheelShare: 0.5,
   paytable: {
     DL: { 3: 64.8, 4: 232.8, 5: 2650.8 },
     WD: { 3: 38.4, 4: 130.8, 5: 530.4 },

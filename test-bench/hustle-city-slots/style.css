@@ -599,7 +599,7 @@ body {
   text-shadow: 0 0 16px rgba(46, 155, 255, .95), 0 2px 3px rgba(0, 0, 0, .9);
 }
 .bonus-sub { text-align: center; margin-top: 6px; font-size: 14.5px; color: #cfe5ff; }
-.bonus-sub b { color: #ff5347; }
+.bonus-sub b { color: #ffd76a; }
 .bonus-rule {
   margin-top: 10px;
   font-size: 12.5px;
@@ -817,8 +817,8 @@ body {
   100% { border-color: #ffd76a; box-shadow: 0 0 14px rgba(255, 215, 106, .8); }
 }
 .celeb-kick {
-  font-size: 15px; font-weight: 800; letter-spacing: 4px; color: #eef3f9;
-  text-shadow: 0 0 10px rgba(255, 70, 85, .75);
+  font-size: 15px; font-weight: 800; letter-spacing: 4px; color: #ffd76a;
+  text-shadow: 0 0 10px rgba(255, 215, 106, .8);
 }
 .celeb-title {
   margin-top: 8px;
@@ -1286,7 +1286,7 @@ body {
   color: #ffffff; font-size: 16.5px;
   text-shadow: 0 0 12px rgba(64, 170, 255, .6), 0 1px 2px rgba(0, 0, 0, .9);
 }
-.celeb-kick { color: #eef3f9; text-shadow: 0 0 12px rgba(255, 70, 85, .95), 0 1px 2px rgba(0, 0, 0, .9); }
+.celeb-kick { color: #ffe9a8; text-shadow: 0 0 12px rgba(255, 200, 60, .95), 0 1px 2px rgba(0, 0, 0, .9); }
 .celeb-title { color: #ffffff; text-shadow: 0 0 22px rgba(64, 170, 255, 1), 0 2px 0 #06263f, 0 2px 6px rgba(0, 0, 0, .9); }
 .celeb-sub { color: #eaf6ff; }
 .celeb-tap { color: #cfe9ff; }
@@ -1315,3 +1315,134 @@ body, button, input, select, textarea,
 .bonus-title { font-size: 30px; }
 .celeb-title { font-size: clamp(38px, 11vw, 58px); }
 .led { font-size: clamp(19px, 6vw, 26px); }
+
+/* ==========================================================================
+   BONUS WHEEL (2026-11-22, ported from Pearl's Paws, dressed for Casino
+   Classics: garage chrome — dark steel rim with bolts, chrome +
+   electric-blue wedges, red reserved for the GRAND wedge. NO GOLD.)
+   The wheel itself is a layered SVG (lit wedges, machined steel rim, peg
+   spheres) built by game.js; the gloss below is a still sheen of light
+   over it — light doesn't rotate. */
+.wheel-overlay {
+  position: fixed; inset: 0;
+  z-index: 60;
+  pointer-events: none; /* taps pass through to the cabinet — the lever and
+     the main SPIN button under the overlay stay live and spin the wheel */
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  background: rgba(3, 5, 9, .86);
+}
+.wheel-overlay.on { display: flex; }
+.wheel-card {
+  pointer-events: auto;
+  width: min(100%, 430px);
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+  border-radius: 22px;
+  padding: 18px 16px 16px;
+  text-align: center;
+  background:
+    radial-gradient(120% 60% at 50% 0%, rgba(127, 208, 255, .16) 0%, transparent 60%),
+    linear-gradient(170deg, #232f42 0%, #10161f 55%, #05080e 100%);
+  border: 1px solid #7d9cc4;
+  box-shadow: 0 0 0 2px rgba(46, 155, 255, .35), 0 0 44px rgba(46, 155, 255, .22), 0 24px 60px rgba(0, 0, 0, .7);
+}
+.wheel-title {
+  font-family: 'Bebas Neue', 'Arial Narrow', Arial, sans-serif;
+  font-size: 30px; letter-spacing: .12em;
+  color: #ffffff;
+  text-shadow: 0 0 18px rgba(127, 208, 255, .9), 0 2px 3px rgba(0, 0, 0, .9);
+}
+.wheel-rules { margin-top: 8px; font-size: 13.5px; line-height: 1.55; color: #d7e7f7; }
+.wheel-rules .hl { color: #7fd0ff; }
+.wheel-rules .grand { color: #ff6a55; }
+.wheel-wrap {
+  position: relative;
+  width: min(76vw, 320px);
+  aspect-ratio: 1;
+  margin: 16px auto 6px;
+}
+.wheel-wrap::before {
+  content: ""; position: absolute; inset: -11px; border-radius: 50%; z-index: 0;
+  background: conic-gradient(from 210deg, #5a6c84, #0d1420 25%, #aebfd4 50%, #0a0f18 75%, #5a6c84);
+  box-shadow: 0 18px 34px rgba(0, 0, 0, .75), inset 0 2px 3px rgba(215, 227, 242, .35), inset 0 -3px 7px rgba(0, 0, 0, .75);
+}
+.wheel-svg {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  z-index: 1;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, .55));
+}
+.wheel-svg .wlabel {
+  font-size: 15px; font-weight: 900; letter-spacing: .03em;
+  fill: #10161f; text-anchor: middle;
+}
+.wheel-svg .wlabel.tier { font-size: 12px; letter-spacing: .08em; }
+.wheel-svg .wlabel.tierval { font-size: 14.5px; }
+.wheel-svg .wlabel.wtier { fill: #eaf3fc; }
+.wheel-svg .wlabel.wgrand { fill: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,.6); }
+.wheel-hub-sym {
+  font-size: 46px; font-weight: 900; text-anchor: middle;
+  fill: #37e08b;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, .7);
+}
+.wheel-gloss {
+  position: absolute; inset: 0; border-radius: 50%;
+  z-index: 2; pointer-events: none;
+  background:
+    radial-gradient(ellipse 65% 42% at 32% 16%, rgba(255, 255, 255, .20) 0%, rgba(255, 255, 255, .05) 46%, transparent 70%),
+    radial-gradient(ellipse 120% 120% at 50% 50%, transparent 72%, rgba(0, 0, 0, .18) 100%);
+}
+.wheel-pointer {
+  position: absolute;
+  left: 50%; top: -15px;
+  z-index: 3;
+  width: 0; height: 0;
+  transform: translateX(-50%);
+  border-left: 11px solid transparent;
+  border-right: 11px solid transparent;
+  border-top: 20px solid #e8eef5;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8));
+  transform-origin: 50% 0;
+}
+.wheel-pointer.flick { animation: ptrFlick .18s ease-out; }
+@keyframes ptrFlick { 0% { transform: translateX(-50%) rotate(-16deg); } 100% { transform: translateX(-50%) rotate(0deg); } }
+.wheel-prize {
+  display: none;
+  margin: 10px auto 0;
+  width: fit-content;
+  padding: 8px 22px 10px;
+  border-radius: 14px;
+  text-align: center;
+  background: linear-gradient(180deg, #eef5ff 0%, #9db4cc 45%, #4a5c74 80%, #2a3648 100%);
+  border: 1px solid rgba(6, 12, 22, .8);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .6), inset 0 1px 0 #fff, 0 0 22px rgba(127, 208, 255, .45);
+}
+.wheel-prize.on { display: block; animation: celebPop .45s ease-out; }
+.wheel-prize .prize-label, .wheel-prize .prize-unit {
+  display: block;
+  font-size: 10px; font-weight: 900; letter-spacing: .28em;
+  color: #22314a;
+}
+.wheel-prize .prize-amt {
+  display: block;
+  font-size: 30px; font-weight: 900; line-height: 1.05;
+  color: #0a1420;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .65);
+}
+.wheel-msg { margin-top: 10px; font-size: 15px; line-height: 1.5; color: #eaf5ff; min-height: 24px; }
+.wheel-spin-btn {
+  margin-top: 12px;
+  padding: 13px 30px;
+  border-radius: 999px;
+  border: 1px solid #7fd0ff;
+  background: linear-gradient(180deg, #4aa8ff 0%, #2e7fd9 55%, #17457e 100%);
+  box-shadow: 0 3px 0 #0a2547, 0 8px 18px rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .7);
+  font-family: 'Bebas Neue', 'Arial Narrow', Arial, sans-serif;
+  font-size: 18px; letter-spacing: .1em;
+  color: #ffffff;
+  cursor: pointer;
+}
+.wheel-spin-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #0a2547, 0 4px 10px rgba(0, 0, 0, .4); }

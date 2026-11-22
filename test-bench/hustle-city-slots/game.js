@@ -55,6 +55,7 @@
   const bonusGame = $('bonusGame'), bonusBackdrop = $('bonusBackdrop');
   const trunksEl = $('trunks'), bonusBankEl = $('bonusBank');
   const bonusResultEl = $('bonusResult'), bonusCollectBtn = $('bonusCollect');
+  const wheelOverlay = $('wheelOverlay'), wheelMsg = $('wheelMsg'), wheelRotor = $('wheelRotor'), wheelPointer = $('wheelPointer'), wheelPrize = $('wheelPrize');
 
   const START_CREDITS = 1000;
   /* Bet ladder (Joshua, 2026-11-21 13:02 CT): the bet is a TOTAL bet per
@@ -372,7 +373,7 @@
       `<div class="payrow"><div class="thumb"><img src="${ART.X2}" alt="WIN ×2"></div><div class="nm">WIN ×2</div><span class="pv wide">Anywhere on a winning line, this line's win is DOUBLED (×2)</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.X3}" alt="WIN ×3"></div><div class="nm">WIN ×3</div><span class="pv wide">Anywhere on a winning line, this line's win is TRIPLED (×3). Two multipliers on the same line multiply together — ×2 and ×3 pay ×6</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.SC}" alt="SCATTER"></div><div class="nm">SCATTER</div><span class="pv wide">3+ anywhere: pays 2.4× / 9.6× / 48× total bet + 7 / 10 / 15 FREE SPINS at 2× line wins</span></div>` +
-      `<div class="payrow"><div class="thumb"><img src="${ART.BN}" alt="BONUS"></div><div class="nm">BONUS — PICK-A-GARAGE</div><span class="pv wide">3+ anywhere on a paid spin opens the garage: 9 real cars — pop a trunk! 8 trunks hide prizes (0.6×–4.8× total bet), 1 hides SCOTTY. Banked prizes are kept; Scotty ends it. Pop all 8 for a 7.2× GARAGE BONUS</span></div>` +
+      `<div class="payrow"><div class="thumb"><img src="${ART.BN}" alt="BONUS"></div><div class="nm">BONUS — PICK-A-GARAGE / WHEEL</div><span class="pv wide">3+ anywhere on a paid spin opens the garage: 9 real cars — pop a trunk! 8 trunks hide prizes (0.6×–4.8× total bet), 1 hides SCOTTY. Banked prizes are kept; Scotty ends it. Pop all 8 for a 7.2× GARAGE BONUS. Half the time the BONUS WHEEL opens instead: 12 wedges, every wedge pays × total bet — MINI 4× · MINOR 8× · MAJOR 15× · GRAND 30×</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.DL}" alt="BET"></div><div class="nm">BET</div><span class="pv wide">Bets run in $25 steps: $25, $50, $75 … all the way up to $2,500 a spin. A step unlocks the first time your balance reaches it — and stays unlocked even if your balance dips. Use the −25 / +25 buttons or MAX BET. NEW GAME resets you to a $25 bet</span></div>`;
   }
 
@@ -383,12 +384,30 @@
   $('sheetHandle').addEventListener('click', closeSheet);
   sheetBackdrop.addEventListener('click', closeSheet);
 
+  /* ---------- TWO-SECOND MINIMUM-VIEW LOCK (Joshua's standing rule,
+     2026-11-22): "Make sure you have to see a couple seconds at least of
+     the bonus screen before it goes away. It's easy to accidentally push
+     it right past it." Every bonus screen arms its lock the moment it
+     appears; while locked, a tap that would skip / advance / dismiss it
+     is IGNORED — never queued, so a stray tap at 0.5s does not fire at
+     2.0s. After 2 seconds every tap works exactly as before. Deliberate
+     play inside a bonus (trunk picks, COLLECT) is NOT locked, and
+     auto-advance timers are not taps — they run as they always did. */
+  const BONUS_MIN_VIEW_MS = 2000;
+  const mkViewLock = () => ({
+    t: 0,
+    arm() { this.t = performance.now(); },
+    locked() { return performance.now() - this.t < BONUS_MIN_VIEW_MS; }
+  });
+  const celebLock = mkViewLock(), wheelLock = mkViewLock();
+
   /* ---------- celebration screens (Joshua, 2026-11-21 12:52–12:54 CT) ----------
      A bonus or free-spins trigger NEVER cuts straight in: a full-cabinet
      celebration plays first (~3s, tap to skip ahead — never skips the
      prize itself). Input is locked by the overlay while it shows. */
   function celebrate(kind, title, sub, durMs) {
     return new Promise(res => {
+      celebLock.arm(); /* minimum-view lock: no tap-skip for the first 2s */
       celebEl.className = 'celeb on k-' + kind;
       celebKickEl.textContent = kind === 'bonus' ? 'BONUS' : 'FREE SPINS';
       celebTitleEl.textContent = title;
@@ -429,16 +448,189 @@
         done = true;
         celebEl.classList.remove('on');
         celebEl.setAttribute('aria-hidden', 'true');
-        celebEl.removeEventListener('click', finish);
+        celebEl.removeEventListener('click', onTap);
         if (celebVideo) { try { celebVideo.pause(); } catch (e) {} }
         res();
       };
-      celebEl.addEventListener('click', finish);
+      /* a tap inside the first 2s is ignored outright — not queued */
+      const onTap = () => { if (celebLock.locked()) return; finish(); };
+      celebEl.addEventListener('click', onTap);
       setTimeout(finish, durMs);
     });
   }
   /* bigger bets celebrate a touch longer/brighter */
   function celebDur() { return 5000; } /* the show runs the full 5s clip (Joshua, 2026-11-21 19:34 CT), tap to skip */
+
+  /* ---------- CASINO CLASSICS — BONUS WHEEL (2026-11-22, ported from
+     Pearl's Paws at Joshua's order) ----------
+     A layered SVG wheel, not flat wedges on a disc: lit radial-gradient
+     wedges with raised separators, a dark steel rim with bolts, real peg
+     spheres at every boundary, a glass gloss that does NOT rotate.
+     Dressed for Classics: garage chrome — chrome + electric-blue wedges,
+     red reserved for the GRAND wedge. NO GOLD anywhere. The wedge table
+     is cfg.wheel — physics mirror Pearl's: the winning wedge is drawn
+     first, then the wheel spins (6 full turns, quartic ease-out,
+     real-kit peg clicks + pointer flick, near-GRAND bell) and settles
+     exactly on it. The wheel opens INSTEAD of Pick-a-Garage on
+     cfg.wheelShare of bonus triggers; the garage itself is untouched. */
+  const WEDGES = cfg.wheel, TIERS = cfg.wheelTiers || {};
+  const WSEG = 360 / WEDGES.length;
+  let wheelBuilt = false, wheelAngle = 0, wheelSpinning = false, wheelArmed = null;
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  function wedgeFill(v, i) {
+    if (TIERS[v] === 'GRAND') return 'url(#wgGrand)';
+    if (TIERS[v] === 'MAJOR') return 'url(#wgMajor)';
+    if (TIERS[v] === 'MINOR') return 'url(#wgMinor)';
+    if (TIERS[v] === 'MINI') return 'url(#wgMini)';
+    return i % 2 ? 'url(#wgA)' : 'url(#wgB)';
+  }
+  function buildWheel() {
+    if (wheelBuilt) return;
+    wheelBuilt = true;
+    /* machined bolts around the static steel rim */
+    const bolts = $('wheelBolts');
+    if (bolts) for (let i = 0; i < 12; i++) {
+      const a = (i * 30 - 90) * Math.PI / 180;
+      const b = document.createElementNS(SVGNS, 'circle');
+      b.setAttribute('cx', 170 + 165 * Math.cos(a)); b.setAttribute('cy', 170 + 165 * Math.sin(a));
+      b.setAttribute('r', 3.4); b.setAttribute('fill', 'url(#wgPeg)'); b.setAttribute('stroke', 'rgba(0,0,0,.55)'); b.setAttribute('stroke-width', '0.7');
+      bolts.appendChild(b);
+    }
+    const cx = 170, cy = 170, rO = 148, rI = 54;
+    const pt = (r, aDeg) => { const a = (aDeg - 90) * Math.PI / 180; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; };
+    WEDGES.forEach((v, i) => {
+      const a0 = i * WSEG - WSEG / 2, a1 = a0 + WSEG;
+      const [x0, y0] = pt(rO, a0), [x1, y1] = pt(rO, a1), [x2, y2] = pt(rI, a1), [x3, y3] = pt(rI, a0);
+      const p = document.createElementNS(SVGNS, 'path');
+      p.setAttribute('d', `M ${x0} ${y0} A ${rO} ${rO} 0 0 1 ${x1} ${y1} L ${x2} ${y2} A ${rI} ${rI} 0 0 0 ${x3} ${y3} Z`);
+      p.setAttribute('fill', wedgeFill(v, i));
+      p.setAttribute('stroke', 'rgba(6,10,18,.85)');
+      p.setAttribute('stroke-width', '1.6');
+      wheelRotor.appendChild(p);
+      /* label group at the wedge center angle */
+      const g = document.createElementNS(SVGNS, 'g');
+      const mid = i * WSEG;
+      g.setAttribute('transform', `rotate(${mid} ${cx} ${cy})`);
+      if (TIERS[v]) {
+        const t1 = document.createElementNS(SVGNS, 'text');
+        t1.setAttribute('x', cx); t1.setAttribute('y', cy - rO + 48);
+        t1.setAttribute('class', 'wlabel tier' + (TIERS[v] === 'GRAND' ? ' wgrand' : ' wtier'));
+        t1.textContent = TIERS[v];
+        const t2 = document.createElementNS(SVGNS, 'text');
+        t2.setAttribute('x', cx); t2.setAttribute('y', cy - rO + 66);
+        t2.setAttribute('class', 'wlabel tierval' + (TIERS[v] === 'GRAND' ? ' wgrand' : ' wtier'));
+        t2.textContent = v + '×';
+        g.appendChild(t1); g.appendChild(t2);
+      } else {
+        const t = document.createElementNS(SVGNS, 'text');
+        t.setAttribute('x', cx); t.setAttribute('y', cy - rO + 66);
+        t.setAttribute('class', 'wlabel');
+        t.textContent = v + '×';
+        g.appendChild(t);
+      }
+      wheelRotor.appendChild(g);
+      /* a machined peg sphere on every boundary */
+      const [px, py] = pt(157, a0);
+      const peg = document.createElementNS(SVGNS, 'circle');
+      peg.setAttribute('cx', px); peg.setAttribute('cy', py); peg.setAttribute('r', 5.6);
+      peg.setAttribute('fill', 'url(#wgPeg)');
+      peg.setAttribute('stroke', 'rgba(0,0,0,.6)');
+      peg.setAttribute('stroke-width', '0.8');
+      wheelRotor.appendChild(peg);
+    });
+  }
+  function spinWheelPhysics(targetIdx) {
+    return new Promise(resolve => {
+      wheelSpinning = true;
+      const current = wheelAngle % 360;
+      let delta = ((-targetIdx * WSEG) - current) % 360;
+      if (delta < 0) delta += 360;
+      const total = 360 * 6 + delta;
+      const start = wheelAngle;
+      const dur = 5600 + Math.random() * 700;
+      const easeOut = u => 1 - Math.pow(1 - u, 4.2);
+      let lastPeg = Math.floor(start / WSEG);
+      const t0 = performance.now();
+      (function frame(now) {
+        const u = Math.min(1, (now - t0) / dur);
+        wheelAngle = start + total * easeOut(u);
+        wheelRotor.setAttribute('transform', `rotate(${wheelAngle} 170 170)`);
+        const peg = Math.floor(wheelAngle / WSEG);
+        if (peg !== lastPeg) {
+          lastPeg = peg;
+          if (u < 0.985) {
+            let nearGrand = false;
+            if (u > 0.8) {
+              const gCenter = WEDGES.indexOf(Math.max(...WEDGES)) * WSEG;
+              const ptr = (((-wheelAngle) % 360) + 360) % 360;
+              let d = Math.abs(ptr - gCenter); if (d > 180) d = 360 - d;
+              nearGrand = d < WSEG * 1.1;
+            }
+            if (nearGrand && Kit.nearBell) Kit.nearBell(); else Kit.peg();
+            wheelPointer.classList.remove('flick'); void wheelPointer.offsetWidth; wheelPointer.classList.add('flick');
+          }
+        }
+        if (u < 1) requestAnimationFrame(frame);
+        else { wheelSpinning = false; resolve(); }
+      })(t0);
+    });
+  }
+  function runBonusWheel(betAtTrigger, forceIdx) {
+    return new Promise(resolve => {
+      buildWheel();
+      wheelOverlay.classList.add('on');
+      wheelOverlay.setAttribute('aria-hidden', 'false');
+      wheelLock.arm(); /* minimum-view lock: the wheel must be seen 2s before a tap can spin it */
+      wheelPrize.classList.remove('on');
+      wheelMsg.textContent = 'Pull the arm — or tap SPIN!';
+      msgEl.textContent = 'BONUS WHEEL! Pull the arm or tap SPIN to spin the wheel!';
+      betDownBtn.disabled = true; betUpBtn.disabled = true; maxBetBtn.disabled = true;
+      spinBtn.disabled = false;
+      spinBtn.classList.remove('stop');
+      spinFace.textContent = 'SPIN THE WHEEL';
+      const lv = $('lever');
+      if (lv) { lv.classList.remove('off'); lv.setAttribute('aria-disabled', 'false'); }
+      wheelArmed = async () => {
+        wheelArmed = null;
+        const idx = (typeof forceIdx === 'number') ? forceIdx : Math.floor(Math.random() * WEDGES.length);
+        const val = WEDGES[idx];
+        wheelMsg.textContent = 'The wheel is spinning…';
+        await spinWheelPhysics(idx);
+        const pay = Math.round(val * betAtTrigger);
+        {
+          const tier = TIERS[val];
+          wheelPrize.querySelector('.prize-amt').textContent = '+' + fmt(pay);
+          wheelPrize.classList.add('on');
+          if (tier === 'GRAND') {
+            wheelMsg.innerHTML = `GRAND JACKPOT! The wheel pays <b>${fmt(pay)}</b> credits!`;
+            Kit.jackpot();
+            await celebrate('bonus', 'GRAND JACKPOT!', `Top wedge on the wheel — ${fmt(pay)} credits!`, celebDur());
+          } else if (tier) {
+            wheelMsg.innerHTML = `${tier} JACKPOT! The wheel pays <b>${fmt(pay)}</b> credits!`;
+            Kit.jackpot();
+          } else {
+            wheelMsg.innerHTML = `The wheel pays <b>${fmt(pay)}</b> credits!`;
+            Kit.win(val);
+          }
+        }
+        if (pay > 0) {
+          const before = parseInt(winEl.textContent.replace(/[^0-9]/g, ''), 10) || 0;
+          credits += pay;
+          await countUp(winEl, before, before + pay, Math.min(1500, 400 + pay));
+          renderReadouts(before + pay);
+          lastBonusPaid = pay;
+          lastBonusWhat = 'Bonus Wheel';
+          save();
+        }
+        setTimeout(() => {
+          wheelOverlay.classList.remove('on');
+          wheelOverlay.setAttribute('aria-hidden', 'true');
+          spinFace.textContent = 'SPIN';
+          resolve(pay);
+        }, 2100);
+      };
+    });
+  }
 
   /* ---------- spin flow ---------- */
   async function doSpin(isFree) {
@@ -519,7 +711,7 @@
         levelUpMsg = null;
       } else {
         msgEl.textContent = levelUpMsg || (lastBonusPaid > 0
-          ? `Pick-a-Garage paid ${fmt(lastBonusPaid)} credits!`
+          ? `${lastBonusWhat} paid ${fmt(lastBonusPaid)} credits!`
           : totalWin > 0
             ? (ev.lineWins.length ? `Winner! ${ev.lineWins.map(w => `${w.count}× ${NAMES[w.symbol]}${w.mult > 1 ? ` (×${w.mult})` : ''}`).join(' · ')}` : 'Scatter pay!')
             : 'Set your bet, then press SPIN — or pull the arm.');
@@ -536,8 +728,19 @@
       await celebrate('bonus', 'FIVE OF A KIND!', 'Five on a line — that is a big one!', celebDur());
     }
     if (bonusHit) {
-      /* celebrate first, THEN the garage; any free spins won on this spin
-         run after it (Joshua, 12:52 CT) */
+      /* celebrate first, THEN the bonus; any free spins won on this spin
+         run after it (Joshua, 12:52 CT). BONUS WHEEL split (2026-11-22):
+         on cfg.wheelShare of triggers the wheel opens INSTEAD of the
+         garage — the roll happens here, at the garage dispatch, so the
+         bonus-door frequency (and the combined feature frequency) is
+         unchanged by construction. */
+      if (Math.random() < (cfg.wheelShare ?? 0.5)) {
+        msgEl.textContent = `${ev.bonusCount} BONUS doors — the bonus wheel is open!`;
+        await celebrate('bonus', 'BONUS WHEEL!', `${ev.bonusCount} BONUS doors hit — spin the wheel!`, celebDur());
+        await runBonusWheel(totalBet());
+        finishTurn();
+        return;
+      }
       msgEl.textContent = `${ev.bonusCount} BONUS doors — the garage is open!`;
       await celebrate('bonus', 'PICK-A-GARAGE!', `${ev.bonusCount} BONUS doors hit — pop a trunk, dodge Scotty!`, celebDur());
       openBonus(totalBet(), finishTurn);
@@ -552,7 +755,7 @@
      prize inside, or on Scotty. Banked prizes are KEPT even when
      Scotty ends the round; popping all 8 prize trunks adds the
      completion (GARAGE) bonus. */
-  let bonusDeck = null, lastBonusPaid = 0;
+  let bonusDeck = null, lastBonusPaid = 0, lastBonusWhat = 'Pick-a-Garage';
   function openBonus(tb, done) {
     setControlsEnabled(false);
     Kit.garageDoor(); /* the real door rolls up as the round starts */
@@ -622,6 +825,7 @@
       bonusBackdrop.classList.remove('on');
       bonusDeck = null;
       lastBonusPaid = banked;
+      lastBonusWhat = 'Pick-a-Garage';
       done();
     };
     bonusCollectBtn.addEventListener('click', collect);
@@ -632,12 +836,20 @@
     deck: () => bonusDeck,
     setCredits: n => { credits = Math.max(0, n | 0); notePeak(false); renderReadouts(); newGameBtn.classList.toggle('on', credits < totalBet()); save(); },
     celebrate: (kind, title, sub, dur) => celebrate(kind || 'bonus', title || 'PICK-A-GARAGE!', sub || '', dur || 3000),
+    wheel: (idx) => runBonusWheel(totalBet(), idx),
     kit: Kit,
-    getState: () => ({ credits, bet: betSel, betPerLine: lineBet(), maxBet: unlockedMax(), peak, spinning, rolling: RollSound.isActive(), rollLevel: Math.round(RollSound.level() * 100) / 100, stops: stops.slice() })
+    getState: () => ({ credits, bet: betSel, betPerLine: lineBet(), maxBet: unlockedMax(), peak, spinning, wheelArmed: !!wheelArmed, wheelSpinning, rolling: RollSound.isActive(), rollLevel: Math.round(RollSound.level() * 100) / 100, stops: stops.slice() })
   };
   function runFreeSpins() { if (freeSpinsLeft > 0 && !spinning) doSpin(true); }
 
-  spinBtn.addEventListener('click', () => { if (spinning) { stopAllReels(); return; } ac(); doSpin(false); });
+  $('wheelSpinBtn').addEventListener('click', () => {
+    if (wheelArmed) { if (wheelLock.locked()) return; const f = wheelArmed; ac(); f(); }
+  });
+  spinBtn.addEventListener('click', () => {
+    if (wheelArmed) { if (wheelLock.locked()) return; const f = wheelArmed; ac(); f(); return; }
+    if (spinning) { stopAllReels(); return; }
+    ac(); doSpin(false);
+  });
 
   /* ---------- pull arm (lever): drag it down, it springs back and spins.
      Tap = scripted full pull. Both paths fire the exact SPIN button path. ---------- */
@@ -648,7 +860,7 @@
     leverArm.style.transition = animate ? 'transform .5s cubic-bezier(.25,1.35,.4,1)' : 'none';
     leverArm.style.transform = `translateY(${y}px)`;
   }
-  function leverFire() { if (!spinning && !spinBtn.disabled) spinBtn.click(); }
+  function leverFire() { if (wheelArmed) { spinBtn.click(); return; } if (!spinning && !spinBtn.disabled) spinBtn.click(); }
   function leverScriptedPull() {
     leverArm.style.transition = 'transform .16s ease-in';
     leverArm.style.transform = `translateY(${LEVER_MAX}px)`;

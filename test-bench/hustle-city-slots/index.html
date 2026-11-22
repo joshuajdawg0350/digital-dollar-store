@@ -6,18 +6,6 @@
 <meta name="theme-color" content="#05070a">
 <title>Hustle City Slots — Casino Classics</title>
 <meta name="description" content="Hustle City Slots — Casino Classics. A chrome & blue 5-reel, 20-line casino slot machine. Play credits only — no cash value, no prizes.">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Hustle City Slots — Casino Classics — J-Dawgs Industries">
-<meta property="og:description" content="Hustle City Slots — Casino Classics. A chrome & blue 5-reel, 20-line casino slot machine. Play credits only — no cash value, no prizes.">
-<meta property="og:url" content="https://digitaldollarstore.org/test-bench/hustle-city-slots/">
-<meta property="og:image" content="https://digitaldollarstore.org/test-bench/hustle-city-slots/thumb.jpg">
-<meta property="og:image:width" content="900">
-<meta property="og:image:height" content="1200">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Hustle City Slots — Casino Classics — J-Dawgs Industries">
-<meta name="twitter:description" content="Hustle City Slots — Casino Classics. A chrome & blue 5-reel, 20-line casino slot machine. Play credits only — no cash value, no prizes.">
-<meta name="twitter:image" content="https://digitaldollarstore.org/test-bench/hustle-city-slots/thumb.jpg">
-
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -158,6 +146,39 @@
   </div>
 </section>
 
+<div class="wheel-overlay" id="wheelOverlay" aria-hidden="true" aria-label="Bonus wheel">
+  <div class="wheel-card">
+    <h2 class="wheel-title">BONUS WHEEL</h2>
+    <p class="wheel-rules">12 wedges — <b>every wedge pays</b>, × your total bet:<br>
+      <b class="hl">MINI 4× · MINOR 8× · MAJOR 15×</b> — and the red <b class="grand">GRAND 30×</b> wedge is the top prize on the wheel.</p>
+    <div class="wheel-wrap">
+      <div class="wheel-pointer" id="wheelPointer"></div>
+      <svg class="wheel-svg" id="wheelSvg" viewBox="0 0 340 340" role="img" aria-label="Bonus wheel">
+        <defs>
+          <radialGradient id="wgA" cx="50%" cy="50%" r="65%"><stop offset="55%" stop-color="#f2f5f8"/><stop offset="100%" stop-color="#b9c4d2"/></radialGradient>
+          <radialGradient id="wgB" cx="50%" cy="50%" r="65%"><stop offset="55%" stop-color="#a8d4ff"/><stop offset="100%" stop-color="#4a90d9"/></radialGradient>
+          <radialGradient id="wgMini" cx="50%" cy="50%" r="65%"><stop offset="55%" stop-color="#7d9cc4"/><stop offset="100%" stop-color="#46648f"/></radialGradient>
+          <radialGradient id="wgMinor" cx="50%" cy="50%" r="65%"><stop offset="55%" stop-color="#5d7ea6"/><stop offset="100%" stop-color="#33507a"/></radialGradient>
+          <radialGradient id="wgMajor" cx="50%" cy="50%" r="65%"><stop offset="55%" stop-color="#46648f"/><stop offset="100%" stop-color="#1d2f4d"/></radialGradient>
+          <radialGradient id="wgGrand" cx="50%" cy="50%" r="65%"><stop offset="40%" stop-color="#ff7a5c"/><stop offset="80%" stop-color="#e03428"/><stop offset="100%" stop-color="#8f130c"/></radialGradient>
+          <radialGradient id="wgPeg" cx="35%" cy="30%" r="80%"><stop offset="0%" stop-color="#eef5ff"/><stop offset="38%" stop-color="#9db4cc"/><stop offset="68%" stop-color="#4a5c74"/><stop offset="100%" stop-color="#10161f"/></radialGradient>
+          <linearGradient id="wgRim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a4658"/><stop offset="22%" stop-color="#d7e3f2"/><stop offset="48%" stop-color="#5a6c84"/><stop offset="74%" stop-color="#aebfd4"/><stop offset="100%" stop-color="#141c28"/></linearGradient>
+          <radialGradient id="wgHub" cx="38%" cy="32%" r="85%"><stop offset="0%" stop-color="#eef5ff"/><stop offset="45%" stop-color="#8fa5bd"/><stop offset="100%" stop-color="#2a3648"/></radialGradient>
+        </defs>
+        <circle cx="170" cy="170" r="165" fill="none" stroke="url(#wgRim)" stroke-width="11"/>
+        <g id="wheelBolts"></g>
+        <g id="wheelRotor"></g>
+        <circle cx="170" cy="170" r="52" fill="url(#wgHub)" stroke="rgba(6,12,22,.8)" stroke-width="2"/>
+        <text x="170" y="190" class="wheel-hub-sym">$</text>
+      </svg>
+      <div class="wheel-gloss" aria-hidden="true"></div>
+    </div>
+    <div class="wheel-prize" id="wheelPrize"><span class="prize-label">YOU WIN</span><span class="prize-amt">+0</span><span class="prize-unit">CREDITS</span></div>
+    <div class="wheel-msg" id="wheelMsg" aria-live="polite">Pull the arm — or tap SPIN!</div>
+    <button class="wheel-spin-btn" id="wheelSpinBtn" type="button">SPIN THE WHEEL</button>
+  </div>
+</div>
+
 <div class="sheet-backdrop" id="sheetBackdrop"></div>
 <section class="sheet" id="paySheet" aria-hidden="true" aria-label="Paytable and how to play">
   <div class="sheet-handle" id="sheetHandle"><span></span></div>
@@ -176,7 +197,7 @@
       <li><b>No blank stops:</b> every reel position is a real symbol — all 15 windows show a symbol on every spin.</li>
       <li><b>CHERRY</b> pays from just 2 on a line.</li>
       <li>3+ <b>SCATTER</b> anywhere pays 2.4× / 9.6× / 48× your total bet and awards 7 / 10 / 15 <b>FREE SPINS</b> — line wins pay <b>double</b> in free spins, and free spins can retrigger.</li>
-      <li>3+ <b>BONUS</b> garage doors anywhere on a paid spin opens <b>PICK-A-GARAGE</b>: 9 cars — pop their trunks. 8 trunks hide prizes (0.6×–4.8× your total bet) and 1 hides SCOTTY. Prizes you find are banked and kept; find SCOTTY and the bonus ends — un-popped trunks are lost. Pop all 8 and a 7.2× GARAGE BONUS is added.</li>
+      <li>3+ <b>BONUS</b> garage doors anywhere on a paid spin opens <b>PICK-A-GARAGE</b>: 9 cars — pop their trunks. 8 trunks hide prizes (0.6×–4.8× your total bet) and 1 hides SCOTTY. Prizes you find are banked and kept; find SCOTTY and the bonus ends — un-popped trunks are lost. Pop all 8 and a 7.2× GARAGE BONUS is added. Half the time the <b>BONUS WHEEL</b> opens instead: 12 wedges, every wedge pays × your total bet — MINI 4× · MINOR 8× · MAJOR 15× · GRAND 30×.</li>
       <li>Credits are saved on this device. Out of credits? Hit <b>NEW GAME</b> to start over with a fresh 1,000.</li>
       <li><b>Garage car photos</b> (real photographs via Wikimedia Commons): Mustang — Coolalabright, CC BY 4.0 · Camaro SS — Alexander Migl, CC BY-SA 4.0 · Challenger — Damian B Oh, CC BY-SA 4.0 · Corvette C3 — Alexander Migl, CC BY-SA 4.0 · Countach — Matti Blume, CC BY-SA 4.0 · Testarossa — Johannes Maximilian, CC BY-SA 4.0 · Porsche 911 — David Villarreal Fernández, CC BY-SA 2.0 · Cadillac CTS-V — Matti Blume (MB-one), CC BY-SA 3.0 · Ford GT — Mannequin-, CC BY 2.0. Full source list in the game's creation record.</li>
     </ul>
