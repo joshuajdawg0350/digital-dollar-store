@@ -133,7 +133,7 @@
     return grid;
   }
   function clearWinMarks() {
-    document.querySelectorAll('.cell.win,.cell.scatterhit,.cell.bonushit').forEach(c => c.classList.remove('win', 'scatterhit', 'bonushit'));
+    document.querySelectorAll('.cell.win,.cell.scatterhit,.cell.bonushit,.cell.scatterpop').forEach(c => c.classList.remove('win', 'scatterhit', 'bonushit', 'scatterpop'));
     winFlash.classList.remove('on');
   }
   function markCell(reel, row, cls) {
@@ -345,7 +345,7 @@
       `<div class="payrow"><div class="thumb"><img src="${ART.WD}" alt="WILD"></div><div class="nm">WILD</div><span class="pv wide">Substitutes for every symbol except SCATTER</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.X2}" alt="WIN ×2"></div><div class="nm">WIN ×2</div><span class="pv wide">Anywhere on a winning line, this line's win is DOUBLED (×2)</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.X3}" alt="WIN ×3"></div><div class="nm">WIN ×3</div><span class="pv wide">Anywhere on a winning line, this line's win is TRIPLED (×3). Two multipliers on the same line multiply together — ×2 and ×3 pay ×6</span></div>` +
-      `<div class="payrow"><div class="thumb"><img src="${ART.SC}" alt="SCATTER"></div><div class="nm">SCATTER</div><span class="pv wide">3+ anywhere: pays 2× / 8× / 40× total bet + 7 / 10 / 15 FREE SPINS at 2× line wins</span></div>` +
+      `<div class="payrow"><div class="thumb"><img src="${ART.SC}" alt="SCATTER"></div><div class="nm">SCATTER</div><span class="pv wide">3+ anywhere: pays 2× / 8× / 40× total bet + 7 / 10 / 15 FREE SPINS at 2× line wins. The third scatter slows the reels, they SLAM to a stop, and the scatters grow and POP before the free spins open.</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.DL}" alt="BONUS DOOR"></div><div class="nm">BONUS DOOR</div><span class="pv wide">3+ anywhere opens the BONUS DOOR — the ONLY way into the bonus games. Behind the door: the DICE ROLL (pot starts at 0 / ${fmt(Math.round(cfg.bonusStart[4] * lineBet()))} / ${fmt(Math.round(cfg.bonusStart[5] * lineBet()))} for 3 / 4 / 5 dollars; every roll adds its total × ${cfg.diceUnit} × line bet; roll a 7 and the pot BUSTS), the BONUS WHEEL (12 wedges, every wedge pays × your total bet — MINI 1× · MINOR 2× · MAJOR 3× · GRAND 4×), and BRIDGE RUN in the bonus pool</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.VT}" alt="BET"></div><div class="nm">BET</div><span class="pv wide">Bets run in $25 steps: $25, $50, $75 … all the way up to $2,500 a spin. A step unlocks the first time your balance reaches it — and stays unlocked even if your balance dips. Use the −25 / +25 buttons or MAX BET. NEW GAME resets you to a $25 bet. Your current max is on the machine under the buttons</span></div>`;
   }
@@ -1162,6 +1162,20 @@
     });
   }
 
+  /* ---------- SCATTER beats 3-4: grow + pop (Joshua's standard) ---------- */
+  function scatterPopSequence(cells) {
+    return new Promise(res => {
+      cells.forEach((c, i) => {
+        const track = reelsEl[c.r].firstElementChild;
+        const cell = track && track.children[c.row];
+        if (cell) { cell.classList.add('scatterpop'); cell.style.animationDelay = (i * 0.13) + 's'; }
+        setTimeout(() => { try { Kit.play('bell', { rate: 1.15 + i * 0.09 }); } catch (e) {} }, 420 + i * 130);
+      });
+      try { Kit.play('coins'); } catch (e) {}
+      setTimeout(res, 620 + cells.length * 130 + 450);
+    });
+  }
+
   /* ---------- spin flow ---------- */
   async function doSpin(isFree) {
     if (spinning) return;
@@ -1199,9 +1213,22 @@
       }
     }
     if (slowReel >= 0) durations[slowReel] += 1700;
+    /* SCATTER anticipation (Joshua's standard, 2026-11-22 16:37 CT): the
+       scatters get the same treatment as the dollars — the reel that
+       lands the THIRD scatter crawls in slow motion and slams. */
+    const scPerReel = dealtGrid.map(col => col.filter(s => s === 'SC').length);
+    let scatterSlowReel = -1;
+    if (scPerReel.reduce((a, b) => a + b, 0) >= 3) {
+      let cum = 0;
+      for (let r = 0; r < 5; r++) {
+        if (cum === 2 && scPerReel[r] > 0) { scatterSlowReel = r; break; }
+        cum += scPerReel[r];
+      }
+    }
+    if (scatterSlowReel >= 0 && scatterSlowReel !== slowReel) durations[scatterSlowReel] += 1700;
     setStopMode(true);
     if (soundOn) Kit.rollStart();
-    await Promise.all(finalStops.map((_, r) => spinReel(r, finalStops, durations[r], r === slowReel ? { slow: true } : null)));
+    await Promise.all(finalStops.map((_, r) => spinReel(r, finalStops, durations[r], (r === slowReel || r === scatterSlowReel) ? { slow: true } : null)));
     Kit.rollStop(false);
     setStopMode(false);
     spinBtn.disabled = true; /* payout / bonus phase: button rests until controls return */
@@ -1219,6 +1246,15 @@
     }
     if (ev.scatterCount >= 1) for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) if (grid[r][row] === 'SC') markCell(r, row, 'scatterhit');
     if (ev.bonus) for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) if (grid[r][row] === 'DL') markCell(r, row, 'bonushit');
+
+    if (ev.scatterCount >= 3) {
+      /* SCATTER beats 3-4: every landed scatter swells up and pops, one
+         after another, before the free spins open — the same treatment
+         the dollars get (Joshua's standard, 2026-11-22). */
+      const sCells = [];
+      for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) if (grid[r][row] === 'SC') sCells.push({ r, row });
+      await scatterPopSequence(sCells);
+    }
 
     if (totalWin > 0) {
       winFlash.classList.add('on');
