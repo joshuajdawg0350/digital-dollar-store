@@ -364,7 +364,46 @@
      A bonus or free-spins trigger NEVER cuts straight in: a full-cabinet
      celebration plays first (~3s, tap to skip ahead — never skips the
      prize itself). Input is locked by the overlay while it shows. */
+  /* ---------- bonus celebration VIDEO (Joshua, 2026-11-21 19:34 CT) ----------
+     Engine-Rev Jackpot (celebration-hc-5) is Luxe's bonus celebration:
+     full-screen, the full 5.0s, tap-to-skip, its OWN audio unmuted (no
+     sound-kit fanfare under it). The ★ BONUS ★ title rides as a separate
+     overlay layer (assets/celeb-title.png) — TITLE HOLD: Joshua's graffiti
+     pick swaps that one file when it lands. */
+  const celebVideoEl = $('celebVideo'), celebVideoVid = $('celebVideoEl');
+  function playBonusVideo() {
+    return new Promise(res => {
+      let done = false;
+      const finish = () => {
+        if (done) return;
+        done = true;
+        try { celebVideoVid.pause(); } catch (e) {}
+        celebVideoEl.classList.remove('on');
+        celebVideoEl.setAttribute('aria-hidden', 'true');
+        celebVideoEl.removeEventListener('click', finish);
+        celebVideoVid.removeEventListener('ended', finish);
+        res();
+      };
+      celebVideoEl.classList.add('on');
+      celebVideoEl.setAttribute('aria-hidden', 'false');
+      celebVideoEl.addEventListener('click', finish);
+      celebVideoVid.addEventListener('ended', finish);
+      setTimeout(finish, 5600); /* safety net: the player is never trapped */
+      try {
+        celebVideoVid.currentTime = 0;
+        celebVideoVid.muted = false;
+        const p = celebVideoVid.play();
+        if (p && p.catch) p.catch(() => {
+          /* browser blocked unmuted playback: start muted rather than
+             not at all; the overlay still shows the full celebration */
+          celebVideoVid.muted = true;
+          celebVideoVid.play().catch(() => {});
+        });
+      } catch (e) {}
+    });
+  }
   function celebrate(kind, title, sub, durMs) {
+    if (kind === 'bonus') return playBonusVideo();
     return new Promise(res => {
       celebEl.className = 'celeb on k-' + kind;
       celebKickEl.textContent = kind === 'bonus' ? '★ BONUS ★' : '★ FREE SPINS ★';
@@ -401,10 +440,23 @@
     if (v === Math.max(...WEDGES)) return 'JACKPOT';
     return '×' + v;
   }
-  function wedgeColor(v, i) {
-    if (v === 0) return '#ff1e3c'; /* BANKRUPT wears the electric red (2026-11-21 accent hint) */
-    if (v === Math.max(...WEDGES)) return '#c9a227';
-    return i % 2 ? '#0d2c56' : '#12407c';
+  /* Wedge shading (2026-11-21 wheel realism rebuild): every wedge is a lit
+     physical panel — light catches its leading edge and falls toward the
+     trailing edge. Presentation only; wedge values and order untouched. */
+  function shade(hex, f) {
+    const n = parseInt(hex.slice(1), 16);
+    let r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+    if (f >= 0) { r += (255 - r) * f; g += (255 - g) * f; b += (255 - b) * f; }
+    else { r *= 1 + f; g *= 1 + f; b *= 1 + f; }
+    return `rgb(${r | 0},${g | 0},${b | 0})`;
+  }
+  function wedgeBase(v, i) {
+    /* Joshua 2026-11-21: "No gold!" + wheel example #8 adopted — black
+       leather wedges, two deep-red accent wedges (the two specials),
+       chrome hardware. Palette: chrome, black, red. */
+    if (v === 0) return '#7a0a18'; /* BANKRUPT: deepest red leather */
+    if (v === Math.max(...WEDGES)) return '#c01430'; /* JACKPOT: rich lit red leather */
+    return '#16191f'; /* standard wedges: black leather */
   }
   function buildWheel() {
     if (wheelBuilt) return;
@@ -414,8 +466,26 @@
        all children of the wheel so they spin with it, physics untouched */
     const lines = document.createElement('div');
     lines.className = 'wheel-lines';
-    lines.style.background = `radial-gradient(circle, transparent 56%, rgba(0, 0, 0, .26) 88%, rgba(0, 0, 0, .52) 100%), repeating-conic-gradient(from ${-WSEG / 2}deg, rgba(0, 0, 0, .42) 0deg 1.6deg, transparent 1.6deg ${WSEG}deg)`;
+    /* layered light (2026-11-21 wheel realism rebuild): a lit dome over the
+       face, a chrome pinstripe ring, per-wedge bevel catch-light at each
+       leading edge and shade at each trailing edge, rim falloff */
+    lines.style.background = [
+      'radial-gradient(circle at 50% 38%, rgba(255, 255, 255, .17) 0%, rgba(255, 255, 255, .05) 34%, transparent 58%)',
+      'radial-gradient(circle, transparent 61.5%, rgba(230, 238, 246, .42) 62.6%, rgba(70, 80, 95, .35) 63.6%, transparent 64.8%)',
+      'repeating-conic-gradient(from 0deg, rgba(255, 255, 255, .014) 0deg 1deg, transparent 1deg 2deg)',
+      `repeating-conic-gradient(from ${-WSEG / 2}deg, rgba(0, 0, 0, .5) 0deg 1deg, rgba(255, 255, 255, .14) 1deg 3.4deg, transparent 3.4deg ${WSEG - 3.2}deg, rgba(0, 0, 0, .24) ${WSEG}deg)`,
+      'radial-gradient(circle, transparent 56%, rgba(0, 0, 0, .26) 88%, rgba(0, 0, 0, .55) 100%)'
+    ].join(',');
     wheelEl.appendChild(lines);
+    /* motion-streak layer (spin feel): sits over the face under the glass,
+       faded in by the spin loop in proportion to the wheel's real speed */
+    const streaks = document.createElement('div');
+    streaks.className = 'wheel-streaks';
+    streaks.id = 'wheelStreaks';
+    const wrapEl = wheelEl.parentElement;
+    const glossEl = wrapEl ? wrapEl.querySelector('.wheel-gloss') : null;
+    if (wrapEl && glossEl) wrapEl.insertBefore(streaks, glossEl);
+    else if (wrapEl) wrapEl.appendChild(streaks);
     WEDGES.forEach((v, i) => {
       const peg = document.createElement('div');
       peg.className = 'wheel-peg';
@@ -423,7 +493,24 @@
       peg.innerHTML = '<span></span>';
       wheelEl.appendChild(peg);
     });
-    const grads = WEDGES.map((v, i) => `${wedgeColor(v, i)} ${i * WSEG}deg ${(i + 1) * WSEG}deg`).join(',');
+    /* chrome studs (rivets) riding every wedge seam — wheel example #8's
+       signature hardware (2026-11-21 settled pick) */
+    WEDGES.forEach((v, i) => {
+      ['r1', 'r2', 'r3'].forEach(cls => {
+        const stud = document.createElement('div');
+        stud.className = 'wheel-stud';
+        stud.style.transform = `rotate(${i * WSEG - WSEG / 2}deg)`;
+        stud.innerHTML = `<span class="${cls}"></span>`;
+        wheelEl.appendChild(stud);
+      });
+    });
+    const grads = WEDGES.map((v, i) => {
+      const base = wedgeBase(v, i);
+      const a = i * WSEG, b = (i + 1) * WSEG;
+      /* black leather takes a gentler, matte sweep; the red accents glow */
+      const hi = base === '#16191f' ? .20 : .38, lo = base === '#16191f' ? -.32 : -.42;
+      return `${shade(base, hi)} ${a}deg, ${shade(base, .02)} ${a + WSEG * .48}deg, ${shade(base, lo)} ${b}deg`;
+    }).join(',');
     wheelEl.style.background = `conic-gradient(from ${-WSEG / 2}deg, ${grads})`;
     WEDGES.forEach((v, i) => {
       const lab = document.createElement('div');
@@ -447,11 +534,18 @@
       const dur = 5600 + Math.random() * 700;
       const easeOut = u => 1 - Math.pow(1 - u, 4.2); /* hard launch, long friction tail */
       let lastPeg = Math.floor(start / WSEG);
+      let prevAngle = start;
+      const streakEl = document.getElementById('wheelStreaks');
       const t0 = performance.now();
       (function frame(now) {
         const u = Math.min(1, (now - t0) / dur);
         wheelAngle = start + total * easeOut(u);
         wheelEl.style.transform = `rotate(${wheelAngle}deg)`;
+        /* spin feel only: motion streaks track the wheel's real per-frame
+           speed — strong at the launch, gone as friction wins. The angle
+           math above is untouched. */
+        if (streakEl) streakEl.style.opacity = Math.min(.6, Math.abs(wheelAngle - prevAngle) / 26).toFixed(3);
+        prevAngle = wheelAngle;
         const peg = Math.floor(wheelAngle / WSEG);
         if (peg !== lastPeg) {
           lastPeg = peg;
@@ -472,6 +566,7 @@
         }
         if (u < 1) requestAnimationFrame(frame);
         else {
+          if (streakEl) streakEl.style.opacity = 0;
           wheelSpinning = false;
           try { wheelEl.animate([{ transform: `rotate(${wheelAngle - 1.6}deg)` }, { transform: `rotate(${wheelAngle}deg)` }], { duration: 220, easing: 'ease-out' }); } catch (e) {}
           resolve();

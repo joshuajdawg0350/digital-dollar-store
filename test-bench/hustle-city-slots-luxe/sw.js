@@ -1,5 +1,5 @@
 /* Hustle City Slots — Poker Luxe service worker. (c) 2026 J-Dawgs Industries. */
-const CACHE = 'hc-slots-luxe-v5';
+const CACHE = 'hc-slots-luxe-v6';
 const ASSETS = [
   './', './index.html', './style.css', './game.js', './logic.js', './machines.js', './soundkit.js',
   './assets/sfx/bell.mp3', './assets/sfx/win-small.mp3', './assets/sfx/win-med.mp3',
@@ -15,7 +15,7 @@ const ASSETS = [
   './assets/sym-ac.webp', './assets/sym-kg.webp',
   './assets/sym-qn.webp', './assets/sym-jk.webp', './assets/sym-dm.webp',
   './assets/sym-cp.webp', './assets/sym-cg.webp', './assets/sym-dk.webp',
-  './assets/sym-wd.webp', './assets/sym-sc.webp', './assets/sym-bn.webp',
+  './assets/sym-wd.webp', './assets/sym-sc.webp', './assets/sym-bn.webp', './assets/celeb-title.png',
   './assets/sym-x2.webp', './assets/sym-x3.webp',
   './assets/deck-plate.webp', './assets/belly.webp', './assets/coin-tray.webp'
 ];

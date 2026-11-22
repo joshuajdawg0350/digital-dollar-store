@@ -621,17 +621,18 @@ body {
   padding: 18px 16px 16px;
   text-align: center;
   background:
+    radial-gradient(58% 44% at 50% 47%, rgba(255, 30, 60, .16) 0%, rgba(255, 30, 60, .05) 55%, transparent 78%),
     radial-gradient(120% 60% at 50% 0%, rgba(46, 155, 255, .22) 0%, transparent 60%),
     linear-gradient(170deg, #131c2c 0%, #070b13 55%, #04060a 100%);
-  border: 1px solid var(--gold-deep);
-  box-shadow: 0 0 0 2px #05070a, 0 0 44px rgba(232, 194, 104, .35), 0 24px 60px rgba(0, 0, 0, .9);
+  border: 1px solid #79879a;
+  box-shadow: 0 0 0 2px #05070a, 0 0 44px rgba(255, 30, 60, .30), 0 24px 60px rgba(0, 0, 0, .9);
 }
 .bonus-title {
   font-size: 24px;
   font-weight: 900;
   letter-spacing: .14em;
-  color: var(--gold);
-  text-shadow: 0 2px 3px #000, 0 0 22px rgba(232, 194, 104, .45);
+  color: #eef3f8;
+  text-shadow: 0 2px 3px #000, 0 0 22px rgba(255, 255, 255, .35), 0 0 34px rgba(255, 30, 60, .35);
 }
 .bonus-rules {
   margin-top: 8px;
@@ -639,31 +640,51 @@ body {
   line-height: 1.55;
   color: #c3d2e4;
 }
-.bonus-rules .gold { color: var(--gold); }
+.bonus-rules .gold { color: #ff5b74; }
 .bonus-rules .bad { color: #ff1e3c; }
 .wheel-wrap {
   position: relative;
   width: min(76vw, 320px);
   aspect-ratio: 1;
-  margin: 16px auto 6px;
+  margin: 20px auto 10px;
 }
-/* the wheel sits in a machined metal housing ring (2026-11-21 realism pass) */
+/* the wheel sits in a machined metal housing (2026-11-21 realism pass;
+   rebuilt 2026-11-21 wheel realism: brushed + knurled rim, mirror chrome,
+   deep cast shadow — a real object, not a ring graphic) */
 .wheel-wrap::before {
-  content: ""; position: absolute; inset: -11px; border-radius: 50%; z-index: 0;
-  background: conic-gradient(from 210deg, #525f73, #131922 25%, #75839a 50%, #0d1119 75%, #525f73);
-  box-shadow: 0 18px 34px rgba(0, 0, 0, .75), inset 0 2px 3px rgba(255, 255, 255, .35), inset 0 -3px 7px rgba(0, 0, 0, .75);
+  content: ""; position: absolute; inset: -19px; border-radius: 50%; z-index: 0;
+  /* extra-thick MIRROR chrome rim — wheel example #8 (settled 2026-11-21) */
+  background:
+    repeating-conic-gradient(from 0deg, rgba(255, 255, 255, .05) 0deg 1.4deg, rgba(0, 0, 0, .13) 1.4deg 2.8deg),
+    conic-gradient(from 210deg, #dfe7f0, #7c8a9d 18%, #f4f7fb 34%, #98a5b5 52%, #4a5563 66%, #e8eef5 84%, #dfe7f0);
+  box-shadow:
+    0 26px 44px rgba(0, 0, 0, .85),
+    0 6px 16px rgba(0, 0, 0, .7),
+    inset 0 2px 5px rgba(255, 255, 255, .85),
+    inset 0 -5px 10px rgba(0, 0, 0, .55),
+    inset 0 0 0 3px rgba(4, 6, 10, .9),
+    inset 0 0 0 5px rgba(20, 24, 31, .55);
+}
+/* the shadow the wheel throws on the card below it */
+.wheel-wrap::after {
+  content: ""; position: absolute; left: 6%; right: 6%; bottom: -26px; height: 30px;
+  border-radius: 50%; z-index: 0; pointer-events: none;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, .55) 0%, transparent 70%);
+  filter: blur(3px);
 }
 .wheel {
   position: absolute; inset: 0;
   z-index: 1;
   border-radius: 50%;
-  border: 6px solid #d7dee7;
+  border: 3px solid #05070a;
   box-shadow:
-    0 0 0 3px #39424f,
-    0 0 34px rgba(46, 155, 255, .5),
-    0 14px 22px rgba(0, 0, 0, .55),
-    inset 0 0 0 3px rgba(0, 0, 0, .55),
-    inset 0 0 44px rgba(0, 0, 0, .5);
+    0 0 0 3px #98a5b5,
+    0 0 0 5px #232a35,
+    0 0 0 7px rgba(232, 238, 246, .5),
+    0 0 38px rgba(255, 30, 60, .22),
+    0 18px 30px rgba(0, 0, 0, .65),
+    inset 0 0 0 3px rgba(0, 0, 0, .6),
+    inset 0 0 52px rgba(0, 0, 0, .55);
   will-change: transform;
   overflow: hidden;
 }
@@ -679,22 +700,59 @@ body {
   width: 0; height: 0;
   pointer-events: none;
 }
+/* massive steel POSTS, not balls — wheel example #8's rim hardware:
+   machined cylinders straddling the rim, lit along their length */
 .wheel-peg span {
   position: absolute;
   left: 0; top: 0;
-  width: 11px; height: 11px; border-radius: 50%;
+  width: 13px; height: 24px; border-radius: 4px;
   transform: translate(-50%, -50%);
-  translate: 0 calc(min(76vw, 320px) * -0.458);
-  background: radial-gradient(circle at 35% 30%, #ffffff 0%, #c3cedd 38%, #79879a 68%, #333d4a 100%);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, .85), inset 0 -1px 2px rgba(0, 0, 0, .55);
+  translate: 0 calc(min(76vw, 320px) * -0.472);
+  background: linear-gradient(90deg, #39424f 0%, #79879a 22%, #f4f7fb 46%, #aeb9c7 68%, #333d4a 100%);
+  box-shadow:
+    0 0 0 2px rgba(4, 6, 10, .85),
+    0 3px 6px rgba(0, 0, 0, .9),
+    inset 0 2px 2px rgba(255, 255, 255, .9),
+    inset 0 -3px 4px rgba(0, 0, 0, .6);
+}
+/* chrome studs (rivets) along every wedge seam — wheel example #8 */
+.wheel-stud {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 0; height: 0;
+  pointer-events: none;
+}
+.wheel-stud span {
+  position: absolute;
+  left: 0; top: 0;
+  width: 5.5px; height: 5.5px; border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle at 35% 30%, #ffffff 0%, #c3cedd 45%, #5d6a7a 100%);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .85), inset 0 -1px 1px rgba(0, 0, 0, .5);
+}
+.wheel-stud span.r1 { translate: 0 calc(min(76vw, 320px) * -0.335); }
+.wheel-stud span.r2 { translate: 0 calc(min(76vw, 320px) * -0.388); }
+.wheel-stud span.r3 { translate: 0 calc(min(76vw, 320px) * -0.44); }
+/* motion streaks — faded in by the spin loop in proportion to the wheel's
+   real speed (spin feel); the light layer, not the wheel, so it never
+   rotates and never touches the angle math */
+.wheel-streaks {
+  position: absolute; inset: 0; border-radius: 50%;
+  z-index: 2; pointer-events: none;
+  opacity: 0;
+  transition: opacity .16s linear;
+  background:
+    radial-gradient(circle, transparent 26%, rgba(255, 255, 255, .05) 52%, transparent 80%),
+    repeating-conic-gradient(from 0deg, rgba(255, 255, 255, .045) 0deg 5deg, transparent 5deg 11deg);
 }
 /* a still sheen of light over the spinning wheel — light doesn't rotate */
 .wheel-gloss {
   position: absolute; inset: 0; border-radius: 50%;
-  z-index: 2; pointer-events: none;
+  z-index: 3; pointer-events: none;
   background:
-    radial-gradient(ellipse 65% 42% at 32% 16%, rgba(255, 255, 255, .20) 0%, rgba(255, 255, 255, .05) 46%, transparent 70%),
-    radial-gradient(ellipse 120% 120% at 50% 50%, transparent 72%, rgba(0, 0, 0, .16) 100%);
+    radial-gradient(ellipse 62% 40% at 31% 14%, rgba(255, 255, 255, .26) 0%, rgba(255, 255, 255, .07) 46%, transparent 70%),
+    linear-gradient(118deg, transparent 30%, rgba(255, 255, 255, .055) 44%, rgba(255, 255, 255, .015) 52%, transparent 63%),
+    radial-gradient(ellipse 120% 120% at 50% 50%, transparent 70%, rgba(0, 0, 0, .22) 100%);
 }
 .wheel-label {
   position: absolute;
@@ -711,30 +769,39 @@ body {
   font-size: 13px;
   font-weight: 900;
   letter-spacing: .04em;
-  color: #eaf3fc;
-  text-shadow: 0 1px 3px #000, 0 0 6px rgba(0, 0, 0, .8);
+  color: #eef3f8; /* chrome white on the black / crimson wedges */
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .22), 0 -1px 2px rgba(0, 0, 0, .5), 0 2px 4px rgba(0, 0, 0, .75);
   white-space: nowrap;
 }
-.wheel-label.jackpot span { color: #231a02; text-shadow: 0 1px 0 rgba(255, 255, 255, .4); font-size: 11.5px; }
-.wheel-label.bad span { color: #2b0208; font-size: 10px; text-shadow: 0 1px 0 rgba(255, 255, 255, .35); }
+.wheel-label.jackpot span { color: #f4f7fb; text-shadow: 0 1px 0 rgba(0, 0, 0, .45), 0 0 12px rgba(255, 255, 255, .65), 0 2px 4px rgba(0, 0, 0, .6); font-size: 11.5px; }
+.wheel-label.bad span { color: #fff2f4; font-size: 10px; text-shadow: 0 1px 0 rgba(0, 0, 0, .4), 0 -1px 2px rgba(0, 0, 0, .45), 0 2px 4px rgba(0, 0, 0, .6); }
+/* the pointer is a machined metal flipper on a chrome pivot (wheel realism
+   rebuild) — chrome body, electric-red tip, hinged at the pivot */
 .wheel-pointer {
   position: absolute;
-  left: 50%; top: -13px;
+  left: 50%; top: -19px;
   transform: translateX(-50%);
-  z-index: 3;
-  width: 0; height: 0;
-  border-left: 13px solid transparent;
-  border-right: 13px solid transparent;
-  border-top: 22px solid #ff1e3c; /* electric-red pointer — Classics/DDS red family hint */
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8));
-  z-index: 4;
+  transform-origin: 50% 9px;
+  width: 32px; height: 50px;
+  z-index: 5;
+  background: linear-gradient(180deg, #f4f7fb 0%, #c3cedd 26%, #79879a 52%, #39424f 82%, #20262f 100%);
+  clip-path: polygon(14% 0, 86% 0, 100% 52%, 50% 100%, 0 52%);
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .85));
 }
-/* the pointer's chrome mounting stud */
+/* the flipper's electric-red tip */
+.wheel-pointer::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 42%;
+  background: linear-gradient(180deg, #ff5b74 0%, #ff1e3c 45%, #a30d24 100%);
+  clip-path: polygon(0 22%, 100% 22%, 50% 100%);
+}
+/* the pointer's chrome pivot stud, with a screw slot */
 .wheel-pointer::before {
-  content: ""; position: absolute; left: 50%; top: -8px;
+  content: ""; position: absolute; left: 50%; top: 1px;
   transform: translateX(-50%);
-  width: 15px; height: 15px; border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #ffffff 0%, #aeb9c7 52%, #39424f 100%);
+  width: 17px; height: 17px; border-radius: 50%; z-index: 2;
+  background:
+    linear-gradient(38deg, transparent 44%, #141920 44%, #141920 56%, transparent 56%),
+    radial-gradient(circle at 35% 30%, #ffffff 0%, #aeb9c7 52%, #39424f 100%);
   box-shadow: 0 2px 4px rgba(0, 0, 0, .8), inset 0 -1px 2px rgba(0, 0, 0, .5);
 }
 .wheel-pointer.flick { animation: pegFlick .12s ease-out; }
@@ -747,19 +814,75 @@ body {
   aspect-ratio: 1;
   border-radius: 50%;
   overflow: hidden;
-  border: 3px solid #d7dee7;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, .8), 0 0 18px rgba(232, 194, 104, .5);
-  z-index: 3;
-  background: #000;
+  border: 3px solid #05070a;
+  box-shadow:
+    0 0 0 3px #98a5b5,
+    0 0 0 5px #232a35,
+    0 0 0 6.5px rgba(232, 238, 246, .5),
+    0 6px 18px rgba(0, 0, 0, .85),
+    0 0 22px rgba(255, 30, 60, .3),
+    inset 0 0 14px rgba(0, 0, 0, .65);
+  z-index: 4;
+  background: radial-gradient(circle, #1a202a 0%, #05070a 78%);
+  display: grid;
+  place-items: center;
 }
-.wheel-hub img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* chrome SPOKES behind the center cap — wheel example #8's hub */
+.wheel-hub::before {
+  content: ""; position: absolute; inset: 0; border-radius: 50%;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23f4f7fb'/%3E%3Cstop offset='.5' stop-color='%23aeb9c7'/%3E%3Cstop offset='1' stop-color='%2339424f'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg fill='url(%23g)'%3E%3Crect x='46.4' y='3' width='7.2' height='36' rx='3.4'/%3E%3Crect x='46.4' y='3' width='7.2' height='36' rx='3.4' transform='rotate(45 50 50)'/%3E%3Crect x='46.4' y='3' width='7.2' height='36' rx='3.4' transform='rotate(90 50 50)'/%3E%3Crect x='46.4' y='3' width='7.2' height='36' rx='3.4' transform='rotate(135 50 50)'/%3E%3Crect x='46.4' y='3' width='7.2' height='36' rx='3.4' transform='rotate(180 50 50)'/%3E%3Crect x='46.4' y='3' width='7.2' height='36' rx='3.4' transform='rotate(225 50 50)'/%3E%3Crect x='46.4' y='3' width='7.2' height='36' rx='3.4' transform='rotate(270 50 50)'/%3E%3Crect x='46.4' y='3' width='7.2' height='36' rx='3.4' transform='rotate(315 50 50)'/%3E%3C/g%3E%3C/svg%3E") center / 96% 96% no-repeat;
+}
+/* the BONUS coin rides as the hub's center cap */
+.wheel-hub img {
+  position: relative;
+  width: 54%; height: 54%;
+  object-fit: cover; display: block;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px #05070a, 0 0 0 3.5px #aeb9c7, 0 3px 8px rgba(0, 0, 0, .8);
+}
+/* domed glass over the hub art */
+.wheel-hub::after {
+  content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
+  background:
+    radial-gradient(ellipse 70% 46% at 32% 14%, rgba(255, 255, 255, .34) 0%, rgba(255, 255, 255, .06) 48%, transparent 72%),
+    radial-gradient(circle, transparent 62%, rgba(0, 0, 0, .38) 100%);
+}
 .bonus-msg {
   min-height: 26px;
   margin-top: 10px;
   font-size: 16.5px;
   font-weight: 800;
   letter-spacing: .03em;
-  color: var(--blue-hot);
+  color: #ff5b74;
+}
+
+/* ---------- bonus celebration VIDEO (2026-11-21) ----------
+   Engine-Rev Jackpot plays full-screen at the bonus moment. The title is
+   its own layer + file (assets/celeb-title.png) so Joshua's graffiti pick
+   swaps in one step; the soft dark band behind it masks the video's baked
+   title so the picked render reads clean. */
+.celeb-video {
+  position: fixed; inset: 0; z-index: 80;
+  display: none;
+  background: #01030a;
+}
+.celeb-video.on { display: block; }
+.celeb-video video {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover;
+}
+.celeb-video-title {
+  position: absolute; left: 0; right: 0; top: 0;
+  padding: 24px 6% 46px;
+  background: linear-gradient(180deg, rgba(1, 3, 10, .96) 0%, rgba(1, 3, 10, .8) 58%, transparent 100%);
+  pointer-events: none;
+}
+.celeb-video-title img { width: 100%; display: block; }
+.celeb-video-tap {
+  position: absolute; left: 0; right: 0; bottom: 26px;
+  text-align: center; font-size: 12.5px; font-weight: 800; letter-spacing: .22em;
+  color: rgba(238, 243, 248, .75); text-shadow: 0 1px 3px #000;
+  pointer-events: none;
 }
 
 /* ---------- celebration screens (2026-11-21) ----------
