@@ -1,4 +1,4 @@
-const CACHE = 'hc-pinochle-v1';
+const CACHE = 'hc-pinochle-v2';
 const SHELL = ['.', 'index.html', 'logic.js', 'manifest.json', 'icon-192.png', 'icon-512.png', 'deck/BACK.webp', 'assets/fonts/bebas-neue.woff2'];
 self.addEventListener('install', e => { self.skipWaiting(); e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL))); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => clients.claim())); });

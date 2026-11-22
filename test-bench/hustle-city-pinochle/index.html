@@ -55,7 +55,7 @@ button{font-family:inherit;touch-action:manipulation;cursor:pointer}
 .stat .val.sm{font-size:14.5px}
 
 /* ---------- main column ---------- */
-.pn-main{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:5px;padding:6px 10px 64px;max-width:560px;width:100%;margin:0 auto}
+.pn-main{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:5px;padding:6px 10px 300px;max-width:560px;width:100%;margin:0 auto}
 .seat{display:flex;align-items:center;gap:8px;min-width:0}
 .seat .who{font-weight:700;letter-spacing:.13em;font-size:12.5px;text-transform:uppercase;color:var(--mut);white-space:nowrap}
 .seat .who b{color:var(--ink)}
@@ -80,7 +80,7 @@ button{font-family:inherit;touch-action:manipulation;cursor:pointer}
     radial-gradient(ellipse at 50% 45%, #10324f 0%, #0a2036 55%, #050d18 100%);
   border:3px solid #46586f;
   box-shadow:0 0 0 2px #101823, 0 0 0 4px rgba(57,194,255,.14), inset 0 0 44px rgba(0,0,0,.72), 0 14px 30px rgba(0,0,0,.55)}
-.pn-main:has(#panel:not(:empty)) .tablewrap{height:min(215px,25dvh);min-height:112px}
+.pn-main:has(#panel:not(:empty)) .tablewrap{height:min(215px,25dvh);min-height:88px}
 .table-emblem{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;gap:3px}
 .table-emblem .te-mark{font-size:44px;line-height:1;color:rgba(140,210,255,.10)}
 .table-emblem .te-word{font-weight:900;font-size:12px;letter-spacing:.28em;margin-left:.28em;text-transform:uppercase;color:rgba(180,220,255,.13)}
@@ -104,41 +104,59 @@ button{font-family:inherit;touch-action:manipulation;cursor:pointer}
 
 /* ---------- action panel ---------- */
 @keyframes panelIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.panelbox{flex:0 0 auto;background:linear-gradient(165deg,#131c2c,#070b13);border:1.5px solid rgba(150,180,220,.35);border-radius:12px;padding:10px 12px;box-shadow:0 8px 20px rgba(0,0,0,.5);animation:panelIn .22s ease-out}
+.panelbox{flex:0 0 auto;background:linear-gradient(165deg,#131c2c,#070b13);border:1.5px solid rgba(150,180,220,.35);border-radius:12px;padding:8px 10px;box-shadow:0 8px 20px rgba(0,0,0,.5);animation:panelIn .22s ease-out}
 .panelbox:empty{display:none}
-.panelbox .pt{font-family:"Bebas Neue","Archivo",sans-serif;font-weight:400;font-size:24px;text-transform:uppercase;letter-spacing:.05em;
+.panelbox .pt{font-family:"Bebas Neue","Archivo",sans-serif;font-weight:400;font-size:20px;text-transform:uppercase;letter-spacing:.05em;
   background:linear-gradient(180deg,#fdfeff 0%,#e6eef7 30%,#8fa5bd 49%,#eef4fb 52%,#aebfd4 72%,#f4f8fc 100%);
   -webkit-background-clip:text;background-clip:text;color:transparent}
-.panelbox .ps{color:var(--mut);font-size:14px;margin:3px 0 9px;line-height:1.4}
+.panelbox .prow{display:flex;align-items:baseline;gap:9px;margin-bottom:6px;min-width:0}
+.panelbox .prow .pt{font-size:19px;flex:0 0 auto}
+.phint{color:var(--mut);font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.phint b{color:var(--ink)}
+.phint .warnline{color:var(--gold);font-weight:800}
+.panelbox .ps{color:var(--mut);font-size:13px;margin:2px 0 6px;line-height:1.35}
 .panelbox .ps b{color:var(--ink)}
 .btnrow{display:flex;gap:8px;flex-wrap:wrap}
 .btnrow .btn{flex:1}
-select.bidsel{flex:1;background:var(--panel2);color:var(--ink);border:1px solid var(--line2);border-radius:12px;min-height:48px;font-size:17px;font-weight:800;padding:0 12px;font-family:inherit}
+.panelbox .btnrow .btn{min-height:42px;padding:8px 14px;font-size:15px}
+.panelbox .btnrow .btn.big{min-height:44px;font-size:16px}
+select.bidsel{flex:1;background:var(--panel2);color:var(--ink);border:1px solid var(--line2);border-radius:12px;min-height:42px;font-size:16px;font-weight:800;padding:0 12px;font-family:inherit}
 .suitgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
-.suitbtn{flex-direction:column;gap:0;min-height:62px;font-size:26px;line-height:1.05;min-width:0;padding:10px 2px}
-.suitbtn small{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--mut);text-transform:uppercase}
+.suitbtn{flex-direction:column;gap:0;min-height:54px;font-size:24px;line-height:1.05;min-width:0;padding:8px 2px}
+.suitbtn small{font-size:10.5px;font-weight:700;letter-spacing:.06em;color:var(--mut);text-transform:uppercase}
 .suitbtn.red{color:#ff8f8f}.suitbtn:disabled{opacity:.3}
-.scorelines{display:grid;gap:5px;margin:4px 0 10px}
-.sl{display:flex;justify-content:space-between;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:15px}
+.scorelines{display:grid;gap:4px;margin:2px 0 8px}
+.sl{display:flex;justify-content:space-between;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:5px 11px;font-size:14px}
 .sl b.pos{color:var(--green)} .sl b.neg{color:var(--red)}
-.meldlines{font-size:13.5px;color:var(--mut);display:grid;gap:3px;margin:2px 0 8px}
+.meldlines{font-size:13px;color:var(--mut);display:grid;gap:2px;margin:0 0 6px}
 .meldlines b{color:var(--ink)}
-.meldlines .ml{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dashed rgba(120,160,210,.14);padding:2px 0}
+.meldlines .ml{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dashed rgba(120,160,210,.14);padding:1px 0}
 
-/* ---------- your hand ---------- */
-#pn-youarea{margin-top:auto;flex:0 0 auto}
-.myhand{display:flex;flex-wrap:wrap;justify-content:center;row-gap:5px;min-height:0;max-width:460px;margin:2px auto 0;padding-top:6px}
-.hcard{position:relative;width:50px;height:70px;margin-left:-17px;border-radius:8px;border:1px solid rgba(120,160,210,.35);padding:0;background:#0a0f16;overflow:visible;
+/* ---------- your hand (pull-up hand sheet) ---------- */
+#handsheet{position:fixed;left:50%;transform:translateX(-50%);bottom:54px;width:min(560px,100%);z-index:30;
+  background:linear-gradient(180deg,#131c2c,#070b13);border:1.5px solid rgba(150,180,220,.4);border-bottom:none;border-radius:16px 16px 0 0;
+  box-shadow:0 -12px 30px rgba(0,0,0,.6);padding:0 10px 7px;transition:transform .25s cubic-bezier(.3,.8,.3,1)}
+#handsheet .hshandle{height:27px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:grab;touch-action:none;padding-top:4px}
+#handsheet .hshandle .bar{width:52px;height:5px;border-radius:99px;background:#5f7189}
+#handsheet .hshandle .hlab{font-size:10px;font-weight:800;letter-spacing:.22em;color:var(--dim);text-transform:uppercase}
+#handsheet .seat{padding:1px 2px 0}
+#handsheet .avatar{width:30px;height:30px;font-size:13.5px}
+.myhand{display:flex;flex-wrap:wrap;justify-content:center;row-gap:5px;min-height:0;max-width:460px;margin:2px auto 0;padding-top:4px}
+#handsheet.hs1 .myhand{row-gap:8px}
+#handsheet.hs2 .myhand{row-gap:10px}
+.hcard{position:relative;width:60px;height:84px;margin-left:-26px;border-radius:8px;border:1px solid rgba(120,160,210,.35);padding:0;background:#0a0f16;overflow:visible;
   box-shadow:0 4px 10px rgba(0,0,0,.5);transition:transform .12s ease, box-shadow .12s ease}
+#handsheet.hs1 .hcard:not(:first-child){margin-left:-13px}
+#handsheet.hs2 .hcard:not(:first-child){margin-left:-5px}
 .hcard:first-child{margin-left:0}
 .hcard img{width:100%;height:100%;display:block;border-radius:8px}
-.hcard.legal{transform:translateY(-7px);border-color:var(--cyan);box-shadow:0 0 0 1.5px rgba(57,194,255,.55),0 10px 18px rgba(0,0,0,.5)}
+.hcard.legal{transform:translateY(-8px);border-color:var(--cyan);box-shadow:0 0 0 1.5px rgba(57,194,255,.55),0 10px 18px rgba(0,0,0,.5)}
 .hcard.illegal{opacity:.45}
-.hcard.sel{transform:translateY(-13px);border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,211,77,.7),0 12px 20px rgba(0,0,0,.55)}
-.hcard:active{transform:translateY(-11px)}
-.hcard .copybdg{position:absolute;right:-4px;bottom:-4px;min-width:17px;height:17px;border-radius:50%;background:#0d1624;border:1.5px solid var(--cyan);color:#bfe6ff;
-  font-size:10.5px;font-weight:900;display:flex;align-items:center;justify-content:center;padding:0 3px;z-index:3}
-.hcard .newbdg{position:absolute;left:-4px;top:-6px;background:var(--cyan);color:#04121f;border-radius:6px;font-size:9px;font-weight:900;letter-spacing:.05em;padding:1px 4px;z-index:3}
+.hcard.sel{transform:translateY(-15px);border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,211,77,.7),0 12px 20px rgba(0,0,0,.55)}
+.hcard:active{transform:translateY(-13px)}
+.hcard .copybdg{position:absolute;right:-4px;bottom:-4px;min-width:20px;height:20px;border-radius:50%;background:#0d1624;border:1.5px solid var(--cyan);color:#bfe6ff;
+  font-size:12.5px;font-weight:900;display:flex;align-items:center;justify-content:center;padding:0 3px;z-index:3}
+.hcard .newbdg{position:absolute;left:-4px;top:-6px;background:var(--cyan);color:#04121f;border-radius:6px;font-size:11px;font-weight:900;letter-spacing:.05em;padding:2px 5px;z-index:3}
 
 /* ---------- drag sheet (score / meld / rules) ---------- */
 #sheet{position:fixed;left:50%;transform:translate(-50%,calc(100% - 54px));bottom:0;width:min(560px,100%);height:80dvh;z-index:40;
@@ -159,17 +177,23 @@ select.bidsel{flex:1;background:var(--panel2);color:var(--ink);border:1px solid 
 #sheet .sbody .copy{color:var(--dim);font-size:12px;margin-top:10px}
 
 @media (max-height:780px){
-  .hcard{width:45px;height:63px;margin-left:-15px}
+  .hcard{width:54px;height:76px;margin-left:-23px}
+  #handsheet.hs1 .hcard:not(:first-child){margin-left:-12px}
+  #handsheet.hs2 .hcard:not(:first-child){margin-left:-4px}
   .hcard:first-child{margin-left:0}
   .slot,.mcard{width:45px;height:63px}
   .brandbar{padding:5px 10px 3px}
   .brandbar .bt{font-size:14.5px}
   .hud{padding:4px 10px}
-  .pn-main{gap:4px;padding:4px 10px 60px}
+  .pn-main{gap:4px;padding:4px 10px 280px}
   #pn-call{font-size:15px;min-height:22px}
-  .panelbox{padding:8px 10px}
-  .panelbox .pt{font-size:21px}
+  .panelbox{padding:7px 9px}
+  .panelbox .pt{font-size:19px}
+  .panelbox .prow .pt{font-size:18px}
   .table-emblem .te-mark{font-size:34px}
+}
+@media (max-width:380px){
+  #handsheet.hs0 .hcard:not(:first-child){margin-left:-25px}
 }
 </style>
 </head>
@@ -202,10 +226,12 @@ select.bidsel{flex:1;background:var(--panel2);color:var(--ink);border:1px solid 
   </div>
   <div id="pn-call">Shuffling up…</div>
   <div class="panelbox" id="panel"></div>
-  <div id="pn-youarea">
-    <div class="seat" id="seat-0"><span class="avatar av-you">♠</span><span class="who"><b>You</b></span><span class="pchip" id="chip-0">—</span></div>
-    <div class="myhand" id="myhand"></div>
-  </div>
+</div>
+
+<div id="handsheet" class="hs0" aria-label="Your hand">
+  <div class="hshandle" id="hs-handle"><div class="bar"></div><div class="hlab">Your hand — drag</div></div>
+  <div class="seat" id="seat-0"><span class="avatar av-you">♠</span><span class="who"><b>You</b></span><span class="pchip" id="chip-0">—</span></div>
+  <div class="myhand" id="myhand"></div>
 </div>
 
 <div id="sheet" aria-label="Score, meld and rules sheet">
@@ -597,7 +623,7 @@ function render(){
     slot.className = "slot " + ["s-bottom","s-left","s-top","s-right"][p] + (isWin ? " win" : "");
     slot.innerHTML = entry ? '<div class="mcard hcd"><img class="hcd-img" src="deck/' + entry.card.rank + entry.card.suit + '.webp" alt="' + L.cardName(entry.card) + '"></div>' : "";
   }
-  renderHand(); renderPanel(); renderSheet();
+  renderHand(); renderPanel(); renderSheet(); syncHsPad();
 }
 function renderHand(){
   const wrap = $("#myhand"); const hand = G.hands[0];
@@ -638,21 +664,23 @@ function renderPanel(){
     const minBid = L.minLegalBid(G.currentBid);
     let opts = "";
     for(let v = minBid; v <= 200; v = v < 60 ? v + 1 : v + 5) opts += '<option value="' + v + '">' + v + '</option>';
-    const marr = marriageSuits(G.hands[0]).map(s => L.SUIT_GLYPH[s] + " " + L.SUIT_NAME[s]).join(", ") || "none — careful, you can't name trump without one";
-    panel.innerHTML = '<div class="pt">Your bid</div><div class="ps">' +
-      (G.currentBid ? "High bid is <b>" + G.currentBid + "</b> (" + NAMES[G.highBidder] + "). " : "Open the auction. ") +
-      "Bids start at 50. You hold a marriage in: <b>" + marr + "</b>. Best meld if trump were your strongest suit: <b>" + (bestTrumpFor(G.hands[0]) ? bestTrumpFor(G.hands[0]).meld : 0) + "</b>.</div>" +
+    const marrSuits = marriageSuits(G.hands[0]);
+    const marr = marrSuits.length
+      ? "Marriage <b>" + marrSuits.map(s => L.SUIT_GLYPH[s]).join(" ") + "</b> · Best meld <b>" + (bestTrumpFor(G.hands[0]) ? bestTrumpFor(G.hands[0]).meld : 0) + "</b>"
+      : '<span class="warnline">No marriage — you can\'t name trump</span>';
+    panel.innerHTML = '<div class="prow"><span class="pt">Your bid</span><span class="phint">' +
+      (G.currentBid ? "High bid <b>" + G.currentBid + "</b> · " : "") + marr + '</span></div>' +
       '<div class="btnrow"><select class="bidsel" id="bid-amt">' + opts + '</select>' +
       '<button class="btn gold" id="btn-bid">BID</button><button class="btn" id="btn-passbid">PASS</button></div>';
     $("#btn-bid").addEventListener("click", humanBid);
     $("#btn-passbid").addEventListener("click", humanPassBid);
   }
   else if(phase === "auction"){
-    panel.innerHTML = '<div class="pt">Auction</div><div class="ps">' + (G.currentBid ? "High bid <b>" + G.currentBid + "</b> — " + NAMES[G.highBidder] + ". " : "") + NAMES[G.turn] + " is thinking…</div>";
+    panel.innerHTML = '<div class="prow"><span class="pt">Auction</span><span class="phint">' + (G.currentBid ? "High bid <b>" + G.currentBid + "</b> — " + NAMES[G.highBidder] + " · " : "") + NAMES[G.turn] + " is thinking…</span></div>";
   }
   else if(phase === "trump" && G.declarer === 0){
     const suits = marriageSuits(G.hands[0]);
-    panel.innerHTML = '<div class="pt">Name your trump</div><div class="ps">You won the auction at <b>' + G.currentBid + '</b>. Trump must be a suit where you hold a marriage (K + Q). Your meld for each:</div>' +
+    panel.innerHTML = '<div class="prow"><span class="pt">Name your trump</span><span class="phint">Won at <b>' + G.currentBid + '</b> · trump needs a marriage (K + Q)</span></div>' +
       '<div class="suitgrid">' + L.SUITS.map(s => {
         const ok = suits.includes(s);
         return '<button class="btn suitbtn' + (s === "H" || s === "D" ? " red" : "") + '" data-suit="' + s + '"' + (ok ? "" : " disabled") + '>' + L.SUIT_GLYPH[s] + '<small>' + L.SUIT_NAME[s] + (ok ? " · meld " + L.computeMeld(G.hands[0], s).total : " · no marriage") + '</small></button>';
@@ -660,27 +688,24 @@ function renderPanel(){
     panel.querySelectorAll("[data-suit]").forEach(b => b.addEventListener("click", ()=>{ nameTrump(b.getAttribute("data-suit")); save(); render(); maybeAI(); }));
   }
   else if(phase === "trump"){
-    panel.innerHTML = '<div class="pt">Trump</div><div class="ps">' + NAMES[G.declarer] + ' is naming trump…</div>';
+    panel.innerHTML = '<div class="prow"><span class="pt">Trump</span><span class="phint">' + NAMES[G.declarer] + ' is naming trump…</span></div>';
   }
   else if(phase === "pass"){
     const partner = partnerOf(G.declarer);
     if(G.passStage === "toDeclarer" && partner === 0){
-      panel.innerHTML = '<div class="pt">Pass 4 cards to ' + NAMES[G.declarer] + '</div><div class="ps">Trump is <b>' + L.SUIT_GLYPH[G.trump] + " " + L.SUIT_NAME[G.trump] + '</b>. Your partner won the bid — send trump and aces. Tap 4 cards in your hand (' + G.selected.length + '/4 picked).</div>' +
+      panel.innerHTML = '<div class="prow"><span class="pt">Pass 4 to ' + NAMES[G.declarer] + '</span><span class="phint">Trump <b>' + L.SUIT_GLYPH[G.trump] + " " + L.SUIT_NAME[G.trump] + '</b> · send trump &amp; aces · <b>' + G.selected.length + '/4</b> picked</span></div>' +
         '<div class="btnrow"><button class="btn gold big" id="btn-sendpass"' + (G.selected.length === 4 ? "" : " disabled") + '>SEND 4 CARDS</button></div>';
       const b = $("#btn-sendpass"); if(b) b.addEventListener("click", confirmPass);
     } else if(G.passStage === "return" && G.declarer === 0){
-      panel.innerHTML = '<div class="pt">Send 4 cards back</div><div class="ps">Ace passed you 4 cards (marked NEW). You hold ' + G.hands[0].length + ' — pick any 4 to return (' + G.selected.length + '/4 picked). Keep your trump, aces and meld.</div>' +
+      panel.innerHTML = '<div class="prow"><span class="pt">Send 4 back</span><span class="phint">Ace\'s 4 are marked NEW · keep trump, aces &amp; meld · <b>' + G.selected.length + '/4</b> picked</span></div>' +
         '<div class="btnrow"><button class="btn gold big" id="btn-sendpass"' + (G.selected.length === 4 ? "" : " disabled") + '>RETURN 4 CARDS</button></div>';
       const b = $("#btn-sendpass"); if(b) b.addEventListener("click", confirmPass);
     } else {
-      panel.innerHTML = '<div class="pt">The pass</div><div class="ps">Partners are exchanging 4 cards across the table…</div>';
+      panel.innerHTML = '<div class="prow"><span class="pt">The pass</span><span class="phint">Partners are exchanging 4 cards…</span></div>';
     }
   }
   else if(phase === "meld"){
-    const lines = [0,1,2,3].map(p => '<div class="ml"><span><b>' + NAMES[p] + '</b>' + (p === G.declarer ? " (bidder)" : "") + '</span><span>' + G.melds[p].total + '</span></div>').join("");
-    panel.innerHTML = '<div class="pt">Meld is down</div><div class="meldlines">' + lines +
-      '<div class="ml"><span><b>Team totals</b></span><span>Us ' + G.meldTeamRaw[0] + " · Them " + G.meldTeamRaw[1] + '</span></div></div>' +
-      '<div class="ps">Full meld cards are in the Meld sheet below. A side under 20 scores no meld.</div>' +
+    panel.innerHTML = '<div class="prow"><span class="pt">Meld is down</span><span class="phint">Us <b>' + G.meldTeamRaw[0] + '</b> · Them <b>' + G.meldTeamRaw[1] + '</b> · under 20 scores nothing · per-player meld in the Meld sheet</span></div>' +
       '<div class="btnrow"><button class="btn gold big" id="btn-beginplay">PLAY THE HAND</button>' +
       (G.declarer === 0 ? '<button class="btn danger" id="btn-throwin">THROW IN (−' + G.currentBid + ')</button>' : "") + '</div>';
     $("#btn-beginplay").addEventListener("click", ()=>{ beginPlay(); });
@@ -690,13 +715,13 @@ function renderPanel(){
     const r = G.lastResult;
     const d0 = r.delta[0], d1 = r.delta[1];
     const fmt = d => '<b class="' + (d >= 0 ? "pos" : "neg") + '">' + (d >= 0 ? "+" : "") + d + '</b>';
-    panel.innerHTML = '<div class="pt">' + (phase === "matchover" ? "Match over" : "Hand " + G.hand + " — scored") + '</div>' +
+    panel.innerHTML = '<div class="prow"><span class="pt">' + (phase === "matchover" ? "Match over" : "Hand " + G.hand + " — scored") + '</span><span class="phint">Match <b>Us ' + G.scores[0] + " · Them " + G.scores[1] + "</b>" +
+      (phase === "matchover" ? " · <b>" + (G.winner === 0 ? "🏆 You and Ace win!" : "Rex and Slim win.") + "</b>" : "") + '</span></div>' +
       '<div class="ps">' + r.note + '</div><div class="scorelines">' +
       '<div class="sl"><span>Us — You + Ace</span>' + fmt(d0) + '</div>' +
-      '<div class="sl"><span>Them — Rex + Slim</span>' + fmt(d1) + '</div>' +
-      '<div class="sl"><span>Match score</span><span><b>' + G.scores[0] + " · " + G.scores[1] + '</b></span></div></div>' +
+      '<div class="sl"><span>Them — Rex + Slim</span>' + fmt(d1) + '</div></div>' +
       (phase === "matchover"
-        ? '<div class="ps" style="font-size:17px"><b>' + (G.winner === 0 ? "🏆 You and Ace win the match!" : "Rex and Slim win the match.") + '</b></div><div class="btnrow"><button class="btn gold big" id="btn-newmatch2">NEW MATCH</button></div>'
+        ? '<div class="btnrow"><button class="btn gold big" id="btn-newmatch2">NEW MATCH</button></div>'
         : '<div class="btnrow"><button class="btn gold big" id="btn-nexthand">DEAL THE NEXT HAND</button></div>');
     const nh = $("#btn-nexthand"); if(nh) nh.addEventListener("click", nextHand);
     const nm = $("#btn-newmatch2"); if(nm) nm.addEventListener("click", ()=>{ newMatch(); deal(); });
@@ -791,6 +816,51 @@ const RULES_HTML = "<h3>How to play — Hustle City Pinochle</h3>" +
   handle.addEventListener("pointercancel", endDrag);
   handle.addEventListener("click", ()=>{ if(Math.abs(event.clientY - startY) < 6) setSheet(sheetSnap === 0 ? 1 : 0); });
   document.querySelectorAll("#sheet .tabs .btn").forEach(b => b.addEventListener("click", ()=> setSheet(sheetSnap === 0 ? 1 : sheetSnap, b.getAttribute("data-tab"))));
+})();
+/* ---------------- hand pull-up sheet ----------------
+   The player's hand lives on its own drag sheet, stacked directly
+   above the score sheet's handle. Stop 0 (default): compact fan.
+   Stops 1–2: the fan spreads out into the extra room. The main
+   column reserves exactly the stop-0 height so the action panel
+   is never covered at the default stop. */
+let hsStop = 0;   // 0 compact, 1 spread, 2 full spread
+function syncHsPad(){
+  const main = document.querySelector(".pn-main"), hs = $("#handsheet");
+  if(!main || !hs || !G) return;
+  if(hsStop !== 0){ hs.classList.remove("hs" + hsStop); hs.classList.add("hs0"); }
+  const h = hs.offsetHeight;
+  if(hsStop !== 0){ hs.classList.remove("hs0"); hs.classList.add("hs" + hsStop); }
+  if(h) main.style.paddingBottom = (54 + h + 8) + "px";
+}
+function setHsStop(n){
+  hsStop = Math.max(0, Math.min(2, n));
+  const hs = $("#handsheet");
+  hs.classList.remove("hs0", "hs1", "hs2"); hs.classList.add("hs" + hsStop);
+  hs.style.transform = "translateX(-50%)";
+  syncHsPad();
+}
+(function(){
+  const handle = $("#hs-handle"), hs = $("#handsheet");
+  let startY = 0, startStop = 0, dragging = false, moved = false;
+  handle.addEventListener("pointerdown", e => { dragging = true; moved = false; startY = e.clientY; startStop = hsStop; handle.setPointerCapture(e.pointerId); });
+  handle.addEventListener("pointermove", e => {
+    if(!dragging) return;
+    const dy = e.clientY - startY;
+    if(Math.abs(dy) > 5) moved = true;
+    const y = Math.max(-150, Math.min(50, dy));
+    hs.style.transition = "none";
+    hs.style.transform = "translate(-50%," + y + "px)";
+  });
+  const endDrag = e => {
+    if(!dragging) return; dragging = false;
+    hs.style.transition = "";
+    const dy = e.clientY - startY;
+    setHsStop(startStop + (dy < -40 ? 1 : dy > 40 ? -1 : 0));
+  };
+  handle.addEventListener("pointerup", endDrag);
+  handle.addEventListener("pointercancel", endDrag);
+  handle.addEventListener("click", ()=>{ if(!moved) setHsStop(hsStop === 0 ? 1 : 0); });
+  window.addEventListener("resize", syncHsPad);
 })();
 /* ---------------- boot ---------------- */
 $("#btn-rules").addEventListener("click", ()=> setSheet(2, "rules"));
