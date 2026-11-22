@@ -776,6 +776,18 @@ body {
   cursor: pointer;
 }
 .bonus-collect.on { display: block; }
+/* Final-reveal trunk (2026-11-22): after all 8 prizes pop, the one
+   closed trunk left holds Scotty and stays LIVE — it pulses so the
+   player can see it is still a real pick, not a dead tile. */
+.trunk.final-reveal {
+  border-color: #7fd0ff;
+  box-shadow: 0 0 0 2px rgba(127, 208, 255, .85), 0 0 22px rgba(46, 155, 255, .9), inset 0 1px 0 rgba(255, 255, 255, .28);
+  animation: finalTrunkPulse .7s ease-in-out infinite alternate;
+}
+@keyframes finalTrunkPulse { from { filter: brightness(1); } to { filter: brightness(1.25); } }
+/* COLLECT hardening (2026-11-22): the button takes touch directly —
+   no scroll/drag gesture may reinterpret the tap. */
+.bonus-collect { touch-action: manipulation; pointer-events: auto; position: relative; z-index: 5; }
 
 @media (min-width: 700px) {
   .room { align-items: center; }
@@ -783,6 +795,7 @@ body {
 }
 @media (prefers-reduced-motion: reduce) {
   .fs-banner.on, .cell.win::after, .cell.win img, .spin-btn:not(:disabled) .spin-ring { animation: none; }
+  .trunk.final-reveal { animation: none; }
 }
 
 /* ---------- celebration screens (2026-11-21) ----------

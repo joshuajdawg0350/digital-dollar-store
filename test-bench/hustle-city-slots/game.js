@@ -373,7 +373,7 @@
       `<div class="payrow"><div class="thumb"><img src="${ART.X2}" alt="WIN ×2"></div><div class="nm">WIN ×2</div><span class="pv wide">Anywhere on a winning line, this line's win is DOUBLED (×2)</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.X3}" alt="WIN ×3"></div><div class="nm">WIN ×3</div><span class="pv wide">Anywhere on a winning line, this line's win is TRIPLED (×3). Two multipliers on the same line multiply together — ×2 and ×3 pay ×6</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.SC}" alt="SCATTER"></div><div class="nm">SCATTER</div><span class="pv wide">3+ anywhere: pays 2.4× / 9.6× / 48× total bet + 7 / 10 / 15 FREE SPINS at 2× line wins</span></div>` +
-      `<div class="payrow"><div class="thumb"><img src="${ART.BN}" alt="BONUS"></div><div class="nm">BONUS — PICK-A-GARAGE / WHEEL</div><span class="pv wide">3+ anywhere on a paid spin opens the garage: 9 real cars — pop a trunk! 8 trunks hide prizes (0.6×–4.8× total bet), 1 hides SCOTTY. Banked prizes are kept; Scotty ends it. Pop all 8 for a 7.2× GARAGE BONUS. Half the time the BONUS WHEEL opens instead: 12 wedges, every wedge pays × total bet — MINI 4× · MINOR 8× · MAJOR 15× · GRAND 30×</span></div>` +
+      `<div class="payrow"><div class="thumb"><img src="${ART.BN}" alt="BONUS"></div><div class="nm">BONUS — PICK-A-GARAGE / WHEEL</div><span class="pv wide">3+ anywhere on a paid spin opens the garage: 9 real cars — pop a trunk! 8 trunks hide prizes (0.6×–4.8× total bet), 1 hides SCOTTY. Banked prizes are kept; Scotty ends it. Pop all 8 for a 7.2× GARAGE BONUS — the last closed trunk then stays live as a no-risk reveal of SCOTTY. Half the time the BONUS WHEEL opens instead: 12 wedges, every wedge pays × total bet — MINI 4× · MINOR 8× · MAJOR 15× · GRAND 30×</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.DL}" alt="BET"></div><div class="nm">BET</div><span class="pv wide">Bets run in $25 steps: $25, $50, $75 … all the way up to $2,500 a spin. A step unlocks the first time your balance reaches it — and stays unlocked even if your balance dips. Use the −25 / +25 buttons or MAX BET. NEW GAME resets you to a $25 bet</span></div>`;
   }
 
@@ -753,20 +753,66 @@
      9 cars, 9 TRUNKS: 8 prizes (x total bet of the triggering spin) +
      1 SCOTTY. The pick pops the trunk — the lid swings open on the
      prize inside, or on Scotty. Banked prizes are KEPT even when
-     Scotty ends the round; popping all 8 prize trunks adds the
-     completion (GARAGE) bonus. */
-  let bonusDeck = null, lastBonusPaid = 0, lastBonusWhat = 'Pick-a-Garage';
-  function openBonus(tb, done) {
-    setControlsEnabled(false);
-    Kit.garageDoor(); /* the real door rolls up as the round starts */
+     Scotty ends the round; popping all 8 prize trunks banks the
+     completion (GARAGE) bonus and leaves the one closed trunk LIVE
+     as a no-risk final reveal — it always holds Scotty, and the
+     round only ends when he is shown or found. (2026-11-22 fix:
+     the round used to end on the 8th prize with Scotty's trunk
+     permanently dead and a 5s celebration overlay sitting on top
+     of COLLECT — Joshua's real-phone report. No overlay covers the
+     bonus any more, and COLLECT is bound ONCE, below, against the
+     live session — no per-round listener stacking.) */
+  let bonusDeck = null, bonusSession = null, lastBonusPaid = 0, lastBonusWhat = 'Pick-a-Garage';
+  function buildGarageDeck(tb) {
     const deck = cfg.bonus.prizes.map(m => ({ prize: Math.round(m * tb) }));
     deck.push({ scotty: true });
     for (let i = deck.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = deck[i]; deck[i] = deck[j]; deck[j] = t; }
+    return deck;
+  }
+  function endGarage(html) {
+    if (!bonusSession) return;
+    bonusSession.phase = 'over';
+    bonusResultEl.innerHTML = html;
+    bonusCollectBtn.textContent = `COLLECT ${fmt(bonusSession.banked)}`;
+    bonusCollectBtn.classList.add('on');
+    /* instant scroll: the button must be STATIONARY when it appears —
+       a smooth scroll left it moving under the player's tap */
+    setTimeout(() => bonusGame.scrollTo({ top: bonusGame.scrollHeight, behavior: 'auto' }), 60);
+  }
+  function collectBonus() {
+    const session = bonusSession;
+    if (!session || session.phase !== 'over' || session.collected) return;
+    session.collected = true;
+    const banked = session.banked;
+    credits += banked;
+    checkTierUnlock(false);
+    renderReadouts(banked);
+    save();
+    bonusGame.classList.remove('on');
+    bonusGame.setAttribute('aria-hidden', 'true');
+    bonusBackdrop.classList.remove('on');
+    bonusDeck = null;
+    bonusSession = null;
+    lastBonusPaid = banked;
+    lastBonusWhat = 'Pick-a-Garage';
+    session.done();
+  }
+  bonusCollectBtn.addEventListener('click', collectBonus);
+  function openBonus(tb, done) {
+    setControlsEnabled(false);
+    Kit.garageDoor(); /* the real door rolls up as the round starts */
+    const deck = buildGarageDeck(tb);
     bonusDeck = deck;
-    const completion = Math.round(cfg.bonus.completion * tb);
-    let banked = 0, safePicked = 0, over = false;
+    const session = {
+      deck,
+      completion: Math.round(cfg.bonus.completion * tb),
+      prizeTotal: deck.reduce((s, c) => s + (c.prize || 0), 0),
+      banked: 0, safePicked: 0, phase: 'picking', done, collected: false
+    };
+    bonusSession = session;
     bonusBankEl.textContent = '0';
     bonusResultEl.innerHTML = '';
+    bonusCollectBtn.textContent = 'COLLECT';
     bonusCollectBtn.classList.remove('on');
     trunksEl.innerHTML = '';
     deck.forEach((card, i) => {
@@ -776,37 +822,39 @@
       b.setAttribute('aria-label', `Trunk ${i + 1}`);
       b.innerHTML = `<span class="car-photo"><img src="assets/car-${i + 1}.webp" alt="" draggable="false"></span><span class="cavity"></span><span class="lid"><span class="lid-plate">TRUNK <b>${i + 1}</b></span><span class="lid-latch"></span></span>`;
       b.addEventListener('click', () => {
-        if (over || b.classList.contains('open')) return;
+        if (bonusSession !== session || session.collected || session.phase === 'over' || b.classList.contains('open')) return;
+        if (session.phase === 'final-reveal' && !card.scotty) return; /* only Scotty's trunk is left by construction */
         b.classList.add('open');
         Kit.trunkOpen(); /* latch + creak on every trunk */
         if (card.scotty) {
-          over = true;
           b.classList.add('scotty');
           b.querySelector('.cavity').innerHTML = `<img class="cavity-scotty" src="assets/scotty.webp" alt="Scotty" draggable="false"><span class="busted-tag">SCOTTY!</span>`;
-          Kit.engineBust(); /* engine rev + bell crash — the bust sting */
-          bonusResultEl.innerHTML = `<img class="scotty-img" src="assets/scotty.webp" alt="Scotty">SCOTTY was hiding in that trunk! Bonus over — you keep your banked <b>${fmt(banked)}</b> credits. Only the un-popped trunks are lost.`;
-          bonusCollectBtn.textContent = `COLLECT ${fmt(banked)}`;
-          bonusCollectBtn.classList.add('on');
-          setTimeout(() => bonusGame.scrollTo({ top: bonusGame.scrollHeight, behavior: 'smooth' }), 60);
+          if (session.phase === 'final-reveal') {
+            /* no-risk reveal: every prize is already banked, Scotty
+               showing his face cannot take any of it away */
+            Kit.jackpot();
+            endGarage(`<span class="clear-title">YOU CLEARED THE GARAGE!</span><br>All 8 prize trunks popped and SCOTTY was hiding in the last trunk. Prizes ${fmt(session.prizeTotal)} + GARAGE BONUS ${fmt(session.completion)} = total banked: <b>${fmt(session.banked)}</b>.`);
+          } else {
+            Kit.engineBust(); /* engine rev + bell crash — the bust sting */
+            endGarage(`<img class="scotty-img" src="assets/scotty.webp" alt="Scotty">SCOTTY was hiding in that trunk! Bonus over — you keep your banked <b>${fmt(session.banked)}</b> credits. Only the un-popped trunks are lost.`);
+          }
           return;
         }
-        banked += card.prize;
-        safePicked++;
+        session.banked += card.prize;
+        session.safePicked++;
         b.querySelector('.cavity').innerHTML = `<span class="prize">+${fmt(card.prize)}</span>`;
         /* rising prize dings as the bank grows; deep picks get tension */
-        setTimeout(() => Kit.prize(safePicked - 1), 130);
-        if (safePicked >= 5) setTimeout(() => Kit.tension(), 420);
-        bonusBankEl.textContent = fmt(banked);
-        if (safePicked === cfg.bonus.prizes.length) {
-          over = true;
-          banked += completion;
-          bonusBankEl.textContent = fmt(banked);
-          Kit.jackpot(); /* full clear = the jackpot celebration */
-          celebrate('bonus', 'GARAGE CLEARED!', 'Every prize car picked — big bonus!', celebDur());
-          bonusResultEl.innerHTML = `<span class="clear-title">YOU CLEARED THE GARAGE!</span><br>All 8 prize trunks popped and Scotty never showed — GARAGE BONUS +${fmt(completion)} credits. Total banked: <b>${fmt(banked)}</b>.`;
-          bonusCollectBtn.textContent = `COLLECT ${fmt(banked)}`;
-          bonusCollectBtn.classList.add('on');
-          setTimeout(() => bonusGame.scrollTo({ top: bonusGame.scrollHeight, behavior: 'smooth' }), 60);
+        setTimeout(() => Kit.prize(session.safePicked - 1), 130);
+        if (session.safePicked >= 5) setTimeout(() => Kit.tension(), 420);
+        bonusBankEl.textContent = fmt(session.banked);
+        if (session.safePicked === cfg.bonus.prizes.length) {
+          session.banked += session.completion;
+          bonusBankEl.textContent = fmt(session.banked);
+          session.phase = 'final-reveal';
+          const remaining = trunksEl.querySelector('.trunk:not(.open)');
+          if (remaining) remaining.classList.add('final-reveal');
+          bonusResultEl.innerHTML = `<span class="clear-title">ALL 8 PRIZE TRUNKS POPPED!</span><br>Prizes ${fmt(session.prizeTotal)} + GARAGE BONUS ${fmt(session.completion)} = <b>${fmt(session.banked)}</b> banked. One trunk is still closed — pop it to reveal SCOTTY. The ${fmt(session.banked)} is already yours.`;
+          setTimeout(() => bonusGame.scrollTo({ top: bonusGame.scrollHeight, behavior: 'auto' }), 60);
         }
       });
       trunksEl.appendChild(b);
@@ -814,26 +862,13 @@
     bonusGame.classList.add('on');
     bonusGame.setAttribute('aria-hidden', 'false');
     bonusBackdrop.classList.add('on');
-    const collect = () => {
-      bonusCollectBtn.removeEventListener('click', collect);
-      credits += banked;
-      checkTierUnlock(false);
-      renderReadouts(banked);
-      save();
-      bonusGame.classList.remove('on');
-      bonusGame.setAttribute('aria-hidden', 'true');
-      bonusBackdrop.classList.remove('on');
-      bonusDeck = null;
-      lastBonusPaid = banked;
-      lastBonusWhat = 'Pick-a-Garage';
-      done();
-    };
-    bonusCollectBtn.addEventListener('click', collect);
   }
   /* QA hook: force the bonus open / inspect the shuffled deck / drive state */
   window.__slotsDebug = {
     openBonus: tb => openBonus(tb || totalBet(), () => setControlsEnabled(true)),
     deck: () => bonusDeck,
+    buildGarageDeck: tb => buildGarageDeck(tb || totalBet()),
+    garage: () => bonusSession ? { phase: bonusSession.phase, banked: bonusSession.banked, safePicked: bonusSession.safePicked, prizeTotal: bonusSession.prizeTotal, completion: bonusSession.completion, collected: bonusSession.collected } : null,
     setCredits: n => { credits = Math.max(0, n | 0); notePeak(false); renderReadouts(); newGameBtn.classList.toggle('on', credits < totalBet()); save(); },
     celebrate: (kind, title, sub, dur) => celebrate(kind || 'bonus', title || 'PICK-A-GARAGE!', sub || '', dur || 3000),
     wheel: (idx) => runBonusWheel(totalBet(), idx),
