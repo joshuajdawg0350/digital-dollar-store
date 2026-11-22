@@ -18,7 +18,7 @@ const BARS = ['BAR1', 'BAR2', 'BAR3'];
    These are the BASE pays — a winning line containing ducks pays its base
    times the duck multiplier (see evaluateCombo). */
 const PAYTABLE = {
-  DUCK:   [2500, 5000, 10000],
+  DUCK:   [3500, 5000, 10000],
   SEVEN:  [100, 200, 300],
   BAR3:   [40, 80, 120],
   BAR2:   [20, 40, 60],
@@ -37,17 +37,27 @@ const TIER_ORDER = ['DUCK', 'SEVEN', 'BAR3', 'BAR2', 'BAR1', 'ANYBAR', 'CHERRY3'
    2026-11-22 for the wild build: duck variants multiply the average win
    ~1.3x, so the tier weights came down to hold the same return. */
 const TIER_WEIGHTS = {
-  DUCK: 3, SEVEN: 23, BAR3: 88, BAR2: 158, BAR1: 352,
-  ANYBAR: 862, CHERRY3: 123, CHERRY2: 1364, CHERRY1: 8008
+  DUCK: 4, SEVEN: 29, BAR3: 109, BAR2: 196, BAR1: 436,
+  ANYBAR: 1069, CHERRY3: 153, CHERRY2: 1691, CHERRY1: 9930
 };
-/* Re-tuned 2026-11-22 (v4): the red-screen routing fix means EVERY red
-   trigger now re-spins (the old build diverted 25% of them into Pick a
-   Duck), which lifted the return ~+12 points in sim. Weights trimmed
-   ~12% across the board to hold the v3 band — Monte Carlo (2M spins,
-   ../sim.js): 87.2% @ 1 coin / ~90.5% @ 3 coins, vs the pre-fix build's
-   85.4% / 92.2% at 400k. Hit frequency eases 12.5% -> ~11.0% while red
-   screens fire MORE often (0.023 -> 0.027 per spin): the feature Joshua
-   plays for got more common, base hits slightly fewer. */
+/* Re-tuned 2026-11-22 (v7) — JOSHUA'S RULING: the machine pays out
+   MORE than it takes in, RTP above 100% at BOTH bet levels, aiming
+   ~110%. (Supersedes the v4 tune below the line in git history: red
+   routing fix era, 87.48% @1c / 85.90% @3c at 2M spins, hit 11.0%.)
+   Method: win weights scaled x1.24 across the board (hit rate rises
+   with them — a loose machine that rarely hits is wrong), plus the
+   one paytable touch the levels needed: DUCK at 1 coin 2500 -> 3500.
+   DUCK is the only tier worth more per coin at 3 coins than at 1
+   (10000/3 vs 2500/1), which tilted 3-coin RTP ~5 points over
+   1-coin at any pure weight scale; 3500 closes the tilt so both
+   levels land together. The displayed paytable is rendered from
+   PAYTABLE above, so displayed = actual by construction. Red-chain
+   behavior UNCHANGED (RED_CHANCE 0.20 / RED_CHAIN_CHANCE 0.20 /
+   RED_MAX 5), PICK_CHANCE unchanged. Proof: Monte Carlo 2,000,000
+   spins per level on this file (../sim.js simSpins replica) —
+   numbers recorded in the vault BUILD-RECORD.md V7 section.
+   Tuner cross-check (seeded, 5M spins/level): 110.11% @1c /
+   110.50% @3c, hit 13.6%. */
 const TOTAL_WEIGHT = 100000;
 
 /* Feature odds (documented/inferred — see RESEARCH.md):
