@@ -811,9 +811,24 @@ const LIMIT_RE = /\b(never|don't|do not)\b/i;
 function splitSentences(t) {
   const byLine = (t || "").split(/\n+/).map(s => s.trim()).filter(Boolean);
   const out = [];
+  const pushSplit = (s) => {
+    /* Dictation often arrives as one run-on with no periods. A limit clause
+       joined on with ", " / " and " / " in " ("in" is a common dictation
+       rendering of "and") — "... make it funny in never show him losing" —
+       is its own sentence: split it off so the limit lands in Limits instead
+       of swallowing the whole command into Limits and polluting the subject. */
+    let rest = s;
+    for (;;) {
+      const m = rest.match(/^(.*?)(\s*(?:,|\band\b|\bin\b)\s+)((?:never|don't|do not)\b.*)$/i);
+      if (!m || m[1].trim().length < 10) { out.push(rest); return; }
+      out.push(m[1].trim());
+      rest = m[3].trim();
+      if (!rest) return;
+    }
+  };
   for (const line of byLine) {
     const parts = line.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [line];
-    for (const p of parts) { const s = p.trim(); if (s) out.push(s); }
+    for (const p of parts) { const s = p.trim(); if (s) pushSplit(s); }
   }
   return out;
 }
@@ -850,7 +865,9 @@ function mapSpeech(transcript) {
 
   if (kind === "image" || kind === "video") {
     let subj = goalText;
-    subj = subj.replace(/^(please\s+)?(can you\s+|could you\s+)?(make|create|generate|draw|paint|film|shoot|record|give me|i want|i need|let's make)\s+(me\s+)?(a\s+|an\s+|the\s+)?(video|image|picture|photo|clip|movie|film|poster|logo|drawing|painting|reel)?\s*(of|about|showing)?\s*/i, "");
+    subj = subj.replace(/^(please\s+)?(can you\s+|could you\s+)?(make|create|generate|draw|paint|film|shoot|record|give me|i want|i need|let's make)\s+(me\s+)?(a\s+|an\s+|the\s+)?(video|image|picture|photo|clip|movie|film|poster|logo|drawing|painting|reel)?\s*(of|about|showing)?\s*/i,
+      (m, _please, _canYou, _verb, _me, _art, medium, ofWord) =>
+        (medium && /^(logo|poster)$/i.test(medium)) ? medium.toLowerCase() + (ofWord ? " " + ofWord.toLowerCase() + " " : " ") : "");
     subj = subj.replace(/[.\s]+$/, "");
     /* setting: "in/at/inside/outside/near a|the|an|my …" phrase */
     const sm = subj.match(/\b(in|at|inside|outside|near)\s+(a|an|the|my)\s+([\w'’ -]{2,42})/i);
@@ -1110,7 +1127,15 @@ function buildMediaPrompt(kind, v) {
     if (move) parts.push("Camera movement: " + move + ".");
     parts.push("Motion is natural and physically believable — real weight, real timing, realistic motion blur, 24 fps. The subject stays consistent and lifelike for the full clip, 5–10 seconds.");
   } else {
-    parts.push("No text, no watermark, no logo anywhere in the image.");
+    /* The no-text/no-logo line must never contradict the user's own words:
+       a logo or lettering request keeps only the watermark ban. */
+    const wantsText = /\b(text|letters?|lettering|words?|typography|signage)\b/i.test((v.subject || "") + " " + (v.facts || ""));
+    const wantsLogo = /\b(logo|wordmark|monogram|emblem)\b/i.test((v.subject || "") + " " + (v.facts || ""));
+    const bans = [];
+    if (!wantsText) bans.push("text");
+    bans.push("watermark");
+    if (!wantsLogo) bans.push("logo");
+    parts.push("No " + bans.join(", no ") + " anywhere in the image.");
     if (shot) parts.push("Aspect ratio: " + shot.ar + ".");
   }
   return parts.join(" ");
