@@ -314,6 +314,7 @@ select.pinput{appearance:none;}
 .spotcard b{font-size:17.5px; display:block; line-height:1.2;}
 .spotcard .spotline{font-size:14px; font-weight:700; opacity:.8; display:block; margin-top:2px; line-height:1.35;}
 .spotcard .spotdist{font-size:13px; font-weight:900; color:#1f7ae0; display:block; margin-top:3px;}
+.spotcard .spottier{display:inline-block; font-size:12px; font-weight:900; letter-spacing:.4px; background:#fff3c4; color:#7a5200; border-radius:999px; padding:3px 9px; margin-top:4px;}
 .spotcard .spotord{flex:none; background:var(--sun); color:#7a5200; font-weight:900; font-size:14px; border-radius:999px; padding:5px 10px; border:2.5px solid #fff; box-shadow:0 2px 0 rgba(0,0,0,.15);}
 .spotadd{flex:none; min-height:56px; min-width:96px; border-radius:16px; border:3.5px solid #155a9e; background:var(--blue); color:#fff; font-weight:900; font-size:15.5px; padding:10px; font-family:var(--kidfont);}
 .spotcard.picked{border-color:var(--grass); background:#effbea;}
@@ -628,12 +629,12 @@ select.pinput{appearance:none;}
         <h3 id="planRouteTitle">Your road</h3>
         <p id="planRouteSub"></p>
         <div class="mapframe"><div class="mapbox planmap" id="planMap"></div></div>
-        <p class="plansub">The pins are in trip order — 1 is the first stop on your road. Tap a pin or a card below to pick the places for the hunt.</p>
+        <p class="plansub">The pins are the real places, in trip order — 1 is the first stop on your road. Cards marked 👀 can be spotted anywhere along the way. Tap a pin or a card below to pick the finds for the hunt.</p>
       </div>
       <div id="planSpotList"></div>
-      <div class="plancard" id="planEmpty" hidden>
-        <h3>🤔 No spots on that road yet</h3>
-        <p>The map doesn't know everything — we couldn't find kid-fun places along that road. The places were <b>not</b> made up. Try one of these:</p>
+      <div class="plancard" id="planEmpty">
+        <h3>🧭 More ways to play</h3>
+        <p>Your hunt card is never empty — it fills with real places ⭐, big things by the road 🚗, and anywhere-finds 👀. Named places are <b>never</b> made up. Want a different mix? Try one of these:</p>
         <button class="bigplay alt" id="btnPlanWider" type="button">🔍 Look a Little Wider</button>
         <button class="bigplay alt" id="btnPlanNearDest" type="button">🏁 Find Spots Near the End of the Trip</button>
         <button class="bigplay alt" id="btnPlanBuiltin" type="button">🚗 Play a Ready-Made Hunt Instead</button>
@@ -1651,6 +1652,7 @@ function makeMap(el, opts){
   function fit(){
     const pts=[];
     data.pins.forEach(p=>pts.push([p.lat,p.lon]));
+    if(data.path) data.path.forEach(p=>pts.push(p)); /* a pin-less map (anywhere-finds hunt) still frames the road */
     if(data.me) pts.push([data.me.lat, data.me.lon]);
     if(data.boundary && data.boundary.pts) data.boundary.pts.forEach(p=>pts.push(p));
     if(data.draft) data.draft.forEach(p=>pts.push(p));
@@ -2567,7 +2569,7 @@ function planSpotsFrom(j, route, baseM){
     }
     const info=PLAN_CATS[cat];
     const score=info.w + (tags.wikidata?3:0) + (tags.wikipedia?2:0);
-    const spot={osm:el.type[0]+el.id, name, cat, icon:info.icon, line:info.line, diff:info.diff, lat, lon, alongM:along, score};
+    const spot={osm:el.type[0]+el.id, name, cat, tier:1, icon:info.icon, line:info.line, diff:info.diff, lat, lon, alongM:along, score};
     const dup=out.find(s=>s.name.toLowerCase()===name.toLowerCase() && haversineM(s.lat,s.lon,lat,lon)<600);
     if(dup){ if(score>dup.score) Object.assign(dup, spot); }
     else out.push(spot);
@@ -2607,6 +2609,143 @@ async function planCorridorSpots(route, samples, radius, gen, deadlineMs){
   const spots=planSpotsFrom({elements}, route, 0);
   PLAN.cache[key]=spots; return spots;
 }
+/* ---------- TIER 2 · GENERAL ROADSIDE (Joshua, 2026-11-21) ----------
+   "Make things simpler like mile markers and signs for exits that are
+   going to be on there and big general things like barns or gas stations
+   or simple stuff." Broad, cheap queries for the big general things by
+   the road — they need no name and no fame, so they answer even when
+   the named-place hunt comes back thin. Real map features with real
+   coordinates; generic kid labels, never invented places. */
+function planRoadQL(samples, radius){
+  const lines=['[out:json][timeout:25];','('];
+  for(const s of samples){
+    const a=`around:${radius},${s[0].toFixed(5)},${s[1].toFixed(5)}`;
+    lines.push(`nwr["amenity"="fuel"](${a});`);
+    lines.push(`node["highway"="motorway_junction"](${a});`);
+    lines.push(`nwr["building"~"^(barn|farm|farm_auxiliary|stable)$"](${a});`);
+    lines.push(`node["man_made"="water_tower"](${a});`);
+    lines.push(`nwr["bridge"="yes"](${a});`);
+    lines.push(`node["highway"="milestone"](${a});`);
+  }
+  lines.push(');','out center tags;');
+  return lines.join('\n');
+}
+function planRoadKind(tags){
+  const t=tags||{};
+  if(t.amenity==='fuel') return {icon:'⛽', name:(t.name||'').trim()||'A Gas Station', line:'A gas station — the car stops here for a drink of gas!'};
+  if(t.highway==='motorway_junction') return {icon:'🛣️', name: t.ref? 'Exit '+t.ref : 'A Highway Exit', line:'A highway exit — read the big sign as you pass!'};
+  if(t.highway==='milestone') return {icon:'🔢', name: t.distance? 'Mile Marker '+t.distance : 'A Mile Marker', line:'A mile marker — a little sign that counts the miles!'};
+  if(t.man_made==='water_tower') return {icon:'🗼', name:(t.name||'').trim()||'A Water Tower', line:'A water tower — look way up high!'};
+  if(t.building==='barn'||t.building==='farm'||t.building==='farm_auxiliary'||t.building==='stable') return {icon:'🏠', name:'A Barn', line:'A barn — farm animals live and work near here!'};
+  if(t.bridge==='yes'||t.man_made==='bridge') return {icon:'🌉', name:'A Bridge', line:'A bridge — the road hops over something!'};
+  return null;
+}
+function planRoadsideFrom(j, route){
+  const out=[];
+  for(const el of (j.elements||[])){
+    const kind=planRoadKind(el.tags||{}); if(!kind) continue;
+    const lat=el.lat!=null? el.lat : (el.center? el.center.lat : null);
+    const lon=el.lon!=null? el.lon : (el.center? el.center.lon : null);
+    if(lat==null||lon==null) continue;
+    let best=1e18, bi=0;
+    for(let i=0;i<route.pts.length;i++){ const d=haversineM(lat,lon,route.pts[i][0],route.pts[i][1]); if(d<best){ best=d; bi=i; } }
+    if(best>6000) continue; /* roadside means BY the road */
+    const spot={osm:'r'+el.type[0]+el.id, name:kind.name, cat:'roadside', tier:2, icon:kind.icon, line:kind.line, diff:1, lat, lon, alongM:route.cum[bi], score:3};
+    const dup=out.find(s=>s.name===spot.name && haversineM(s.lat,s.lon,lat,lon)<500);
+    if(!dup) out.push(spot);
+  }
+  return out.sort((a,b)=>a.alongM-b.alongM).slice(0,24);
+}
+async function planRoadsideSpots(route, samples, gen, deadlineMs){
+  const key=`road:${route.pts[0][0].toFixed(3)}:${Math.round(route.totalM)}:${samples.length}`;
+  if(PLAN.cache[key]) return PLAN.cache[key];
+  /* Same resilience shape as the corridor sweep: one small query per
+     sample stop, 3 at a time, partial answers used, deadline-bounded. */
+  const deadline=Date.now()+(deadlineMs||60000);
+  const elements=[]; let answered=0, done=0;
+  const queue=samples.map((s,i)=>i);
+  async function worker(){
+    while(queue.length){
+      if(planStale(gen)) throw {code:'cancelled'};
+      if(Date.now()>deadline) return;
+      const s=samples[queue.shift()];
+      try{
+        const j=await planOverpass(planRoadQL([s], 3000), 20000, gen);
+        if(j && j.elements){ for(const el of j.elements) elements.push(el); answered++; }
+      }catch(e){ if(e && e.code==='cancelled') throw e; }
+      done++;
+      if(PLAN.onProgress) PLAN.onProgress(done, samples.length);
+    }
+  }
+  await Promise.all([worker(), worker(), worker()]);
+  if(planStale(gen)) throw {code:'cancelled'};
+  if(!answered) throw {code:'net'};
+  const spots=planRoadsideFrom({elements}, route);
+  PLAN.cache[key]=spots; return spots;
+}
+/* ---------- TIER 3 · ANYWHERE FINDS (Joshua, 2026-11-21) ----------
+   "Blue cars, red cars, green trucks, simple stuff. Keep them busy."
+   Needs NO map data at all — just the route's mileage from OSRM, which
+   is healthy even when the place servers are buried. Simple spotting
+   items dealt into the emptiest stretches of the route, so NO planned
+   trip can ever produce an empty or near-empty hunt card. */
+const PLAN_FULL=12; /* a full hunt card: the biggest auto-pick size */
+const PLAN_ANY=[
+  {key:'bluecar',    name:'A Blue Car',    icon:'🚙', line:'Spot a blue car zooming by!'},
+  {key:'redcar',     name:'A Red Car',     icon:'🚗', line:'Spot a red car!'},
+  {key:'greentruck', name:'A Green Truck', icon:'🛻', line:'Spot a green truck!'},
+  {key:'cow',        name:'A Cow',         icon:'🐄', line:'Spot a cow munching in a field!'},
+  {key:'horse',      name:'A Horse',       icon:'🐴', line:'Spot a horse in a field!'},
+  {key:'redbarn',    name:'A Red Barn',    icon:'🏠', line:'Spot a red barn!'},
+  {key:'train',      name:'A Train',       icon:'🚂', line:'Spot a train — count the cars as it passes!'},
+  {key:'funnysign',  name:'A Funny Sign',  icon:'🪧', line:'Spot a sign that makes you laugh!'},
+  {key:'whitetruck', name:'A White Truck', icon:'🚚', line:'Spot a big white truck!'},
+  {key:'schoolbus',  name:'A School Bus',  icon:'🚌', line:'Spot a yellow school bus!'},
+  {key:'motorcycle', name:'A Motorcycle',  icon:'🏍️', line:'Spot a motorcycle — vroom!'},
+  {key:'tractor',    name:'A Tractor',     icon:'🚜', line:'Spot a tractor working in a field!'},
+  {key:'dogcar',     name:'A Dog in a Car', icon:'🐶', line:'Spot a dog riding in a car!'},
+  {key:'policecar',  name:'A Police Car',  icon:'🚓', line:'Spot a police car!'},
+  {key:'airplane',   name:'An Airplane in the Sky', icon:'✈️', line:'Spot an airplane up in the sky!'},
+  {key:'bicycle',    name:'A Bicycle',     icon:'🚲', line:'Spot someone riding a bicycle!'},
+];
+function planAnywhere(route, existing, count){
+  if(count<=0 || !route || !(route.totalM>0)) return [];
+  /* Deal the finds into the LARGEST empty gaps between the finds we
+     already have — quiet stretches lean on anywhere-finds hardest. */
+  const pts=[0, route.totalM];
+  existing.forEach(s=>pts.push(s.alongM));
+  pts.sort((a,b)=>a-b);
+  const used=new Set(existing.map(s=>s.anyKey).filter(Boolean));
+  const avail=PLAN_ANY.filter(a=>!used.has(a.key));
+  const placed=[];
+  for(let n=0;n<count;n++){
+    let gi=0, gmax=-1;
+    for(let i=0;i<pts.length-1;i++){ const g=pts[i+1]-pts[i]; if(g>gmax){ gmax=g; gi=i; } }
+    const mid=(pts[gi]+pts[gi+1])/2;
+    pts.splice(gi+1, 0, mid);
+    const a=avail.length? avail[n%avail.length] : PLAN_ANY[n%PLAN_ANY.length];
+    placed.push({osm:'any-'+a.key+(avail.length && n<avail.length? '' : '-'+n), anyKey:a.key, name:a.name, cat:'anywhere', tier:3, icon:a.icon, line:a.line, diff:1, lat:null, lon:null, alongM:mid, score:0});
+  }
+  return placed;
+}
+/* Fill the card in tier order — named places first (they are the best
+   finds), then general roadside, then anywhere-finds to the top — so a
+   hunt card is NEVER empty. "Keep them busy" is the acceptance test. */
+async function planTopUp(route, samples, spots, gen, opDown){
+  let list=[...spots];
+  if(list.length<PLAN_FULL && !opDown){
+    planBusy('Found the special places ✓ — now looking for big easy things by the road: gas stations, barns, exits…');
+    PLAN.onProgress=(done,total)=> planBusy(`Looking for big easy things by the road… checked ${done} of ${total} stops.`);
+    try{
+      const road=await planRoadsideSpots(route, samples, gen, 60000);
+      for(const r of road){ if(list.length>=PLAN_FULL) break; if(!list.some(s=>s.osm===r.osm)) list.push(r); }
+    }catch(e){ if(e && e.code==='cancelled') throw e; /* roadside is a bonus layer — anywhere-finds still fill the card */ }
+    finally{ PLAN.onProgress=null; }
+    if(planStale(gen)) throw {code:'cancelled'};
+  }
+  if(list.length<PLAN_FULL) list=list.concat(planAnywhere(route, list, PLAN_FULL-list.length));
+  return list.sort((a,b)=>a.alongM-b.alongM);
+}
 async function planDestSpots(dest, route, gen){
   const key=`dest:${dest.lat.toFixed(3)},${dest.lon.toFixed(3)}`;
   if(PLAN.cache[key]) return PLAN.cache[key];
@@ -2634,11 +2773,12 @@ async function planDoSearch(fromText, toText, gen){
   const samples=planSamples(route);
   planBusy(`Road drawn ✓ — now looking for fun places along the way… checked 0 of ${samples.length} stops.`);
   PLAN.onProgress=(done,total)=> planBusy(`Road drawn ✓ — looking for fun places along the way… checked ${done} of ${total} stops.`);
-  let spots, wide=false;
+  let spots=[], wide=false, opDown=false;
   try{ spots=await planCorridorSpots(route, samples, 5000, gen, 90000); }
+  catch(e){ if(e && e.code==='cancelled') throw e; opDown=true; /* the place servers never answered — anywhere-finds below still fill the card */ }
   finally{ PLAN.onProgress=null; }
   stale();
-  if(spots.length<4){
+  if(!opDown && spots.length<4){
     planBusy('Only a few spots so far — looking a little wider around your road…');
     PLAN.onProgress=(done,total)=> planBusy(`Looking a little wider around your road… checked ${done} of ${total} stops.`);
     try{
@@ -2648,7 +2788,11 @@ async function planDoSearch(fromText, toText, gen){
     finally{ PLAN.onProgress=null; }
     stale();
   }
-  return {from, to, route, spots, wide};
+  /* Tier 2 roadside + Tier 3 anywhere-finds top the card up to full —
+     a planned trip NEVER lands on an empty card (Joshua, 2026-11-21). */
+  spots=await planTopUp(route, samples, spots, gen, opDown);
+  stale();
+  return {from, to, route, spots, wide, opDown};
 }
 /* ---------- planner UI ---------- */
 function planShow(step){
@@ -2702,17 +2846,29 @@ function planRenderResults(){
   const res=PLAN.results; if(!res) return;
   const spots=res.spots;
   $('#planRouteTitle').textContent=`🚗 ${res.from.name} → ${res.to.name}`;
-  $('#planRouteSub').textContent=`About ${Math.round(res.route.distMi)} miles · ${spots.length} fun place${spots.length===1?'':'s'} found along your road${res.wide?' (we looked a little wider)':''}. Pick the ones for your hunt!`;
-  $('#planEmpty').hidden = spots.length>0;
+  const n1=spots.filter(s=>!s.tier||s.tier===1).length;
+  const n2=spots.filter(s=>s.tier===2).length;
+  const n3=spots.filter(s=>s.tier===3).length;
+  let sub=`About ${Math.round(res.route.distMi)} miles · ${spots.length} find${spots.length===1?'':'s'} on your hunt card${res.wide?' (we looked a little wider)':''}. Pick the ones for your hunt!`;
+  if(n3 && !n1 && !n2) sub = res.opDown
+    ? `About ${Math.round(res.route.distMi)} miles · the map computers are too busy to name places right now, so your card is full of ANYWHERE finds — simple things to spot all along the road. It always works!`
+    : `About ${Math.round(res.route.distMi)} miles · the map doesn't know named places on this road, so your card is full of ANYWHERE finds — simple things to spot all along the way. It always works!`;
+  else if(n3) sub+=` ⭐ = a real place on your road · 🚗 = a big thing right by the road · 👀 = an ANYWHERE find, so the card is always full!`;
+  else if(n2) sub+=` ⭐ = a real place on your road · 🚗 = a big thing right by the road!`;
+  $('#planRouteSub').textContent=sub;
   $('#btnPlanWider').style.display = res.wide? 'none':'';
   $('#planSpotList').innerHTML = spots.map((s,i)=>{
     const mi=Math.round(s.alongM/1609.34);
+    const chip = s.tier===2? '<span class="spottier">🚗 BY THE ROAD</span>' : s.tier===3? '<span class="spottier">👀 ANYWHERE FIND</span>' : '';
+    const dist = s.tier===3
+      ? `👀 Start watching about ${Math.max(1,mi)} mile${mi===1?'':'s'} into your trip`
+      : `🚗 About ${Math.max(1,mi)} mile${mi===1?'':'s'} into your trip`;
     return `<button class="spotcard ${PLAN.picked.has(s.osm)?'picked':''}" data-spot="${s.osm}" type="button">
       <span class="spotord">${i+1}</span>
       <span class="spoticon">${s.icon}</span>
       <span class="spotmain"><b>${esc(s.name)}</b>
-        <span class="spotline">${esc(s.line)}</span>
-        <span class="spotdist">🚗 About ${Math.max(1,mi)} mile${mi===1?'':'s'} into your trip</span></span>
+        <span class="spotline">${esc(s.line)}</span>${chip}
+        <span class="spotdist">${dist}</span></span>
       <span class="spotadd">${PLAN.picked.has(s.osm)?'✔ ON MY HUNT':'➕ ADD'}</span>
     </button>`;
   }).join('');
@@ -2722,7 +2878,7 @@ function planRenderResults(){
       onPin:id=>{ const el=document.querySelector(`[data-spot="${id}"]`); if(el){ el.scrollIntoView({behavior:'smooth', block:'center'}); el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); } }});
   }
   PLAN.map.setTheme(S.mapTheme);
-  PLAN.map.setData({pins: spots.map((s,i)=>({id:s.osm, lat:s.lat, lon:s.lon, iconHTML:s.icon, label:s.name, ord:i+1})),
+  PLAN.map.setData({pins: spots.map((s,i)=>({id:s.osm, lat:s.lat, lon:s.lon, iconHTML:s.icon, label:s.name, ord:i+1})).filter(p=>p.lat!=null),
     path: res.route.pts, me: res.from.name==='Right here'? {lat:res.from.lat, lon:res.from.lon} : null});
   planUpdateMakeBtn();
 }
@@ -2751,11 +2907,12 @@ async function planWider(){
   planShow('busy'); $('#planBusyText').textContent='Looking a little wider around your road…';
   PLAN.onProgress=(done,total)=> planBusy(`Looking a little wider around your road… checked ${done} of ${total} stops.`);
   try{
-    const spots=await planCorridorSpots(res.route, planSamples(res.route), 10000, gen, 60000);
+    const named=await planCorridorSpots(res.route, planSamples(res.route), 10000, gen, 60000);
+    if(planStale(gen)) return;
+    const spots=await planTopUp(res.route, planSamples(res.route), named, gen, false);
     if(planStale(gen)) return;
     res.spots=spots; res.wide=true;
     planShow('results'); planRenderResults();
-    if(!spots.length) toast('Still no spots — the map is quiet out there. Try spots near the end of the trip!');
   }catch(e){
     if((e && e.code==='cancelled') || planStale(gen)){ planShow('results'); planRenderResults(); return; }
     planShow('results'); planRenderResults(); toast('📡 The wider search did not answer — check the internet and try again.');
@@ -2766,11 +2923,13 @@ async function planNearDest(){
   const gen=++PLAN.gen;
   planShow('busy'); $('#planBusyText').textContent=`Looking for fun places near ${res.to.name}…`;
   try{
-    const spots=await planDestSpots(res.to, res.route, gen);
+    const named=await planDestSpots(res.to, res.route, gen);
+    if(planStale(gen)) return;
+    const spots=await planTopUp(res.route, planSamples(res.route), named, gen, false);
     if(planStale(gen)) return;
     res.spots=spots; PLAN.nearDest=true;
     planShow('results'); planRenderResults();
-    $('#planRouteSub').textContent=`${spots.length} fun place${spots.length===1?'':'s'} near ${res.to.name}. Pick the ones for your hunt!`;
+    $('#planRouteSub').textContent=`${spots.length} find${spots.length===1?'':'s'} near ${res.to.name} and along your road. Pick the ones for your hunt!` + (spots.some(s=>s.tier===3)? ' 👀 = ANYWHERE finds, so the card stays full!' : '');
   }catch(e){
     if((e && e.code==='cancelled') || planStale(gen)){ planShow('results'); planRenderResults(); return; }
     planShow('results'); planRenderResults(); toast('📡 That search did not answer — check the internet and try again.');
@@ -2779,7 +2938,7 @@ async function planNearDest(){
 function planMakeHunt(){
   const res=PLAN.results; if(!res || !PLAN.picked.size) return;
   const chosen=res.spots.filter(s=>PLAN.picked.has(s.osm)).sort((a,b)=>a.alongM-b.alongM);
-  S.tripTargets=chosen.map(s=>({id:'trip'+s.osm, name:s.name, icon:s.icon, diff:s.diff, hint:s.line, lat:s.lat, lon:s.lon, cat:s.cat}));
+  S.tripTargets=chosen.map(s=>({id:'trip'+s.osm, name:s.name, icon:s.icon, diff:s.diff, hint:s.line, lat:s.lat, lon:s.lon, cat:s.cat, tier:s.tier||1}));
   const step=Math.max(1, Math.floor(res.route.pts.length/160));
   const simp=[];
   for(let i=0;i<res.route.pts.length;i+=step) simp.push(res.route.pts[i]);
