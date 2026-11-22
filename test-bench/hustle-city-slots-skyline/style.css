@@ -771,25 +771,49 @@ body {
 .bonus-head p { font-size: 13px; font-weight: 700; color: var(--blue-hot); margin-top: 3px; }
 .bonus-rules { font-size: 13px; line-height: 1.5; color: #c3d2e4; margin-top: 10px; }
 .bonus-rules b { color: #fff; }
-.bonus-pot { margin-top: 12px; }
+.bonus-pot {
+  margin-top: 12px;
+  padding: 10px 8px 12px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #0a1424 0%, #04070f 100%);
+  border: 1px solid #2b3a4f;
+  box-shadow: inset 0 2px 12px rgba(0, 0, 0, .9), inset 0 0 22px rgba(11, 95, 215, .18), 0 1px 0 rgba(255, 255, 255, .08);
+}
 .bonus-pot label {
   display: block; text-align: center; font-size: 10px; font-weight: 800;
   letter-spacing: .28em; color: #9db4cc; margin-bottom: 4px;
 }
+/* The dice sit on a real table now (2026-11-21 realism pass): a midnight-blue
+   felt under a spotlight pool, ringed by a dark chrome rail — the dice land
+   ON something instead of floating in a panel. */
 .bonus-dice {
   margin-top: 14px;
   display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 20px 12px;
+  border-radius: 18px;
+  border: 1px solid #31435f;
+  background:
+    radial-gradient(ellipse 85% 105% at 50% 26%, rgba(120, 180, 255, .30) 0%, rgba(46, 110, 190, .12) 42%, transparent 68%),
+    radial-gradient(ellipse 120% 130% at 50% 50%, #16345f 0%, #0a1e3c 58%, #040a1a 100%);
+  box-shadow:
+    0 0 0 5px #1c2635,
+    0 0 0 7px #04070c,
+    inset 0 0 38px rgba(0, 0, 0, .82),
+    inset 0 2px 0 rgba(255, 255, 255, .10),
+    0 12px 26px rgba(0, 0, 0, .55);
 }
 .die {
   width: 74px; height: 74px; border-radius: 15px; flex: none;
   background: linear-gradient(145deg, #f4f7fa 0%, #aebdd0 52%, #5d6c82 100%);
   border: 1px solid #2b3a4f;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, .7), inset 0 2px 3px rgba(255, 255, 255, .9), inset 0 -4px 8px rgba(0, 0, 0, .35);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, .78), 0 3px 5px rgba(0, 0, 0, .6), inset 0 2px 3px rgba(255, 255, 255, .9), inset 0 -4px 8px rgba(0, 0, 0, .35);
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
   padding: 11px;
 }
+#die0 { transform: rotate(-3deg); }
+#die1 { transform: rotate(2.5deg); }
 .die .pip {
   width: 13px; height: 13px; border-radius: 50%;
   place-self: center;
@@ -922,3 +946,215 @@ body {
 .chrome-btn { overflow: hidden; }
 .controls .btn-top { font-size: clamp(10px, 3vw, 11.5px); letter-spacing: .01em; }
 .controls .btn-sub { font-size: clamp(8px, 2.4vw, 10px); letter-spacing: .03em; }
+
+/* ---------- LOWER CABINET REALISM (2026-11-21) ----------
+   Joshua: "Make the bottom half of the slot machine below the screen look
+   more realistic. Use realism." The deck is now a photographed brushed-steel
+   plate (assets/deck-plate.webp) under a dark tint, with real corner screws,
+   an engraved seam, and the screen's blue glow spilling across its top edge.
+   Buttons are physical: a hard side wall under each face that collapses as
+   the button sinks when pressed. LED readouts sit in machined bezels under
+   glass. Below the deck: a backlit belly-glass panel in a chrome frame
+   (assets/belly.webp — this machine's own art) and a base strip with speaker
+   grilles flanking a coin tray heaped with coins (assets/coin-tray.webp).
+   Skin only — no handler, ID, or layout changes. */
+.deck {
+  position: relative;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cdefs%3E%3CradialGradient id='g' cx='35%25' cy='30%25'%3E%3Cstop offset='0%25' stop-color='%23f2f5f9'/%3E%3Cstop offset='45%25' stop-color='%2398a5b5'/%3E%3Cstop offset='80%25' stop-color='%23454f5c'/%3E%3Cstop offset='100%25' stop-color='%23141920'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='10' cy='10' r='9' fill='url(%23g)'/%3E%3Crect x='2.6' y='8.8' width='14.8' height='2.4' rx='1.2' fill='%2310141a' transform='rotate(38 10 10)'/%3E%3C/svg%3E") left 6px top 6px / 12px 12px no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cdefs%3E%3CradialGradient id='g' cx='35%25' cy='30%25'%3E%3Cstop offset='0%25' stop-color='%23f2f5f9'/%3E%3Cstop offset='45%25' stop-color='%2398a5b5'/%3E%3Cstop offset='80%25' stop-color='%23454f5c'/%3E%3Cstop offset='100%25' stop-color='%23141920'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='10' cy='10' r='9' fill='url(%23g)'/%3E%3Crect x='2.6' y='8.8' width='14.8' height='2.4' rx='1.2' fill='%2310141a' transform='rotate(115 10 10)'/%3E%3C/svg%3E") right 6px top 6px / 12px 12px no-repeat,
+    linear-gradient(180deg, rgba(27, 36, 50, .68) 0%, rgba(10, 14, 20, .82) 52%, rgba(4, 6, 10, .92) 100%),
+    url('assets/deck-plate.webp') center / cover no-repeat,
+    #0a0d12;
+  border: 1px solid #525f73;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .30),
+    inset 0 0 0 1px rgba(0, 0, 0, .55),
+    inset 0 -16px 28px rgba(0, 0, 0, .72),
+    0 6px 16px rgba(0, 0, 0, .70);
+}
+.deck::before {
+  content: "";
+  position: absolute;
+  left: 5%; right: 5%; top: -3px; height: 30px;
+  background: radial-gradient(62% 100% at 50% 0%, rgba(111, 194, 255, .20), rgba(111, 194, 255, 0) 70%);
+  pointer-events: none;
+}
+.controls { position: relative; }
+.controls::before {
+  content: "";
+  position: absolute;
+  left: -5px; right: -5px; top: -7px; height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, .9) 10%, rgba(0, 0, 0, .9) 90%, transparent);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .10);
+  pointer-events: none;
+}
+.readout label { text-shadow: 0 -1px 1px rgba(0, 0, 0, .9), 0 1px 0 rgba(255, 255, 255, .10); }
+.led {
+  position: relative;
+  border: 1px solid #4a5a72;
+  box-shadow:
+    inset 0 3px 12px rgba(0, 0, 0, .95),
+    inset 0 0 22px rgba(11, 95, 215, .30),
+    inset 0 -1px 0 rgba(143, 212, 255, .16),
+    0 0 0 2px #10141b,
+    0 0 0 3px #3d485a,
+    0 2px 5px rgba(0, 0, 0, .6);
+}
+.led::after {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .13) 0%, rgba(255, 255, 255, .02) 40%, rgba(255, 255, 255, 0) 62%);
+  pointer-events: none;
+}
+.chrome-btn {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .22) 0%, rgba(255, 255, 255, 0) 46%),
+    linear-gradient(180deg, #eef2f7 0%, #b4bfcc 28%, #67727f 50%, #39424e 53%, #828fa0 76%, #dde4ec 100%);
+  border: 1px solid #05070a;
+  box-shadow:
+    0 5px 0 #151a21,
+    0 10px 15px rgba(0, 0, 0, .72),
+    inset 0 1px 1px rgba(255, 255, 255, .95),
+    inset 0 -3px 6px rgba(0, 0, 0, .50),
+    inset 1px 0 2px rgba(255, 255, 255, .22),
+    inset -1px 0 2px rgba(0, 0, 0, .32);
+}
+.chrome-btn:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow:
+    0 1px 0 #151a21,
+    0 3px 6px rgba(0, 0, 0, .70),
+    inset 0 1px 1px rgba(255, 255, 255, .85),
+    inset 0 -1px 3px rgba(0, 0, 0, .50);
+}
+.chrome-btn:disabled {
+  box-shadow:
+    0 2px 0 #151a21,
+    0 4px 8px rgba(0, 0, 0, .60),
+    inset 0 1px 1px rgba(255, 255, 255, .70),
+    inset 0 -2px 4px rgba(0, 0, 0, .40);
+}
+.spin-btn {
+  box-shadow:
+    0 7px 0 #12171e,
+    0 15px 26px rgba(0, 0, 0, .82),
+    0 0 26px rgba(46, 155, 255, .50),
+    inset 0 2px 3px rgba(255, 255, 255, .95),
+    inset 0 -6px 10px rgba(0, 0, 0, .55);
+}
+.spin-btn::before {
+  content: "";
+  position: absolute;
+  inset: -7px;
+  border-radius: 50%;
+  border: 4px solid #79879a;
+  border-top-color: #d7dee7;
+  border-bottom-color: #333d4a;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .55),
+    inset 0 -1px 2px rgba(0, 0, 0, .55),
+    0 3px 8px rgba(0, 0, 0, .65);
+  pointer-events: none;
+}
+.spin-btn:active:not(:disabled) {
+  transform: translateY(5px) scale(.99);
+  box-shadow:
+    0 2px 0 #12171e,
+    0 6px 13px rgba(0, 0, 0, .80),
+    0 0 26px rgba(46, 155, 255, .50),
+    inset 0 2px 3px rgba(255, 255, 255, .90),
+    inset 0 -3px 6px rgba(0, 0, 0, .55);
+}
+.refill-btn, .newgame-btn {
+  border: 1px solid #052a47;
+  box-shadow:
+    0 4px 0 #08283f,
+    0 9px 15px rgba(0, 0, 0, .65),
+    inset 0 1px 0 rgba(255, 255, 255, .65),
+    inset 0 -3px 6px rgba(0, 26, 54, .50);
+}
+.refill-btn:active, .newgame-btn:active {
+  transform: translateY(3px);
+  box-shadow:
+    0 1px 0 #08283f,
+    0 4px 8px rgba(0, 0, 0, .60),
+    inset 0 1px 0 rgba(255, 255, 255, .55),
+    inset 0 -1px 3px rgba(0, 26, 54, .50);
+}
+
+/* belly glass — backlit panel in a chrome frame, this machine's own art */
+.belly { margin-top: 10px; }
+.belly-frame {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  line-height: 0;
+  background: #000;
+  border: 1px solid #59667a;
+  box-shadow:
+    0 0 0 2px #05070a,
+    0 0 24px rgba(46, 155, 255, .28),
+    0 5px 14px rgba(0, 0, 0, .72),
+    inset 0 0 0 1px rgba(0, 0, 0, .85);
+}
+.belly-art { width: 100%; height: auto; display: block; filter: saturate(1.07) brightness(1.04); }
+.belly-glowfx {
+  position: absolute; inset: 0; pointer-events: none;
+  box-shadow: inset 0 0 36px rgba(46, 155, 255, .20), inset 0 0 8px rgba(0, 0, 0, .45);
+}
+.belly-glassfx {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(112deg, rgba(255, 255, 255, .15) 0%, rgba(255, 255, 255, .03) 30%, rgba(255, 255, 255, 0) 48%),
+    linear-gradient(0deg, rgba(255, 255, 255, .05) 0%, rgba(255, 255, 255, 0) 20%);
+}
+
+/* cabinet base — speaker grilles flanking the coin tray */
+.cab-base {
+  margin-top: 10px;
+  height: 62px;
+  display: flex;
+  gap: 8px;
+}
+.grille {
+  flex: 0 0 14%;
+  border-radius: 10px;
+  border: 1px solid #333d4b;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(0, 0, 0, .92) 1.7px, rgba(190, 205, 225, .14) 2.1px, rgba(0, 0, 0, 0) 2.9px) 4px 4px / 10px 10px,
+    linear-gradient(180deg, #1b232f 0%, #0a0d12 100%);
+  box-shadow:
+    inset 0 2px 9px rgba(0, 0, 0, .85),
+    inset 0 -1px 0 rgba(255, 255, 255, .07),
+    0 2px 6px rgba(0, 0, 0, .55);
+}
+.tray {
+  position: relative;
+  flex: 1 1 auto;
+  border-radius: 10px;
+  overflow: hidden;
+  line-height: 0;
+  background: #05070a;
+  border: 1px solid #4a576c;
+  box-shadow:
+    inset 0 0 0 2px #04060a,
+    inset 0 12px 20px rgba(0, 0, 0, .60),
+    0 3px 10px rgba(0, 0, 0, .65);
+}
+.tray-art {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: 50% 62%;
+  display: block;
+}
+.tray-shade {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, .34) 0%, rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, .40) 100%),
+    linear-gradient(100deg, rgba(255, 255, 255, .10) 0%, rgba(255, 255, 255, 0) 42%);
+  box-shadow: inset 0 0 24px rgba(0, 0, 0, .50);
+}
+@media (max-width: 400px) { .cab-base { height: 56px; } }
