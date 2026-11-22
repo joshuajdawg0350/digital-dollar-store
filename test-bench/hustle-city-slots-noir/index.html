@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#060607">
+<title>Film Noir — A Black-and-White Slot Machine</title>
+<meta name="description" content="Film Noir. A black-and-white slot machine — 5 reels, 20 lines, silver cards, a cut diamond, free spins and The Case Files bonus. Play credits only — no cash value, no prizes.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="style.css">
+<link rel="prefetch" href="assets/case-closed.webp"><link rel="prefetch" href="assets/case-open.webp">
+<link rel="prefetch" href="assets/snitch.webp">
+</head>
+<body>
+<div class="room">
+  <main class="cabinet" id="cabinet">
+    <div class="cab-glow"></div>
+
+    <header class="marquee-wrap">
+      <img class="marquee" src="assets/marquee.webp" alt="FILM NOIR" draggable="false">
+      <div class="marquee-shine"></div>
+    </header>
+
+    <div class="fs-banner" id="fsBanner" aria-live="polite"></div>
+
+    <section class="reel-window" aria-label="Slot reels">
+      <div class="reel-bezel">
+        <div class="reels" id="reels">
+          <div class="reel" id="reel0"></div>
+          <div class="reel" id="reel1"></div>
+          <div class="reel" id="reel2"></div>
+          <div class="reel" id="reel3"></div>
+          <div class="reel" id="reel4"></div>
+          <div class="glass"></div>
+          <div class="win-flash" id="winFlash"></div>
+        </div>
+        <div class="payline-rail left" aria-hidden="true"></div>
+        <div class="payline-rail right" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <div class="lever" id="lever" role="button" tabindex="0" aria-label="Pull the lever to spin" aria-disabled="false">
+      <div class="lever-slot"></div>
+      <div class="lever-arm" id="leverArm">
+        <div class="lever-knob"></div>
+        <div class="lever-rod"></div>
+      </div>
+      <div class="lever-base"></div>
+    </div>
+
+    <div class="message" id="msg" aria-live="polite">Set your bet, then press SPIN.</div>
+
+    <section class="deck">
+      <div class="readouts">
+        <div class="readout">
+          <label>CREDITS</label>
+          <div class="led" id="credits">1,000</div>
+        </div>
+        <div class="readout">
+          <label>BET</label>
+          <div class="led" id="bet">25</div>
+        </div>
+        <div class="readout win-readout">
+          <label>WIN</label>
+          <div class="led win" id="win">0</div>
+        </div>
+      </div>
+
+      <div class="tier-line" id="tierLine" aria-live="polite"></div>
+
+      <div class="controls">
+        <button class="btn chrome-btn" id="betDownBtn" type="button" aria-label="Bet down 25">
+          <span class="btn-top">−25</span><span class="btn-sub">BET</span>
+        </button>
+        <button class="btn chrome-btn" id="betUpBtn" type="button" aria-label="Bet up 25">
+          <span class="btn-top">+25</span><span class="btn-sub">BET</span>
+        </button>
+        <button class="btn chrome-btn" id="maxBetBtn" type="button">
+          <span class="btn-top">MAX</span><span class="btn-sub">BET</span>
+        </button>
+        <button class="btn spin-btn" id="spinBtn" type="button" aria-label="Spin the reels">
+          <span class="spin-ring"></span>
+          <span class="spin-face">SPIN</span>
+        </button>
+        <button class="btn chrome-btn" id="payBtn" type="button">
+          <span class="btn-top">PAYS</span><span class="btn-sub">INFO</span>
+        </button>
+        <button class="btn chrome-btn" id="soundBtn" type="button">
+          <span class="btn-top">SOUND</span><span class="btn-sub" id="soundState">ON</span>
+        </button>
+      </div>
+
+      <button class="btn refill-btn" id="newGameBtn" type="button">NEW GAME — START OVER WITH 1,000 CREDITS</button>
+    </section>
+
+    <section class="belly" aria-hidden="true">
+      <div class="belly-frame">
+        <img class="belly-art" src="assets/belly.webp" alt="" draggable="false">
+        <div class="belly-glowfx"></div>
+        <div class="belly-glassfx"></div>
+      </div>
+    </section>
+
+    <div class="cab-base" aria-hidden="true">
+      <div class="grille"></div>
+      <div class="tray">
+        <img class="tray-art" src="assets/coin-tray.webp" alt="" draggable="false">
+        <div class="tray-shade"></div>
+      </div>
+      <div class="grille"></div>
+    </div>
+
+    <footer class="legal">
+      Play credits only — no cash value, no prizes. For entertainment.<br>
+      © 2026 J-Dawgs Industries
+    </footer>
+  </main>
+</div>
+
+<div class="celeb" id="celeb" aria-hidden="true" role="alertdialog" aria-label="Celebration">
+  <video class="celeb-video" id="celebVideo" muted playsinline preload="auto" src="assets/celeb-show.mp4"></video>
+  <div class="celeb-frame">
+    <div class="celeb-kick" id="celebKick">★ BONUS ★</div>
+    <div class="celeb-title" id="celebTitle">THE CASE FILES!</div>
+    <div class="celeb-sub" id="celebSub"></div>
+    <div class="celeb-tap">TAP TO SKIP ▸</div>
+  </div>
+</div>
+
+<div class="bonus-backdrop" id="bonusBackdrop"></div>
+<section class="bonus" id="bonusGame" aria-hidden="true" aria-label="The Case Files bonus game">
+  <div class="bonus-inner">
+    <h2 class="bonus-title">THE CASE FILES</h2>
+    <p class="bonus-sub">Nine sealed case files. Eight hold <b>EVIDENCE</b> — one holds <b>THE SNITCH</b>.</p>
+    <p class="bonus-rule">Tap a case file to open it. Inside is an evidence tag carrying its amount — every prize you find is banked and yours to keep. Find THE SNITCH — the shadow in the doorway — and the case is blown: the bonus ends on the spot, you keep everything you banked, and only the unopened files are lost. Open all 8 prize files without finding him and you win the CASE-CLOSED BONUS too.</p>
+    <div class="bonus-bank">BANKED&nbsp;<span id="bonusBank">0</span></div>
+    <div class="trunks" id="trunks"></div>
+    <div class="bonus-result" id="bonusResult" aria-live="polite"></div>
+    <button class="btn bonus-collect" id="bonusCollect" type="button">COLLECT</button>
+  </div>
+</section>
+
+<div class="sheet-backdrop" id="sheetBackdrop"></div>
+<section class="sheet" id="paySheet" aria-hidden="true" aria-label="Paytable and how to play">
+  <div class="sheet-handle" id="sheetHandle"><span></span></div>
+  <div class="sheet-body">
+    <h2>PAYTABLE <small>per credit bet per line · 20 lines</small></h2>
+    <div id="payrows"></div>
+    <h2>HOW TO PLAY</h2>
+    <ul class="howto">
+      <li><b>−25 / +25</b> steps your total bet up or down in $25 steps (25 to start). <b>MAX BET</b> jumps straight to the biggest step you've unlocked.</li>
+      <li><b>Your bet ladder grows with your balance:</b> a new $25 step unlocks every time your balance reaches it — 25 credits a spin to start, all the way up to 2,500 a spin. Once a step unlocks it stays unlocked — it never drops back when your balance dips. Starting a NEW GAME resets the ladder to 25.</li>
+      <li>While the reels are spinning, <b>SPIN</b> becomes <b>STOP</b> — tap it and every reel lands on its stop at once.</li>
+      <li>Spin two ways: press <b>SPIN</b>, or grab the <b>PULL ARM</b> on the side of the machine and pull it down — a tap on the arm works too.</li>
+      <li>Wins pay left to right on 20 lines. Only the highest win per line pays.</li>
+      <li><b>WILD</b> substitutes for every symbol except SCATTER.</li>
+      <li><b>WIN ×2 / WIN ×3</b>: a multiplier anywhere on a winning line multiplies that line's win — ×2 doubles it, ×3 triples it. If two multipliers land on the same line, they multiply together (×2 and ×3 pay ×6).</li>
+      <li><b>No blank stops:</b> every reel position is a real symbol — all 15 windows show a symbol on every spin.</li>
+      <li><b>QUEEN</b> pays from just 2 on a line.</li>
+      <li>3+ <b>SCATTER</b> (the silver starburst) anywhere pays 2× / 8× / 40× your total bet and awards 7 / 10 / 15 <b>FREE SPINS</b> — line wins pay <b>double</b> in free spins, and free spins can retrigger.</li>
+      <li>3+ <b>BONUS</b> coins anywhere on a paid spin opens <b>THE CASE FILES</b>: 9 sealed case files, 8 hold evidence prizes (½×–4× your total bet) and 1 holds <b>THE SNITCH</b>. Prizes you find are banked and kept; find The Snitch and the bonus ends — unopened files are lost. Open all 8 and a 6× CASE-CLOSED BONUS is added.</li>
+      <li>Credits are saved on this device. Out of credits? Hit <b>NEW GAME</b> to start over with a fresh 1,000.</li>
+      <li><b>Art:</b> every card, coin and case file on this machine is original artwork made for Film Noir by J-Dawgs Industries. Sounds are real recordings. The celebration show is an original black-and-white clip made for this machine.</li>
+    </ul>
+    <p class="sheet-legal">Play credits only — no cash value, no prizes. © 2026 J-Dawgs Industries</p>
+  </div>
+</section>
+
+<script src="logic.js"></script>
+<script src="machines.js"></script>
+<script src="soundkit.js"></script>
+<script src="game.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  }
+</script>
+</body>
+</html>
