@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Hustle City Cosmic Bowling</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#05060f">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+:root {
+  --blue:#38b6ff; --blue2:#1c6fd9; --chrome:#dfe6ee; --ink:#05060f;
+  --panel:rgba(13,18,38,.92); --line:rgba(56,182,255,.35);
+  --magenta:#ff4fd8; --lime:#b6ff4f; --dim:#8fa3c8;
+}
+html, body { height:100%; }
+body {
+  font-family:'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+  background:
+    radial-gradient(120% 60% at 50% -10%, rgba(60,30,140,.35), transparent 60%),
+    radial-gradient(90% 50% at 85% 110%, rgba(28,111,217,.20), transparent 60%),
+    #05060f;
+  color:var(--chrome); min-height:100dvh; user-select:none; -webkit-user-select:none;
+  overflow-x:hidden;
+}
+#app { width:min(430px, 100vw); min-height:100dvh; margin:0 auto; display:flex; flex-direction:column; position:relative; }
+/* ---------- top bar ---------- */
+#topbar {
+  display:flex; align-items:center; gap:8px; padding:8px 10px calc(6px);
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg, rgba(20,28,58,.9), rgba(8,10,24,.9));
+  position:sticky; top:0; z-index:30;
+}
+#topbar .ttl { font-weight:800; font-size:12.5px; letter-spacing:1.2px; line-height:1.05;
+  background:linear-gradient(180deg,#fff 20%, #9fc6ee 55%, #e8f2ff 78%, #6f87a8);
+  -webkit-background-clip:text; background-clip:text; color:transparent; flex:1; }
+.pill { display:flex; align-items:center; gap:4px; font-size:12.5px; font-weight:700; color:#ffe9a8;
+  background:rgba(255,209,31,.08); border:1px solid rgba(255,209,31,.35); border-radius:999px; padding:3px 9px; white-space:nowrap; }
+.pill.troph { color:#bfe0ff; background:rgba(56,182,255,.08); border-color:var(--line); }
+#savedTag { font-size:10.5px; color:#7fe6a8; opacity:0; transition:opacity .3s; font-weight:700; letter-spacing:.4px; }
+#savedTag.on { opacity:1; }
+.iconbtn { background:rgba(56,182,255,.08); border:1px solid var(--line); color:var(--chrome);
+  border-radius:9px; font-size:15px; padding:4px 8px; cursor:pointer; }
+/* ---------- screens ---------- */
+.screen { display:none; flex-direction:column; flex:1; }
+.screen.on { display:flex; }
+/* ---------- title ---------- */
+#coverWrap { position:relative; margin:12px 12px 0; border-radius:16px; overflow:hidden; border:1.5px solid var(--line);
+  box-shadow:0 0 34px rgba(56,182,255,.25), inset 0 0 0 1px rgba(255,255,255,.06); }
+#coverWrap img { width:100%; display:block; }
+#coverWrap .shine { position:absolute; inset:0; background:linear-gradient(115deg, transparent 30%, rgba(255,255,255,.14) 48%, transparent 62%); pointer-events:none; }
+#gameTitle { text-align:center; padding:12px 10px 2px; }
+#gameTitle .l1 { font-size:31px; font-weight:900; letter-spacing:2.5px; line-height:1;
+  background:linear-gradient(180deg,#ffffff 15%, #a9c8ef 48%, #f4faff 62%, #5f7ea6 90%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  filter:drop-shadow(0 0 9px rgba(56,182,255,.55)); }
+#gameTitle .l2 { font-size:19px; font-weight:900; letter-spacing:6px; color:var(--blue);
+  text-shadow:0 0 12px rgba(56,182,255,.8), 0 0 30px rgba(255,79,216,.35); margin-top:2px; }
+#gameTitle .tag { font-size:11.5px; color:var(--dim); letter-spacing:1.6px; margin-top:5px; }
+.menu { display:flex; flex-direction:column; gap:10px; padding:16px 16px 8px; }
+.bigbtn { border:1.5px solid var(--line); border-radius:14px; padding:14px 16px; cursor:pointer;
+  font-size:17px; font-weight:800; letter-spacing:1.4px; color:#eaf6ff; text-align:center;
+  background:linear-gradient(180deg, rgba(56,182,255,.20), rgba(28,111,217,.10) 55%, rgba(10,14,30,.6));
+  box-shadow:0 4px 18px rgba(28,111,217,.25), inset 0 1px 0 rgba(255,255,255,.18); }
+.bigbtn:active { transform:scale(.985); }
+.bigbtn small { display:block; font-size:11px; font-weight:600; letter-spacing:.6px; color:var(--dim); margin-top:2px; }
+.bigbtn.hot { border-color:rgba(255,79,216,.55); background:linear-gradient(180deg, rgba(255,79,216,.20), rgba(120,30,160,.12) 55%, rgba(10,14,30,.6)); }
+.bigbtn:disabled { opacity:.45; }
+.row2 { display:flex; gap:10px; } .row2 .bigbtn { flex:1; font-size:14.5px; padding:12px 8px; }
+#titleStats { text-align:center; font-size:12px; color:var(--dim); padding:8px 16px 18px; line-height:1.7; }
+#dailyBtn { display:none; }
+/* ---------- alley select ---------- */
+.head { padding:14px 16px 4px; font-size:19px; font-weight:900; letter-spacing:1.6px; color:#eaf6ff; }
+.sub { padding:0 16px 8px; font-size:12px; color:var(--dim); line-height:1.5; }
+#leagueStrip { margin:6px 12px 4px; padding:9px 12px; border:1px solid var(--line); border-radius:12px; background:var(--panel);
+  font-size:12px; line-height:1.65; }
+#leagueStrip b { color:var(--blue); }
+.alley { margin:8px 12px; padding:13px 14px; border-radius:14px; border:1.5px solid var(--line); cursor:pointer;
+  background:linear-gradient(120deg, rgba(20,16,48,.92), rgba(8,10,24,.94)); position:relative; overflow:hidden; }
+.alley::before { content:''; position:absolute; inset:0; opacity:.35; pointer-events:none;
+  background:radial-gradient(70% 90% at 85% 10%, hsla(var(--hue,265), 95%, 60%, .35), transparent 60%); }
+.alley.locked { opacity:.55; cursor:default; }
+.alley .nm { font-size:17px; font-weight:900; letter-spacing:1px; }
+.alley .meta { font-size:12px; color:var(--dim); margin-top:3px; line-height:1.55; position:relative; }
+.alley .meta b { color:#ffe9a8; } .alley .meta .ai { color:#ffb7ec; }
+.alley .go { position:absolute; right:12px; top:50%; transform:translateY(-50%); font-size:20px; color:var(--blue); }
+/* ---------- match ---------- */
+#scorebug { margin:8px 10px 0; border:1px solid var(--line); border-radius:11px; overflow:hidden; background:var(--panel); font-size:12px; }
+#scorebug table { width:100%; border-collapse:collapse; }
+#scorebug th, #scorebug td { padding:4px 2px; text-align:center; border-right:1px solid rgba(56,182,255,.14); }
+#scorebug th { color:var(--dim); font-size:10px; letter-spacing:1px; background:rgba(56,182,255,.06); }
+#scorebug td.nm { text-align:left; padding-left:8px; font-weight:800; font-size:11.5px; white-space:nowrap; max-width:86px; overflow:hidden; }
+#scorebug td.tot { font-weight:900; color:var(--blue); font-size:14px; }
+#scorebug tr.me td { background:rgba(56,182,255,.05); }
+#scorebug .rolls { font-size:10.5px; color:#cfe5ff; letter-spacing:1px; min-height:13px; }
+#scorebug .cum { font-weight:800; font-size:13px; min-height:16px; }
+#laneWrap { position:relative; margin:8px 10px 0; border-radius:14px; overflow:hidden; border:1.5px solid var(--line);
+  box-shadow:0 0 26px rgba(56,182,255,.18); background:#03040a; touch-action:none; }
+#lane { display:block; width:100%; }
+#banner { position:absolute; left:0; right:0; top:34%; text-align:center; pointer-events:none; z-index:5; }
+#banner .big { font-size:44px; font-weight:900; letter-spacing:3px; color:#fff;
+  text-shadow:0 0 18px rgba(56,182,255,.95), 0 0 46px rgba(255,79,216,.6), 0 3px 0 rgba(0,0,0,.4); opacity:0; transform:scale(.7); transition:all .18s; }
+#banner .small { font-size:14px; font-weight:800; letter-spacing:2px; color:#ffe9a8; text-shadow:0 0 10px rgba(0,0,0,.8); opacity:0; transition:all .18s; }
+#banner.show .big, #banner.show .small { opacity:1; transform:scale(1); }
+#clockWrap { position:absolute; top:8px; right:10px; z-index:6; text-align:center; }
+#clockNum { font-size:19px; font-weight:900; color:#fff; text-shadow:0 0 8px rgba(56,182,255,.9); }
+#clockWrap.low #clockNum { color:#ff6b6b; }
+#clockLbl { font-size:8.5px; letter-spacing:1.5px; color:var(--dim); }
+#turnTag { position:absolute; top:8px; left:10px; z-index:6; font-size:11px; font-weight:800; letter-spacing:1.2px;
+  padding:4px 9px; border-radius:999px; background:rgba(5,8,20,.75); border:1px solid var(--line); }
+#hint { min-height:34px; padding:6px 14px 0; text-align:center; font-size:12.5px; color:#cfe5ff; line-height:1.45; }
+#hint b { color:var(--blue); }
+#deck { margin-top:auto; padding:6px 10px calc(10px + env(safe-area-inset-bottom)); border-top:1px solid var(--line);
+  background:linear-gradient(180deg, rgba(10,14,30,.6), rgba(6,8,18,.95)); }
+#queueRow { display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
+#queueRow .qlbl { font-size:9.5px; letter-spacing:1.2px; color:var(--dim); writing-mode:vertical-rl; transform:rotate(180deg); }
+.qball { width:36px; height:36px; border-radius:50%; border:2px solid rgba(255,255,255,.25); position:relative; flex:none;
+  box-shadow:inset -6px -8px 12px rgba(0,0,0,.55), 0 2px 8px rgba(0,0,0,.5); cursor:pointer; }
+.qball.cur { border-color:var(--blue); box-shadow:0 0 12px rgba(56,182,255,.7), inset -6px -8px 12px rgba(0,0,0,.55); transform:scale(1.1); }
+.qball .lv { position:absolute; bottom:-6px; right:-4px; font-size:9px; font-weight:900; background:#0a1030; border:1px solid var(--line);
+  color:#bfe0ff; border-radius:6px; padding:0 4px; }
+#ballInfo { flex:1 1 100%; min-width:0; margin:5px 0 0 2px; display:flex; align-items:baseline; gap:9px; }
+#ballInfo .bn { font-size:13.5px; font-weight:900; letter-spacing:.4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#ballInfo .bt { font-size:10.5px; color:var(--dim); letter-spacing:.6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#swapBtn { flex:none; }
+/* ---------- arsenal ---------- */
+#bagRow { display:flex; gap:8px; padding:6px 12px; align-items:center; }
+#bagRow .slot { width:46px; height:46px; border-radius:50%; border:2px dashed rgba(56,182,255,.4); position:relative; cursor:pointer; flex:none; }
+#bagRow .slot.sel { border-style:solid; border-color:var(--magenta); box-shadow:0 0 10px rgba(255,79,216,.5); }
+#bagRow .slot .qball { width:100%; height:100%; }
+.bcard { margin:8px 12px; padding:12px; border:1px solid var(--line); border-radius:14px; background:var(--panel); display:flex; gap:12px; }
+.bcard .orb { width:64px; height:64px; border-radius:50%; flex:none; box-shadow:inset -10px -12px 20px rgba(0,0,0,.6), 0 4px 14px rgba(0,0,0,.5); position:relative; }
+.bcard .inf { flex:1; min-width:0; }
+.bcard .nm { font-size:15.5px; font-weight:900; }
+.bcard .tp { font-size:10.5px; letter-spacing:1px; color:var(--dim); }
+.bcard .blurb { font-size:11.5px; color:#b9c9e8; margin:3px 0 6px; line-height:1.4; }
+.stat { display:flex; align-items:center; gap:6px; font-size:10px; color:var(--dim); margin-top:2px; }
+.stat .sn { width:58px; letter-spacing:.4px; }
+.stat .bar { flex:1; height:5px; border-radius:3px; background:rgba(255,255,255,.09); overflow:hidden; }
+.stat .bar i { display:block; height:100%; background:linear-gradient(90deg, var(--blue2), var(--blue)); border-radius:3px; }
+.stat .sv { width:24px; text-align:right; color:#dbeafe; font-weight:700; }
+.bcard .act { display:flex; flex-direction:column; gap:6px; justify-content:center; }
+.minibtn { border:1px solid var(--line); background:rgba(56,182,255,.12); color:#eaf6ff; font-weight:800; font-size:11.5px;
+  border-radius:9px; padding:7px 10px; cursor:pointer; white-space:nowrap; }
+.minibtn:disabled { opacity:.4; }
+.minibtn.pink { border-color:rgba(255,79,216,.5); background:rgba(255,79,216,.13); }
+.cardsTag { font-size:10.5px; color:#ffe9a8; text-align:center; }
+/* ---------- modal / results ---------- */
+#modal { position:fixed; inset:0; background:rgba(2,3,10,.82); display:none; z-index:60; align-items:center; justify-content:center; padding:18px; }
+#modal.on { display:flex; }
+#modalCard { width:min(400px, 94vw); max-height:88dvh; overflow-y:auto; border:1.5px solid var(--line); border-radius:18px; padding:20px 18px;
+  background:linear-gradient(180deg, #0d1230, #060818); box-shadow:0 0 44px rgba(56,182,255,.3); text-align:center; }
+#modalCard h2 { font-size:23px; font-weight:900; letter-spacing:1.6px; margin-bottom:4px; }
+#modalCard .msub { font-size:12.5px; color:var(--dim); line-height:1.55; }
+#modalCard .scoreLine { font-size:15px; font-weight:800; margin:10px 0 2px; }
+#modalCard .deltas { font-size:13.5px; line-height:1.8; margin:8px 0; }
+#modalCard .deltas b { color:#ffe9a8; }
+#caseBox { margin:12px auto 4px; width:110px; height:110px; border-radius:16px; cursor:pointer; display:none;
+  border:2px solid rgba(255,209,31,.6); background:radial-gradient(80% 80% at 50% 30%, rgba(255,209,31,.28), rgba(90,60,10,.25) 70%);
+  align-items:center; justify-content:center; font-size:44px; box-shadow:0 0 26px rgba(255,209,31,.35); }
+#caseReveal { font-size:13.5px; line-height:1.7; min-height:24px; }
+.miss { text-align:left; font-size:12px; margin:5px 0; color:#cfe5ff; }
+.miss .pbar { height:5px; background:rgba(255,255,255,.09); border-radius:3px; overflow:hidden; margin-top:2px; }
+.miss .pbar i { display:block; height:100%; background:linear-gradient(90deg, #b98a1d, #ffd21f); }
+.helpTxt { text-align:left; font-size:13px; line-height:1.65; color:#cfe5ff; }
+.helpTxt b { color:var(--blue); }
+.foot { text-align:center; font-size:10.5px; color:#54678c; padding:12px 20px 20px; line-height:1.6; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="topbar">
+    <div class="ttl">HUSTLE CITY<br>COSMIC BOWLING</div>
+    <span id="savedTag">SAVED ✓</span>
+    <span class="pill">🪙 <span id="chipCt">0</span></span>
+    <span class="pill troph">🏆 <span id="trophCt">0</span></span>
+    <button class="iconbtn" id="soundBtn" title="Sound on/off">🔊</button>
+  </div>
+
+  <!-- TITLE -->
+  <div class="screen on" id="screen-title">
+    <div id="coverWrap"><img src="cover.webp" alt="Hustle City Cosmic Bowling — a plain lane turns cosmic under blacklight"><div class="shine"></div></div>
+    <div id="gameTitle">
+      <div class="l1">HUSTLE CITY</div>
+      <div class="l2">COSMIC BOWLING</div>
+      <div class="tag">3 FRAMES · ONE SWIPE · WINNER TAKES THE POT</div>
+    </div>
+    <div class="menu">
+      <button class="bigbtn hot" id="playBtn">▶ &nbsp;PLAY A MATCH<small>Pick an alley — beat the house pro, win trophies &amp; a case</small></button>
+      <button class="bigbtn" id="dailyBtn">🎁 &nbsp;DAILY CASE CHIPS — 100 FREE<small>Come back every day</small></button>
+      <div class="row2">
+        <button class="bigbtn" id="practiceBtn">PRACTICE<small>Solo, no stakes</small></button>
+        <button class="bigbtn" id="arsenalBtn">ARSENAL<small id="caseLbl">Balls &amp; upgrades</small></button>
+      </div>
+      <button class="bigbtn" id="helpBtn" style="font-size:13.5px; padding:10px;">HOW TO PLAY</button>
+    </div>
+    <div id="titleStats"></div>
+    <div class="foot">No ads. Ever. Your progress saves on this device automatically.<br>© 2026 J-Dawgs Industries</div>
+  </div>
+
+  <!-- ALLEYS -->
+  <div class="screen" id="screen-alleys">
+    <div class="head">PICK YOUR ALLEY</div>
+    <div class="sub">Winner takes the pot and the trophies. Loser pays both. Every alley bowls different — oil changes how much your ball hooks.</div>
+    <div id="leagueStrip"></div>
+    <div id="alleyList"></div>
+    <div class="menu"><button class="bigbtn" id="alleysBack">← BACK</button></div>
+  </div>
+
+  <!-- MATCH -->
+  <div class="screen" id="screen-match">
+    <div id="scorebug"></div>
+    <div id="laneWrap">
+      <canvas id="lane"></canvas>
+      <div id="turnTag">YOUR THROW</div>
+      <div id="clockWrap"><div id="clockNum">20</div><div id="clockLbl">SHOT CLOCK</div></div>
+      <div id="banner"><div class="big"></div><div class="small"></div></div>
+    </div>
+    <div id="hint"></div>
+    <div id="deck">
+      <div id="queueRow">
+        <div class="qlbl">NEXT BALLS</div>
+        <div id="queueBalls" style="display:flex; gap:7px;"></div>
+        <div id="ballInfo"><div class="bn"></div><div class="bt"></div></div>
+        <button class="minibtn" id="swapBtn">SWAP ⤵</button>
+      </div>
+    </div>
+    <div class="menu" style="padding-top:8px;"><button class="bigbtn" id="quitMatchBtn" style="font-size:12.5px; padding:9px;">✕ QUIT MATCH</button></div>
+  </div>
+
+  <!-- ARSENAL -->
+  <div class="screen" id="screen-arsenal">
+    <div class="head">THE ARSENAL</div>
+    <div class="sub">Your match bag holds 6 balls — they cycle as you throw, thrown ball goes to the back. Tap a bag slot, then tap a ball to load it in. <b style="color:#ffe9a8">Weight</b> and <b style="color:#ffe9a8">Hook Control</b> grow with upgrades; Speed, Guide and Hook are the ball's nature.</div>
+    <div id="bagRow"></div>
+    <div id="ballList"></div>
+    <div class="menu"><button class="bigbtn" id="arsenalBack">← BACK</button></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div id="modal"><div id="modalCard"></div></div>
+
+<script src="logic.js"></script>
+<script src="game.js"></script>
+<script>
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>
