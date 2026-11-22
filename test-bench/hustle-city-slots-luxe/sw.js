@@ -5,7 +5,7 @@
    reflect it, and the BUY BACK IN button never appeared). Media/assets stay
    cache-first for speed. The precache is fault-tolerant: one missing file
    can no longer fail the whole install and freeze a phone on an old build. */
-const CACHE = 'hc-slots-luxe-v14';
+const CACHE = 'hc-slots-luxe-v15';
 const ASSETS = [
   './', './index.html', './style.css', './game.js', './logic.js', './machines.js', './soundkit.js', './cabinet-life.js',
   './assets/sfx/bell.mp3', './assets/sfx/win-small.mp3', './assets/sfx/win-med.mp3',
@@ -21,7 +21,7 @@ const ASSETS = [
   './assets/sym-ac.webp', './assets/sym-kg.webp',
   './assets/sym-qn.webp', './assets/sym-jk.webp', './assets/sym-dm.webp',
   './assets/sym-cp.webp', './assets/sym-cg.webp', './assets/sym-dk.webp',
-  './assets/sym-wd.webp', './assets/sym-sc.webp', './assets/sym-bn.webp', './assets/celeb-title.png', './assets/fonts/bebas-neue.woff2',
+  './assets/sym-wd.webp', './assets/sym-sc.webp', './assets/sym-bn.webp', './assets/sym-dd.webp', './assets/celeb-title.png', './assets/fonts/bebas-neue.woff2',
   './assets/sym-x2.webp', './assets/sym-x3.webp',
   './assets/deck-plate.webp', './assets/belly.webp', './assets/marquee-steel.webp', './assets/coin-tray.webp', './assets/celeb-bonus.mp4',
   './assets/vault-skull.webp',

@@ -51,7 +51,15 @@ const LUXE = {
   name: 'Hustle City Slots — Poker Luxe',
   scatterPay: { 3: 2, 4: 7, 5: 35 },
   scatterSpins: { 3: 7, 4: 10, 5: 15 },
-  bonusAt: 3,
+  /* DOLLAR DOOR (2026-11-22, Joshua's program-wide ruling): the ONLY way
+     into a bonus is 3+ BIG GREEN DOLLAR SIGNS (DD, a new door-only symbol
+     — it pays nothing on lines) anywhere in the window. The old BN token
+     trigger is gone: its six stops became DD, plus one DD each on reels
+     1 and 5 (ex-JK stops). Exact door rate 1 in 19.7 paid spins
+     (enumeration); free-spin geometry untouched (still 1 in 68.2).
+     Behind the door the vault/wheel prizes were scaled so the total RTP
+     holds at the pre-door measured line. */
+  doorSymbol: 'DD',
   /* SKULL VAULT (Joshua's pick #2, 2026-11-21 23:02 CT — replaces the
      press-and-watch Bonus Wheel on the BN door; free spins untouched):
      12 riveted vault doors — the 9 prizes below (multiples of the TOTAL
@@ -64,7 +72,11 @@ const LUXE = {
      top-heavy table (one 25x diamond door) is what carries the EV; an
      even spread of the same 38x measures only ~5.0x. The old wheel
      (EV 12.08x, wedges [100,5,7,2,4,8,0,3,6,1,5,4]) is retired. */
-  vault: { prizes: [25, 3, 2, 2, 2, 1, 1, 1, 1], skulls: 3 },
+  /* DOLLAR DOOR rebalance (2026-11-22): the door fires ~3.5x as often as
+     the old BN trigger, so vault prizes were scaled x~0.35 (optimal-play
+     EV 6.93x -> ~2.4x) to hold the machine's total RTP at its pre-door
+     measured line (~114%). Base pays NOT touched. */
+  vault: { prizes: [8.5, 1, 0.7, 0.7, 0.7, 0.35, 0.35, 0.35, 0.35], skulls: 3 },
   /* BONUS WHEEL (added 2026-11-22 — JOINS the Skull Vault on the same BN
      door; Joshua picked the Vault over a wheel, then the wheel was ported
      in alongside it, replacing nothing): when the BN trigger fires, a
@@ -73,8 +85,10 @@ const LUXE = {
      matching the vault's ~6.9x band. Tunable — unification pass owns
      final numbers. (The retired wheel table in the header comment,
      EV 12.08x, is history — do not resurrect it.) */
-  wheel: [25, 2, 6, 3, 12, 5, 2, 7, 4, 3, 8, 6],
-  wheelTiers: { 25: 'GRAND', 12: 'MAJOR', 8: 'MINOR', 4: 'MINI' },
+  /* Door rebalance (2026-11-22): wedges scaled x~0.35 with the vault
+     (EV 6.92x -> 2.38x) so the blended behind-door EV holds the total. */
+  wheel: [8.5, 0.7, 2, 1, 4, 1.7, 0.7, 2.4, 1.4, 1, 2.8, 2.4],
+  wheelTiers: { 8.5: 'GRAND', 4: 'MAJOR', 2.8: 'MINOR', 1.4: 'MINI' },
   wheelShare: 0.5,
   paytable: {
     AC: { 3: 46, 4: 145, 5: 1500 },
@@ -88,11 +102,11 @@ const LUXE = {
     CP: { 2: 3, 3: 4, 4: 11, 5: 21 }
   },
   strips: [
-    ['JK', 'CP', 'CP', 'CP', 'CG', 'CG', 'JK', 'CG', 'CP', 'WD', 'X2', 'SC', 'AC', 'KG', 'CG', 'JK', 'JK', 'DK', 'CP', 'DM', 'CP', 'AC', 'JK', 'CG', 'CP'],
-    ['JK', 'SC', 'CP', 'CG', 'CP', 'JK', 'CP', 'JK', 'CG', 'BN', 'JK', 'X3', 'CP', 'KG', 'CP', 'CP', 'WD', 'CG', 'DM', 'BN', 'CP', 'CG', 'JK', 'CP'],
-    ['JK', 'KG', 'DM', 'JK', 'CG', 'CP', 'CG', 'X2', 'BN', 'SC', 'CP', 'CG', 'JK', 'CG', 'JK', 'WD', 'DK', 'CP', 'DM', 'CP', 'BN', 'CP', 'CP', 'JK', 'CG'],
-    ['CG', 'DM', 'WD', 'X2', 'CP', 'JK', 'KG', 'CP', 'BN', 'CP', 'JK', 'QN', 'CP', 'JK', 'CG', 'QN', 'CG', 'WD', 'SC', 'BN', 'CP', 'QN', 'CG', 'JK', 'CP'],
-    ['CP', 'CP', 'CG', 'KG', 'JK', 'WD', 'DM', 'JK', 'JK', 'CP', 'X2', 'CP', 'CG', 'CG', 'CP', 'SC', 'JK', 'DK', 'AC', 'CG', 'CP', 'KG', 'CG', 'JK', 'CP']
+    ['DD', 'CP', 'CP', 'CP', 'CG', 'CG', 'JK', 'CG', 'CP', 'WD', 'X2', 'SC', 'AC', 'KG', 'CG', 'JK', 'JK', 'DK', 'CP', 'DM', 'CP', 'AC', 'JK', 'CG', 'CP'],
+    ['JK', 'SC', 'CP', 'CG', 'CP', 'JK', 'CP', 'JK', 'CG', 'DD', 'JK', 'X3', 'CP', 'KG', 'CP', 'CP', 'WD', 'CG', 'DM', 'DD', 'CP', 'CG', 'JK', 'CP'],
+    ['JK', 'KG', 'DM', 'JK', 'CG', 'CP', 'CG', 'X2', 'DD', 'SC', 'CP', 'CG', 'JK', 'CG', 'JK', 'WD', 'DK', 'CP', 'DM', 'CP', 'DD', 'CP', 'CP', 'JK', 'CG'],
+    ['CG', 'DM', 'WD', 'X2', 'CP', 'JK', 'KG', 'CP', 'DD', 'CP', 'JK', 'QN', 'CP', 'JK', 'CG', 'QN', 'CG', 'WD', 'SC', 'DD', 'CP', 'QN', 'CG', 'JK', 'CP'],
+    ['CP', 'CP', 'CG', 'KG', 'DD', 'WD', 'DM', 'JK', 'JK', 'CP', 'X2', 'CP', 'CG', 'CG', 'CP', 'SC', 'JK', 'DK', 'AC', 'CG', 'CP', 'KG', 'CG', 'JK', 'CP']
   ]
 };
 

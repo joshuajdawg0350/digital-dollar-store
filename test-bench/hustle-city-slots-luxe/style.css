@@ -234,6 +234,47 @@ body {
   box-shadow: inset 0 0 0 3px #ff3540, inset 0 0 26px rgba(255, 42, 51, .55), 0 0 20px rgba(255, 42, 51, .8);
   animation: winPulse .4s ease-in-out infinite alternate;
 }
+
+/* ---------- DOLLAR DOOR (2026-11-22): anticipation glow, the slam,
+   and the grow-and-pop on the landed dollars ---------- */
+.reel.anticipating {
+  box-shadow: 0 0 0 3px rgba(46, 255, 140, .9), 0 0 34px rgba(46, 255, 140, .65), inset 0 0 30px rgba(46, 255, 140, .35);
+  z-index: 3;
+}
+.reel.slamming { animation: reelSlam .42s cubic-bezier(.2, 2.2, .4, 1); }
+@keyframes reelSlam {
+  0% { transform: translateY(0); }
+  30% { transform: translateY(8px); }
+  55% { transform: translateY(-3px); }
+  75% { transform: translateY(2px); }
+  100% { transform: translateY(0); }
+}
+.cell.doorhit { z-index: 5; }
+.cell.doorhit img {
+  animation: doorPop .95s cubic-bezier(.2, 1.6, .35, 1) both;
+  filter: drop-shadow(0 0 16px rgba(46, 255, 140, .95));
+}
+.cell.doorhit::after {
+  content: "";
+  position: absolute; inset: -6px;
+  border-radius: 50%;
+  border: 3px solid rgba(46, 255, 140, .9);
+  animation: doorRing .95s ease-out both;
+  animation-delay: inherit;
+  pointer-events: none;
+}
+@keyframes doorPop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.5); }
+  62% { transform: scale(1.85); }
+  78% { transform: scale(.94); }
+  100% { transform: scale(1.18); }
+}
+@keyframes doorRing {
+  0% { transform: scale(.6); opacity: 0; }
+  55% { opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
 /* motion blur while a reel is at speed (class toggled by the spin physics) */
 .track.fast .cell img { filter: blur(2.5px) saturate(1.15); }
 .glass {

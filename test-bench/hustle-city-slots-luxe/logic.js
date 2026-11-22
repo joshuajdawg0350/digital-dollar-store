@@ -83,15 +83,18 @@ function evaluateGrid(grid, lineBet, cfg) {
   }
   let scatterCount = 0;
   for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) if (grid[r][row] === 'SC') scatterCount++;
+  /* DOLLAR DOOR: bonusCount counts the door symbol (cfg.doorSymbol, 'DD'
+     on Luxe) anywhere in the window — 3+ opens the bonus.
+     (Before 2026-11-22 the BN token on reels 2/3/4 was the trigger.) */
+  const doorSym = cfg.doorSymbol || 'BN';
   let bonusCount = 0;
-  for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) if (grid[r][row] === 'BN') bonusCount++;
+  for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) if (grid[r][row] === doorSym) bonusCount++;
   const totalBet = lineBet * PAYLINES.length;
   const capped = Math.min(scatterCount, 5);
   const scatterPay = scatterCount >= 3 ? cfg.scatterPay[capped] * totalBet : 0;
   const freeSpins = scatterCount >= 3 ? cfg.scatterSpins[capped] : 0;
-  /* Bonus wheel: cfg.bonusAt = number of BONUS tokens that triggers the wheel
-     (machines without a wheel leave it unset -> bonus never triggers). */
-  const bonus = cfg.bonusAt ? bonusCount >= cfg.bonusAt : false;
+  /* Dollar Door: 3+ door symbols anywhere trigger the bonus games. */
+  const bonus = bonusCount >= 3;
   return { lineWins, lineWinTotal, scatterCount, scatterPay, freeSpins, bonusCount, bonus };
 }
 
