@@ -249,7 +249,16 @@ const countEl = document.getElementById('fw-count');
 const moreBtn = document.getElementById('more');
 const PAGE = 48;
 let cat = 'all', shown = 0, current = [];
-function filtered(){ if (cat === 'all') return DATA; if (cat === 'newest') return DATA.filter(d => d.n); return DATA.filter(d => d.c === cat); }
+/* Random mix (Joshua, 2026-11-21): shuffle the whole collection once per
+   page load, so every visit opens on a different mix. The shuffled order is
+   fixed for the visit, so Show more walks the entire set exactly once --
+   nothing unreachable, nothing repeated. Shelves filter the same mix. */
+const MIXED = DATA.slice();
+for (let i = MIXED.length - 1; i > 0; i--) {
+  const j = Math.floor(Math.random() * (i + 1));
+  const t = MIXED[i]; MIXED[i] = MIXED[j]; MIXED[j] = t;
+}
+function filtered(){ if (cat === 'all') return MIXED; if (cat === 'newest') return MIXED.filter(d => d.n); return MIXED.filter(d => d.c === cat); }
 function render(){
   current = filtered();
   shown = 0; grid.innerHTML = '';
