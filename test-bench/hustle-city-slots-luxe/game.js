@@ -153,7 +153,7 @@
     return grid;
   }
   function clearWinMarks() {
-    document.querySelectorAll('.cell.win,.cell.scatterhit,.cell.bonushit,.cell.doorhit').forEach(c => c.classList.remove('win', 'scatterhit', 'bonushit', 'doorhit'));
+    document.querySelectorAll('.cell.win,.cell.scatterhit,.cell.bonushit,.cell.doorhit,.cell.scatterpop').forEach(c => c.classList.remove('win', 'scatterhit', 'bonushit', 'doorhit', 'scatterpop'));
     winFlash.classList.remove('on');
   }
   function markCell(reel, row, cls) {
@@ -370,7 +370,7 @@
       `<div class="payrow"><div class="thumb"><img src="${ART.WD}" alt="WILD"></div><div class="nm">WILD</div><span class="pv wide">Substitutes for every symbol except SCATTER</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.X2}" alt="WIN ×2"></div><div class="nm">WIN ×2</div><span class="pv wide">Anywhere on a winning line, this line's win is DOUBLED (×2)</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.X3}" alt="WIN ×3"></div><div class="nm">WIN ×3</div><span class="pv wide">Anywhere on a winning line, this line's win is TRIPLED (×3). Two multipliers on the same line multiply together — ×2 and ×3 pay ×6</span></div>` +
-      `<div class="payrow"><div class="thumb"><img src="${ART.SC}" alt="SCATTER"></div><div class="nm">SCATTER</div><span class="pv wide">3+ anywhere: pays 2× / 7× / 35× total bet + 7 / 10 / 15 FREE SPINS at 2× line wins</span></div>` +
+      `<div class="payrow"><div class="thumb"><img src="${ART.SC}" alt="SCATTER"></div><div class="nm">SCATTER</div><span class="pv wide">3+ anywhere: pays 2× / 7× / 35× total bet + 7 / 10 / 15 FREE SPINS at 2× line wins. The third scatter slows the reels, they SLAM to a stop, and the scatters grow and POP before the free spins open.</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.DD}" alt="DOLLAR DOOR"></div><div class="nm">THE DOLLAR DOOR</div><span class="pv wide">3+ BIG GREEN DOLLARS anywhere — the ONLY way into a bonus. The third dollar slows the reels, they SLAM to a stop, the dollars grow and POP, and the bonus opens: half the time the BONUS WHEEL spins (12 wedges, every wedge pays × your total bet — MINI 1.4×, MINOR 2.8×, MAJOR 4×, GRAND 8.5×); the rest of the time the SKULL VAULT opens: 12 doors, 9 hide blue-chip prizes (${cfg.vault.prizes.slice().sort((a, b) => b - a).join('×, ')}× your total bet — ${cfg.vault.prizes.reduce((a, b) => a + b, 0)}× in all) and ${cfg.vault.skulls} hide SKULLS. Every door you open PAYS YOU ON THE SPOT — a SKULL ends the vault, and you keep everything you collected. The door lands about once every 20 spins</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.CP}" alt="BET"></div><div class="nm">BET</div><span class="pv wide">Bets run in $25 steps: $25, $50, $75 … all the way up to $2,500 a spin. A step unlocks the first time your balance reaches it — and stays unlocked even if your balance dips. Use the −25 / +25 buttons or MAX BET. NEW GAME resets you to a $25 bet</span></div>`;
   }
@@ -915,6 +915,20 @@
     });
   }
 
+  /* ---------- SCATTER beats 3-4: grow + pop (same standard as the door) ---------- */
+  function scatterPopSequence(cells) {
+    return new Promise(res => {
+      cells.forEach((c, i) => {
+        const track = reelsEl[c.r].firstElementChild;
+        const cell = track && track.children[c.row];
+        if (cell) { cell.classList.add('scatterpop'); cell.style.animationDelay = (i * 0.13) + 's'; }
+        setTimeout(() => { try { Kit.play('bell', { rate: 1.15 + i * 0.09 }); } catch (e) {} }, 420 + i * 130);
+      });
+      try { Kit.play('coins'); } catch (e) {}
+      setTimeout(res, 620 + cells.length * 130 + 450);
+    });
+  }
+
   /* ---------- spin flow ---------- */
   async function doSpin(isFree) {
     if (spinning || vaultOpen || wheelOpen) return;
@@ -958,6 +972,24 @@
       reelFx[doorReel] = { slow: true };
       msgEl.textContent = 'The dollars are on the reels — watch for the third one…';
     }
+
+    /* SCATTER choreography (Joshua's standard, 2026-11-22 16:37 CT): the
+       scatters get the same four beats as the dollars — the reel that
+       lands the THIRD scatter crawls in slow motion (beat 1) and slams
+       (beat 2), exactly like the third-dollar reel. */
+    let scatterReel = -1;
+    if (dealtEv.scatterCount >= 3) {
+      let scum = 0;
+      for (let r = 0; r < 5; r++) {
+        scum += dealtGrid[r].filter(s => s === 'SC').length;
+        if (scum >= 3) { scatterReel = r; break; }
+      }
+    }
+    if (scatterReel >= 0 && scatterReel !== doorReel) {
+      durations[scatterReel] = 3600;
+      reelFx[scatterReel] = { slow: true };
+      if (doorReel < 0) msgEl.textContent = 'Scatters are on the reels — watch for the third one…';
+    }
     stopRequested = false;
     clatterAcc.fill(0);
     startRollSound();
@@ -983,6 +1015,15 @@
       for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) if (grid[r][row] === cfg.doorSymbol) cells.push({ r, row });
       await doorPopSequence(cells);
       msgEl.textContent = `${ev.bonusCount} BIG GREEN DOLLARS — the door is open!`;
+    }
+
+    if (ev.scatterCount >= 3) {
+      /* BEATS 3-4 FOR SCATTERS: every landed scatter swells up and pops,
+         one after another, before the free spins open — the same
+         treatment the dollars get (Joshua's standard, 2026-11-22). */
+      const sCells = [];
+      for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) if (grid[r][row] === 'SC') sCells.push({ r, row });
+      await scatterPopSequence(sCells);
     }
 
     if (totalWin > 0) {

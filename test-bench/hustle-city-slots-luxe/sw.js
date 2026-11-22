@@ -9,7 +9,7 @@
    reflect it, and the BUY BACK IN button never appeared). Media/assets stay
    cache-first for speed. The precache is fault-tolerant: one missing file
    can no longer fail the whole install and freeze a phone on an old build. */
-const CACHE = 'hc-slots-luxe-v17';
+const CACHE = 'hc-slots-luxe-v18';
 const ASSETS = [
   './', './index.html', './style.css', './game.js', './logic.js', './machines.js', './soundkit.js', './cabinet-life.js',
   './assets/sfx/bell.mp3', './assets/sfx/win-small.mp3', './assets/sfx/win-med.mp3',

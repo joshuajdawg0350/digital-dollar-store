@@ -275,6 +275,24 @@ body {
   55% { opacity: 1; }
   100% { transform: scale(1.5); opacity: 0; }
 }
+
+/* SCATTER grow+pop (Joshua's standard, 2026-11-22): same motion as the
+   dollar doorPop, in scatter ice-blue. */
+.cell.scatterpop { z-index: 5; }
+.cell.scatterpop img {
+  animation: doorPop .95s cubic-bezier(.2, 1.6, .35, 1) both;
+  filter: drop-shadow(0 0 16px rgba(143, 212, 255, .95));
+}
+.cell.scatterpop::after {
+  content: "";
+  position: absolute; inset: -6px;
+  border-radius: 50%;
+  border: 3px solid rgba(143, 212, 255, .9);
+  box-shadow: none;
+  animation: doorRing .95s ease-out both;
+  animation-delay: inherit;
+  pointer-events: none;
+}
 /* motion blur while a reel is at speed (class toggled by the spin physics) */
 .track.fast .cell img { filter: blur(2.5px) saturate(1.15); }
 .glass {
