@@ -10,6 +10,10 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="stylesheet" href="style.css">
+<link rel="prefetch" href="assets/car-1.webp"><link rel="prefetch" href="assets/car-2.webp"><link rel="prefetch" href="assets/car-3.webp">
+<link rel="prefetch" href="assets/car-4.webp"><link rel="prefetch" href="assets/car-5.webp"><link rel="prefetch" href="assets/car-6.webp">
+<link rel="prefetch" href="assets/car-7.webp"><link rel="prefetch" href="assets/car-8.webp"><link rel="prefetch" href="assets/car-9.webp">
+<link rel="prefetch" href="assets/scotty.webp">
 </head>
 <body>
 <div class="room">
@@ -93,6 +97,23 @@
       <button class="btn refill-btn" id="newGameBtn" type="button">NEW GAME — START OVER WITH 1,000 CREDITS</button>
     </section>
 
+    <section class="belly" aria-hidden="true">
+      <div class="belly-frame">
+        <img class="belly-art" src="assets/belly.webp" alt="" draggable="false">
+        <div class="belly-glowfx"></div>
+        <div class="belly-glassfx"></div>
+      </div>
+    </section>
+
+    <div class="cab-base" aria-hidden="true">
+      <div class="grille"></div>
+      <div class="tray">
+        <img class="tray-art" src="assets/coin-tray.webp" alt="" draggable="false">
+        <div class="tray-shade"></div>
+      </div>
+      <div class="grille"></div>
+    </div>
+
     <footer class="legal">
       Play credits only — no cash value, no prizes. For entertainment.<br>
       © 2026 J-Dawgs Industries
@@ -113,8 +134,8 @@
 <section class="bonus" id="bonusGame" aria-hidden="true" aria-label="Pick-a-Garage bonus game">
   <div class="bonus-inner">
     <h2 class="bonus-title">PICK-A-GARAGE</h2>
-    <p class="bonus-sub">Nine trunks. Eight hide prizes — one hides <b>SCOTTY</b>.</p>
-    <p class="bonus-rule">Tap a trunk to open it. Every prize you find is banked and yours to keep. Find SCOTTY and the bonus ends on the spot — you keep everything you banked; only the un-opened trunks are lost. Open all 8 prize trunks without finding Scotty and you win the GARAGE BONUS too.</p>
+    <p class="bonus-sub">Nine cars. Eight hide prizes — one hides <b>SCOTTY</b>.</p>
+    <p class="bonus-rule">Tap a car to pick it. Every prize you find is banked and yours to keep. Find SCOTTY and the bonus ends on the spot — you keep everything you banked; only the un-picked cars are lost. Pick all 8 prize cars without finding Scotty and you win the GARAGE BONUS too.</p>
     <div class="bonus-bank">BANKED&nbsp;<span id="bonusBank">0</span></div>
     <div class="trunks" id="trunks"></div>
     <div class="bonus-result" id="bonusResult" aria-live="polite"></div>
@@ -140,8 +161,9 @@
       <li><b>No blank stops:</b> every reel position is a real symbol — all 15 windows show a symbol on every spin.</li>
       <li><b>CHERRY</b> pays from just 2 on a line.</li>
       <li>3+ <b>SCATTER</b> anywhere pays 2× / 8× / 40× your total bet and awards 7 / 10 / 15 <b>FREE SPINS</b> — line wins pay <b>double</b> in free spins, and free spins can retrigger.</li>
-      <li>3+ <b>BONUS</b> garage doors anywhere on a paid spin opens <b>PICK-A-GARAGE</b>: 9 trunks, 8 hide prizes (½×–4× your total bet) and 1 hides SCOTTY. Prizes you find are banked and kept; find SCOTTY and the bonus ends — un-opened trunks are lost. Clear all 8 and a 6× GARAGE BONUS is added.</li>
+      <li>3+ <b>BONUS</b> garage doors anywhere on a paid spin opens <b>PICK-A-GARAGE</b>: 9 cars, 8 hide prizes (½×–4× your total bet) and 1 hides SCOTTY. Prizes you find are banked and kept; find SCOTTY and the bonus ends — un-picked cars are lost. Clear all 8 and a 6× GARAGE BONUS is added.</li>
       <li>Credits are saved on this device. Out of credits? Hit <b>NEW GAME</b> to start over with a fresh 1,000.</li>
+      <li><b>Garage car photos</b> (real photographs via Wikimedia Commons): Mustang — Coolalabright, CC BY 4.0 · Camaro SS — Alexander Migl, CC BY-SA 4.0 · Challenger — Damian B Oh, CC BY-SA 4.0 · Corvette C3 — Alexander Migl, CC BY-SA 4.0 · Countach — Matti Blume, CC BY-SA 4.0 · Testarossa — Johannes Maximilian, CC BY-SA 4.0 · Porsche 911 — David Villarreal Fernández, CC BY-SA 2.0 · Cadillac CTS-V — Matti Blume (MB-one), CC BY-SA 3.0 · Ford GT — Mannequin-, CC BY 2.0. Full source list in the game's creation record.</li>
     </ul>
     <p class="sheet-legal">Play credits only — no cash value, no prizes. © 2026 J-Dawgs Industries</p>
   </div>

@@ -92,42 +92,103 @@ function evaluateGrid(grid, lineBet, cfg) {
   return { lineWins, lineWinTotal, scatterCount, scatterPay, freeSpins, bonusCount };
 }
 
-/* Reel motion model (pure + node-testable): spin-up acceleration (~0.30s to
-   full speed), cruise, firm braking to a creep, then a spring settle over
-   the last fraction of a cell — zeta ~0.48 gives ONE small recoil onto the
-   stop. step(dtSeconds) advances the integrator in <=4ms substeps and
-   returns { p, v, done } with p in pixels travelled toward D. */
-function createReelMotion(D, H, durationMs) {
-  const springDist = Math.min(0.85 * H, D * 0.2);
-  const vmax = Math.max(500, (D - springDist) / Math.max(0.4, durationMs / 1000 - 0.89));
-  const ACC = vmax / 0.30, DEC = vmax / 0.55, CREEP = 120, K = 520, C = 21.9;
-  let p = 0, v = 0, mode = 'accel', springT = 0, done = false;
+/* Reel motion model (pure + node-testable) — the SAME physics on all
+   three Hustle City slot machines, so every cabinet spins identically:
+     SPIN-UP  velocity eases from rest to the machine's peak speed over
+              ~0.42s on a smoothstep torque curve (90% of peak at ~0.35s);
+     CRUISE   peak speed — 20x the old builds' peak (Joshua, 2026-11-21),
+              so the symbols are a motion-blurred streak, like a real
+              cabinet photographed mid-spin;
+     BRAKE    a firm ~0.55s closed-loop deceleration down to creep speed
+              (decel recomputed every substep from speed + room left, its
+              bite ramped in over ~80ms so velocity has no kink);
+     SETTLE   an underdamped spring over the last fraction of a cell —
+              the reel overshoots a few px past the stop and recoils ONCE
+              onto it, the mechanical thunk landing.
+   brake(delaySec) is the STOP button: after a hair of per-reel stagger
+   the reel whips (up to ~3.4x cruise speed under full blur) then brakes
+   hard into the same settle, landing on the EXACT same dealt stop.
+   step(dtSeconds) advances the integrator in <=4ms substeps and returns
+   { p, v, done } with p in pixels travelled toward D. */
+const REEL_T_UP = 0.42, REEL_T_BRAKE = 0.55, REEL_T_SPRING_EST = 0.30;
+const REEL_CREEP = 230;                                /* spring entry speed, px/s */
+function reelSpringDist(H, D) { return Math.max(6, Math.min(0.38 * H, D * 0.15)); }
+function reelDistance(vmax, H, durationMs) {
+  const T = Math.max(0.95, durationMs / 1000);
+  const tCruise = Math.max(0.12, T - REEL_T_UP - REEL_T_BRAKE - REEL_T_SPRING_EST);
+  const springDist = Math.max(6, Math.min(0.38 * H, vmax * 0.05));
+  return vmax * (REEL_T_UP / 2 + tCruise + REEL_T_BRAKE / 2) + (REEL_CREEP * REEL_T_BRAKE) / 2 + springDist;
+}
+function createReelMotion(D, H, durationMs, vmax) {
+  const CREEP = REEL_CREEP;
+  const springDist = reelSpringDist(H, D);
+  if (!vmax) { /* fallback: solve peak speed from distance + duration */
+    const T = Math.max(0.95, durationMs / 1000);
+    const tCruise = Math.max(0.12, T - REEL_T_UP - REEL_T_BRAKE - REEL_T_SPRING_EST);
+    vmax = Math.max(420, (D - springDist - (CREEP * REEL_T_BRAKE) / 2) / (REEL_T_UP / 2 + tCruise + REEL_T_BRAKE / 2));
+  }
+  const DEC = (vmax - CREEP) / REEL_T_BRAKE;           /* firm brake, px/s^2 */
+  const DEC_HARD = Math.max(DEC * 2.2, (vmax * 3.4 - CREEP) / 0.12);
+  const K = 1400, C = 31;                              /* settle spring */
+  let p = 0, v = 0, t = 0, mode = 'accel', springT = 0, brakeT = 0, done = false;
+  let stopAt = Infinity;
+  const smooth = u => u * u * (3 - 2 * u);
+  function brakeDistAt(speed, dec) { return ((speed * speed - CREEP * CREEP) / (2 * dec)) + springDist; }
+  function brake(delaySec) {
+    if (done || mode === 'spring' || mode === 'stopcruise' || mode === 'stopbrake') return;
+    stopAt = Math.min(stopAt, t + Math.max(0, delaySec || 0));
+  }
   function step(dt) {
     let remaining = dt;
     while (remaining > 0 && !done) {
       const h = Math.min(0.004, remaining);
       remaining -= h;
-      if (mode === 'accel') { v += ACC * h; if (v >= vmax) { v = vmax; mode = 'cruise'; } }
-      if (mode === 'cruise') {
-        const brake = (v * v - CREEP * CREEP) / (2 * DEC) + springDist;
-        if (D - p <= brake) mode = 'decel';
-      }
-      if (mode === 'decel') { v -= DEC * h; if (v <= CREEP) { v = CREEP; mode = 'spring'; } }
-      if (mode === 'spring') {
+      t += h;
+      if (stopAt !== Infinity && t >= stopAt && mode !== 'spring') { mode = 'stopcruise'; stopAt = Infinity; }
+      if (mode === 'accel') {
+        const u = Math.min(1, t / REEL_T_UP);
+        v = vmax * smooth(u);
+        p += v * h;
+        if (u >= 1) { v = vmax; mode = 'cruise'; }
+      } else if (mode === 'cruise') {
+        v = vmax;
+        p += v * h;
+        if (D - p <= brakeDistAt(v, DEC)) { mode = 'brake'; brakeT = 0; }
+      } else if (mode === 'brake' || mode === 'stopbrake') {
+        /* closed-loop brake: the decel is recomputed every substep from
+           the CURRENT speed and the room left, so the reel always arrives
+           at creep speed exactly at the spring — at 20x speeds an
+           open-loop brake misses by thousands of px/s. The bite still
+           ramps in over ~80ms (factor 0.5 -> 1) for a kink-free join;
+           the feedback compensates by raising decel as the room shrinks. */
+        const decFull = mode === 'brake' ? DEC : DEC_HARD;
+        brakeT += h;
+        const factor = 0.5 + 0.5 * smooth(Math.min(1, brakeT / 0.08));
+        const room = Math.max(1, (D - p) - springDist);
+        const decNeed = (v * v - CREEP * CREEP) / (2 * room);
+        const dec = Math.min(decFull * 2.5, decNeed * factor);
+        v -= dec * h;
+        if (v <= CREEP) { v = CREEP; mode = 'spring'; }
+        else if (D - p <= springDist * 0.9) mode = 'spring';  /* position catch: spring absorbs the entry speed */
+        p += v * h;
+      } else if (mode === 'stopcruise') {
+        const vT = vmax * 3.4;
+        v = Math.min(vT, v + vmax * 12 * h);
+        p += v * h;
+        if (D - p <= brakeDistAt(v, DEC_HARD)) { mode = 'stopbrake'; brakeT = 0; }
+      } else if (mode === 'spring') {
         springT += h;
         v += (K * (D - p) - C * v) * h;
         p += v * h;
-        if ((Math.abs(D - p) < 0.5 && Math.abs(v) < 16) || springT > 0.9) { p = D; done = true; }
-      } else {
-        p += v * h;
-        if (p >= D) mode = 'spring';
+        if ((Math.abs(D - p) < 0.6 && Math.abs(v) < 26) || springT > 0.85) { p = D; v = 0; done = true; }
       }
+      if (!done && mode !== 'spring' && p > D + springDist) mode = 'spring';
     }
     return { p, v, done };
   }
-  return { step, vmax, get done() { return done; } };
+  return { step, brake, vmax, D, get done() { return done; } };
 }
 
-const coreApi = { PAYLINES, FREE_SPIN_MULTIPLIER, MULTIPLIERS, lineMultiplier, windowForStops, randomStops, evaluateLine, evaluateGrid, createReelMotion };
+const coreApi = { PAYLINES, FREE_SPIN_MULTIPLIER, MULTIPLIERS, lineMultiplier, windowForStops, randomStops, evaluateLine, evaluateGrid, createReelMotion, reelDistance };
 if (typeof module !== 'undefined' && module.exports) module.exports = coreApi;
 if (typeof window !== 'undefined') window.SlotCore = coreApi;
