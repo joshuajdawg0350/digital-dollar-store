@@ -123,7 +123,7 @@
 
 <div class="celeb" id="celeb" aria-hidden="true" role="alertdialog" aria-label="Celebration">
   <div class="celeb-frame">
-    <div class="celeb-kick" id="celebKick">★ BONUS ★</div>
+    <div class="celeb-kick" id="celebKick">BONUS</div>
     <div class="celeb-title" id="celebTitle">BONUS WHEEL!</div>
     <div class="celeb-sub" id="celebSub"></div>
     <div class="celeb-tap">TAP TO PLAY</div>
@@ -132,16 +132,17 @@
 
 <div class="celeb-video" id="celebVideo" aria-hidden="true" role="alertdialog" aria-label="Bonus celebration">
   <video id="celebVideoEl" src="assets/celeb-bonus.mp4" playsinline preload="auto"></video>
-  <!-- TITLE SWAP POINT: the ★ BONUS ★ title is this separate layer + file
-       (assets/celeb-title.png). Joshua's graffiti pick (2026-11-21) swaps
-       that ONE file when it lands — nothing else changes. -->
-  <div class="celeb-video-title"><img src="assets/celeb-title.png" alt="★ BONUS ★" draggable="false"></div>
+  <!-- TITLE LAYER: the BONUS title is this separate layer + file
+       (assets/celeb-title.png). FINAL treatment: round-3 pick #15
+       "Brushed Red Metal", word only, no stars (Joshua, 2026-11-21). -->
+  <div class="celeb-video-title"><img src="assets/celeb-title.png" alt="BONUS" draggable="false"></div>
+  <div class="celeb-video-cap" id="celebVideoCap"></div>
   <div class="celeb-video-tap">TAP TO SKIP</div>
 </div>
 
 <div class="bonus-overlay" id="bonusOverlay" aria-hidden="true" aria-label="Bonus Wheel">
   <div class="bonus-card">
-    <h2 class="bonus-title">★ BONUS WHEEL ★</h2>
+    <h2 class="bonus-title">BONUS WHEEL</h2>
     <p class="bonus-rules">3 BONUS tokens lit the wheel — one spin, on the house.<br>
       Wedges pay <b>× your total bet</b>. <b class="gold">JACKPOT pays 100×</b>. <b class="bad">BANKRUPT pays nothing</b>.</p>
     <div class="wheel-wrap">
@@ -183,6 +184,7 @@
 <script src="machines.js"></script>
 <script src="soundkit.js"></script>
 <script src="game.js"></script>
+<script src="cabinet-life.js"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));

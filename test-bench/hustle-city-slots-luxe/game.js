@@ -365,13 +365,15 @@
      celebration plays first (~3s, tap to skip ahead — never skips the
      prize itself). Input is locked by the overlay while it shows. */
   /* ---------- bonus celebration VIDEO (Joshua, 2026-11-21 19:34 CT) ----------
-     Engine-Rev Jackpot (celebration-hc-5) is Luxe's bonus celebration:
+     Engine-Rev Jackpot (celebration-hc-5) is Luxe's celebration:
      full-screen, the full 5.0s, tap-to-skip, its OWN audio unmuted (no
      sound-kit fanfare under it). The ★ BONUS ★ title rides as a separate
-     overlay layer (assets/celeb-title.png) — TITLE HOLD: Joshua's graffiti
-     pick swaps that one file when it lands. */
+     overlay layer (assets/celeb-title.png) — FINAL: round-3 pick #15
+     "Brushed Red Metal", word BONUS only, stars removed (Joshua,
+     2026-11-21 20:45 CT). Swap = replace that one file. */
   const celebVideoEl = $('celebVideo'), celebVideoVid = $('celebVideoEl');
-  function playBonusVideo() {
+  const celebVideoCap = $('celebVideoCap');
+  function playBonusVideo(capText) {
     return new Promise(res => {
       let done = false;
       const finish = () => {
@@ -384,6 +386,7 @@
         celebVideoVid.removeEventListener('ended', finish);
         res();
       };
+      if (celebVideoCap) { celebVideoCap.textContent = capText || ''; celebVideoCap.style.display = capText ? 'block' : 'none'; }
       celebVideoEl.classList.add('on');
       celebVideoEl.setAttribute('aria-hidden', 'false');
       celebVideoEl.addEventListener('click', finish);
@@ -403,10 +406,13 @@
     });
   }
   function celebrate(kind, title, sub, durMs) {
-    if (kind === 'bonus') return playBonusVideo();
+    /* the show fires at BOTH big moments (Joshua, 2026-11-21 20:50 CT): the
+       bonus trigger and the free-spins trigger (caption carries the title) */
+    if (kind === 'bonus') return playBonusVideo('');
+    if (kind === 'fs') return playBonusVideo(title);
     return new Promise(res => {
       celebEl.className = 'celeb on k-' + kind;
-      celebKickEl.textContent = kind === 'bonus' ? '★ BONUS ★' : '★ FREE SPINS ★';
+      celebKickEl.textContent = kind === 'bonus' ? 'BONUS' : 'FREE SPINS';
       celebTitleEl.textContent = title;
       celebSubEl.textContent = sub || '';
       celebEl.setAttribute('aria-hidden', 'false');
@@ -599,7 +605,7 @@
           bonusMsg.textContent = 'BANKRUPT — the wheel gives nothing this time.';
           Kit.bust(); /* the low bust sting — no synth buzz */
         } else if (val === Math.max(...WEDGES)) {
-          bonusMsg.textContent = `★ JACKPOT! ${val}× your bet = ${fmt(pay)} credits! ★`;
+          bonusMsg.textContent = `JACKPOT! ${val}× your bet = ${fmt(pay)} credits!`;
           Kit.jackpot(); /* full bell + coin celebration */
         } else {
           bonusMsg.textContent = `The wheel pays ${val}× your bet = ${fmt(pay)} credits!`;
@@ -611,6 +617,10 @@
           await countUp(winEl, before, before + pay, Math.min(1500, 400 + pay));
           renderReadouts(before + pay);
           save();
+        }
+        if (pay > 0) {
+          /* the wheel AWARD moment celebrates too (Joshua, 2026-11-21 20:57 CT) */
+          await playBonusVideo(`THE WHEEL PAYS ${val}× YOUR BET!`);
         }
         setTimeout(() => {
           bonusOverlay.classList.remove('on');
@@ -673,6 +683,11 @@
     notePeak();
     save();
 
+    if (!ev.bonus && ev.lineWins.some(w => w.count >= 5)) {
+      /* FIVE OF A KIND celebrates too (Joshua, 2026-11-21 20:57 CT) */
+      await celebrate('bonus', 'FIVE OF A KIND!', 'Five on a line — that is a big one!', celebDur());
+    }
+
     /* Bonus Wheel plays before free spins when both trigger together.
        Celebrate first — never cut straight in (Joshua, 12:52 CT). */
     if (ev.bonus) {
@@ -687,7 +702,7 @@
 
     if (ev.freeSpins > 0) {
       freeSpinsLeft += ev.freeSpins;
-      fsBanner.textContent = `★ ${ev.freeSpins} FREE SPINS ★ LINE WINS ×2 ★`;
+      fsBanner.textContent = `${ev.freeSpins} FREE SPINS — LINE WINS ×2`;
       fsBanner.classList.add('on');
       msgEl.textContent = `${ev.scatterCount} scatters! ${ev.freeSpins} free spins${isFree ? ' added' : ''} — here they come!`;
       spinning = false;
