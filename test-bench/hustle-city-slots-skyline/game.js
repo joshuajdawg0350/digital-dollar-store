@@ -450,6 +450,7 @@
     setTimeout(() => {
       clearInterval(tumble);
       dieEls.forEach(d => d.classList.remove('tumbling'));
+      if (!bonus) return; /* round already ended (banked) while the dice tumbled — nothing to resolve */
       const [d1, d2] = rollTwoDice();
       drawDie(dieEls[0], d1); drawDie(dieEls[1], d2);
       const total = d1 + d2;
