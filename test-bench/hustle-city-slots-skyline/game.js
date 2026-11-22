@@ -508,6 +508,471 @@
     setTimeout(() => endBonus(prize), 450);
   });
 
+  /* ---------- BRIDGE RUN bonus game (bonus-pool game, 2026-11-22) ----------
+     Joshua's pick #3 from the Skyline bonus boards, built ON Hustle City
+     Drag Racing v0.4.5: the race model is that game's stepCar /
+     doShiftCar / rpmFor / torqueFactor / rivalShapeAt with fixed street
+     builds and 1/8-mile spans, and the engine voice is Drag Racing's own
+     oscillator synth (saw + square + sub through a lowpass, blower
+     whine, lopey idle, strain wobble at the redline). Race the rival
+     across 5 spans paying 2/4/7/12/20x total bet, +20x finish bonus
+     (max 40x). After each span: PIT (bank) or RACE ON. 2 engines — a
+     lost or blown race costs one. Spans 2 and 4 LOCK their prize.
+     Tuned by simulation (sim/bridgerun-sim.js, 4,000 races/span):
+     good driving EV = 7.65x bet; perfect play 32.9x; sloppy 0.15x.
+     Pool contract (same as Dice Roll): play(opts, onDone) — the game
+     resolves onDone(prizeCredits); the CALLER credits the prize. */
+  const BR_LADDER = [2, 4, 7, 12, 20];
+  const BR_LOCKS = { 2: 4, 4: 12 };
+  const BR_FINISH_BONUS = 20;
+  const BR_RIVAL_POWER = [1.002, 1.007, 1.022, 1.027, 1.042];
+  const BR_SHAPES = ['even', 'launch', 'charge', 'launch', 'charge'];
+  const BR_SPAN_M = 201.168; /* 1/8 mile — Drag Racing's 1/8mi split mark */
+  const BR_RATIOS = [2.82, 2.15, 1.62, 1.22, 0.81], BR_FINAL_D = 3.7, BR_WHEEL_C = 2.05;
+  const BR_REDLINE = 7500, BR_LIMITER = 7680, BR_PERFECT_LO = 6850, BR_PERFECT_HI = 7500;
+  const BR_FORCE_K = 5.4, BR_DRAG_C = 0.0005, BR_ROLL_R = 0.25;
+  const brRpmFor = (v, g) => v / BR_WHEEL_C * BR_RATIOS[g] * BR_FINAL_D * 60;
+  const brTorque = rpm => Math.max(0.78, Math.min(1.14, 1.22 - Math.abs(rpm - 5600) / 12000));
+  const brClamp = (x, a, b) => Math.max(a, Math.min(b, x));
+  const brNorm = () => (Math.random() + Math.random() + Math.random() + Math.random() - 2) * 1.73;
+  /* Drag Racing v0.4.5 rivalShapeAt, breakpoints scaled to the span */
+  function brShapeAt(shape, dist) {
+    if (shape === 'launch') { if (dist < 50) return 1.01 - 0.01 * (dist / 50); if (dist < 125) return 1; return 1 - 0.0325 * ((dist - 125) / 76); }
+    if (shape === 'charge') { if (dist < 50) return 0.98 + 0.02 * (dist / 50); if (dist < 100) return 1; return 1 + 0.03 * ((dist - 100) / 101); }
+    return 1;
+  }
+  function brNewCar(power, isPlayer) {
+    return { v: 0, dist: 0, gear: 0, throttle: 0, power, shiftCut: 0, launched: false, finishT: null,
+             slip: 0, redTime: 0, blown: false, isPlayer: !!isPlayer, rpmDisp: 900,
+             powerMult: 1.30, forceMult: 1.22, cutP: 0.14, cutN: 0.24, cutKeep: 0.62 };
+  }
+  function brStep(c, dt, clock) {
+    if (!c.launched) return;
+    if (c.finishT !== null || c.blown) { /* roll-out: lift, brake, coast — never freeze at the line; a blown motor is dead weight */
+      c.throttle = 0;
+      const a = -BR_DRAG_C * c.v * c.v - (c.v > 0.01 ? BR_ROLL_R : 0) - 3.4;
+      c.v = Math.max(0, c.v + a * dt); c.dist += c.v * dt;
+      c.rpmDisp += ((c.v < 0.5 ? 900 : brRpmFor(c.v, c.gear)) - c.rpmDisp) * Math.min(1, dt * 10);
+      return;
+    }
+    const gear = c.gear, rpmC = brRpmFor(c.v, gear);
+    let force = 0;
+    if (c.throttle > 0 && rpmC < BR_LIMITER) {
+      force = c.throttle * c.power * c.powerMult * c.forceMult * BR_FORCE_K * BR_RATIOS[gear] * brTorque(Math.max(rpmC, c.slip > 0 ? 4300 : 0));
+      if (c.shiftCut > 0) force *= c.cutKeep;
+      if (!c.isPlayer && c.shape) force *= brShapeAt(c.shape, c.dist);
+    }
+    if (c.shiftCut > 0) c.shiftCut -= dt;
+    let a = force - BR_DRAG_C * c.v * c.v - (c.v > 0.01 ? BR_ROLL_R : 0);
+    if (c.slip > 0) { a *= 0.60; c.slip -= dt; }
+    c.v = Math.max(0, c.v + a * dt);
+    c.dist += c.v * dt;
+    if (c.isPlayer) { /* hold it in the red 2s and the motor lets go (Drag Racing's law) */
+      if (rpmC >= BR_REDLINE && c.throttle > 0) { c.redTime += dt; if (c.redTime >= 2.0) c.blown = true; }
+      else c.redTime = Math.max(0, c.redTime - dt * 2);
+    }
+    let rpm = brRpmFor(c.v, c.gear);
+    if (c.slip > 0 && c.throttle > 0) rpm = Math.max(rpm, 4300 + Math.sin(clock * 40) * 120);
+    if (c.throttle === 0) rpm = Math.max(rpm, 900);
+    c.rpmDisp += (rpm - c.rpmDisp) * Math.min(1, dt * 18);
+    if (c.dist >= BR_SPAN_M && c.finishT === null) c.finishT = clock;
+  }
+  function brShiftCar(c) {
+    if (!c.launched || c.finishT !== null || c.blown || c.gear >= 4 || c.shiftCut > 0) return null;
+    const rpm = brRpmFor(c.v, c.gear);
+    let q = 'good';
+    if (rpm >= BR_PERFECT_LO && rpm <= BR_PERFECT_HI) q = 'perfect';
+    else if (rpm < 5200) q = 'early';
+    else if (rpm > BR_PERFECT_HI) q = 'late';
+    c.gear++;
+    c.shiftCut = (q === 'perfect') ? c.cutP : c.cutN;
+    return q;
+  }
+  /* Drag Racing's engine voice, ported: saw + square + sub sine through
+     a lowpass, roots-blower whine (tier 2 street build), lopey idle,
+     valve-float strain wobble near the redline. Runs on the cabinet's
+     shared AudioContext and obeys the machine's SOUND toggle. */
+  const BrEng = {
+    n: null,
+    start() {
+      const a = ac(); if (!a || this.n) return;
+      try {
+        const g = a.createGain(); g.gain.value = 0;
+        const flt = a.createBiquadFilter(); flt.type = 'lowpass'; flt.frequency.value = 900; flt.Q.value = 2;
+        const o1 = a.createOscillator(); o1.type = 'sawtooth';
+        const o2 = a.createOscillator(); o2.type = 'square';
+        const g2 = a.createGain(); g2.gain.value = 0.4;
+        const sub = a.createOscillator(); sub.type = 'sine';
+        const gs = a.createGain(); gs.gain.value = 0.7;
+        o1.connect(flt); o2.connect(g2); g2.connect(flt); sub.connect(gs); gs.connect(flt);
+        flt.connect(g); g.connect(a.destination);
+        o1.start(); o2.start(); sub.start();
+        const wo = a.createOscillator(); wo.type = 'triangle';
+        const wg = a.createGain(); wg.gain.value = 0;
+        wo.connect(wg); wg.connect(a.destination); wo.start();
+        this.n = { g, flt, o1, o2, sub, wo, wg };
+      } catch (e) { this.n = null; }
+    },
+    engine(rpm, throttle, running) {
+      if (!this.n) return;
+      const a = ac(); if (!a) return;
+      const t = a.currentTime, n = this.n;
+      if (!soundOn) { n.g.gain.setTargetAtTime(0, t, 0.03); n.wg.gain.setTargetAtTime(0, t, 0.03); return; }
+      const strain = brClamp((rpm - 7150) / 500, 0, 1);
+      let f = 29 + rpm / 7500 * 138;
+      if (strain > 0.03) f *= (1 + 0.012 * Math.sin(t * 47) * strain);
+      n.o1.frequency.setTargetAtTime(f, t, 0.03);
+      n.o2.frequency.setTargetAtTime(f * 0.5 + 2, t, 0.03);
+      n.sub.frequency.setTargetAtTime(f * 0.5, t, 0.03);
+      n.flt.frequency.setTargetAtTime(420 + throttle * 2500 + rpm / 7500 * 950, t, 0.05);
+      let target = running ? 0.055 + throttle * 0.145 : 0.0;
+      if (strain > 0.03) target *= (1 - 0.22 * strain * Math.abs(Math.sin(t * 23)));
+      if (running && rpm < 1500) target *= (0.68 + 0.32 * Math.sin(t * 56));
+      n.g.gain.setTargetAtTime(target, t, 0.05);
+      n.wo.frequency.setTargetAtTime(180 + rpm * 0.34, t, 0.04);
+      n.wg.gain.setTargetAtTime(running ? (0.006 + 0.030 * (2 / 3)) * (0.35 + throttle * 0.65) * (rpm / 7500) : 0, t, 0.07);
+    },
+    stop() { if (this.n) this.engine(0, 0, false); }
+  };
+
+  const bridgeEl = $('bridgeGame'), bridgeBackdrop = $('bridgeBackdrop');
+  const bridgeTriggerEl = $('bridgeTriggerText'), bridgeMsgEl = $('bridgeMsg');
+  const bridgePrizeEl = $('bridgePrize'), bridgeLockedEl = $('bridgeLocked');
+  const bridgeSpansEl = $('bridgeSpans'), bridgeEnginesEl = $('bridgeEngines');
+  const bridgeCanvas = $('bridgeCanvas'), brCtx = bridgeCanvas.getContext('2d');
+  const bridgeFlashEl = $('bridgeFlash'), bridgeBigEl = $('bridgeBigText');
+  const bridgeTachFill = $('bridgeTachFill'), bridgeGearEl = $('bridgeGear'), bridgeMphEl = $('bridgeMph');
+  const bridgeStartBtn = $('bridgeStartBtn'), bridgeGasBtn = $('bridgeGasBtn'), bridgeShiftBtn = $('bridgeShiftBtn');
+  const bridgePitBtn = $('bridgePitBtn'), bridgeRaceBtn = $('bridgeRaceBtn');
+  const brTreeBulbs = Array.from(document.querySelectorAll('#bridgeTree .tl'));
+  const brImgBackdrop = new Image(); brImgBackdrop.src = 'assets/bridge-backdrop.webp';
+  const brImgPlayer = new Image(); brImgPlayer.src = 'assets/bridge-car-player.png';
+  const brImgRival = new Image(); brImgRival.src = 'assets/bridge-car-rival.png';
+
+  let bridgeRun = null; /* { bet, resolve, span, engines, cur, locked, phase, clock, ... } */
+  let brP = null, brR = null; /* the two cars */
+  let brRaf = 0, brLastTs = 0, brAcc = 0;
+  let brGasHeld = false, brLaunchRpm = 900, brTreeFired = {}, brGreenAt = 2.3, brSettleEnd = 0, brFlashUntil = 0;
+
+  function brSetPhase(p) { if (bridgeRun) bridgeRun.phase = p; bridgeEl.dataset.phase = p; }
+  function brTree(name, on) {
+    const idx = { stage: 0, amber1: 1, amber2: 2, amber3: 3, green: 4, red: 5 }[name];
+    if (brTreeBulbs[idx]) brTreeBulbs[idx].classList.toggle('on', !!on);
+  }
+  function brTreeAllOff() { brTreeBulbs.forEach(b => b.classList.remove('on')); }
+  function brHud() {
+    if (!bridgeRun) return;
+    bridgePrizeEl.textContent = fmt(Math.round(bridgeRun.cur * bridgeRun.bet));
+    bridgeLockedEl.textContent = fmt(Math.round(bridgeRun.locked * bridgeRun.bet));
+    bridgeEnginesEl.innerHTML = [1, 2].map(i =>
+      `<span class="br-engine${i <= bridgeRun.engines ? '' : ' lost'}">ENGINE ${i}</span>`).join('');
+    bridgeSpansEl.innerHTML = BR_LADDER.map((v, i) => {
+      const n = i + 1;
+      let cls = 'br-span';
+      if (n < bridgeRun.span || (n === bridgeRun.span && bridgeRun.cur >= v)) cls += ' done';
+      if (n === bridgeRun.span) cls += ' current';
+      if (BR_LOCKS[n] && bridgeRun.locked >= BR_LOCKS[n]) cls += ' locked';
+      return `<span class="${cls}">SPAN ${n}<b>${v}×</b>${BR_LOCKS[n] ? '<i>LOCK</i>' : ''}</span>`;
+    }).join('');
+  }
+  function brFlash(text, cls) {
+    bridgeFlashEl.textContent = text;
+    bridgeFlashEl.className = 'bridge-flash show ' + (cls || '');
+    brFlashUntil = performance.now() + 750;
+  }
+  function brBig(text, cls) {
+    bridgeBigEl.textContent = text || '';
+    bridgeBigEl.className = 'bridge-bigtext' + (text ? ' show ' : ' ') + (cls || '');
+  }
+  function brLaunchQuality(rpm) {
+    if (rpm >= 5600 && rpm <= 6800) return { slip: 0.80, form: 1.000, label: 'CLEAN LAUNCH!' };
+    if (rpm > 6800 && rpm <= 7300) return { slip: 1.00, form: 0.995, label: 'HOT LAUNCH' };
+    if (rpm > 7300) return { slip: 1.65, form: 0.970, label: 'WHEELSPIN!' };
+    if (rpm >= 4200) return { slip: 1.05, form: 0.985, label: 'SOFT LAUNCH' };
+    return { slip: 1.45, form: 0.965, label: 'BOGGED DOWN' };
+  }
+  function brLaunchPlayer(delay, slip, form) {
+    brP.launched = true; brP.launchAt = bridgeRun.clock;
+    brP.slip = slip; brP.power = form * (1 + (Math.random() * 2 - 1) * 0.015);
+    brP.throttle = brGasHeld ? 1 : 0;
+    brFlash(delay <= 0.12 ? 'REACTION ' + delay.toFixed(2) : 'LAUNCH +' + delay.toFixed(2) + 's', 'blue');
+  }
+  function brStartSpan() {
+    const b = bridgeRun; if (!b) return;
+    brP = brNewCar(1.0, true);
+    const rp = BR_RIVAL_POWER[b.span - 1] * (1 + (Math.random() * 2 - 1) * 0.05);
+    brR = brNewCar(rp, false);
+    brR.shape = BR_SHAPES[b.span - 1];
+    brR.launchDelay = brClamp(0.16 + brNorm() * 0.06, 0.08, 0.45);
+    brR.launchSlip = brClamp(0.90 + brNorm() * 0.20, 0.6, 1.5);
+    brR.shiftTargets = [0, 1, 2, 3].map(() => 7000 + brNorm() * 300);
+    b.clock = 0; brAcc = 0; brTreeFired = {}; brGreenAt = 2.3;
+    brLaunchRpm = 900; brGasHeld = false;
+    brTreeAllOff(); brBig('');
+    brSetPhase('tree');
+    bridgeMsgEl.textContent = `Span ${b.span} of 5 — pays ${BR_LADDER[b.span - 1]}×. HOLD GAS to stage your revs (sweet spot 5,600–6,800), launch on GREEN, SHIFT in the green zone!`;
+    brHud();
+    BrEng.start();
+  }
+  function brEndRace(win, blown) {
+    const b = bridgeRun; if (!b || b.phase !== 'race') return;
+    b.result = { win, blown };
+    brSettleEnd = b.clock + 0.9;
+    brSetPhase('settle');
+    if (blown) { brTree('red', true); brBig('MOTOR BLOWN!', 'red'); Kit.engineBust(); BrEng.stop(); }
+    else if (win) brBig(`SPAN ${b.span} — YOURS!`, 'blue');
+    else brBig('OUTRUN!', 'red');
+  }
+  function brResolveRace() {
+    const b = bridgeRun; if (!b || !b.result) return;
+    const { win, blown } = b.result; b.result = null;
+    if (win) {
+      b.cur = BR_LADDER[b.span - 1];
+      if (BR_LOCKS[b.span]) b.locked = Math.max(b.locked, BR_LOCKS[b.span]);
+      Kit.risingDing(b.span);
+      brHud();
+      if (b.span >= 5) { brCollect(b.cur + BR_FINISH_BONUS, true); return; }
+      b.nextSpan = b.span + 1;
+      brSetPhase('choice');
+      bridgeMsgEl.textContent = BR_LOCKS[b.span]
+        ? `Span ${b.span} is yours and ${BR_LADDER[b.span - 1]}× is LOCKED IN. PIT and bank ${fmt(Math.round(b.cur * b.bet))}, or RACE ON to span ${b.span + 1} for ${BR_LADDER[b.span]}×.`
+        : `Span ${b.span} is yours — prize is ${fmt(Math.round(b.cur * b.bet))}. PIT and bank it, or RACE ON to span ${b.span + 1} for ${BR_LADDER[b.span]}×.`;
+    } else {
+      b.engines--;
+      if (!blown) Kit.bust();
+      brHud();
+      if (b.engines <= 0) {
+        bridgeMsgEl.textContent = blown ? 'Second engine gone — the run is over.' : 'Out of engines — the run is over.';
+        brCollect(b.locked, false);
+        return;
+      }
+      b.nextSpan = b.span; /* a lost span is re-run, not skipped */
+      brSetPhase('choice');
+      bridgeMsgEl.textContent = blown
+        ? `That motor is scrap — one engine left. PIT and bank ${fmt(Math.round(b.cur * b.bet))}, or RACE ON and run span ${b.span} again on your last engine.`
+        : `The rival took span ${b.span} — one engine left. PIT and bank ${fmt(Math.round(b.cur * b.bet))}, or RACE ON and run span ${b.span} again.`;
+    }
+  }
+  function brCollect(amountX, finishedAll) {
+    const b = bridgeRun; if (!b || b.phase === 'collect') return;
+    brSetPhase('collect');
+    BrEng.stop();
+    const prize = Math.round(amountX * b.bet);
+    const finish = () => { brClose(); if (b.resolve) b.resolve(prize); };
+    if (prize > 0) {
+      bridgeMsgEl.textContent = finishedAll
+        ? `FULL CROSSING! All five spans plus the finish bonus — Bridge Run pays ${fmt(prize)} credits!`
+        : `Banked! Bridge Run pays ${fmt(prize)} credits.`;
+      Kit.bankIt(amountX);
+      if (finishedAll) setTimeout(() => Kit.jackpot(), 250);
+      setTimeout(() => celebrate('bonus', 'BRIDGE RUN!', `You banked ${fmt(prize)} credits!`, celebDur()).then(finish), 700);
+    } else {
+      bridgeMsgEl.textContent = 'Out of engines with nothing locked in — the bridge keeps this one.';
+      setTimeout(finish, 1500);
+    }
+  }
+  function brClose() {
+    cancelAnimationFrame(brRaf); brRaf = 0;
+    BrEng.stop();
+    bridgeRun = null; brP = null; brR = null;
+    bridgeEl.classList.remove('on'); bridgeEl.setAttribute('aria-hidden', 'true');
+    bridgeBackdrop.classList.remove('on');
+  }
+  function openBridgeRun(opts, onDone) {
+    if (bridgeRun) return;
+    opts = opts || {};
+    bridgeRun = { bet: totalBet(), resolve: onDone || null, span: 1, engines: 2, cur: 0, locked: 0,
+                  phase: 'intro', clock: 0, nextSpan: 1, result: null, introAt: performance.now() };
+    brP = brNewCar(1.0, true); brR = brNewCar(1.0, false);
+    bridgeTriggerEl.textContent = opts.triggerText || 'Bridge Run — race the rival across five neon spans!';
+    bridgeMsgEl.textContent = 'Five spans. Two engines. Read the run, then start yours.';
+    brTreeAllOff(); brBig('');
+    bridgeStartBtn.disabled = true; /* 2-second bonus-screen minimum view (house rule) */
+    setTimeout(() => { if (bridgeRun && bridgeRun.phase === 'intro') bridgeStartBtn.disabled = false; }, 2000);
+    brSetPhase('intro');
+    brHud();
+    bridgeEl.classList.add('on'); bridgeEl.setAttribute('aria-hidden', 'false');
+    bridgeBackdrop.classList.add('on');
+    brLastTs = performance.now();
+    cancelAnimationFrame(brRaf);
+    brRaf = requestAnimationFrame(brFrame);
+  }
+  /* the bonus-pool registry — the $$$ door deals a random game from here */
+  window.__bonusPool = window.__bonusPool || { games: {}, register(id, def) { this.games[id] = def; } };
+  window.__bonusPool.register('bridgeRun', { title: 'BRIDGE RUN', play: (opts, onDone) => openBridgeRun(opts, onDone) });
+  window.__bridgeRunBonus = { play: (opts, onDone) => openBridgeRun(opts, onDone) };
+  window.__bridgeRunState = () => bridgeRun ? { phase: bridgeRun.phase, span: bridgeRun.span, engines: bridgeRun.engines, curX: bridgeRun.cur, lockedX: bridgeRun.locked, prize: Math.round(bridgeRun.cur * bridgeRun.bet), playerDist: brP ? Math.round(brP.dist) : 0, rivalDist: brR ? Math.round(brR.dist) : 0, blown: brP ? brP.blown : false } : null;
+
+  function brFrame(ts) {
+    if (!bridgeRun) { brRaf = 0; return; }
+    brRaf = requestAnimationFrame(brFrame);
+    let dt = Math.min(0.05, (ts - brLastTs) / 1000 || 0); brLastTs = ts;
+    const b = bridgeRun;
+    if (performance.now() > brFlashUntil && bridgeFlashEl.classList.contains('show')) bridgeFlashEl.classList.remove('show');
+
+    if (b.phase === 'tree') {
+      b.clock += dt;
+      /* stage revs: hold GAS to climb the tach, release and it falls */
+      if (brGasHeld) brLaunchRpm = Math.min(7900, brLaunchRpm + 3600 * dt);
+      else brLaunchRpm = Math.max(900, brLaunchRpm - 4600 * dt);
+      brP.rpmDisp += (brLaunchRpm - brP.rpmDisp) * Math.min(1, dt * 18);
+      BrEng.engine(brLaunchRpm, brGasHeld ? 0.85 : 0.15, true);
+      const sched = [[0.3, 'stage'], [0.8, 'amber1'], [1.3, 'amber2'], [1.8, 'amber3'], [brGreenAt, 'green']];
+      for (const [t, name] of sched) {
+        if (b.clock >= t && !brTreeFired[name]) {
+          brTreeFired[name] = true; brTree(name, true);
+          if (name === 'green') {
+            Kit.nearBell();
+            brBig('GREEN!', 'green'); setTimeout(() => { if (bridgeRun && bridgeRun.phase === 'race') brBig(''); }, 650);
+            brSetPhase('race');
+            if (brGasHeld) { const q = brLaunchQuality(brLaunchRpm); brLaunchPlayer(0.10, q.slip, q.form); brFlash(q.label, 'blue'); }
+          } else Kit.click();
+        }
+      }
+    } else if (b.phase === 'race' || b.phase === 'settle') {
+      brAcc += dt;
+      const step = 1 / 240;
+      let guard = 0;
+      while (brAcc >= step && guard++ < 40) {
+        brAcc -= step; b.clock += step;
+        if (b.phase === 'race') {
+          if (!brP.launched && brGasHeld && b.clock >= brGreenAt) brLaunchPlayer(Math.max(0.10, b.clock - brGreenAt), 1.15, 0.98);
+          if (!brR.launched && b.clock >= brGreenAt + brR.launchDelay) { brR.launched = true; brR.slip = brR.launchSlip; brR.throttle = 1; }
+          if (brP.launched) brP.throttle = brGasHeld ? 1 : 0;
+          if (brR.launched && brR.finishT === null && brR.gear < 4 && brRpmFor(brR.v, brR.gear) >= brR.shiftTargets[brR.gear]) brShiftCar(brR);
+        }
+        brStep(brP, step, b.clock);
+        brStep(brR, step, b.clock);
+        if (b.phase === 'race') {
+          if (brP.blown) { brEndRace(false, true); break; }
+          if (brP.finishT !== null && brR.finishT !== null) { brEndRace(brP.finishT <= brR.finishT, false); break; }
+          if (brP.finishT !== null && brR.dist < BR_SPAN_M - 30) { brEndRace(true, false); break; }
+          if (brR.finishT !== null && brP.dist < BR_SPAN_M - 30) { brEndRace(false, false); break; }
+          if (b.clock - brGreenAt > 15) { brEndRace(brP.dist >= brR.dist, false); break; }
+        }
+      }
+      BrEng.engine(brP ? brP.rpmDisp : 900, brP && brP.launched && brGasHeld ? 1 : 0.25, b.phase === 'race');
+      if (b.phase === 'settle' && b.clock >= brSettleEnd) brResolveRace();
+    }
+    brDraw();
+    /* tach + readouts */
+    const rpm = brP ? brP.rpmDisp : 900;
+    bridgeTachFill.style.width = brClamp(rpm / 8000 * 100, 0, 100) + '%';
+    bridgeTachFill.classList.toggle('red', rpm >= BR_REDLINE);
+    bridgeGearEl.textContent = brP && brP.launched ? String(brP.gear + 1) : 'N';
+    bridgeMphEl.textContent = brP ? String(Math.round(brP.v * 2.23694)) : '0';
+  }
+  function brDraw() {
+    const W = 720, H = 420, c = brCtx;
+    if (!c) return;
+    const pD = brP ? brP.dist : 0, rD = brR ? brR.dist : 0;
+    const cam = (pD + rD) / 2;
+    /* sky + far bridge (the picked board's world), slow parallax */
+    c.fillStyle = '#040814'; c.fillRect(0, 0, W, H);
+    if (brImgBackdrop.complete && brImgBackdrop.naturalWidth) {
+      const iw = 981, off = -((cam * 1.2) % iw);
+      c.globalAlpha = 0.92;
+      c.drawImage(brImgBackdrop, off, 0, iw, 420);
+      c.drawImage(brImgBackdrop, off + iw, 0, iw, 420);
+      c.globalAlpha = 1;
+    }
+    /* deck */
+    const deckY = 292;
+    const grad = c.createLinearGradient(0, deckY, 0, H);
+    grad.addColorStop(0, '#0a1428'); grad.addColorStop(0.12, '#060b18'); grad.addColorStop(1, '#03060f');
+    c.fillStyle = grad; c.fillRect(0, deckY, W, H - deckY);
+    c.fillStyle = 'rgba(64,190,255,0.85)'; c.fillRect(0, deckY, W, 2);
+    c.fillStyle = 'rgba(64,190,255,0.30)'; c.fillRect(0, H - 6, W, 2);
+    /* lane dashes + distance posts stream past at full speed */
+    const pxM = 3.0;
+    c.fillStyle = 'rgba(190,225,255,0.5)';
+    for (const laneY of [deckY + 44, deckY + 88]) {
+      const dashOff = -((cam * pxM) % 46);
+      for (let x = dashOff; x < W; x += 46) c.fillRect(x, laneY, 26, 3);
+    }
+    c.fillStyle = 'rgba(64,190,255,0.75)';
+    const postOff = -((cam * pxM) % (25 * pxM));
+    for (let x = postOff; x < W; x += 25 * pxM) { c.fillRect(x, deckY - 16, 3, 16); c.fillRect(x - 1, deckY - 20, 5, 5); }
+    /* finish gantry for this span */
+    const finX = W / 2 + (BR_SPAN_M - cam) * pxM;
+    if (finX > -40 && finX < W + 40) {
+      c.fillStyle = 'rgba(238,243,249,0.9)';
+      c.fillRect(finX - 3, deckY - 118, 6, 118);
+      c.fillStyle = 'rgba(64,190,255,0.95)';
+      c.fillRect(finX - 60, deckY - 124, 120, 7);
+      c.fillStyle = '#eaf6ff'; c.font = '700 15px "Bebas Neue", sans-serif'; c.textAlign = 'center';
+      c.fillText('SPAN ' + (bridgeRun ? bridgeRun.span : 1) + ' FINISH', finX, deckY - 130);
+    }
+    /* cars: rival on the far lane, player on the near lane */
+    const drawCar = (img, car, laneBase, w) => {
+      if (!car || !img.complete || !img.naturalWidth) return;
+      const h = w * (img.naturalHeight / img.naturalWidth);
+      const x = W / 2 + (car.dist - cam) * pxM - w / 2;
+      const y = laneBase - h;
+      /* speed streaks */
+      if (car.v > 8) {
+        c.strokeStyle = 'rgba(64,190,255,0.35)'; c.lineWidth = 2;
+        const n = Math.min(6, 1 + (car.v / 14) | 0);
+        for (let i = 0; i < n; i++) {
+          const sy = y + h * (0.25 + 0.6 * ((i * 37 % 10) / 10));
+          const len = car.v * (0.5 + (i % 3) * 0.22);
+          c.beginPath(); c.moveTo(x + 6, sy); c.lineTo(x + 6 - len, sy); c.stroke();
+        }
+      }
+      c.drawImage(img, x, y, w, h);
+      if (car.blown) { /* smoke from the dead motor */
+        c.fillStyle = 'rgba(160,170,185,0.5)';
+        for (let i = 0; i < 5; i++) {
+          const sx = x + w * 0.72 + Math.sin(performance.now() / 300 + i) * 6;
+          const sy = y + 6 - i * 9 - ((performance.now() / 60) % 12);
+          c.beginPath(); c.arc(sx, sy, 6 + i * 2.4, 0, 7); c.fill();
+        }
+      }
+    };
+    drawCar(brImgRival, brR, deckY + 62, 168);
+    drawCar(brImgPlayer, brP, deckY + 106, 176);
+    /* span progress strip */
+    if (bridgeRun) {
+      c.fillStyle = 'rgba(4,10,22,0.65)'; c.fillRect(0, 0, W, 22);
+      c.fillStyle = 'rgba(64,190,255,0.9)';
+      c.fillRect(0, 20, W * brClamp(((pD + rD) / 2) / BR_SPAN_M, 0, 1), 2);
+      c.fillStyle = '#cfe9ff'; c.font = '600 12px "Bebas Neue", sans-serif'; c.textAlign = 'left';
+      c.fillText(`SPAN ${bridgeRun.span} / 5 · YOU ${Math.round(pD)}m · RIVAL ${Math.round(rD)}m · ${Math.round(BR_SPAN_M)}m`, 10, 15);
+    }
+  }
+  bridgeStartBtn.addEventListener('click', () => {
+    if (!bridgeRun || bridgeRun.phase !== 'intro') return;
+    if (performance.now() - bridgeRun.introAt < 2000) return; /* minimum-view lock */
+    Kit.click();
+    brStartSpan();
+  });
+  const brGasOn = e => { e.preventDefault(); brGasHeld = true; bridgeGasBtn.classList.add('held'); };
+  const brGasOff = () => { brGasHeld = false; bridgeGasBtn.classList.remove('held'); };
+  bridgeGasBtn.addEventListener('pointerdown', brGasOn);
+  bridgeGasBtn.addEventListener('pointerup', brGasOff);
+  bridgeGasBtn.addEventListener('pointerleave', brGasOff);
+  bridgeGasBtn.addEventListener('pointercancel', brGasOff);
+  bridgeShiftBtn.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    if (!bridgeRun || bridgeRun.phase !== 'race' || !brP || !brP.launched) return;
+    const q = brShiftCar(brP);
+    if (!q) return;
+    if (q === 'perfect') { brFlash('PERFECT SHIFT!', 'blue'); Kit.peg(); }
+    else if (q === 'good') { brFlash('GOOD SHIFT', ''); Kit.thunk(); }
+    else if (q === 'early') { brFlash('EARLY — BOGGED', 'red'); Kit.thunk(); }
+    else { brFlash('LATE SHIFT!', 'red'); Kit.thunk(); }
+  });
+  bridgePitBtn.addEventListener('click', () => {
+    if (!bridgeRun || bridgeRun.phase !== 'choice') return;
+    brCollect(bridgeRun.cur, false);
+  });
+  bridgeRaceBtn.addEventListener('click', () => {
+    if (!bridgeRun || bridgeRun.phase !== 'choice') return;
+    bridgeRun.span = bridgeRun.nextSpan;
+    Kit.click();
+    brStartSpan();
+  });
+
   /* ---------- BONUS WHEEL (ported from Pearl's Paws, 2026-11-22) ----------
      Alongside the Dice Roll bonus, replaces nothing: when the dice bonus
      would open, cfg.wheelShare of triggers open this wheel instead (see
@@ -837,7 +1302,7 @@
     leverArm.style.transition = animate ? 'transform .5s cubic-bezier(.25,1.35,.4,1)' : 'none';
     leverArm.style.transform = `translateY(${y}px)`;
   }
-  const machineBusy = () => spinning || !!bonus || wheelSpinning;
+  const machineBusy = () => spinning || !!bonus || wheelSpinning || !!bridgeRun;
   function leverFire() { if (!machineBusy()) spinBtn.click(); }
   function leverScriptedPull() {
     leverArm.style.transition = 'transform .16s ease-in';
@@ -905,6 +1370,21 @@
     kit: Kit,
     openBonus: (count, isFree) => openBonus(count || 3, !!isFree, () => setControlsEnabled(true)),
     wheel: (idx) => runBonusWheel(totalBet(), idx),
+    openBridgeRun: () => {
+      if (machineBusy()) return 'busy';
+      openBridgeRun({}, async prize => {
+        if (prize > 0) { /* credit exactly like the spin flow's bonus resolve */
+          const before = parseInt(winEl.textContent.replace(/[^0-9]/g, ''), 10) || 0;
+          await countUp(winEl, before, before + prize, Math.min(1200, 300 + prize));
+          credits += prize;
+          renderReadouts(prize);
+          save();
+        }
+        setControlsEnabled(true);
+      });
+      return 'ok';
+    },
+    bridgeState: () => window.__bridgeRunState(),
     getState: () => ({ credits, bet: betSel, betPerLine: lineBet(), maxBet: unlockedMax(), peak, spinning, bonus: !!bonus, wheelArmed: !!wheelArmed, wheelSpinning, lastBonusPaid, stops: stops.slice() })
   };
   soundStateEl.textContent = soundOn ? 'ON' : 'OFF';

@@ -1,5 +1,5 @@
 /* Hustle City Slots — Midnight Skyline service worker. (c) 2026 J-Dawgs Industries. */
-const CACHE = 'hc-slots-skyline-v2-15';
+const CACHE = 'hc-slots-skyline-v2-16';
 const ASSETS = [
   './', './index.html', './style.css', './celeb-title.css', './game.js', './logic.js', './machines.js', './soundkit.js', './cabinet-life.js', './assets/celeb-show.mp4', './assets/celeb-title.png', './assets/fonts/bebas-neue.woff2',
   './assets/sfx/bell.mp3', './assets/sfx/win-small.mp3', './assets/sfx/win-med.mp3',
@@ -15,7 +15,8 @@ const ASSETS = [
   './assets/marquee.webp', './assets/deck-plate.webp', './assets/belly.webp', './assets/coin-tray.webp', './assets/sym-vt.webp', './assets/sym-sk.webp',
   './assets/sym-mn.webp', './assets/sym-tx.webp', './assets/sym-lm.webp',
   './assets/sym-sl.webp', './assets/sym-wd.webp', './assets/sym-sc.webp',
-  './assets/sym-x2.webp', './assets/sym-x3.webp', './assets/sym-bn.webp'
+  './assets/sym-x2.webp', './assets/sym-x3.webp', './assets/sym-bn.webp',
+  './assets/bridge-backdrop.webp', './assets/bridge-car-player.png', './assets/bridge-car-rival.png'
 ];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));

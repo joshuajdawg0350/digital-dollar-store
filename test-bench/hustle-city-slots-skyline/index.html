@@ -158,6 +158,47 @@
   </div>
 </section>
 
+<div class="bonus-backdrop" id="bridgeBackdrop"></div>
+<section class="bonus bridge" id="bridgeGame" aria-hidden="true" aria-label="Bridge Run bonus game" data-phase="intro">
+  <div class="bonus-head">
+    <img src="assets/bridge-backdrop.webp" alt="Neon bridge at night">
+    <div>
+      <h2>BRIDGE RUN</h2>
+      <p id="bridgeTriggerText">Bridge Run!</p>
+    </div>
+  </div>
+  <p class="bonus-rules" id="bridgeRules">Race the rival across <b>5 neon spans</b> — they pay <b>2× / 4× / 7× / 12× / 20×</b> your bet, and crossing all five adds a <b>+20×</b> finish bonus. <b>HOLD GAS</b> to stage your launch revs, launch on <b>GREEN</b>, and <b>SHIFT</b> in the green zone. After every span: <b>PIT</b> and bank the prize, or <b>RACE ON</b>. You have <b>2 engines</b> — a lost or blown race costs one. Spans <b>2 and 4 LOCK</b>: once reached, that prize is yours no matter what.</p>
+  <div class="bridge-hud">
+    <div class="bridge-spans" id="bridgeSpans" aria-label="Span ladder"></div>
+    <div class="bridge-meters">
+      <div class="bridge-engines" id="bridgeEngines" aria-label="Engines left"></div>
+      <div class="bridge-pot"><label>PRIZE</label><div class="led" id="bridgePrize">0</div></div>
+      <div class="bridge-pot"><label>LOCKED</label><div class="led" id="bridgeLocked">0</div></div>
+    </div>
+  </div>
+  <div class="bridge-stage">
+    <canvas id="bridgeCanvas" width="720" height="420"></canvas>
+    <div class="bridge-tree" id="bridgeTree" aria-hidden="true">
+      <span class="tl stage"></span><span class="tl amber"></span><span class="tl amber"></span><span class="tl amber"></span><span class="tl green"></span><span class="tl red"></span>
+    </div>
+    <div class="bridge-flash" id="bridgeFlash"></div>
+    <div class="bridge-bigtext" id="bridgeBigText"></div>
+  </div>
+  <div class="bridge-tachrow">
+    <div class="bridge-tach" aria-hidden="true"><div class="bridge-tach-fill" id="bridgeTachFill"></div></div>
+    <div class="bridge-read"><label>GEAR</label><div class="led" id="bridgeGear">N</div></div>
+    <div class="bridge-read"><label>MPH</label><div class="led" id="bridgeMph">0</div></div>
+  </div>
+  <div class="bonus-msg" id="bridgeMsg" aria-live="polite"></div>
+  <div class="bridge-controls">
+    <button class="btn bonus-btn bridge-start" id="bridgeStartBtn" type="button">START ENGINE</button>
+    <button class="btn bridge-pedal gas" id="bridgeGasBtn" type="button">HOLD<br>GAS</button>
+    <button class="btn bridge-pedal shift" id="bridgeShiftBtn" type="button">SHIFT</button>
+    <button class="btn bonus-btn bridge-pit" id="bridgePitBtn" type="button">PIT — BANK IT</button>
+    <button class="btn bonus-btn bridge-raceon" id="bridgeRaceBtn" type="button">RACE ON</button>
+  </div>
+</section>
+
 <div class="wheel-overlay" id="wheelOverlay" aria-hidden="true" aria-label="Bonus wheel">
   <div class="wheel-card">
     <h2 class="wheel-title">BONUS WHEEL</h2>
@@ -211,6 +252,7 @@
       <li><b>TAXI</b> pays from just 2 on a line.</li>
       <li>3+ <b>SCATTER</b> anywhere pays 2× / 8× / 40× your total bet and awards 7 / 10 / 15 <b>FREE SPINS</b> — line wins pay <b>double</b> in free spins, and free spins can retrigger.</li>
       <li>3+ <b>BONUS DICE</b> anywhere start the <b>DICE ROLL</b> bonus: the pot starts at 0 / 30 / 60 × your line bet for 3 / 4 / 5 dice. Every roll of the two dice adds its total × 3 × line bet to the pot — but roll a <b>7</b> and the pot <b>busts</b> to zero. After any safe roll you choose: <b>BANK IT</b> and keep the pot, or <b>ROLL AGAIN</b> and push your luck. Half the time the <b>BONUS WHEEL</b> opens instead: one spin, 12 wedges, every wedge pays × your total bet — MINI 4× · MINOR 9× · MAJOR 15× · GRAND 25×.</li>
+      <li><b>BRIDGE RUN</b> (bonus pool game): race the rival across 5 neon spans paying 2× / 4× / 7× / 12× / 20× your total bet, plus a +20× finish bonus for crossing all five. Hold GAS to stage your launch, launch on green, and shift in the green zone — hold it in the red too long and the motor blows. After each span you may PIT and bank the prize or RACE ON; a lost or blown race costs one of your 2 engines, and spans 2 and 4 lock their prize in for good.</li>
       <li>Credits are saved on this device. Run out of credits — or drop below your bet — and a <b>NEW GAME</b> button appears: it starts you over with 1,000 fresh credits (and resets the max-bet ladder).</li>
     </ul>
     <p class="sheet-legal">Play credits only — no cash value, no prizes. © 2026 J-Dawgs Industries</p>

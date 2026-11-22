@@ -917,8 +917,8 @@ body {
   100% { border-color: #ffd76a; box-shadow: 0 0 14px rgba(255, 215, 106, .8); }
 }
 .celeb-kick {
-  font-size: 15px; font-weight: 800; letter-spacing: 4px; color: #ffd76a;
-  text-shadow: 0 0 10px rgba(255, 215, 106, .8);
+  font-size: 15px; font-weight: 800; letter-spacing: 4px; color: #eef3f9;
+  text-shadow: 0 0 10px rgba(255, 70, 85, .75);
 }
 .celeb-title {
   margin-top: 8px;
@@ -1432,7 +1432,7 @@ body {
   color: #ffffff; font-size: 16.5px;
   text-shadow: 0 0 12px rgba(64, 170, 255, .6), 0 1px 2px rgba(0, 0, 0, .9);
 }
-.celeb-kick { color: #ffe9a8; text-shadow: 0 0 12px rgba(255, 200, 60, .95), 0 1px 2px rgba(0, 0, 0, .9); }
+.celeb-kick { color: #eef3f9; text-shadow: 0 0 12px rgba(255, 70, 85, .95), 0 1px 2px rgba(0, 0, 0, .9); }
 .celeb-title { color: #ffffff; text-shadow: 0 0 22px rgba(64, 170, 255, 1), 0 2px 0 #06263f, 0 2px 6px rgba(0, 0, 0, .9); }
 .celeb-sub { color: #eaf6ff; }
 .celeb-tap { color: #cfe9ff; }
@@ -1605,6 +1605,142 @@ body, button, input, select, textarea,
   background: linear-gradient(180deg, #d7dee7 0%, #79879a 45%, #39424f 100%);
   box-shadow: 0 2px 4px rgba(0, 0, 0, .60), inset 0 1px 0 rgba(255, 255, 255, .70);
 }
+
+/* ================= BRIDGE RUN bonus (2026-11-22) ================= */
+#bridgeGame {
+  width: min(96vw, 720px);
+  padding: 16px 14px calc(14px + env(safe-area-inset-bottom));
+}
+#bridgeGame .bonus-head img { width: 64px; height: 44px; object-fit: cover; border-radius: 8px; }
+#bridgeRules { display: none; }
+#bridgeGame[data-phase="intro"] #bridgeRules { display: block; }
+.bridge-hud { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.bridge-spans { display: flex; gap: 5px; flex-wrap: wrap; }
+.br-span {
+  flex: 1 1 0; min-width: 58px; text-align: center;
+  font-family: "Bebas Neue", sans-serif; font-size: 11px; letter-spacing: .08em;
+  color: #8fa8c4; background: rgba(6, 14, 28, .8);
+  border: 1px solid rgba(90, 115, 150, .4); border-radius: 8px;
+  padding: 4px 2px 3px; line-height: 1.15;
+}
+.br-span b { display: block; font-size: 17px; color: #cfe5ff; }
+.br-span i { display: block; font-style: normal; font-size: 8.5px; letter-spacing: .14em; color: #5f748e; }
+.br-span.done { border-color: rgba(64, 190, 255, .65); color: #bfe2ff; }
+.br-span.done b { color: #6fc2ff; }
+.br-span.current { border-color: #6fc2ff; box-shadow: 0 0 10px rgba(46, 155, 255, .55), inset 0 0 8px rgba(46, 155, 255, .25); color: #eaf6ff; }
+.br-span.locked { border-color: #d7dee7; }
+.br-span.locked i { color: #eef3f9; }
+.bridge-meters { display: flex; align-items: stretch; gap: 8px; }
+.bridge-engines { display: flex; gap: 5px; align-items: center; flex: 1; }
+.br-engine {
+  font-family: "Bebas Neue", sans-serif; font-size: 12px; letter-spacing: .1em;
+  color: #0a1420; background: linear-gradient(180deg, #eef3f9, #9fb2c8);
+  border-radius: 6px; padding: 5px 8px 3px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.8), 0 2px 5px rgba(0,0,0,.5);
+}
+.br-engine.lost { background: #2a1418; color: #ff5a68; text-decoration: line-through; box-shadow: none; }
+.bridge-pot { text-align: right; }
+.bridge-pot label { display: block; font-size: 9.5px; letter-spacing: .18em; color: #8fa8c4; }
+.bridge-pot .led { font-size: 22px; }
+.bridge-stage {
+  position: relative; margin-top: 10px;
+  border-radius: 12px; overflow: hidden;
+  border: 1px solid #59667a;
+  box-shadow: 0 0 0 2px #05070a, 0 0 22px rgba(46, 155, 255, .35), inset 0 0 30px rgba(0,0,0,.6);
+  background: #040814;
+}
+#bridgeCanvas { display: block; width: 100%; height: auto; }
+.bridge-tree {
+  position: absolute; top: 8px; left: 8px;
+  display: flex; flex-direction: column; gap: 4px;
+  background: rgba(2, 5, 12, .72); border: 1px solid rgba(90, 115, 150, .5);
+  border-radius: 9px; padding: 6px 5px;
+}
+.bridge-tree .tl {
+  width: 15px; height: 15px; border-radius: 50%;
+  background: #141c2a; border: 1px solid rgba(140, 165, 195, .35);
+}
+.bridge-tree .tl.stage.on { background: #7fd4ff; box-shadow: 0 0 10px #7fd4ff; }
+.bridge-tree .tl.amber.on { background: #ff9a3c; box-shadow: 0 0 10px #ff9a3c; }
+.bridge-tree .tl.green.on { background: #2eff7a; box-shadow: 0 0 13px #2eff7a; }
+.bridge-tree .tl.red.on { background: #ff2a3c; box-shadow: 0 0 13px #ff2a3c; }
+.bridge-flash {
+  position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+  font-family: "Bebas Neue", sans-serif; font-size: 21px; letter-spacing: .1em;
+  color: #eaf6ff; text-shadow: 0 0 12px rgba(46, 155, 255, .95), 0 2px 3px rgba(0,0,0,.9);
+  opacity: 0; transition: opacity .18s ease; pointer-events: none; white-space: nowrap;
+}
+.bridge-flash.show { opacity: 1; }
+.bridge-flash.blue { color: #6fc2ff; }
+.bridge-flash.red { color: #ff5a68; text-shadow: 0 0 12px rgba(255, 42, 60, .9), 0 2px 3px rgba(0,0,0,.9); }
+.bridge-bigtext {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-family: "Bebas Neue", sans-serif; font-size: clamp(34px, 9vw, 58px); letter-spacing: .08em;
+  color: #eaf6ff; text-shadow: 0 0 22px rgba(46, 155, 255, .95), 0 3px 6px rgba(0,0,0,.95);
+  opacity: 0; transition: opacity .2s ease; pointer-events: none; text-align: center; padding: 0 10px;
+}
+.bridge-bigtext.show { opacity: 1; }
+.bridge-bigtext.red { color: #ff8a94; text-shadow: 0 0 22px rgba(255, 42, 60, .9), 0 3px 6px rgba(0,0,0,.95); }
+.bridge-bigtext.green { color: #8affb0; text-shadow: 0 0 22px rgba(46, 255, 122, .85), 0 3px 6px rgba(0,0,0,.95); }
+.bridge-tachrow { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.bridge-tach {
+  position: relative; flex: 1; height: 20px; border-radius: 7px; overflow: hidden;
+  border: 1px solid rgba(90, 115, 150, .55);
+  background: linear-gradient(90deg, #0d1626 0%, #0d1626 84%, rgba(46, 255, 122, .34) 85.6%, rgba(46, 255, 122, .34) 93.7%, rgba(255, 42, 60, .45) 93.8%, rgba(255, 42, 60, .45) 100%);
+}
+.bridge-tach-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(180deg, #bfe2ff, #2e9bff 60%, #1663b8);
+  box-shadow: 0 0 12px rgba(46, 155, 255, .8);
+  transition: none;
+}
+.bridge-tach-fill.red { background: linear-gradient(180deg, #ffc2c8, #ff2a3c 60%, #a3001e); box-shadow: 0 0 12px rgba(255, 42, 60, .85); }
+.bridge-read { text-align: center; min-width: 52px; }
+.bridge-read label { display: block; font-size: 9.5px; letter-spacing: .18em; color: #8fa8c4; }
+.bridge-read .led { font-size: 21px; }
+.bridge-controls { margin-top: 12px; display: flex; gap: 10px; }
+.bridge-controls .btn { touch-action: none; user-select: none; -webkit-user-select: none; }
+.bridge-start { flex: 1; }
+.bridge-pit { flex: 1; }
+.bridge-raceon { flex: 1.25; }
+/* the base .bonus-btn carries no paint of its own (the dice buttons get
+   theirs from .roll/.bank) — Bridge Run's buttons take the same family:
+   blue for go, bank-green for PIT */
+.bridge-start, .bridge-raceon {
+  color: #03101f;
+  background: linear-gradient(180deg, var(--blue-hot), var(--blue) 60%, var(--blue-deep));
+  box-shadow: 0 0 18px rgba(46, 155, 255, .65), inset 0 1px 0 rgba(255, 255, 255, .65);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .35);
+}
+.bridge-pit {
+  color: #062b16;
+  background: linear-gradient(180deg, #c9ffe0 0%, #5eeaa0 45%, #1fae62 100%);
+  box-shadow: 0 0 16px rgba(46, 255, 143, .45), inset 0 1px 0 rgba(255, 255, 255, .8);
+}
+.bridge-start:active:not(:disabled), .bridge-raceon:active, .bridge-pit:active { transform: translateY(2px); }
+.bridge-pedal {
+  border-radius: 14px; border: 1px solid #59667a;
+  font-family: "Bebas Neue", sans-serif; letter-spacing: .1em; color: #eaf6ff;
+  box-shadow: 0 0 0 2px #05070a, 0 6px 14px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.25);
+  cursor: pointer; line-height: 1.05;
+}
+.bridge-pedal.gas {
+  flex: 1.5; min-height: 76px; font-size: 24px;
+  background: linear-gradient(180deg, #2e9bff, #1663b8 55%, #0a2c52);
+}
+.bridge-pedal.gas.held { background: linear-gradient(180deg, #6fc2ff, #2e9bff 55%, #1663b8); transform: translateY(2px); }
+.bridge-pedal.shift {
+  flex: 1; min-height: 76px; font-size: 24px;
+  background: linear-gradient(180deg, #d7dee7, #79879a 55%, #39424f);
+  color: #0a1420; text-shadow: 0 1px 0 rgba(255,255,255,.5);
+}
+.bridge-pedal:active { transform: translateY(2px); }
+/* phase-driven controls: only the buttons for the moment show */
+#bridgeGame .bridge-pedal, #bridgeGame .bridge-pit, #bridgeGame .bridge-raceon, #bridgeGame .bridge-start { display: none; }
+#bridgeGame[data-phase="intro"] .bridge-start { display: block; }
+#bridgeGame[data-phase="tree"] .bridge-pedal, #bridgeGame[data-phase="race"] .bridge-pedal, #bridgeGame[data-phase="settle"] .bridge-pedal { display: block; }
+#bridgeGame[data-phase="choice"] .bridge-pit, #bridgeGame[data-phase="choice"] .bridge-raceon { display: block; }
+#bridgeGame[data-phase="tree"] .bridge-controls, #bridgeGame[data-phase="race"] .bridge-controls { display: flex; }
 
 /* ---------- BONUS WHEEL (ported from Pearl's Paws, 2026-11-22) ----------
    Midnight deco dress: deep blue/black wedges, a machined chrome rim
