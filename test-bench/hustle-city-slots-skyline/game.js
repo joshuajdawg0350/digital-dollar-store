@@ -98,68 +98,23 @@
   const sTick = () => Kit.click();
 
   /* ---------- mechanical reel sound (Joshua, 2026-11-21: "more of a
-     rolling noise", not a digital beep) ----------
-     A shared white-noise buffer is the raw stock. While a reel rolls, a
-     tracker follows the reel's own easing curve (the exact cubic-bezier
-     the CSS transition runs) and fires one filtered-noise pawl click per
-     symbol cell that passes — so the clatter accelerates with spin-up,
-     rolls steady at cruise, ticks down as the reel brakes, and cuts dead
-     the moment the reel settles (including a STOP-button halt). Each
-     landing is a lowpassed noise thunk with a soft low body tone — a
-     mechanical clunk. */
-  let noiseBuf = null, masterGain = null;
-  function getNoiseBuf(a) {
-    if (noiseBuf) return noiseBuf;
-    const len = a.sampleRate;
-    const buf = a.createBuffer(1, len, a.sampleRate);
-    const d = buf.getChannelData(0);
-    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
-    noiseBuf = buf;
-    return buf;
-  }
-  function master(a) {
-    if (!masterGain) { masterGain = a.createGain(); masterGain.gain.value = 0.9; masterGain.connect(a.destination); }
-    return masterGain;
-  }
+     rolling noise", not a digital beep — and after his ear test killed
+     the modeled kit, every part of it is now a REAL recording) ----------
+     The shared kit's reel-roll loop (an actual slot machine's reels)
+     runs under the spin, its rate/level driven by the reels' own speed
+     from the motion loop. Per symbol cell that passes, one real
+     prize-wheel peg click fires (rate-jittered like a real mechanism) —
+     so the clatter accelerates with spin-up, rolls steady at cruise,
+     ticks down as the reel brakes, and cuts the moment the last reel
+     settles (a STOP-button brake included). Each landing is the kit's
+     real mechanical clunk. No noise buffers, no oscillators. */
   function clatterBurst(intensity) {
     if (!soundOn) return;
-    const a = ac(); if (!a) return;
-    const src = a.createBufferSource();
-    src.buffer = getNoiseBuf(a);
-    src.playbackRate.value = 0.85 + Math.random() * 0.4;
-    const bp = a.createBiquadFilter();
-    bp.type = 'bandpass';
-    bp.frequency.value = 1250 + intensity * 950 + Math.random() * 250;
-    bp.Q.value = 1.1;
-    const g = a.createGain();
-    const t = a.currentTime;
-    const peak = 0.045 + intensity * 0.07;
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(peak, t + 0.006);
-    g.gain.exponentialRampToValueAtTime(0.0008, t + 0.045);
-    src.connect(bp); bp.connect(g); g.connect(master(a));
-    src.start(t, Math.random() * 0.4, 0.07);
+    Kit.play('peg', { group: 'peg', gain: 0.25 + 0.55 * Math.min(1, intensity || 0), rate: 0.92 + Math.random() * 0.18 });
   }
   function landThunk() {
     if (!soundOn) return;
-    const a = ac(); if (!a) return;
-    const t = a.currentTime;
-    const src = a.createBufferSource();
-    src.buffer = getNoiseBuf(a);
-    src.playbackRate.value = 0.5;
-    const lp = a.createBiquadFilter();
-    lp.type = 'lowpass'; lp.frequency.value = 260;
-    const g = a.createGain();
-    g.gain.setValueAtTime(0.22, t);
-    g.gain.exponentialRampToValueAtTime(0.0008, t + 0.11);
-    src.connect(lp); lp.connect(g); g.connect(master(a));
-    src.start(t, Math.random() * 0.4, 0.14);
-    const o = a.createOscillator(), og = a.createGain();
-    o.type = 'sine'; o.frequency.value = 95;
-    og.gain.setValueAtTime(0.09, t);
-    og.gain.exponentialRampToValueAtTime(0.0008, t + 0.09);
-    o.connect(og); og.connect(master(a));
-    o.start(t); o.stop(t + 0.1);
+    Kit.thunk();
   }
   /* (win/dice/bust sounds moved to the shared kit — see Kit.* call sites) */
 
@@ -186,9 +141,9 @@
   }
 
   /* STOP control (Joshua, 2026-11-21): while the reels roll, SPIN reads
-     STOP and stays live; pressing it settles every reel immediately onto
-     its dealt stop (same stops, same evaluation, same payouts — just no
-     waiting). reelStoppers[r] is the in-flight reel's fast-settle handle. */
+     STOP and stays live; pressing it brakes every reel fast onto its
+     dealt stop (same stops, same evaluation, same payouts — just no
+     waiting). reelStoppers[r] is the in-flight reel's brake handle. */
   const reelStoppers = [];
   let reelsRolling = false;
   function setStopMode(on) {
@@ -203,89 +158,113 @@
     for (const s of reelStoppers) if (typeof s === 'function') s();
   }
 
-  /* Reel motion: spin-up acceleration, motion blur at speed, staggered stops
-     (durations rise left to right), and a settle bounce — the track overshoots
-     a few px past the stop, then recoils onto it. Pure presentation: the dealt
-     stops are whatever the engine rolled. The rolling clatter is driven by
-     the track's real computed position: one pawl click per cell passing. */
+  /* Reel motion: the shared real-machine physics from logic.js
+     (createReelMotion — identical on all three cabinets): spin-UP from
+     rest on a smoothstep torque curve (~0.42s), a full-speed cruise with
+     motion blur, a firm brake, staggered stops left to right, and a
+     spring settle that overshoots a few px past the stop and recoils
+     ONCE onto it. Pure presentation: the dealt stops are whatever the
+     engine rolled. The rolling clatter is driven by the track's real
+     position: one pawl click per cell passing, rising with spin-up,
+     rolling at cruise, ticking down as the reel brakes; landThunk()
+     fires at the true landing moment. STOP brakes the reel fast into
+     the same settle on the same dealt stop. */
+  /* Peak reel speed — Joshua, 2026-11-21: "spin the wheels 20 times
+     faster." The old build's CSS-bezier launch peaked at ~2,446 px/s at
+     a 59px cell (41.5 symbols/sec), so every reel now cruises at 20x
+     that: 829.2 symbols/sec. Distance grows with the speed — the spin
+     keeps its ~2-2.5s shape, the strip just travels ~20x farther. */
+  const PEAK_SYM_PER_SEC = 829.2;
   function spinReel(r, finalStops, duration) {
     return new Promise(resolve => {
       const reel = reelsEl[r], H = cellH(r), strip = cfg.strips[r];
       const grid = core.windowForStops(cfg.strips, finalStops);
-      const seq = [];
-      seq.push(...core.windowForStops(cfg.strips, stops)[r]);
-      const extra = 14 + r * 5;
-      let idx = Math.floor(Math.random() * strip.length);
-      for (let i = 0; i < extra; i++) { seq.push(strip[idx % strip.length]); idx++; }
-      seq.push(...grid[r]);
+
+      const len = strip.length;
+      const vmax = PEAK_SYM_PER_SEC * H;   /* this machine's 20x peak, px/s */
+      let N = Math.max(24, Math.round(core.reelDistance(vmax, H, duration) / H));
+      N += ((finalStops[r] - stops[r] - N) % len + len) % len;  /* land exactly on the dealt stop */
+      const D = N * H;                     /* total travel, px */
+      /* Recycling strip renderer: at 20x speed a spin travels hundreds
+         of cells — far past mobile layer limits if built as one tall
+         track. Only K cells live in the DOM; their symbols rotate as the
+         strip passes, exactly like a real reel band looping its drum.
+         The walk is the machine's own strip, continuous from the resting
+         window to the dealt window (guard cell first, for the settle). */
+      const K = 8;
+      const seq = new Array(N + K + 2);
+      for (let i = 0; i < seq.length; i++) seq[i] = strip[(((stops[r] + i - 1) % len) + len) % len];
       const track = document.createElement('div');
       track.className = 'track';
-      track.innerHTML = seq.map(s => cellHTML(s, H)).join('');
+      track.innerHTML = seq.slice(0, K).map(s => cellHTML(s, H)).join('');
       reel.innerHTML = '';
       reel.appendChild(track);
-      const target = -(seq.length - 3) * H;
-      const overshoot = target - Math.max(5, H * 0.09);
-      track.style.transform = 'translateY(0px)';
-      void track.offsetHeight;
-      reel.classList.add('blur');
-      track.style.transition = `transform ${duration}ms cubic-bezier(.28,.62,.32,1)`;
-      track.style.transform = `translateY(${overshoot}px)`;
-      let finished = false;
-      /* Rolling-noise tracker: the reel's CSS transition follows
-         cubic-bezier(.28,.62,.32,1) from 0 to `overshoot` over `duration`,
-         so the position curve is known analytically — track it on a timer
-         (NO computed-style reads: those forced a layout flush per frame
-         and thrashed the main thread) and fire one pawl click per cell
-         that passes. The clatter therefore rises with spin-up, rolls at
-         cruise, and ticks down as the reel brakes. */
-      const bezierYforX = (x, x1, y1, x2, y2) => {
-        const cx = t => 3 * (1 - t) * (1 - t) * t * x1 + 3 * (1 - t) * t * t * x2 + t * t * t;
-        const cy = t => 3 * (1 - t) * (1 - t) * t * y1 + 3 * (1 - t) * t * t * y2 + t * t * t;
-        const dx = t => 3 * (1 - t) * (1 - t) * x1 + 6 * (1 - t) * t * (x2 - x1) + 3 * t * t * (1 - x2);
-        let t = x;
-        for (let i = 0; i < 6; i++) {
-          const err = cx(t) - x;
-          if (Math.abs(err) < 1e-4) break;
-          const d = dx(t);
-          if (Math.abs(d) < 1e-4) break;
-          t -= err / d;
-        }
-        return cy(t);
-      };
-      const rollT0 = performance.now();
-      let lastY = 0, acc = 0, lastTickT = rollT0;
-      const rollTimer = setInterval(() => {
+      const cellDivs = [...track.children];
+      const cellImgs = cellDivs.map(c => c.querySelector('img'));
+      const shown = seq.slice(0, K);
+      let shownBase = 0;
+      const motion = core.createReelMotion(D, H, duration, vmax);
+      let finished = false, stopTimer = null;
+      let last = performance.now(), lastCell = 0, lastTick = 0, lastBlur = -1;
+      const finish = () => {
         if (finished) return;
-        const now = performance.now();
-        const p = Math.min(1, (now - rollT0) / duration);
-        const y = Math.abs(overshoot) * bezierYforX(p, .28, .62, .32, 1);
-        const dy = Math.abs(y - lastY); lastY = y;
-        acc += dy;
-        const dt = Math.max(1, now - lastTickT); lastTickT = now;
-        const speed = dy / dt; /* px per ms */
-        let guard = 0;
-        while (acc >= H && guard++ < 4) { acc -= H; clatterBurst(Math.min(1, speed / 1.7)); }
-        if (acc > H * 4) acc = H * 4;
-      }, 30);
-      const finalize = () => {
-        track.style.transition = 'none';
+        finished = true;
+        clearTimeout(hardStop);
+        if (stopTimer) clearTimeout(stopTimer);
+        reelStoppers[r] = null;
+        track.style.filter = '';
         track.innerHTML = grid[r].map(s => cellHTML(s, H)).join('');
         track.style.transform = 'translateY(0px)';
         landThunk();
         resolve();
       };
-      const settle = immediate => {
-        if (finished) return;
-        finished = true;
-        clearInterval(rollTimer);
-        reel.classList.remove('blur');
-        track.style.transition = immediate ? 'transform 90ms ease-out' : 'transform 130ms cubic-bezier(.2,.9,.3,1.4)';
-        track.style.transform = `translateY(${target}px)`;
-        setTimeout(finalize, immediate ? 100 : 140);
+      /* STOP: brake this reel (staggered a hair by reel order) — the
+         motion lands it on the same dealt stop through the same settle;
+         the timer is only a failsafe if the brake ever failed to land. */
+      reelStoppers[r] = () => {
+        if (finished || stopTimer) return;
+        motion.brake(r * 0.05);
+        stopTimer = setTimeout(finish, 1400);
       };
-      reelStoppers[r] = () => settle(true);
-      track.addEventListener('transitionend', () => settle(false), { once: true });
-      setTimeout(() => settle(false), duration + 700);
+      const hardStop = setTimeout(finish, duration + 1600);
+      function frame(now) {
+        if (finished) return;
+        const dt = Math.min(0.25, Math.max(0, (now - last) / 1000));
+        last = now;
+        const { p, v, done } = motion.step(dt);
+        if (done) { finish(); return; }
+
+        const base = Math.max(0, Math.min(N, Math.floor(p / H)));
+        if (base !== shownBase) {
+          shownBase = base;
+          for (let j = 0; j < K; j++) {
+            const code = seq[base + j];
+            if (shown[j] !== code) {
+              shown[j] = code;
+              cellDivs[j].dataset.sym = code;
+              cellImgs[j].src = ART[code];
+              cellImgs[j].alt = NAMES[code];
+            }
+          }
+        }
+        track.style.transform = `translateY(${-(p - base * H) - H}px)`;
+        /* photographic, speed-proportional blur: the smear grows with
+           the distance travelled per frame, capped so the strip still
+           reads as symbols in motion, never a digital smear */
+        const blurPx = Math.min(14, (v / 60) * 0.3);
+        if (Math.abs(blurPx - lastBlur) >= 0.75 || (blurPx < 0.05 && lastBlur >= 0.05)) {
+          lastBlur = blurPx;
+          track.style.filter = blurPx >= 0.05 ? `blur(${blurPx.toFixed(1)}px) brightness(1.07) saturate(1.12)` : '';
+        }
+        const cell = Math.floor(p / H);
+        if (cell !== lastCell) {
+          lastCell = cell;
+          if (now - lastTick >= 32) { clatterBurst(Math.min(1, v / motion.vmax)); lastTick = now; }
+        }
+        Kit.rollSpeed(Math.min(1, v / motion.vmax)); /* the real-reels bed tracks the fastest motion */
+        requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
     });
   }
 
@@ -492,13 +471,16 @@
       }
       credits -= totalBet();
       renderReadouts();
+      Kit.lever(); /* the real lever pull that starts a paid spin */
     }
     newGameBtn.classList.remove('on');
     msgEl.textContent = isFree ? `Free spin — ${freeSpinsLeft} left after this one. Wins pay double!` : 'Good luck!';
     const finalStops = core.randomStops(Math.random, cfg.strips);
-    const durations = [1100, 1360, 1620, 1880, 2140];
+    const durations = [1700, 1900, 2100, 2300, 2500]; /* staggered stops, reel 1 first, ~200ms apart */
     setStopMode(true);
+    if (soundOn) Kit.rollStart();
     await Promise.all(finalStops.map((_, r) => spinReel(r, finalStops, durations[r])));
+    Kit.rollStop(false);
     setStopMode(false);
     spinBtn.disabled = true; /* payout / bonus phase: button rests until controls return */
     reelStoppers.length = 0;
