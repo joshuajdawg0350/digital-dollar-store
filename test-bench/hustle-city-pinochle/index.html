@@ -19,7 +19,7 @@
   --cyan:#39c2ff; --green:#3ddc84; --red:#ff5d5d; --gold:#ffd34d;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;padding:0}
+html,body{margin:0;padding:0;overscroll-behavior:none}
 body{
   background:var(--bg);color:var(--ink);
   font-family:"Archivo",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
@@ -55,7 +55,7 @@ button{font-family:inherit;touch-action:manipulation;cursor:pointer}
 .stat .val.sm{font-size:14.5px}
 
 /* ---------- main column ---------- */
-.pn-main{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:5px;padding:6px 10px 300px;max-width:560px;width:100%;margin:0 auto}
+.pn-main{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:5px;padding:6px 10px 300px;max-width:560px;width:100%;margin:0 auto;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .seat{display:flex;align-items:center;gap:8px;min-width:0}
 .seat .who{font-weight:700;letter-spacing:.13em;font-size:12.5px;text-transform:uppercase;color:var(--mut);white-space:nowrap}
 .seat .who b{color:var(--ink)}
@@ -135,7 +135,13 @@ select.bidsel{flex:1;background:var(--panel2);color:var(--ink);border:1px solid 
 /* ---------- your hand (pull-up hand sheet) ---------- */
 #handsheet{position:fixed;left:50%;transform:translateX(-50%);bottom:54px;width:min(560px,100%);z-index:30;
   background:linear-gradient(180deg,#131c2c,#070b13);border:1.5px solid rgba(150,180,220,.4);border-bottom:none;border-radius:16px 16px 0 0;
-  box-shadow:0 -12px 30px rgba(0,0,0,.6);padding:0 10px 7px;transition:transform .25s cubic-bezier(.3,.8,.3,1)}
+  box-shadow:0 -12px 30px rgba(0,0,0,.6);padding:0 10px 7px;transition:transform .25s cubic-bezier(.3,.8,.3,1);
+  touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+#handsheet img{-webkit-user-drag:none}
+#hs-action{display:flex;align-items:center;gap:9px;padding:5px 2px 1px}
+#hs-action .hsact-lab{font-weight:800;font-size:13px;letter-spacing:.05em;color:var(--mut);white-space:nowrap}
+#hs-action .hsact-lab b{color:var(--ink)}
+#hs-action .btn{flex:1;min-height:46px}
 #handsheet .hshandle{height:27px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:grab;touch-action:none;padding-top:4px}
 #handsheet .hshandle .bar{width:52px;height:5px;border-radius:99px;background:#5f7189}
 #handsheet .hshandle .hlab{font-size:10px;font-weight:800;letter-spacing:.22em;color:var(--dim);text-transform:uppercase}
@@ -149,7 +155,11 @@ select.bidsel{flex:1;background:var(--panel2);color:var(--ink);border:1px solid 
 #handsheet.hs1 .hcard:not(:first-child){margin-left:-13px}
 #handsheet.hs2 .hcard:not(:first-child){margin-left:-5px}
 .hcard:first-child{margin-left:0}
-.hcard img{width:100%;height:100%;display:block;border-radius:8px}
+.hcard img{width:100%;height:100%;display:block;border-radius:8px;pointer-events:none}
+/* 24-card pass hand: slightly smaller cards so 12 fit a row (2 rows, not 3)
+   while every card's center stays exposed for taps */
+#handsheet .myhand.many .hcard{width:55px;height:77px}
+#handsheet.hs0 .myhand.many .hcard:not(:first-child){margin-left:-27px}
 .hcard.legal{transform:translateY(-8px);border-color:var(--cyan);box-shadow:0 0 0 1.5px rgba(57,194,255,.55),0 10px 18px rgba(0,0,0,.5)}
 .hcard.illegal{opacity:.45}
 .hcard.sel{transform:translateY(-15px);border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,211,77,.7),0 12px 20px rgba(0,0,0,.55)}
@@ -161,14 +171,15 @@ select.bidsel{flex:1;background:var(--panel2);color:var(--ink);border:1px solid 
 /* ---------- drag sheet (score / meld / rules) ---------- */
 #sheet{position:fixed;left:50%;transform:translate(-50%,calc(100% - 54px));bottom:0;width:min(560px,100%);height:80dvh;z-index:40;
   background:linear-gradient(180deg,#131c2c,#070b13);border:1.5px solid rgba(150,180,220,.4);border-bottom:none;border-radius:16px 16px 0 0;
-  box-shadow:0 -12px 34px rgba(0,0,0,.6);display:flex;flex-direction:column;transition:transform .28s cubic-bezier(.3,.8,.3,1)}
+  box-shadow:0 -12px 34px rgba(0,0,0,.6);display:flex;flex-direction:column;transition:transform .28s cubic-bezier(.3,.8,.3,1);
+  touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 #sheet .handle{flex:0 0 auto;height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:grab;touch-action:none;padding-top:6px}
 #sheet .handle .bar{width:52px;height:5px;border-radius:99px;background:#5f7189}
 #sheet .handle .hlab{font-size:11px;font-weight:800;letter-spacing:.22em;color:var(--dim);text-transform:uppercase}
 #sheet .tabs{flex:0 0 auto;display:flex;gap:6px;padding:0 12px 8px}
 #sheet .tabs .btn{min-height:40px;padding:6px 10px;font-size:14px;flex:1}
 #sheet .tabs .btn.on{border-color:var(--cyan);color:#57ccff}
-#sheet .sbody{flex:1 1 auto;overflow-y:auto;padding:2px 14px 18px;font-size:14.5px;color:#dbe6f4;line-height:1.5}
+#sheet .sbody{flex:1 1 auto;overflow-y:auto;padding:2px 14px 18px;font-size:14.5px;color:#dbe6f4;line-height:1.5;touch-action:pan-y;overscroll-behavior:contain}
 #sheet .sbody h3{font-family:"Bebas Neue","Archivo",sans-serif;font-weight:400;letter-spacing:.05em;font-size:20px;margin:10px 0 4px;color:#fff}
 #sheet .sbody table{width:100%;border-collapse:collapse;font-size:13.5px;margin:4px 0 10px}
 #sheet .sbody td,#sheet .sbody th{border-bottom:1px solid var(--line);padding:4px 6px;text-align:left}
@@ -194,6 +205,13 @@ select.bidsel{flex:1;background:var(--panel2);color:var(--ink);border:1px solid 
 }
 @media (max-width:380px){
   #handsheet.hs0 .hcard:not(:first-child){margin-left:-25px}
+}
+@media (max-height:780px){
+  #handsheet .myhand.many .hcard{width:50px;height:70px}
+  #handsheet.hs0 .myhand.many .hcard:not(:first-child){margin-left:-24px}
+}
+@media (max-height:700px){
+  .pn-main:has(#panel:not(:empty)) .tablewrap{height:min(160px,20dvh);min-height:64px}
 }
 </style>
 </head>
@@ -231,6 +249,7 @@ select.bidsel{flex:1;background:var(--panel2);color:var(--ink);border:1px solid 
 <div id="handsheet" class="hs0" aria-label="Your hand">
   <div class="hshandle" id="hs-handle"><div class="bar"></div><div class="hlab">Your hand — drag</div></div>
   <div class="seat" id="seat-0"><span class="avatar av-you">♠</span><span class="who"><b>You</b></span><span class="pchip" id="chip-0">—</span></div>
+  <div id="hs-action" class="hidden"></div>
   <div class="myhand" id="myhand"></div>
 </div>
 
@@ -623,10 +642,32 @@ function render(){
     slot.className = "slot " + ["s-bottom","s-left","s-top","s-right"][p] + (isWin ? " win" : "");
     slot.innerHTML = entry ? '<div class="mcard hcd"><img class="hcd-img" src="deck/' + entry.card.rank + entry.card.suit + '.webp" alt="' + L.cardName(entry.card) + '"></div>' : "";
   }
-  renderHand(); renderPanel(); renderSheet(); syncHsPad();
+  /* Flow rule: when a step becomes the human's to act on, the hand sheet
+     drops to its rest stop so the step's panel is never trapped under it.
+     (The pass step also carries its confirm button inside the sheet.) */
+  const humanPassPick = G.phase === "pass" && ((G.passStage === "toDeclarer" && partnerOf(G.declarer) === 0) || (G.passStage === "return" && G.declarer === 0));
+  const stepKey = G.phase + "|" + (humanPassPick ? G.passStage : "");
+  if(stepKey !== render._stepKey){
+    render._stepKey = stepKey;
+    if(humanPassPick || ["auction","trump","meld","score","matchover"].includes(G.phase)) setHsStop(0);
+  }
+  renderHand(); renderPanel(); renderSheet(); renderHsAction(); syncHsPad();
+}
+/* The pass step's confirm button lives inside the hand sheet too, so it
+   is reachable no matter where the sheet sits. */
+function renderHsAction(){
+  const bar = $("#hs-action"); if(!bar) return;
+  const inPass = G && G.phase === "pass" && ((G.passStage === "toDeclarer" && partnerOf(G.declarer) === 0) || (G.passStage === "return" && G.declarer === 0));
+  if(!inPass){ bar.className = "hidden"; bar.innerHTML = ""; return; }
+  bar.className = "";
+  bar.innerHTML = '<span class="hsact-lab"><b>' + G.selected.length + "/4</b> picked</span>" +
+    '<button class="btn gold" id="btn-hssend"' + (G.selected.length === 4 ? "" : " disabled") + ">" +
+    (G.passStage === "toDeclarer" ? "SEND 4 CARDS" : "RETURN 4 CARDS") + "</button>";
+  const b = $("#btn-hssend"); if(b) b.addEventListener("click", confirmPass);
 }
 function renderHand(){
   const wrap = $("#myhand"); const hand = G.hands[0];
+  wrap.classList.toggle("many", hand.length > 20);
   const inPass = G.phase === "pass" && ((G.passStage === "toDeclarer" && partnerOf(G.declarer) === 0) || (G.passStage === "return" && G.declarer === 0));
   let legalIds = null;
   if(G.phase === "play" && G.turn === 0) legalIds = new Set(L.legalCards(hand, G.trick, G.trump).map(c => c.id));
@@ -791,31 +832,67 @@ const RULES_HTML = "<h3>How to play — Hustle City Pinochle</h3>" +
 "<p>A side must take <b>20+ trick points</b> to score anything. Bidding side: meld + tricks reaching the bid scores it all; short — or under 20 in tricks — and you're <b>set</b>: the bid is subtracted. Defenders score their meld + tricks when they take 20+.</p>" +
 "<p>Your cards: the chrome Hustle City Deck. A small numbered badge marks which copy of a doubled card you're holding.</p>" +
 "<div class='copy'>© 2026 Joshua Dawson / J-Dawgs Industries — Hustle City Pinochle™</div>";
-/* sheet drag */
+/* ---- sheet gesture engine (both sheets) --------------------------------
+   Rebuilt after Joshua's real-phone reports (2026-11-22): the old code
+   listened ONLY on the 54px handle strip, used pinpoint-sized targets,
+   and let a post-drag synthetic click re-toggle the sheet. A real thumb
+   lands on the tabs, the sheet body, or the cards — all dead zones.
+   Rules now: a drag starting anywhere reasonable on the sheet moves it;
+   one solid pull = one stop, a long pull = two; a drag never fires the
+   click underneath it; a genuine tap on the handle still toggles. */
+let suppressClickUntil = 0;
+function swallowDraggedClicks(root){
+  root.addEventListener("click", e => {
+    if(Date.now() < suppressClickUntil){ e.stopPropagation(); e.preventDefault(); }
+  }, true);
+}
+function dragDelta(dy){ return dy < -220 ? 2 : dy < -36 ? 1 : dy > 220 ? -2 : dy > 36 ? -1 : 0; }
+/* Score sheet: positional stops. Drag from handle, tabs, or the body
+   (a downward pull when the body is scrolled to its top hands off to
+   the sheet); the body otherwise scrolls natively. */
 (function(){
-  const handle = $("#sheet-handle"), sh = $("#sheet");
-  let startY = 0, startSnap = 0, dragging = false;
-  handle.addEventListener("pointerdown", e => { dragging = true; startY = e.clientY; startSnap = sheetSnap; handle.setPointerCapture(e.pointerId); });
-  handle.addEventListener("pointermove", e => {
-    if(!dragging) return;
-    const dy = e.clientY - startY, H = sh.offsetHeight;
-    const base = startSnap === 0 ? H - 54 : startSnap === 1 ? H * 0.52 : 0;
-    let y = Math.max(0, Math.min(H - 54, base + dy));
+  const sh = $("#sheet"), handle = $("#sheet-handle"), body = $("#sheet-body");
+  swallowDraggedClicks(sh);
+  document.querySelectorAll("#sheet .tabs .btn").forEach(b => b.addEventListener("click", ()=> setSheet(sheetSnap === 0 ? 1 : sheetSnap, b.getAttribute("data-tab"))));
+  const stopY = (snap, H) => snap === 0 ? H - 54 : snap === 1 ? H * 0.52 : 0;
+  let pid = null, mode = null, startY = 0, lastY = 0, startSnap = 0, onHandle = false, moved = false, captured = false;
+  sh.addEventListener("pointerdown", e => {
+    if(e.button !== undefined && e.button > 0) return;
+    if(pid !== null){ pid = null; mode = null; sh.style.transition = ""; sheetTransform(); }  // stale gesture (lost up) — reset
+    pid = e.pointerId; startY = lastY = e.clientY; startSnap = sheetSnap;
+    onHandle = handle.contains(e.target); moved = false; captured = false;
+    mode = body.contains(e.target) ? "pending" : "drag";
+    /* capture is DEFERRED until the gesture is a real drag — capturing at
+       pointerdown would retarget the click to the sheet and kill tab taps */
+  });
+  sh.addEventListener("pointermove", e => {
+    if(e.pointerId !== pid) return;
+    lastY = e.clientY;
+    const dy = e.clientY - startY;
+    if(Math.abs(dy) > 8) moved = true;
+    if(mode === "pending"){
+      if(dy > 10 && body.scrollTop <= 0 && sheetSnap > 0){ mode = "drag"; }
+      else if(dy < -6 || body.scrollTop > 0){ mode = "scroll"; return; }
+      else return;
+    }
+    if(mode !== "drag") return;
+    if(moved && !captured){ captured = true; try{ sh.setPointerCapture(pid); }catch(_){} }
+    const H = sh.offsetHeight;
+    const y = Math.max(0, Math.min(H - 54, stopY(startSnap, H) + dy));
     sh.style.transition = "none";
     sh.style.transform = "translate(-50%," + y + "px)";
   });
-  const endDrag = e => {
-    if(!dragging) return; dragging = false;
+  const finish = e => {
+    if(e.pointerId !== pid) return;
+    const wasDrag = mode === "drag", wasMoved = moved, dy = lastY - startY;
+    pid = null; mode = null; captured = false;
     sh.style.transition = "";
-    const dy = e.clientY - startY;
-    let snap = startSnap + (dy < -40 ? 1 : dy > 40 ? -1 : 0);
-    snap = Math.max(0, Math.min(2, snap));
-    setSheet(snap);
+    if(wasDrag && wasMoved){ suppressClickUntil = Date.now() + 400; setSheet(Math.max(0, Math.min(2, startSnap + dragDelta(dy)))); }
+    else if(wasDrag){ sheetTransform(); if(onHandle) setSheet(sheetSnap === 0 ? 1 : 0); }
+    else sheetTransform();
   };
-  handle.addEventListener("pointerup", endDrag);
-  handle.addEventListener("pointercancel", endDrag);
-  handle.addEventListener("click", ()=>{ if(Math.abs(event.clientY - startY) < 6) setSheet(sheetSnap === 0 ? 1 : 0); });
-  document.querySelectorAll("#sheet .tabs .btn").forEach(b => b.addEventListener("click", ()=> setSheet(sheetSnap === 0 ? 1 : sheetSnap, b.getAttribute("data-tab"))));
+  sh.addEventListener("pointerup", finish);
+  sh.addEventListener("pointercancel", finish);
 })();
 /* ---------------- hand pull-up sheet ----------------
    The player's hand lives on its own drag sheet, stacked directly
@@ -841,25 +918,37 @@ function setHsStop(n){
 }
 (function(){
   const handle = $("#hs-handle"), hs = $("#handsheet");
-  let startY = 0, startStop = 0, dragging = false, moved = false;
-  handle.addEventListener("pointerdown", e => { dragging = true; moved = false; startY = e.clientY; startStop = hsStop; handle.setPointerCapture(e.pointerId); });
-  handle.addEventListener("pointermove", e => {
-    if(!dragging) return;
+  swallowDraggedClicks(hs);
+  let pid = null, startY = 0, lastY = 0, startStop = 0, onHandle = false, moved = false, captured = false;
+  hs.addEventListener("pointerdown", e => {
+    if(e.button !== undefined && e.button > 0) return;
+    if(pid !== null){ pid = null; hs.style.transition = ""; hs.style.transform = "translateX(-50%)"; }  // stale gesture — reset
+    pid = e.pointerId; startY = lastY = e.clientY; startStop = hsStop;
+    onHandle = handle.contains(e.target); moved = false; captured = false;
+    /* capture deferred until the gesture is a real drag (see score sheet) */
+  });
+  hs.addEventListener("pointermove", e => {
+    if(e.pointerId !== pid) return;
+    lastY = e.clientY;
     const dy = e.clientY - startY;
-    if(Math.abs(dy) > 5) moved = true;
-    const y = Math.max(-150, Math.min(50, dy));
+    if(Math.abs(dy) > 8) moved = true;
+    if(!moved) return;
+    if(!captured){ captured = true; try{ hs.setPointerCapture(pid); }catch(_){} }
+    const y = Math.max(-70, Math.min(70, dy));
     hs.style.transition = "none";
     hs.style.transform = "translate(-50%," + y + "px)";
   });
-  const endDrag = e => {
-    if(!dragging) return; dragging = false;
+  const finish = e => {
+    if(e.pointerId !== pid) return;
+    const wasMoved = moved, dy = lastY - startY;
+    pid = null; captured = false;
     hs.style.transition = "";
-    const dy = e.clientY - startY;
-    setHsStop(startStop + (dy < -40 ? 1 : dy > 40 ? -1 : 0));
+    hs.style.transform = "translateX(-50%)";
+    if(wasMoved){ suppressClickUntil = Date.now() + 400; setHsStop(startStop + dragDelta(dy)); }
+    else if(onHandle) setHsStop(hsStop === 0 ? 1 : 0);
   };
-  handle.addEventListener("pointerup", endDrag);
-  handle.addEventListener("pointercancel", endDrag);
-  handle.addEventListener("click", ()=>{ if(!moved) setHsStop(hsStop === 0 ? 1 : 0); });
+  hs.addEventListener("pointerup", finish);
+  hs.addEventListener("pointercancel", finish);
   window.addEventListener("resize", syncHsPad);
 })();
 /* ---------------- boot ---------------- */
