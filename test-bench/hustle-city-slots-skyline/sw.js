@@ -1,5 +1,5 @@
 /* Hustle City Slots — Midnight Skyline service worker. (c) 2026 J-Dawgs Industries. */
-const CACHE = 'hc-slots-skyline-v2-19';
+const CACHE = 'hc-slots-skyline-v2-20';
 const ASSETS = [
   './', './index.html', './style.css', './celeb-title.css', './game.js', './logic.js', './machines.js', './soundkit.js', './cabinet-life.js', './assets/celeb-show.mp4', './assets/celeb-title.png', './assets/fonts/bebas-neue.woff2',
   './assets/sfx/bell.mp3', './assets/sfx/win-small.mp3', './assets/sfx/win-med.mp3',

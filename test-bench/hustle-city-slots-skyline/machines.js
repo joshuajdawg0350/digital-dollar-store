@@ -70,6 +70,12 @@ const SKYLINE = {
   wheel: [4, 1, 1, 1, 3, 1, 1, 2, 1, 1, 1, 1],
   wheelTiers: { 4: 'GRAND', 3: 'MAJOR', 2: 'MINOR', 1: 'MINI' },
   wheelShare: 0.5,
+  /* BRIDGE RUN door share (FIX 2026-11-22): bridgeShare of door triggers
+     race Bridge Run (the pool game Joshua picked 2026-11-22 00:27 CT);
+     the remaining triggers split wheel/dice by wheelShare above. Bridge
+     Run was registered in the bonus pool at build time but the door
+     never dealt it until this fix. */
+  bridgeShare: 0.25,
   paytable: {
     VT: { 3: 61, 4: 219, 5: 2500 },
     WD: { 3: 37, 4: 137, 5: 500 },

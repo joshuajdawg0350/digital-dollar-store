@@ -1274,6 +1274,32 @@
       await new Promise(res => setTimeout(res, 850));
     }
     if (ev.bonus) {
+      /* BRIDGE RUN door split (FIX 2026-11-22): Bridge Run registered
+         itself in the bonus pool when it was built, but the door's
+         trigger split only ever dealt the wheel or the dice — the pool
+         was never consulted, so Bridge Run was unreachable in real play
+         (debug hook only). bridgeShare of door triggers now race the
+         bridge; the rest split wheel/dice by wheelShare exactly as
+         before. Door frequency is unchanged by construction. */
+      if (Math.random() < (cfg.bridgeShare || 0)) {
+        msgEl.textContent = `${ev.bonusCount} big dollars — BONUS DOOR to BRIDGE RUN!`;
+        spinning = false;
+        await celebrate('bonus', 'BONUS DOOR!', `${ev.bonusCount} big dollars — race the bridge!`, celebDur());
+        openBridgeRun({ triggerText: `${ev.bonusCount} BIG DOLLARS — through the BONUS DOOR! Race the rival across five neon spans!` }, async prize => {
+          if (prize > 0) {
+            const before = parseInt(winEl.textContent.replace(/[^0-9]/g, ''), 10) || 0;
+            await countUp(winEl, before, before + prize, Math.min(1200, 300 + prize));
+            credits += prize;
+            if (isFree) freeSpinTotal += prize;
+            totalWin += prize;
+            renderReadouts(totalWin);
+            save();
+          }
+          spinning = true;
+          finishSpin();
+        });
+        return;
+      }
       /* Trigger split (2026-11-22): the BONUS WHEEL joins Dice Roll
          alongside it — when the dice bonus would open, wheelShare of
          triggers open the wheel instead. The celebration fires for the
