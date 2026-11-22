@@ -23,7 +23,7 @@ const rng = Math.random;
    the reel logo, BAR plates, badges, PAYLINE marker and $1 plate are
    likewise the photos' own pixels — see the v6 section of the vault
    BUILD-RECORD.md for the source box of every asset. ------------- */
-const MEDAL_IMG = 'assets/duck-medallion-photo.png';
+const MEDAL_IMG = 'assets/medallion-clean.png';
 function gemSVG() {
   return `<svg viewBox="0 0 100 100" aria-hidden="true">
     <polygon points="50,4 88,34 50,96 12,34" fill="url(#gemG)" stroke="#1d6f9e" stroke-width="3"/>

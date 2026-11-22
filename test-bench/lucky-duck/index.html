@@ -14,24 +14,28 @@
 html, body { height:100%; }
 body {
   font-family:'Bebas Neue', 'Arial Narrow', sans-serif;
-  background:#04170d radial-gradient(120% 90% at 50% 0%, #0d3520 0%, #04170d 62%);
+  /* v9 — Option 4 "Top-Glass Crown" (Joshua's pick, 2026-11-22 16:17):
+     the cabinet body is the option's near-black warm stock (compose.py
+     body_gold: #0e0d0a -> #050504) with gold trim */
+  background:#050504 radial-gradient(120% 90% at 50% 0%, #0e0d0a 0%, #050504 62%);
   color:#f5eeda; min-height:100dvh;
   user-select:none; -webkit-user-select:none; overflow-x:hidden;
 }
 #cabinet {
   width:min(430px, 100vw); min-height:100dvh; margin:0 auto; display:flex; flex-direction:column;
   background:
-    radial-gradient(90% 40% at 50% 0%, rgba(255,215,120,.10), transparent 60%),
+    radial-gradient(90% 40% at 50% 0%, rgba(255,215,120,.07), transparent 60%),
     repeating-linear-gradient(45deg, rgba(255,255,255,.014) 0 6px, transparent 6px 12px),
-    linear-gradient(180deg, #175433 0%, #0e3a24 48%, #082416 100%);
-  box-shadow: inset 0 0 0 3px #051f12, inset 0 0 0 5px rgba(201,162,39,.55), inset 0 0 38px rgba(0,0,0,.55);
+    linear-gradient(180deg, #0e0d0a 0%, #080706 55%, #050504 100%);
+  box-shadow: inset 0 0 0 3px #000000, inset 0 0 0 5px rgba(178,150,74,.6), inset 0 0 38px rgba(0,0,0,.55);
   padding:7px 8px calc(8px + env(safe-area-inset-bottom));
   gap:4px; position:relative;
 }
 /* ---------- logo panel (the bill / marquee art) ---------- */
 #marquee {
   position:relative; border-radius:13px; overflow:hidden;
-  background:radial-gradient(130% 170% at 50% -25%, #22703f 0%, #14532d 52%, #0a2e1a 100%);
+  /* v9 crown: black gloss band like the picked option's header */
+  background:linear-gradient(180deg, #141311 0%, #0a0a09 60%, #060606 100%);
   border:2.5px solid var(--gold);
   box-shadow: inset 0 0 0 2px #06230f, inset 0 0 0 4px rgba(232,200,90,.35), inset 0 0 26px rgba(0,0,0,.5), 0 3px 0 rgba(0,0,0,.4);
   padding:4px 9px 3px;
@@ -51,16 +55,19 @@ body {
 }
 /* the FRENZY JACKPOTS logo itself, copied from the machine's panel (v6) */
 #frenzy img { height:19px; width:auto; display:inline-block; vertical-align:middle; }
-#logoRow { display:flex; align-items:center; gap:5px; margin-top:0; }
-#marqueeDuck { width:76px; height:76px; flex:0 0 auto; filter:drop-shadow(0 2px 3px rgba(0,0,0,.45)); }
+#logoRow { display:flex; align-items:center; gap:10px; margin-top:0; padding:2px 2px 5px; }
+#marqueeDuck { width:52px; height:52px; flex:0 0 auto; filter:drop-shadow(0 2px 3px rgba(0,0,0,.45)); }
 #marqueeDuck img { width:100%; height:100%; display:block; border-radius:50%; }
-.logoSide {
-  flex:1; font-size:31px; letter-spacing:1px; line-height:1; white-space:nowrap;
-  background:linear-gradient(180deg, #fff7ae 0%, #ffe14d 34%, #b5e048 68%, #57ab2d 100%);
-  -webkit-background-clip:text; background-clip:text; color:#ffe14d; -webkit-text-fill-color:transparent;
-  filter:drop-shadow(0 2px 0 #0d3319) drop-shadow(0 3px 2px rgba(0,0,0,.45));
+/* v9 crown title: serif gold LUCKY DUCKY, the picked option's header
+   (compose.py h4: LiberationSerif-Bold, fill #e8c460) */
+#crownTitle {
+  flex:1; text-align:center; white-space:nowrap; line-height:1;
+  font-family:Georgia, 'Times New Roman', serif; font-weight:700;
+  font-size:28px; letter-spacing:3px; color:#e8c460;
+  text-shadow:0 2px 3px rgba(0,0,0,.65);
 }
-.logoSide.left { text-align:right; } .logoSide.right { text-align:left; }
+/* the option's double gold rule under the crown */
+#crownRule { border-top:2px solid rgba(196,164,76,.9); border-bottom:1px solid rgba(196,164,76,.45); height:2px; margin:1px 0 4px; }
 #progressive {
   margin-top:3px; text-align:center; background:#0a0503; border:1.5px solid #3a2c07; border-radius:8px;
   box-shadow: inset 0 0 14px rgba(0,0,0,.85);
@@ -233,6 +240,15 @@ body.redspin .sym .barImg { filter:sepia(1) saturate(4.5) hue-rotate(-48deg) bri
 #banner.over { display:block; color:#5a5148; text-shadow:none; font-size:23px; letter-spacing:5px; }
 @keyframes bannerPop { from { transform:scale(1); } to { transform:scale(1.07); } }
 #glassBadges { display:flex; align-items:flex-end; gap:4px; margin-top:5px; padding:0 1px; }
+/* v9 — Option 4 footer: black panel, gold trim, the three copied badge
+   medallions in a row with the option's caption, gold bar at the base
+   (compose.py f4/b4) */
+#cabFooter { background:#100e0a; border:2px solid #b2964a; border-radius:8px; padding:9px 6px 7px; margin-top:2px; }
+.footBadges { display:flex; justify-content:space-evenly; align-items:center; }
+.footBadges .badgeMed { width:auto; }
+.footBadges .badgeMed img { height:66px; width:auto; display:block; }
+.footCaption { text-align:center; color:#e8c86e; font-size:12.5px; letter-spacing:2.5px; margin-top:6px; }
+#cabBaseBar { height:5px; background:#c4a44c; border-radius:2px; margin-top:3px; }
 .helpOval {
   flex:1.25; background:radial-gradient(ellipse at 50% 40%, #ffe95c, #f2c230); color:#4a3503;
   border:1.5px solid #8a6d1f; border-radius:50%; font-size:7.5px; line-height:1.25; text-align:center;
@@ -365,10 +381,10 @@ body.redspin .sym .barImg { filter:sepia(1) saturate(4.5) hue-rotate(-48deg) bri
 #pickResult .prAmt, #jewelResult .prAmt { font-size:37px; color:#ffe9a8; letter-spacing:2px; }
 #collectBtn, #jewelCollectBtn { font-family:inherit; font-size:23px; letter-spacing:2px; background:linear-gradient(180deg, #39b54a, #1c7a30); color:#fff; border:none; border-radius:11px; padding:10px 30px 8px; cursor:pointer; box-shadow:0 4px 0 rgba(0,0,0,.4); }
 #foot { text-align:center; font-size:10px; letter-spacing:1.5px; color:rgba(245,238,218,.5); font-family:Arial, sans-serif; padding-bottom:2px; }
-@media (max-width:380px) { .logoSide { font-size:26px; } #marqueeDuck { width:64px; height:64px; } .meter .mval { font-size:16.5px; } .meter .mval.money { font-size:13.5px; } .jewel { width:16px; height:16px; } }
+@media (max-width:380px) { #crownTitle { font-size:23px; letter-spacing:2px; } #marqueeDuck { width:46px; height:46px; } .meter .mval { font-size:16.5px; } .meter .mval.money { font-size:13.5px; } .jewel { width:16px; height:16px; } }
 /* short screens: shrink reel cells + shed trim so the cabinet fits one screen */
 @media (max-height:820px) { :root { --cell:84px; } #screenPrint, #foot { display:none; } #cabinet { gap:3px; } #progressiveAmt { font-size:18px; } #frenzy { font-size:12.5px; } }
-@media (max-height:760px) { :root { --cell:80px; } #calledStrip { display:none; } #marqueeDuck { width:56px; height:56px; } .logoSide { font-size:24px; } .billArt .bduck { width:64px; height:64px; } }
+@media (max-height:760px) { :root { --cell:80px; } #calledStrip { display:none; } #marqueeDuck { width:44px; height:44px; } #crownTitle { font-size:24px; } .billArt .bduck { width:64px; height:64px; } }
 </style>
 </head>
 <body>
@@ -390,12 +406,11 @@ body.redspin .sym .barImg { filter:sepia(1) saturate(4.5) hue-rotate(-48deg) bri
 
 <div id="cabinet">
   <div id="marquee">
-    <div id="frenzy"><img src="assets/frenzy-photo.png" alt="Frenzy Jackpots"></div>
     <div id="logoRow">
-      <div class="logoSide left">LUCKY</div>
       <div id="marqueeDuck"></div>
-      <div class="logoSide right">DUCKY</div>
+      <div id="crownTitle">LUCKY DUCKY</div>
     </div>
+    <div id="crownRule"></div>
     <div id="progressive"><div class="plabel">PROGRESSIVE</div><div id="progressiveAmt">$10,000.00</div></div>
   </div>
 
@@ -438,9 +453,6 @@ body.redspin .sym .barImg { filter:sepia(1) saturate(4.5) hue-rotate(-48deg) bri
     <div id="glassPlate"><div class="denomPlaque"><img src="assets/plate-1-photo.png" alt="$1"></div></div>
     <div id="glassBadges">
       <div class="helpOval">To view Player Help, hold down the CASH OUT button for 5 seconds.</div>
-      <div class="badgeMed"><img class="badgeOval" src="assets/badge-doubles-photo.png" alt="Lucky Ducky Doubles"></div>
-      <div class="badgeMed"><img class="badgeOval" src="assets/badge-wild-photo.png" alt="Lucky Ducky Is Wild"></div>
-      <div class="badgeMed"><img class="badgeOval" src="assets/badge-4x-photo.png" alt="Lucky Ducky Pays 4X"></div>
     </div>
     <div id="glassPrint">MALFUNCTION VOIDS ALL PAYS AND PLAYS · REELS ARE FOR ENTERTAINING PURPOSES ONLY</div>
   </div>
@@ -450,7 +462,7 @@ body.redspin .sym .barImg { filter:sepia(1) saturate(4.5) hue-rotate(-48deg) bri
       <button class="sbtn" id="paysBtn">PAYTABLE</button>
       <button class="sbtn" id="soundBtn">SOUND ON</button>
     </div>
-    <button id="spinBtn" aria-label="Spin the reels"><span class="spinDuck"><img src="assets/duck-medallion-photo.png" alt=""></span><span class="spinLab">SPIN</span></button>
+    <button id="spinBtn" aria-label="Spin the reels"><span class="spinDuck"><img src="assets/medallion-clean.png" alt=""></span><span class="spinLab">SPIN</span></button>
     <div class="deckSide right">
       <button class="sbtn bet" id="betOneBtn">BET 1</button>
       <button class="sbtn bet" id="betTwoBtn">BET 2</button>
@@ -463,10 +475,20 @@ body.redspin .sym .barImg { filter:sepia(1) saturate(4.5) hue-rotate(-48deg) bri
   <div id="msg">INSERT COINS — BET 1 OR BET 3, THEN SPIN</div>
 
   <div id="paySheet">
-    <div class="sheetHead"><img class="sheetMedal" src="assets/duck-medallion-photo.png" alt=""><h2>PAYTABLE — CREDITS</h2><img class="sheetMedal" src="assets/duck-medallion-photo.png" alt=""></div>
+    <div class="sheetHead"><img class="sheetMedal" src="assets/medallion-clean.png" alt=""><h2>PAYTABLE — CREDITS</h2><img class="sheetMedal" src="assets/medallion-clean.png" alt=""></div>
     <table id="payTable"></table>
     <div class="note">THE DUCK IS WILD ON THE PAYLINE — ONE DUCK DOUBLES THE WINNING COMBINATION, TWO DUCKS PAY 4X, AND THE DUCK COUNTS AS A CHERRY. 3 DUCKS ON MAX BET ALSO TAKES THE PROGRESSIVE (STARTS AT $10,000). RED SCREEN RE-SPINS GUARANTEE AT LEAST THE WIN THAT TRIGGERED THEM. DUCKS ON THE PAYLINE COLLECT JEWELS — 10 TRIGGERS THE JEWEL HUNT. PERSONAL PLAY MACHINE — CREDITS ONLY, NO CASH VALUE.</div>
   </div>
+
+  <div id="cabFooter">
+    <div class="footBadges">
+      <div class="badgeMed"><img class="badgeOval" src="assets/badge-doubles-clean.png" alt="Lucky Ducky Doubles"></div>
+      <div class="badgeMed"><img class="badgeOval" src="assets/badge-wild-clean.png" alt="Lucky Ducky Is Wild"></div>
+      <div class="badgeMed"><img class="badgeOval" src="assets/badge-4x-clean.png" alt="Lucky Ducky Pays 4X"></div>
+    </div>
+    <div class="footCaption">LUCKY DUCKY PAYS 4X · IS WILD · DOUBLES</div>
+  </div>
+  <div id="cabBaseBar"></div>
 
   <div id="foot">PERSONAL MACHINE · © 2026 J-DAWGS INDUSTRIES</div>
 </div>
