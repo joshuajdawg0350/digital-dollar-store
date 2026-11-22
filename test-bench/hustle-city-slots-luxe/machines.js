@@ -65,6 +65,17 @@ const LUXE = {
      even spread of the same 38x measures only ~5.0x. The old wheel
      (EV 12.08x, wedges [100,5,7,2,4,8,0,3,6,1,5,4]) is retired. */
   vault: { prizes: [25, 3, 2, 2, 2, 1, 1, 1, 1], skulls: 3 },
+  /* BONUS WHEEL (added 2026-11-22 — JOINS the Skull Vault on the same BN
+     door; Joshua picked the Vault over a wheel, then the wheel was ported
+     in alongside it, replacing nothing): when the BN trigger fires, a
+     wheelShare roll decides wheel vs vault. Wedges are multiples of the
+     TOTAL bet; every wedge pays. Table sum 83x / 12 wedges = EV 6.92x,
+     matching the vault's ~6.9x band. Tunable — unification pass owns
+     final numbers. (The retired wheel table in the header comment,
+     EV 12.08x, is history — do not resurrect it.) */
+  wheel: [25, 2, 6, 3, 12, 5, 2, 7, 4, 3, 8, 6],
+  wheelTiers: { 25: 'GRAND', 12: 'MAJOR', 8: 'MINOR', 4: 'MINI' },
+  wheelShare: 0.5,
   paytable: {
     AC: { 3: 46, 4: 145, 5: 1500 },
     WD: { 3: 26, 4: 86, 5: 338 },

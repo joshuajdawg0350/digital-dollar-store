@@ -44,6 +44,8 @@
   const bonusOverlay = $('bonusOverlay'), bonusMsg = $('bonusMsg');
   const vaultGrid = $('vaultGrid'), vaultLed = $('vaultLed'), vaultDoorsLed = $('vaultDoorsLed'),
     vaultSkullsLed = $('vaultSkullsLed'), vaultBankBtn = $('vaultBankBtn');
+  const wheelOverlay = $('wheelOverlay'), wheelMsg = $('wheelMsg'), wheelRotor = $('wheelRotor'),
+    wheelPointer = $('wheelPointer'), wheelPrize = $('wheelPrize');
 
   let credits = 1000, spinning = false;
   let freeSpinsLeft = 0, freeSpinTotal = 0, soundOn = true;
@@ -351,7 +353,7 @@
       `<div class="payrow"><div class="thumb"><img src="${ART.X2}" alt="WIN ×2"></div><div class="nm">WIN ×2</div><span class="pv wide">Anywhere on a winning line, this line's win is DOUBLED (×2)</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.X3}" alt="WIN ×3"></div><div class="nm">WIN ×3</div><span class="pv wide">Anywhere on a winning line, this line's win is TRIPLED (×3). Two multipliers on the same line multiply together — ×2 and ×3 pay ×6</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.SC}" alt="SCATTER"></div><div class="nm">SCATTER</div><span class="pv wide">3+ anywhere: pays 2× / 7× / 35× total bet + 7 / 10 / 15 FREE SPINS at 2× line wins</span></div>` +
-      `<div class="payrow"><div class="thumb"><img src="${ART.BN}" alt="BONUS"></div><div class="nm">SKULL VAULT</div><span class="pv wide">BONUS tokens ride reels 2, 3 and 4 — when all three windows show one, the SKULL VAULT opens: 12 doors, 9 hide blue-chip prizes (${cfg.vault.prizes.slice().sort((a, b) => b - a).join('×, ')}× your total bet — ${cfg.vault.prizes.reduce((a, b) => a + b, 0)}× in all) and ${cfg.vault.skulls} hide SKULLS. Pick doors, STOP &amp; BANK after any safe door — a skull loses everything unbanked. The vault lands about once every 69 spins</span></div>` +
+      `<div class="payrow"><div class="thumb"><img src="${ART.BN}" alt="BONUS"></div><div class="nm">SKULL VAULT / WHEEL</div><span class="pv wide">BONUS tokens ride reels 2, 3 and 4 — when all three windows show one, a bonus opens: half the time the BONUS WHEEL spins instead (12 wedges, every wedge pays × your total bet — MINI 4×, MINOR 8×, MAJOR 12×, GRAND 25×); the rest of the time the SKULL VAULT opens: 12 doors, 9 hide blue-chip prizes (${cfg.vault.prizes.slice().sort((a, b) => b - a).join('×, ')}× your total bet — ${cfg.vault.prizes.reduce((a, b) => a + b, 0)}× in all) and ${cfg.vault.skulls} hide SKULLS. Pick doors, STOP &amp; BANK after any safe door — a skull loses everything unbanked. The vault lands about once every 69 spins</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.CP}" alt="BET"></div><div class="nm">BET</div><span class="pv wide">Bets run in $25 steps: $25, $50, $75 … all the way up to $2,500 a spin. A step unlocks the first time your balance reaches it — and stays unlocked even if your balance dips. Use the −25 / +25 buttons or MAX BET. NEW GAME resets you to a $25 bet</span></div>`;
   }
 
@@ -361,6 +363,22 @@
   $('payBtn').addEventListener('click', openSheet);
   $('sheetHandle').addEventListener('click', closeSheet);
   sheetBackdrop.addEventListener('click', closeSheet);
+
+  /* ---------- bonus-screen minimum-view lock (Joshua, 2026-11-22) ----------
+     "Make sure you have to see a couple seconds at least of the bonus
+     screen before it goes away." Every celebration / bonus screen arms
+     its lock the moment it appears; while locked, a tap that would skip /
+     advance / dismiss it is IGNORED — never queued, so a stray tap at
+     0.5s does not fire at 2.0s. After 2 seconds every tap works exactly
+     as before. Deliberate gameplay picks (vault door taps, STOP & BANK)
+     are NOT locked, and auto-advance timers are not taps. */
+  const BONUS_MIN_VIEW_MS = 2000;
+  const mkViewLock = () => ({
+    t: 0,
+    arm() { this.t = performance.now(); },
+    locked() { return performance.now() - this.t < BONUS_MIN_VIEW_MS; }
+  });
+  const celebLock = mkViewLock(), videoLock = mkViewLock(), wheelLock = mkViewLock();
 
   /* ---------- celebration screens (Joshua, 2026-11-21 12:52–12:54 CT) ----------
      A bonus or free-spins trigger NEVER cuts straight in: a full-cabinet
@@ -377,6 +395,7 @@
   const celebVideoCap = $('celebVideoCap');
   function playBonusVideo(capText) {
     return new Promise(res => {
+      videoLock.arm(); /* minimum-view lock: no tap-skip for the first 2s */
       let done = false;
       const finish = () => {
         if (done) return;
@@ -384,14 +403,16 @@
         try { celebVideoVid.pause(); } catch (e) {}
         celebVideoEl.classList.remove('on');
         celebVideoEl.setAttribute('aria-hidden', 'true');
-        celebVideoEl.removeEventListener('click', finish);
+        celebVideoEl.removeEventListener('click', onTap);
         celebVideoVid.removeEventListener('ended', finish);
         res();
       };
+      /* a tap inside the first 2s is ignored outright — not queued */
+      const onTap = () => { if (videoLock.locked()) return; finish(); };
       if (celebVideoCap) { celebVideoCap.textContent = capText || ''; celebVideoCap.style.display = capText ? 'block' : 'none'; }
       celebVideoEl.classList.add('on');
       celebVideoEl.setAttribute('aria-hidden', 'false');
-      celebVideoEl.addEventListener('click', finish);
+      celebVideoEl.addEventListener('click', onTap);
       celebVideoVid.addEventListener('ended', finish);
       setTimeout(finish, 5600); /* safety net: the player is never trapped */
       try {
@@ -413,6 +434,7 @@
     if (kind === 'bonus') return playBonusVideo('');
     if (kind === 'fs') return playBonusVideo(title);
     return new Promise(res => {
+      celebLock.arm(); /* minimum-view lock: no tap-skip for the first 2s */
       celebEl.className = 'celeb on k-' + kind;
       celebKickEl.textContent = kind === 'bonus' ? 'BONUS' : 'FREE SPINS';
       celebTitleEl.textContent = title;
@@ -425,10 +447,12 @@
         done = true;
         celebEl.classList.remove('on');
         celebEl.setAttribute('aria-hidden', 'true');
-        celebEl.removeEventListener('click', finish);
+        celebEl.removeEventListener('click', onTap);
         res();
       };
-      celebEl.addEventListener('click', finish);
+      /* a tap inside the first 2s is ignored outright — not queued */
+      const onTap = () => { if (celebLock.locked()) return; finish(); };
+      celebEl.addEventListener('click', onTap);
       setTimeout(finish, durMs);
     });
   }
@@ -588,9 +612,181 @@
     vaultAward(`THE VAULT PAYS ${st.unbanked}× YOUR BET!`);
   });
 
+
+  /* ---------- BONUS WHEEL (ported 2026-11-22 from Pearl's Paws) ----------
+     JOINS the Skull Vault on the same BN door — replaces nothing. When
+     the vault would open, a cfg.wheelShare roll sends the player here
+     instead (see the trigger split in doSpin). A layered SVG wheel in
+     the settled Luxe wheel pick #8 dress — "chrome biker/red": dark
+     chrome rim with bolts, black and deep-red wedges, chrome separators,
+     electric-blue label glow, red as a primary accent. NO GOLD. Physics
+     mirror Pearl's: the winning wedge is drawn first, then the wheel
+     spins (6 full turns, quartic ease-out 5.6–6.3s, real-kit peg clicks
+     + pointer flick, near-GRAND nearBell) and settles exactly on it.
+     Every wedge pays wedge × total bet, credited exactly like the
+     vault's award (credits += pay, then countUp + render + save). */
+  const WEDGES = cfg.wheel, WTIERS = cfg.wheelTiers || {};
+  const WSEG = 360 / WEDGES.length;
+  let wheelBuilt = false, wheelAngle = 0, wheelSpinning = false, wheelArmed = null, wheelOpen = false;
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  function wedgeFill(v, i) {
+    if (WTIERS[v] === 'GRAND') return 'url(#wgGrand)';
+    if (WTIERS[v] === 'MAJOR') return 'url(#wgMajor)';
+    if (WTIERS[v] === 'MINOR') return 'url(#wgMinor)';
+    if (WTIERS[v] === 'MINI') return 'url(#wgMini)';
+    return i % 2 ? 'url(#wgB)' : 'url(#wgA)';
+  }
+  function buildWheel() {
+    if (wheelBuilt) return;
+    wheelBuilt = true;
+    /* machined bolts around the static dark-chrome rim */
+    const bolts = $('wheelBolts');
+    if (bolts) for (let i = 0; i < 12; i++) {
+      const a = (i * 30 - 90) * Math.PI / 180;
+      const b = document.createElementNS(SVGNS, 'circle');
+      b.setAttribute('cx', 170 + 165 * Math.cos(a)); b.setAttribute('cy', 170 + 165 * Math.sin(a));
+      b.setAttribute('r', 3.4); b.setAttribute('fill', 'url(#wgPeg)'); b.setAttribute('stroke', 'rgba(0,0,0,.55)'); b.setAttribute('stroke-width', '0.7');
+      bolts.appendChild(b);
+    }
+    const cx = 170, cy = 170, rO = 148, rI = 54;
+    const pt = (r, aDeg) => { const a = (aDeg - 90) * Math.PI / 180; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; };
+    WEDGES.forEach((v, i) => {
+      const a0 = i * WSEG - WSEG / 2, a1 = a0 + WSEG;
+      const [x0, y0] = pt(rO, a0), [x1, y1] = pt(rO, a1), [x2, y2] = pt(rI, a1), [x3, y3] = pt(rI, a0);
+      const pth = document.createElementNS(SVGNS, 'path');
+      pth.setAttribute('d', `M ${x0} ${y0} A ${rO} ${rO} 0 0 1 ${x1} ${y1} L ${x2} ${y2} A ${rI} ${rI} 0 0 0 ${x3} ${y3} Z`);
+      pth.setAttribute('fill', wedgeFill(v, i));
+      pth.setAttribute('stroke', 'rgba(190,205,225,.55)');
+      pth.setAttribute('stroke-width', '1.6');
+      wheelRotor.appendChild(pth);
+      /* label group at the wedge center angle */
+      const g = document.createElementNS(SVGNS, 'g');
+      const mid = i * WSEG;
+      g.setAttribute('transform', `rotate(${mid} ${cx} ${cy})`);
+      if (WTIERS[v]) {
+        const t1 = document.createElementNS(SVGNS, 'text');
+        t1.setAttribute('x', cx); t1.setAttribute('y', cy - rO + 48);
+        t1.setAttribute('class', 'wlabel tier');
+        t1.textContent = WTIERS[v];
+        const t2 = document.createElementNS(SVGNS, 'text');
+        t2.setAttribute('x', cx); t2.setAttribute('y', cy - rO + 68);
+        t2.setAttribute('class', 'wlabel tierval');
+        t2.textContent = v + '×';
+        g.appendChild(t1); g.appendChild(t2);
+      } else {
+        const t = document.createElementNS(SVGNS, 'text');
+        t.setAttribute('x', cx); t.setAttribute('y', cy - rO + 66);
+        t.setAttribute('class', 'wlabel');
+        t.textContent = v + '×';
+        g.appendChild(t);
+      }
+      wheelRotor.appendChild(g);
+      /* a machined peg sphere on every boundary */
+      const [px, py] = pt(157, a0);
+      const peg = document.createElementNS(SVGNS, 'circle');
+      peg.setAttribute('cx', px); peg.setAttribute('cy', py); peg.setAttribute('r', 5.6);
+      peg.setAttribute('fill', 'url(#wgPeg)');
+      peg.setAttribute('stroke', 'rgba(0,0,0,.6)');
+      peg.setAttribute('stroke-width', '0.8');
+      wheelRotor.appendChild(peg);
+    });
+  }
+  function spinWheelPhysics(targetIdx) {
+    return new Promise(resolve => {
+      wheelSpinning = true;
+      const current = wheelAngle % 360;
+      let delta = ((-targetIdx * WSEG) - current) % 360;
+      if (delta < 0) delta += 360;
+      const total = 360 * 6 + delta;
+      const start = wheelAngle;
+      const dur = 5600 + Math.random() * 700;
+      const easeOut = u => 1 - Math.pow(1 - u, 4.2);
+      let lastPeg = Math.floor(start / WSEG);
+      const t0 = performance.now();
+      (function frame(now) {
+        const u = Math.min(1, (now - t0) / dur);
+        wheelAngle = start + total * easeOut(u);
+        wheelRotor.setAttribute('transform', `rotate(${wheelAngle} 170 170)`);
+        const peg = Math.floor(wheelAngle / WSEG);
+        if (peg !== lastPeg) {
+          lastPeg = peg;
+          if (u < 0.985) {
+            let nearGrand = false;
+            if (u > 0.8) {
+              const gCenter = WEDGES.indexOf(Math.max(...WEDGES)) * WSEG;
+              const ptr = (((-wheelAngle) % 360) + 360) % 360;
+              let d = Math.abs(ptr - gCenter); if (d > 180) d = 360 - d;
+              nearGrand = d < WSEG * 1.1;
+            }
+            if (nearGrand && Kit.nearBell) Kit.nearBell(); else Kit.peg();
+            wheelPointer.classList.remove('flick'); void wheelPointer.offsetWidth; wheelPointer.classList.add('flick');
+          }
+        }
+        if (u < 1) requestAnimationFrame(frame);
+        else { wheelSpinning = false; resolve(); }
+      })(t0);
+    });
+  }
+  function runBonusWheel(betAtTrigger, forceIdx) {
+    return new Promise(resolve => {
+      buildWheel();
+      wheelOpen = true;
+      wheelOverlay.classList.add('on');
+      wheelOverlay.setAttribute('aria-hidden', 'false');
+      wheelLock.arm(); /* minimum-view lock: the wheel must be seen 2s before a tap can spin it */
+      wheelPrize.classList.remove('on');
+      wheelMsg.textContent = 'Pull the arm — or tap SPIN!';
+      msgEl.textContent = 'BONUS WHEEL! Pull the arm or tap SPIN to spin the wheel!';
+      /* the wheel is spun with the cabinet SPIN button / pull arm (and its
+         own SPIN THE WHEEL button): freeze the bet controls, arm SPIN */
+      betDownBtn.disabled = true; betUpBtn.disabled = true; maxBetBtn.disabled = true;
+      spinBtn.disabled = false;
+      spinBtn.classList.remove('stopping');
+      spinFace.textContent = 'SPIN THE WHEEL';
+      const lv = $('lever');
+      if (lv) { lv.classList.remove('off'); lv.setAttribute('aria-disabled', 'false'); }
+      wheelArmed = async () => {
+        wheelArmed = null;
+        const idx = (typeof forceIdx === 'number') ? forceIdx : Math.floor(Math.random() * WEDGES.length);
+        const val = WEDGES[idx];
+        wheelMsg.textContent = 'The wheel is spinning…';
+        await spinWheelPhysics(idx);
+        const pay = Math.round(val * betAtTrigger);
+        const tier = WTIERS[val];
+        /* the prize lands on a chrome prize plaque — no paw token here */
+        wheelPrize.querySelector('.plaque-amt').textContent = '+' + fmt(pay);
+        wheelPrize.classList.add('on');
+        if (tier) {
+          wheelMsg.innerHTML = `${tier} JACKPOT! The wheel pays <b>${fmt(pay)}</b> credits!`;
+          Kit.jackpot();
+        } else {
+          wheelMsg.innerHTML = `The wheel pays <b>${fmt(pay)}</b> credits!`;
+          Kit.win(val);
+        }
+        if (pay > 0) {
+          const before = parseInt(winEl.textContent.replace(/[^0-9]/g, ''), 10) || 0;
+          credits += pay;
+          await countUp(winEl, before, before + pay, Math.min(1500, 400 + pay));
+          renderReadouts(before + pay);
+          save();
+        }
+        setTimeout(() => {
+          wheelOverlay.classList.remove('on');
+          wheelOverlay.setAttribute('aria-hidden', 'true');
+          wheelOpen = false;
+          spinFace.textContent = controlsOn ? 'SPIN' : 'STOP';
+          resolve(pay);
+        }, 2100);
+      };
+    });
+  }
+  $('wheelSpinBtn').addEventListener('click', () => {
+    if (wheelArmed) { if (wheelLock.locked()) return; const f = wheelArmed; ac(); f(); }
+  });
+
   /* ---------- spin flow ---------- */
   async function doSpin(isFree) {
-    if (spinning || vaultOpen) return;
+    if (spinning || vaultOpen || wheelOpen) return;
     spinning = true;
     setControlsEnabled(false);
     clearWinMarks();
@@ -648,10 +844,20 @@
     /* Skull Vault plays before free spins when both trigger together.
        Celebrate first — never cut straight in (Joshua, 12:52 CT). */
     if (ev.bonus) {
-      msgEl.textContent = '3 BONUS tokens! The Skull Vault is yours!';
       spinning = false;
-      await celebrate('bonus', 'SKULL VAULT!', 'Pick your doors — bank before a skull does!', celebDur());
-      await runSkullVault(betAtTrigger);
+      /* Trigger split (2026-11-22): the wheel JOINS the vault on this
+         same BN door — a wheelShare roll decides which bonus opens.
+         BN trigger frequency is unchanged, so the combined feature
+         frequency stays 1-in-35 as settled. Free spins untouched. */
+      if (Math.random() < (cfg.wheelShare ?? 0.5)) {
+        msgEl.textContent = '3 BONUS tokens! The Bonus Wheel is yours!';
+        await celebrate('bonus', 'BONUS WHEEL!', 'One spin — every wedge pays!', celebDur());
+        await runBonusWheel(betAtTrigger);
+      } else {
+        msgEl.textContent = '3 BONUS tokens! The Skull Vault is yours!';
+        await celebrate('bonus', 'SKULL VAULT!', 'Pick your doors — bank before a skull does!', celebDur());
+        await runSkullVault(betAtTrigger);
+      }
       notePeak();
       renderReadouts();
       spinning = true;
@@ -693,6 +899,7 @@
 
   spinBtn.addEventListener('click', () => {
     ac();
+    if (wheelArmed) { if (wheelLock.locked()) return; const f = wheelArmed; f(); return; }
     if (vaultOpen) return; /* the vault is played on its doors */
     if (spinning) { requestStop(); return; }
     if (!controlsOn) return; /* free-spin pause etc.: the STOP face is inert */
@@ -717,7 +924,7 @@
   if (leverEl && leverArm) {
     leverEl.addEventListener('pointerdown', e => {
       if (vaultOpen) return;
-      if (!controlsOn && !spinning) return;
+      if (!controlsOn && !spinning && !wheelArmed) return;
       e.preventDefault();
       try { leverEl.setPointerCapture(e.pointerId); } catch (err) {}
       leverDrag = { y0: e.clientY, travel: 0, t0: performance.now() };
@@ -747,7 +954,7 @@
     leverEl.addEventListener('pointerup', leverRelease);
     leverEl.addEventListener('pointercancel', () => { leverDrag = null; leverSet(0, true); });
     leverEl.addEventListener('keydown', e => {
-      if ((e.key === 'Enter' || e.key === ' ') && !vaultOpen && (controlsOn || spinning)) { e.preventDefault(); leverScriptedPull(); }
+      if ((e.key === 'Enter' || e.key === ' ') && !vaultOpen && (controlsOn || spinning || wheelArmed)) { e.preventDefault(); leverScriptedPull(); }
     });
   }
   betDownBtn.addEventListener('click', () => { betSel = Math.max(BET_MIN, betSel - BET_STEP); renderReadouts(); buildPaytable(); sTick(); });
@@ -757,7 +964,7 @@
      one tap restarts the game fresh — standard 1,000 starting credits,
      $25 bet, unlocks reset to the fresh 1,000-credit peak. */
   newGameBtn.addEventListener('click', () => {
-    if (spinning || vaultOpen || freeSpinsLeft > 0) return;
+    if (spinning || vaultOpen || wheelOpen || freeSpinsLeft > 0) return;
     credits = 1000;
     betSel = BET_MIN;
     peak = 1000;
@@ -786,9 +993,10 @@
     celebrate: (kind, title, sub, dur) => celebrate(kind || 'bonus', title || 'BONUS WHEEL!', sub || '', dur || 3000),
     kit: Kit,
     bonus: () => runSkullVault(totalBet()),
+    wheel: (idx) => runBonusWheel(totalBet(), idx),
     vaultRig: layout => { vaultRig = Array.isArray(layout) ? layout.slice() : null; },
     vaultState: () => vaultState ? { unbanked: vaultState.unbanked, bet: vaultState.bet, over: vaultState.over, doorsLeft: vaultState.doorsLeft, skullsLeft: vaultState.skullsLeft, safeLeft: vaultState.safeLeft, pay: vaultState.pay || 0 } : null,
-    getState: () => ({ credits, bet: betSel, betPerLine: lineBet(), maxBet: unlockedMax(), peak, spinning, vaultOpen, stops: stops.slice() })
+    getState: () => ({ credits, bet: betSel, betPerLine: lineBet(), maxBet: unlockedMax(), peak, spinning, vaultOpen, wheelOpen, wheelArmed: !!wheelArmed, wheelSpinning, stops: stops.slice() })
   };
   soundStateEl.textContent = soundOn ? 'ON' : 'OFF';
 
