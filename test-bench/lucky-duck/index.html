@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Lucky Duck — Personal Machine</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#4a0d12">
+<style>
+@font-face { font-family: 'Bebas Neue'; src: url('assets/fonts/bebas-neue.woff2') format('woff2'); font-display: swap; }
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+:root { --cell: 92px; }
+html, body { height:100%; }
+body {
+  font-family:'Bebas Neue', 'Arial Narrow', sans-serif;
+  background:#16060a radial-gradient(120% 90% at 50% 0%, #2b0d13 0%, #16060a 60%);
+  color:#f5eeda; display:flex; justify-content:center; min-height:100dvh;
+  user-select:none; -webkit-user-select:none; overflow-x:hidden;
+}
+#cabinet {
+  width:min(430px, 100vw); min-height:100dvh; display:flex; flex-direction:column;
+  background:linear-gradient(180deg, #6d1420 0%, #8c1d2c 30%, #6d1420 55%, #4a0d12 100%);
+  box-shadow: inset 0 0 0 3px #2a0508, inset 0 0 34px rgba(0,0,0,.55);
+  padding:8px 8px calc(10px + env(safe-area-inset-bottom));
+  gap:7px; position:relative;
+}
+/* ---------- marquee ---------- */
+#marquee {
+  position:relative; border-radius:14px; overflow:hidden;
+  background:radial-gradient(130% 160% at 50% -20%, #ffe9a8 0%, #f7b731 38%, #d97b16 62%, #8c3c07 100%);
+  border:3px solid #2a0508; box-shadow: inset 0 0 0 2px #ffedb5, 0 3px 0 rgba(0,0,0,.4);
+  display:flex; align-items:center; gap:6px; padding:6px 10px 6px 6px;
+}
+#marquee .duckArt { width:74px; height:74px; flex:0 0 auto; filter:drop-shadow(0 2px 2px rgba(0,0,0,.35)); }
+#marqueeText { flex:1; text-align:center; line-height:.92; }
+#marqueeText .lucky {
+  font-size:44px; letter-spacing:2px; color:#7a1016;
+  text-shadow: 0 2px 0 #ffe9a8, 0 4px 0 rgba(0,0,0,.25);
+}
+#marqueeText .sub { font-size:14px; letter-spacing:4px; color:#5c2a05; }
+#denomBadge {
+  flex:0 0 auto; width:46px; height:46px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #fff6d8, #e8b93c 55%, #9a6b0d);
+  border:2px solid #5c2a05; color:#5c2a05; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; line-height:1;
+  box-shadow: 0 2px 4px rgba(0,0,0,.4);
+}
+#denomBadge .d1 { font-size:20px; } #denomBadge .d2 { font-size:8.5px; letter-spacing:1px; }
+#progressive {
+  text-align:center; background:#12040a; border:2px solid #2a0508; border-radius:9px;
+  box-shadow: inset 0 0 0 2px #57131d, inset 0 0 18px rgba(0,0,0,.8);
+  padding:3px 6px 5px;
+}
+#progressive .plabel { font-size:12px; letter-spacing:5px; color:#ffb3a0; }
+#progressiveAmt { font-size:31px; letter-spacing:1px; color:#ffd94d; text-shadow:0 0 12px rgba(255,180,0,.65); line-height:1; }
+/* ---------- video / bingo screen ---------- */
+#screen {
+  background:linear-gradient(180deg, #0d2136, #081426);
+  border:3px solid #2a0508; border-radius:12px; padding:7px 8px 8px;
+  box-shadow: inset 0 0 0 2px #274b6b, inset 0 0 26px rgba(0,0,0,.65);
+}
+#patternBar { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+#patternName { flex:1; font-size:19px; letter-spacing:2px; color:#ffe9a8; text-shadow:0 0 8px rgba(255,190,0,.4); white-space:nowrap; overflow:hidden; }
+#patternGrid { display:grid; grid-template-columns:repeat(5, 9px); gap:2px; flex:0 0 auto; }
+#patternGrid i { width:9px; height:9px; border-radius:2px; background:#1d3857; display:block; }
+#patternGrid i.on { background:#ffb62e; box-shadow:0 0 5px rgba(255,182,46,.8); }
+#gameState { font-size:12.5px; letter-spacing:1.5px; color:#9fc6e8; text-align:right; flex:0 0 auto; }
+#bingoCard { display:grid; grid-template-columns:repeat(5, 1fr); gap:3px; }
+#bingoCard .bh { text-align:center; font-size:17px; color:#fff; letter-spacing:1px; padding:1px 0; }
+#bingoCard .bh:nth-child(1){color:#ff8f7a}#bingoCard .bh:nth-child(2){color:#ffd94d}#bingoCard .bh:nth-child(3){color:#9fe870}#bingoCard .bh:nth-child(4){color:#7ac7ff}#bingoCard .bh:nth-child(5){color:#e2a6ff}
+#bingoCard .cell {
+  position:relative; text-align:center; font-size:19px; line-height:1; padding:6px 0 5px;
+  background:#122c47; color:#dceefc; border-radius:6px; border:1px solid #274b6b;
+}
+#bingoCard .cell.free { color:#ffe9a8; font-size:13px; letter-spacing:1px; background:#1b3a5c; }
+#bingoCard .cell.marked::after {
+  content:''; position:absolute; inset:3px; border-radius:50%;
+  background:radial-gradient(circle at 40% 35%, rgba(255,255,255,.5), rgba(160,200,255,.28) 60%);
+  border:1.5px solid rgba(190,220,255,.65);
+}
+#bingoCard .cell.gold { background:#5c3405; border-color:#ffb62e; color:#ffe9a8; }
+#bingoCard .cell.gold::after {
+  content:''; position:absolute; inset:2px; border-radius:50%;
+  background:radial-gradient(circle at 40% 35%, #fff3c4, #ffb62e 55%, #d97b16);
+  box-shadow:0 0 9px rgba(255,182,46,.85); opacity:.92;
+}
+#bingoCard .cell.gold span { position:relative; z-index:1; color:#3a1c00; }
+#calledStrip { display:flex; align-items:center; gap:4px; margin-top:7px; min-height:26px; }
+#calledStrip .clabel { font-size:11.5px; letter-spacing:1.5px; color:#9fc6e8; flex:0 0 auto; }
+#calledBalls { display:flex; gap:3px; flex-wrap:nowrap; overflow:hidden; flex:1; }
+.ball {
+  flex:0 0 auto; width:24px; height:24px; border-radius:50%; font-size:12.5px;
+  display:flex; align-items:center; justify-content:center; color:#081426;
+  background:radial-gradient(circle at 35% 30%, #ffffff, #b9d4ea 60%, #7ea6c9);
+  border:1px solid #0d2136;
+}
+.ball.latest { background:radial-gradient(circle at 35% 30%, #fff3c4, #ffb62e 60%, #d97b16); box-shadow:0 0 8px rgba(255,182,46,.8); }
+#meters { display:grid; grid-template-columns:repeat(4, 1fr); gap:5px; margin-top:8px; }
+.meter { background:#0a0a0c; border:1.5px solid #3a3f46; border-radius:7px; padding:3px 4px 4px; text-align:center; box-shadow: inset 0 0 12px rgba(0,0,0,.85); }
+.meter .mlabel { font-size:11px; letter-spacing:3px; color:#c8ccd2; }
+.meter .mval { font-size:19px; color:#ff5d47; text-shadow:0 0 7px rgba(255,60,30,.55); line-height:1.05; font-variant-numeric:tabular-nums; }
+.meter .mval.money { color:#ffd94d; text-shadow:0 0 7px rgba(255,190,0,.5); font-size:16.5px; }
+/* ---------- reels ---------- */
+#reelWindow {
+  position:relative; background:linear-gradient(180deg, #d8d3c3, #f4efdf 18%, #fbf7ea 50%, #f4efdf 82%, #cfc9b8);
+  border:3px solid #2a0508; border-radius:12px; box-shadow: inset 0 0 0 2px #8f887a, inset 0 14px 22px rgba(0,0,0,.28), inset 0 -14px 22px rgba(0,0,0,.28);
+  display:grid; grid-template-columns:1fr 1fr 1fr; overflow:hidden; height:calc(var(--cell) * 3);
+}
+.reel { position:relative; overflow:hidden; border-right:2px solid #57503f; }
+.reel:last-child { border-right:none; }
+.strip { position:absolute; left:0; right:0; top:0; will-change:transform; }
+.strip.spinning { filter:blur(2px) brightness(1.04); }
+.sym { height:var(--cell); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; }
+.sym .seven { font-size:64px; line-height:.9; font-weight:900; font-family:Georgia, 'Times New Roman', serif; }
+.sym .seven.red { color:#c8102e; text-shadow:0 2px 0 rgba(0,0,0,.18); }
+.sym .seven.blue { color:#1447c8; text-shadow:0 2px 0 rgba(0,0,0,.18); }
+.sym .bar { background:#151312; color:#f4efdf; border-radius:5px; padding:2px 10px; font-size:21px; letter-spacing:2px; line-height:1.02; text-align:center; box-shadow:0 2px 0 rgba(0,0,0,.25); }
+.sym .bar small { display:block; font-size:21px; }
+.sym .duckSym { width:64px; height:52px; }
+.sym .duckWord { font-size:11.5px; letter-spacing:1.5px; color:#7a1016; }
+.sym .cherry { width:52px; height:52px; }
+#payline { position:absolute; left:0; right:0; top:50%; height:0; border-top:3px solid rgba(200,16,46,.85); transform:translateY(-1.5px); pointer-events:none; z-index:3; }
+#payline::before, #payline::after { content:''; position:absolute; top:-8px; border:8px solid transparent; }
+#payline::before { left:-2px; border-left-color:#c8102e; }
+#payline::after { right:-2px; border-right-color:#c8102e; }
+#banner {
+  position:absolute; inset:auto 0 6px 0; text-align:center; z-index:4; pointer-events:none;
+  font-size:34px; letter-spacing:4px; display:none;
+}
+#banner.win { display:block; color:#ffe9a8; text-shadow:0 0 14px rgba(255,170,0,.9), 0 2px 0 rgba(0,0,0,.5); animation:bannerPop .5s ease infinite alternate; }
+#banner.over { display:block; color:#5a5148; text-shadow:none; font-size:24px; letter-spacing:5px; }
+@keyframes bannerPop { from { transform:scale(1); } to { transform:scale(1.07); } }
+/* ---------- buttons ---------- */
+#deck { display:grid; grid-template-columns:1fr 1.35fr 1fr; gap:8px; align-items:stretch; }
+.pbtn {
+  font-family:inherit; border:none; cursor:pointer; border-radius:12px; color:#fff;
+  letter-spacing:1.5px; padding:11px 4px 9px; line-height:1;
+  box-shadow: 0 5px 0 rgba(0,0,0,.45), inset 0 2px 3px rgba(255,255,255,.45), inset 0 -6px 10px rgba(0,0,0,.3);
+}
+.pbtn:active { transform:translateY(3px); box-shadow:0 2px 0 rgba(0,0,0,.45), inset 0 2px 3px rgba(255,255,255,.4); }
+.pbtn:disabled { opacity:.45; }
+#betOneBtn { background:linear-gradient(180deg, #3f9be0, #1665ad); font-size:23px; }
+#betMaxBtn { background:linear-gradient(180deg, #3f9be0, #1665ad); font-size:23px; }
+#spinBtn { background:linear-gradient(180deg, #e8452f, #a3121f); font-size:27px; }
+.pbtn .bsub { display:block; font-size:11.5px; letter-spacing:2px; opacity:.85; margin-top:2px; }
+#miniRow { display:flex; gap:8px; }
+.mini {
+  flex:1; font-family:inherit; font-size:15px; letter-spacing:2px; cursor:pointer;
+  background:linear-gradient(180deg, #4c5158, #26292e); color:#e8eaed; border:1.5px solid #101215;
+  border-radius:9px; padding:7px 0 6px; box-shadow:0 3px 0 rgba(0,0,0,.4);
+}
+.mini:active { transform:translateY(2px); box-shadow:0 1px 0 rgba(0,0,0,.4); }
+#refillBtn { display:none; background:linear-gradient(180deg, #39b54a, #1c7a30); border-color:#0d3d18; color:#fff; }
+#msg { text-align:center; font-size:15.5px; letter-spacing:1.5px; color:#ffe9a8; min-height:20px; text-shadow:0 1px 2px rgba(0,0,0,.6); }
+/* ---------- paytable sheet ---------- */
+#paySheet {
+  display:none; background:#fdf6dd; color:#2b2118; border:3px solid #2a0508; border-radius:12px;
+  padding:10px 12px; box-shadow:0 8px 24px rgba(0,0,0,.5);
+}
+#paySheet.open { display:block; }
+#paySheet h2 { font-size:21px; letter-spacing:2px; text-align:center; color:#7a1016; margin-bottom:6px; }
+#paySheet table { width:100%; border-collapse:collapse; font-size:16.5px; }
+#paySheet td, #paySheet th { padding:2.5px 4px; border-bottom:1px solid #d8c9a3; text-align:right; font-variant-numeric:tabular-nums; }
+#paySheet td:first-child, #paySheet th:first-child { text-align:left; letter-spacing:1px; }
+#paySheet tr.top td { color:#a3121f; font-size:18.5px; }
+#paySheet .note { font-size:12.5px; text-align:center; margin-top:6px; color:#6b5a35; letter-spacing:.5px; font-family:Arial, sans-serif; }
+/* ---------- overlays ---------- */
+#redFlash { position:fixed; inset:0; background:radial-gradient(circle, rgba(255,40,30,.88), rgba(160,0,0,.94)); display:none; z-index:40; align-items:center; justify-content:center; flex-direction:column; gap:6px; }
+#redFlash.on { display:flex; animation:redPulse .28s ease-in-out infinite alternate; }
+@keyframes redPulse { from { filter:brightness(.92); } to { filter:brightness(1.15); } }
+#redFlash .rt { font-size:47px; letter-spacing:3px; color:#fff; text-shadow:0 0 22px rgba(255,255,255,.7), 0 3px 0 rgba(0,0,0,.4); text-align:center; line-height:1; }
+#redFlash .rs { font-size:19px; letter-spacing:4px; color:#ffe9a8; }
+#pickOverlay { position:fixed; inset:0; background:linear-gradient(180deg, #7a1016 0 64px, #0e4d73 64px); display:none; z-index:50; flex-direction:column; }
+#pickOverlay.on { display:flex; }
+#pickOverlay .ptitle { text-align:center; color:#ffe9a8; font-size:32px; letter-spacing:2px; padding:12px 8px 8px; text-shadow:0 2px 0 rgba(0,0,0,.4); }
+#pond { position:relative; flex:1; overflow:hidden; background:linear-gradient(180deg, #2f8fc4, #1665ad 70%, #0d4a75); }
+#pond::before { content:''; position:absolute; inset:0; background:radial-gradient(60% 30% at 30% 20%, rgba(255,255,255,.25), transparent 70%), radial-gradient(50% 26% at 75% 60%, rgba(255,255,255,.16), transparent 70%); }
+.pondDuck { position:absolute; width:96px; cursor:pointer; background:none; border:none; padding:0; animation:swim linear infinite alternate; }
+.pondDuck svg { width:100%; filter:drop-shadow(0 4px 4px rgba(0,0,0,.35)); }
+.pondDuck .amt { position:absolute; left:50%; transform:translateX(-50%); bottom:-24px; font-size:24px; color:#ffe9a8; text-shadow:0 0 10px rgba(255,170,0,.8); display:none; white-space:nowrap; }
+.pondDuck.picked .amt { display:block; }
+.pondDuck.dim { opacity:.45; }
+@keyframes swim { from { margin-left:-14px; } to { margin-left:14px; } }
+#pickResult { text-align:center; padding:12px; display:none; }
+#pickResult .prAmt { font-size:38px; color:#ffe9a8; letter-spacing:2px; }
+#collectBtn { font-family:inherit; font-size:23px; letter-spacing:2px; background:linear-gradient(180deg, #39b54a, #1c7a30); color:#fff; border:none; border-radius:11px; padding:10px 30px 8px; cursor:pointer; box-shadow:0 4px 0 rgba(0,0,0,.4); }
+#foot { text-align:center; font-size:11px; letter-spacing:1.5px; color:rgba(245,238,218,.55); font-family:Arial, sans-serif; padding-bottom:2px; }
+@media (max-width:380px) { :root { --cell: 82px; } #marqueeText .lucky { font-size:38px; } .meter .mval { font-size:16.5px; } .meter .mval.money { font-size:14px; } }
+</style>
+</head>
+<body>
+<div id="cabinet">
+  <div id="marquee">
+    <div class="duckArt" id="marqueeDuck"></div>
+    <div id="marqueeText">
+      <div class="lucky">LUCKY DUCKY</div>
+      <div class="sub">★ ★ ★</div>
+    </div>
+    <div id="denomBadge"><div class="d1">$1</div><div class="d2">PER CREDIT</div></div>
+  </div>
+
+  <div id="progressive"><div class="plabel">PROGRESSIVE</div><div id="progressiveAmt">$250,000.00</div></div>
+
+  <div id="screen">
+    <div id="patternBar">
+      <div id="patternName">SIX PACK</div>
+      <div id="patternGrid"></div>
+      <div id="gameState">GAME 1 · 0/75</div>
+    </div>
+    <div id="bingoCard"></div>
+    <div id="calledStrip"><div class="clabel">CALLED</div><div id="calledBalls"></div></div>
+    <div id="meters">
+      <div class="meter"><div class="mlabel">BET</div><div class="mval" id="mBet">3</div></div>
+      <div class="meter"><div class="mlabel">WON</div><div class="mval" id="mWon">0</div></div>
+      <div class="meter"><div class="mlabel">PAID</div><div class="mval" id="mPaid">0</div></div>
+      <div class="meter"><div class="mlabel">CASH</div><div class="mval money" id="mCash">$1,000</div></div>
+    </div>
+  </div>
+
+  <div id="reelWindow">
+    <div class="reel" id="reel0"></div>
+    <div class="reel" id="reel1"></div>
+    <div class="reel" id="reel2"></div>
+    <div id="payline"></div>
+    <div id="banner"></div>
+  </div>
+
+  <div id="deck">
+    <button class="pbtn" id="betOneBtn">BET 1<span class="bsub">ONE CREDIT</span></button>
+    <button class="pbtn" id="spinBtn">SPIN<span class="bsub">CASH OUT</span></button>
+    <button class="pbtn" id="betMaxBtn">BET 3<span class="bsub">MAX BET</span></button>
+  </div>
+  <div id="miniRow">
+    <button class="mini" id="paysBtn">PAYTABLE</button>
+    <button class="mini" id="refillBtn">+ $1,000 CASH</button>
+    <button class="mini" id="soundBtn">SOUND ON</button>
+  </div>
+  <div id="msg">INSERT COINS — BET 1 OR BET 3, THEN SPIN</div>
+
+  <div id="paySheet">
+    <h2>PAYTABLE — CREDITS</h2>
+    <table id="payTable"></table>
+    <div class="note">3 DUCKS ON MAX BET ALSO TAKES THE PROGRESSIVE. RED SCREEN RE-SPINS GUARANTEE AT LEAST THE WIN THAT TRIGGERED THEM. PERSONAL PLAY MACHINE — CREDITS ONLY, NO CASH VALUE.</div>
+  </div>
+
+  <div id="foot">PERSONAL MACHINE · BUILT FOR HOME PLAY · © 2026 J-DAWGS INDUSTRIES</div>
+</div>
+
+<div id="redFlash"><div class="rt">RED SCREEN<br>RE-SPIN!</div><div class="rs" id="redSub">GUARANTEED WIN</div></div>
+
+<div id="pickOverlay">
+  <div class="ptitle">PICK A DUCK, ANY DUCK!</div>
+  <div id="pond"></div>
+  <div id="pickResult"><div class="prAmt" id="pickAmt"></div><button id="collectBtn">COLLECT</button></div>
+</div>
+
+<script src="logic.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
