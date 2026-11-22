@@ -143,14 +143,21 @@
 <div class="bonus-overlay" id="bonusOverlay" aria-hidden="true" aria-label="Skull Vault">
   <div class="bonus-card vault-card">
     <h2 class="bonus-title">SKULL VAULT</h2>
-    <p class="bonus-rules">3 BONUS tokens cracked the vault — twelve doors, on the house. Nine hide <b>blue chips</b> worth <b>× your total bet</b> (one big door hides <b class="gold">25×</b>); three hide <b class="bad">SKULLS</b> — open one and everything unbanked is <b class="bad">GONE</b>. Pick doors, <b>STOP &amp; BANK</b> whenever you like; clear all nine for the full <b>38×</b>.</p>
+    <p class="bonus-rules">The DOLLAR DOOR cracked the vault — twelve doors, on the house. Nine hide <b>blue chips</b> worth <b>× your total bet</b> (one big door hides <b class="gold">8.5×</b>); three hide <b class="bad">SKULLS</b>. Every door you open <b>PAYS YOU ON THE SPOT</b> — watch your credits climb. Open a <b class="bad">SKULL</b> and the vault ends: you <b>keep everything you collected</b>, and whatever is still behind the other doors stays locked. Clear all nine for the full <b>13×</b>.</p>
     <div class="vault-readouts">
-      <div class="vault-readout"><label>IN THE VAULT</label><div class="led vault-led" id="vaultLed">0</div></div>
+      <div class="vault-readout"><label>COLLECTED</label><div class="led vault-led" id="vaultLed">0</div></div>
       <div class="vault-readout"><label>DOORS LEFT</label><div class="led vault-led" id="vaultDoorsLed">12</div></div>
       <div class="vault-readout"><label>SKULLS LEFT</label><div class="led vault-led bad" id="vaultSkullsLed">3</div></div>
     </div>
     <div class="vault-grid" id="vaultGrid"></div>
-    <button class="btn vault-bank-btn" id="vaultBankBtn" type="button" disabled>STOP &amp; BANK</button>
+    <button class="btn vault-bank-btn" id="vaultBankBtn" type="button" disabled>STOP — END VAULT</button>
+    <div class="vault-end" id="vaultEnd" aria-hidden="true">
+      <img class="vault-end-img" id="vaultEndImg" src="assets/vault-skull.webp" alt="SKULL" draggable="false">
+      <h3 class="vault-end-title" id="vaultEndTitle">THE SKULL ENDS THE VAULT</h3>
+      <p class="vault-end-line" id="vaultEndLine1"></p>
+      <p class="vault-end-line dim" id="vaultEndLine2"></p>
+      <button class="btn vault-end-btn" id="vaultEndBtn" type="button" disabled>CONTINUE</button>
+    </div>
     <div class="bonus-msg" id="bonusMsg" aria-live="polite">Pick a door!</div>
   </div>
 </div>
@@ -206,7 +213,7 @@
       <li><b>No blank stops:</b> every reel position is a real symbol — all 15 windows show a symbol on every spin.</li>
       <li><b>POKER CHIPS</b> pay from just 2 on a line.</li>
       <li>3+ <b>SCATTER</b> anywhere pays 2× / 7× / 35× your total bet and awards 7 / 10 / 15 <b>FREE SPINS</b> — line wins pay <b>double</b> in free spins, and free spins can retrigger.</li>
-      <li><b>SKULL VAULT — OR THE BONUS WHEEL:</b> BONUS tokens ride reels 2, 3 and 4. When all three windows show one, the bonus opens — half the time the <b>BONUS WHEEL</b> spins instead of the vault: 12 wedges, every wedge pays × your total bet (MINI 4× · MINOR 8× · MAJOR 12× · GRAND 25×). The rest of the time the Skull Vault opens: twelve riveted doors — nine hide blue-chip prizes worth × your total bet (1×, 1×, 1×, 1×, 2×, 2×, 2×, 3× and one big 25× door — 38× in all) and three hide <b>SKULLS</b>. Pick doors one at a time; after any safe door you can <b>STOP &amp; BANK</b> what you've collected. Open a skull and everything unbanked is gone. Clear all nine chip doors to bank the full 38×. The vault lands about once every 69 spins — a feature (vault or free spins) about once every 35.</li>
+      <li><b>SKULL VAULT — OR THE BONUS WHEEL:</b> 3+ <b>BIG GREEN DOLLARS</b> anywhere crack the bonus door — half the time the <b>BONUS WHEEL</b> spins instead of the vault: 12 wedges, every wedge pays × your total bet (MINI 1.4× · MINOR 2.8× · MAJOR 4× · GRAND 8.5×). The rest of the time the Skull Vault opens: twelve riveted doors — nine hide blue-chip prizes worth × your total bet (8.5×, 1×, 0.7×, 0.7×, 0.7×, 0.35×, 0.35×, 0.35× and 0.35× — 13× in all) and three hide <b>SKULLS</b>. Every door you open <b>pays you on the spot</b> — your credits climb with each door. Open a skull and the vault ends: you keep everything you collected, and what's still behind the other doors stays locked. Clear all nine chip doors to take the whole 13×. The door lands about once every 20 spins.</li>
       <li>Credits are saved on this device. Run out? Tap <b>BUY BACK IN</b> for a fresh start with 1,000 credits.</li>
     </ul>
     <p class="sheet-legal">Play credits only — no cash value, no prizes. © 2026 J-Dawgs Industries</p>

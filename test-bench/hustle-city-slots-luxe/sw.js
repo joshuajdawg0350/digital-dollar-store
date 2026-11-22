@@ -1,11 +1,15 @@
 /* Hustle City Slots — Poker Luxe service worker. (c) 2026 J-Dawgs Industries. */
+/* v17 (fix, 2026-11-22): Skull Vault pay path — every door pays on the spot
+   (the old stop-and-bank build let a player open a prize door, hit a skull
+   and walk away with ZERO) plus the ending-beat panel that holds the result
+   on screen. Prize values and the door rate unchanged. */
 /* v14 (fix, 2026-11-22): code files (HTML/JS/CSS) are NETWORK-FIRST — a phone
    can never be stuck running a stale or mixed build again (the Skull Vault
    paid in the current code but older cached builds on real phones did not
    reflect it, and the BUY BACK IN button never appeared). Media/assets stay
    cache-first for speed. The precache is fault-tolerant: one missing file
    can no longer fail the whole install and freeze a phone on an old build. */
-const CACHE = 'hc-slots-luxe-v16';
+const CACHE = 'hc-slots-luxe-v17';
 const ASSETS = [
   './', './index.html', './style.css', './game.js', './logic.js', './machines.js', './soundkit.js', './cabinet-life.js',
   './assets/sfx/bell.mp3', './assets/sfx/win-small.mp3', './assets/sfx/win-med.mp3',

@@ -76,6 +76,17 @@ const LUXE = {
      the old BN trigger, so vault prizes were scaled x~0.35 (optimal-play
      EV 6.93x -> ~2.4x) to hold the machine's total RTP at its pre-door
      measured line (~114%). Base pays NOT touched. */
+  /* PAY-PATH CHANGE (Joshua's order, 2026-11-22 15:18 CT): the stop-and-
+     bank mechanic above is GONE. Joshua played it: "I opened one box it
+     didn't pay and then I hit the head" — the prize sat in an unbanked
+     total the credit meter never showed, the skull wiped it, and the
+     bonus paid ZERO. Now every door PAYS ON THE SPOT (credited the moment
+     it opens); a skull ENDS the vault and the player keeps everything
+     collected; an ending panel holds the scene and states the outcome.
+     Prize values below are UNCHANGED; the mechanic change alone lifts
+     the vault's expected value (pick-until-skull EV = sum x 1/(skulls+1)
+     = 13.0 x 0.25 = 3.25x, Monte Carlo confirmed at build time) — flagged
+     in the vault record for a possible future rebalance call. */
   vault: { prizes: [8.5, 1, 0.7, 0.7, 0.7, 0.35, 0.35, 0.35, 0.35], skulls: 3 },
   /* BONUS WHEEL (added 2026-11-22 — JOINS the Skull Vault on the same BN
      door; Joshua picked the Vault over a wheel, then the wheel was ported

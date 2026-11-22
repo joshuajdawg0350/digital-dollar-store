@@ -1679,6 +1679,34 @@ body, button, input, select, textarea,
   box-shadow: 0 0 12px rgba(46, 155, 255, .45), inset 0 0 0 1px rgba(111, 194, 255, .5);
 }
 
+/* ---------- VAULT ENDING BEAT (2026-11-22) ----------
+   The panel that ends every vault visit: big art, the outcome in plain
+   words, a CONTINUE button armed after a 4-second read hold (JS). It
+   covers the vault card, so the result is the last thing the player
+   sees — never a quick slam-shut. */
+.bonus-card.vault-card { position: relative; }
+.vault-end {
+  position: absolute; inset: 0; z-index: 6;
+  display: none;
+  flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px; padding: 22px 20px;
+  border-radius: inherit;
+  background: linear-gradient(172deg, rgba(10, 13, 19, .97) 0%, rgba(4, 5, 8, .985) 100%);
+  text-align: center;
+}
+.vault-end.on { display: flex; }
+.vault-end-img {
+  width: 148px; height: 148px; object-fit: contain;
+  filter: drop-shadow(0 10px 26px rgba(0, 0, 0, .8));
+  animation: vaultEndPop .45s ease-out;
+}
+@keyframes vaultEndPop { from { transform: scale(.55); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.vault-end-title { font-size: 30px; letter-spacing: .06em; color: #eaf2fb; margin: 0; }
+.vault-end-line { margin: 0; font-size: 16px; line-height: 1.45; color: #f2f6fb; max-width: 330px; }
+.vault-end-line.dim { color: #aebdd0; font-size: 14.5px; }
+.vault-end-btn { margin-top: 8px; min-width: 180px; }
+.vault-end-btn:disabled { opacity: .45; }
+
 /* ---------- BONUS WHEEL overlay (ported 2026-11-22 from Pearl's Paws;
    dressed as the settled Luxe wheel pick #8 "chrome biker/red") ----------
    Dark chrome rim with bolts (the .wheel-wrap::before mirror-chrome rim
