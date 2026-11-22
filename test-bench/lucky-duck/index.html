@@ -10,7 +10,7 @@
 <style>
 @font-face { font-family: 'Bebas Neue'; src: url('assets/fonts/bebas-neue.woff2') format('woff2'); font-display: swap; }
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-:root { --cell: clamp(64px, 9.6dvh, 88px); --gold:#c9a227; --goldlt:#e8c85a; }
+:root { --cell: clamp(80px, 11.6dvh, 96px); --gold:#c9a227; --goldlt:#e8c85a; }
 html, body { height:100%; }
 body {
   font-family:'Bebas Neue', 'Arial Narrow', sans-serif;
@@ -51,7 +51,7 @@ body {
 }
 #logoRow { display:flex; align-items:center; gap:5px; margin-top:0; }
 #marqueeDuck { width:76px; height:76px; flex:0 0 auto; filter:drop-shadow(0 2px 3px rgba(0,0,0,.45)); }
-#marqueeDuck svg { width:100%; height:100%; display:block; }
+#marqueeDuck img { width:100%; height:100%; display:block; border-radius:50%; }
 .logoSide {
   flex:1; font-size:31px; letter-spacing:1px; line-height:1; white-space:nowrap;
   background:linear-gradient(180deg, #fff7ae 0%, #ffe14d 34%, #b5e048 68%, #57ab2d 100%);
@@ -144,7 +144,7 @@ body {
 .billArt .b1000.tl { top:3px; left:6px; } .billArt .b1000.tr { top:3px; right:6px; }
 .billArt .b1000.bl { bottom:3px; left:6px; } .billArt .b1000.br { bottom:3px; right:6px; }
 .billArt .bduck { width:74px; height:74px; }
-.billArt .bduck svg { width:100%; height:100%; display:block; }
+.billArt .bduck img { width:100%; height:100%; display:block; object-fit:cover; border-radius:9px; box-shadow:0 1px 4px rgba(0,0,0,.4); }
 .billArt .btitle {
   font-size:17px; letter-spacing:1.5px; line-height:1;
   background:linear-gradient(180deg, #fff7ae 0%, #ffe14d 38%, #b5e048 72%, #57ab2d 100%);
@@ -175,7 +175,7 @@ body {
 }
 #reelWindow {
   position:relative; display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;
-  margin:0 31px; height:calc(var(--cell) * 3);
+  margin:0 31px; height:calc(var(--cell) * 1.78);
 }
 .reel {
   position:relative; overflow:hidden; border:3px solid #b98a1e; border-radius:8px;
@@ -196,8 +196,8 @@ body {
 .sym .bar { background:#151312; color:#f4efdf; border-radius:5px; padding:2px 12px; font-size:calc(var(--cell) * .20); letter-spacing:2px; line-height:1.04; text-align:center; box-shadow:0 2px 0 rgba(0,0,0,.25); }
 .sym .bar small { display:block; font-size:inherit; }
 body.redspin .sym .bar { background:#3d0605; color:#ff8d7d; box-shadow:0 0 13px rgba(255,40,20,.75), 0 2px 0 rgba(0,0,0,.25); }
-.sym .duckMedal { width:calc(var(--cell) * .86); height:calc(var(--cell) * .86); }
-.sym .duckMedal svg { width:100%; height:100%; display:block; }
+.sym .duckMedal { width:calc(var(--cell) * .82); height:calc(var(--cell) * .82); }
+.sym .duckMedal img { width:100%; height:100%; display:block; border-radius:50%; }
 .sym .duckLogoText {
   font-size:calc(var(--cell) * .125); letter-spacing:1px; line-height:1; margin-top:1px;
   background:linear-gradient(180deg, #fff7ae 0%, #ffe14d 38%, #b5e048 72%, #57ab2d 100%);
@@ -226,7 +226,8 @@ body.redspin .sym .bar { background:#3d0605; color:#ff8d7d; box-shadow:0 0 13px 
   padding:5px 6px 4px; font-family:Arial, sans-serif; font-weight:700;
 }
 .badgeMed { flex:0 0 auto; display:flex; flex-direction:column; align-items:center; width:44px; }
-.badgeMed svg { width:24px; height:24px; }
+.badgeMed .badgeDuck { display:block; width:24px; height:24px; }
+.badgeMed .badgeDuck img { width:24px; height:24px; border-radius:50%; display:block; }
 .badgeMed .blab { font-size:7px; letter-spacing:.4px; color:#7a1016; text-align:center; line-height:1.1; margin-top:1px; }
 .denomPlaque {
   flex:0 0 auto; background:linear-gradient(180deg,#fffdf4,#f1ead2); border:2.5px solid #b98a1e; border-radius:6px;
@@ -286,7 +287,7 @@ body.redspin .sym .bar { background:#3d0605; color:#ff8d7d; box-shadow:0 0 13px 
 #pond::before { content:''; position:absolute; inset:0; background:radial-gradient(60% 30% at 30% 20%, rgba(255,255,255,.25), transparent 70%), radial-gradient(50% 26% at 75% 60%, rgba(255,255,255,.16), transparent 70%); }
 .pondDuck { position:absolute; width:98px; cursor:pointer; background:none; border:none; padding:0; animation:swim linear infinite alternate; }
 .pondDuck .ripple { position:absolute; left:50%; bottom:-7px; transform:translateX(-50%); width:84px; height:17px; border-radius:50%; background:radial-gradient(ellipse, rgba(255,255,255,.5), rgba(255,255,255,0) 68%); }
-.pondDuck svg { width:100%; filter:drop-shadow(0 4px 4px rgba(0,0,0,.35)); position:relative; }
+.pondDuck img { width:100%; border-radius:50%; filter:drop-shadow(0 4px 4px rgba(0,0,0,.35)); position:relative; display:block; }
 .pondDuck .amt { position:absolute; left:50%; transform:translateX(-50%); bottom:-26px; font-size:24px; color:#ffe9a8; text-shadow:0 0 10px rgba(255,170,0,.8); display:none; white-space:nowrap; z-index:2; }
 .pondDuck.picked .amt { display:block; }
 .pondDuck.dim { opacity:.45; }
@@ -303,8 +304,8 @@ body.redspin .sym .bar { background:#3d0605; color:#ff8d7d; box-shadow:0 0 13px 
 #foot { text-align:center; font-size:10px; letter-spacing:1.5px; color:rgba(245,238,218,.5); font-family:Arial, sans-serif; padding-bottom:2px; }
 @media (max-width:380px) { .logoSide { font-size:26px; } #marqueeDuck { width:64px; height:64px; } .meter .mval { font-size:16.5px; } .meter .mval.money { font-size:13.5px; } .jewel { width:16px; height:16px; } }
 /* short screens: shrink reel cells + shed trim so the cabinet fits one screen */
-@media (max-height:820px) { :root { --cell:76px; } #screenPrint, #foot { display:none; } #cabinet { gap:3px; } #progressiveAmt { font-size:18px; } #frenzy { font-size:12.5px; } }
-@media (max-height:760px) { :root { --cell:68px; } #calledStrip { display:none; } #marqueeDuck { width:56px; height:56px; } .logoSide { font-size:24px; } .billArt .bduck { width:64px; height:64px; } }
+@media (max-height:820px) { :root { --cell:84px; } #screenPrint, #foot { display:none; } #cabinet { gap:3px; } #progressiveAmt { font-size:18px; } #frenzy { font-size:12.5px; } }
+@media (max-height:760px) { :root { --cell:80px; } #calledStrip { display:none; } #marqueeDuck { width:56px; height:56px; } .logoSide { font-size:24px; } .billArt .bduck { width:64px; height:64px; } }
 </style>
 </head>
 <body>
@@ -333,7 +334,7 @@ body.redspin .sym .bar { background:#3d0605; color:#ff8d7d; box-shadow:0 0 13px 
       <div class="logoSide right">DUCKY</div>
     </div>
     <div id="denomBadge"><div class="d1">$1</div><div class="d2">PER CREDIT</div></div>
-    <div id="progressive"><div class="plabel">PROGRESSIVE</div><div id="progressiveAmt">$250,000.00</div></div>
+    <div id="progressive"><div class="plabel">PROGRESSIVE</div><div id="progressiveAmt">$10,000.00</div></div>
   </div>
 
   <div id="screen">
@@ -403,7 +404,7 @@ body.redspin .sym .bar { background:#3d0605; color:#ff8d7d; box-shadow:0 0 13px 
   <div id="paySheet">
     <h2>PAYTABLE — CREDITS</h2>
     <table id="payTable"></table>
-    <div class="note">3 DUCKS ON MAX BET ALSO TAKES THE PROGRESSIVE. RED SCREEN RE-SPINS GUARANTEE AT LEAST THE WIN THAT TRIGGERED THEM. DUCKS ON THE PAYLINE COLLECT JEWELS — 10 TRIGGERS THE JEWEL HUNT. PERSONAL PLAY MACHINE — CREDITS ONLY, NO CASH VALUE.</div>
+    <div class="note">THE DUCK IS WILD ON THE PAYLINE — ONE DUCK DOUBLES THE WINNING COMBINATION, TWO DUCKS PAY 4X, AND THE DUCK COUNTS AS A CHERRY. 3 DUCKS ON MAX BET ALSO TAKES THE PROGRESSIVE (STARTS AT $10,000). RED SCREEN RE-SPINS GUARANTEE AT LEAST THE WIN THAT TRIGGERED THEM. DUCKS ON THE PAYLINE COLLECT JEWELS — 10 TRIGGERS THE JEWEL HUNT. PERSONAL PLAY MACHINE — CREDITS ONLY, NO CASH VALUE.</div>
   </div>
 
   <div id="foot">PERSONAL MACHINE · © 2026 J-DAWGS INDUSTRIES</div>

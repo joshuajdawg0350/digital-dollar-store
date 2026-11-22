@@ -14,12 +14,14 @@ const BARS = ['BAR1', 'BAR2', 'BAR3'];
 
 /* Paytable in CREDITS by coins bet (1/2/3). $1 machine: 1 credit = $1.
    Top award VERIFIED: 10,000 credits on 3 coins. Per-line values below the
-   top are RECONSTRUCTED on the classic VGT ladder (see RESEARCH.md). */
+   top are RECONSTRUCTED on the classic VGT ladder (see RESEARCH.md).
+   These are the BASE pays — a winning line containing ducks pays its base
+   times the duck multiplier (see evaluateCombo). */
 const PAYTABLE = {
   DUCK:   [2500, 5000, 10000],
   SEVEN:  [100, 200, 300],
   BAR3:   [40, 80, 120],
-  BAR2:   [25, 50, 75],
+  BAR2:   [20, 40, 60],
   BAR1:   [10, 20, 30],
   ANYBAR: [5, 10, 15],
   CHERRY3: [20, 40, 60],
@@ -29,12 +31,14 @@ const PAYTABLE = {
 const TIER_ORDER = ['DUCK', 'SEVEN', 'BAR3', 'BAR2', 'BAR1', 'ANYBAR', 'CHERRY3', 'CHERRY2', 'CHERRY1'];
 
 /* Relative weights per 100,000. Tuned by simulation (../sim.js) so the full
-   game — base pays + red-screen re-spins + pick-a-duck — returns ~91% in
-   play credits with a high hit frequency, matching the floor game's
-   documented character (frequent small wins, long sessions). */
+   game — base pays WITH the duck multipliers + red-screen re-spins +
+   pick-a-duck — returns ~91% in play credits, matching the floor game's
+   documented character (frequent small wins, long sessions). Re-tuned
+   2026-11-22 for the wild build: duck variants multiply the average win
+   ~1.3x, so the tier weights came down to hold the same return. */
 const TIER_WEIGHTS = {
-  DUCK: 4, SEVEN: 56, BAR3: 195, BAR2: 316, BAR1: 632,
-  ANYBAR: 1265, CHERRY3: 237, CHERRY2: 1739, CHERRY1: 8696
+  DUCK: 3, SEVEN: 26, BAR3: 100, BAR2: 180, BAR1: 400,
+  ANYBAR: 980, CHERRY3: 140, CHERRY2: 1550, CHERRY1: 9100
 };
 const TOTAL_WEIGHT = 100000;
 
@@ -46,6 +50,13 @@ const RED_CHAIN_CHANCE = 0.20; // a red spin can flash red again
 const RED_MAX = 5;             // reported maximum chain
 const PICK_CHANCE = 0.25;      // share of red triggers that become Pick a Duck
 
+/* How many ducks show in a WINNING display (the base tier is drawn first,
+   then the display is dealt): 0 ducks ~78%, 1 duck ~17%, 2 ducks ~5%.
+   The ducks are not decoration — each one in the line multiplies the pay
+   (x2 / x4), which is the real machine's headline rule (floor glass:
+   "[duck] DOUBLES Winning Combination", "2 LUCKY DUCKY PAYS 4X"). */
+const DUCK_ROLL = [0.83, 0.13, 0.04];
+
 /* 22-stop mechanical strips (reconstructed; counts set the near-miss feel —
    the tier draw above decides outcomes, strips decide what the eye sees). */
 const STRIPS = [
@@ -54,25 +65,58 @@ const STRIPS = [
   ['BLANK','BAR1','BLANK','SEVEN','BLANK','BAR2','BLANK','CHERRY','BLANK','BAR1','BLANK','BAR3','BLANK','DUCK','BLANK','BAR2','BLANK','CHERRY','BLANK','SEVEN','BLANK','BAR1']
 ];
 
+/* ---------- the duck: WILD, with multipliers (2026-11-22 research) ----------
+   Floor glass on the real machine (Hard Rock Tulsa photo, RESEARCH.md):
+   "[DUCK] DOUBLES Winning Combination" · "[DUCK] is WILD on payline only" ·
+   "2 LUCKY DUCKY PAYS 4X". Corroborated by paid jackpots photographed on
+   the floor (DUCK + two triple-BARs paid exactly 3xBAR3 doubled; two logos
+   + a red 7 on the sibling game paid three 7s at 4x) and by the sibling
+   game's published rule text. So:
+   - the duck substitutes for every symbol ON THE PAYLINE;
+   - the line is read its best way (highest base pay wins);
+   - 1 duck in the paying line multiplies the pay x2, 2 ducks x4;
+   - the duck also stands in as a cherry for the cherry count pays — the
+     "Doubles" family behavior (a lone duck therefore pays the doubled
+     1-cherry prize; two ducks + a blank pay the 2-cherry prize at 4x).
+     This cherry interaction is INFERRED from the family design — no
+     published source states it in words; flagged in RESEARCH.md;
+   - three ducks are the paytable's own top line (no extra multiplier);
+   - two ducks + a blank is NOT a standalone pair pay — no source shows
+     one; it pays through the cherry count above (60 credits at 3 coins). */
 function evaluateCombo(combo) {
-  const [a, b, c] = combo;
-  if (a === 'DUCK' && b === 'DUCK' && c === 'DUCK') return 'DUCK';
-  if (a === 'SEVEN' && b === 'SEVEN' && c === 'SEVEN') return 'SEVEN';
-  if (a === 'BAR3' && b === 'BAR3' && c === 'BAR3') return 'BAR3';
-  if (a === 'BAR2' && b === 'BAR2' && c === 'BAR2') return 'BAR2';
-  if (a === 'BAR1' && b === 'BAR1' && c === 'BAR1') return 'BAR1';
-  if (BARS.includes(a) && BARS.includes(b) && BARS.includes(c)) return 'ANYBAR';
-  const cherries = combo.filter(s => s === 'CHERRY').length;
-  if (cherries === 3) return 'CHERRY3';
-  if (cherries === 2) return 'CHERRY2';
-  if (cherries === 1) return 'CHERRY1';
-  return null;
+  const ducks = combo.filter(s => s === 'DUCK').length;
+  if (ducks === 3) return { tier: 'DUCK', ducks: 3, mult: 1 };
+  const others = combo.filter(s => s !== 'DUCK');
+  let best = null;
+  const consider = t => { if (t && (!best || PAYTABLE[t][2] > PAYTABLE[best][2])) best = t; };
+  // three-of-a-kind line: every non-duck symbol is the same line symbol
+  if (others.length && others.every(s => s === others[0]) &&
+      ['SEVEN', 'BAR3', 'BAR2', 'BAR1'].includes(others[0])) consider(others[0]);
+  // any-bar line: every non-duck symbol is a bar
+  if (others.length && others.every(s => BARS.includes(s))) consider('ANYBAR');
+  // cherry count pays: real cherries + ducks standing in as cherries
+  const cherryCount = combo.filter(s => s === 'CHERRY').length + ducks;
+  if (cherryCount >= 3) consider('CHERRY3');
+  else if (cherryCount === 2) consider('CHERRY2');
+  else if (cherryCount === 1) consider('CHERRY1');
+  if (!best) return null;
+  return { tier: best, ducks, mult: Math.pow(2, ducks) };
 }
 
 function payFor(tier, coins) {
   if (!tier) return 0;
   if (tier === 'PROGRESSIVE') return 0; // handled by caller
   return PAYTABLE[tier][coins - 1];
+}
+
+/* Full result for a dealt combo: {combo, tier, ducks, mult, base, pay}.
+   tier is null and pay 0 for a non-winning line. */
+function resultForCombo(combo, coins) {
+  const ducks = combo.filter(s => s === 'DUCK').length;
+  const ev = evaluateCombo(combo);
+  if (!ev) return { combo: combo.slice(), tier: null, ducks, mult: 1, base: 0, pay: 0 };
+  const base = payFor(ev.tier, coins);
+  return { combo: combo.slice(), tier: ev.tier, ducks: ev.ducks, mult: ev.mult, base, pay: base * ev.mult };
 }
 
 function pickTier(rng) {
@@ -84,67 +128,107 @@ function pickTier(rng) {
   return null; // losing spin
 }
 
-/* Pick a tier whose pay (at this coin count) is >= minPay — used by the
-   red-screen re-spin, which guarantees at least the triggering win and
-   normally corresponds in size to it. Weighted toward the close tiers. */
-function pickTierAtLeast(minPay, coins, rng) {
-  const ok = TIER_ORDER.filter(t => payFor(t, coins) >= minPay)
-    .sort((x, y) => payFor(x, coins) - payFor(y, coins)); // ascending by pay
-  if (!ok.length) return 'DUCK';
-  // weight by log-distance from the trigger (correspond-in-size behavior):
-  // the closest tiers dominate; the jackpot tier stays a rare leap.
-  const weighted = [];
-  ok.forEach((t, i) => {
-    const p = payFor(t, coins);
-    let w = Math.round(100 * Math.pow(minPay / p, 3.2));
-    if (i === 0) w = Math.max(w, 100); // closest tier always dominates
-    for (let k = 0; k < w; k++) weighted.push(t);
-  });
-  return weighted[Math.floor(rng() * weighted.length)] || ok[ok.length - 1];
+const shuffleArr = (arr, rng) => {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+};
+
+/* Build a combo that evaluates to EXACTLY (tier, ducks) — verified against
+   evaluateCombo before returning. Some pairs are impossible under the
+   best-reading rule (e.g. 2 ducks + a single BAR reads as 3 cherries,
+   which pays more than 3 single BARs, so (BAR1, 2 ducks) can never be the
+   result); those return null and callers fall back. */
+function comboForResult(tier, ducks, rng, attempts) {
+  const pick = arr => arr[Math.floor(rng() * arr.length)];
+  const maxTry = attempts || 12;
+  for (let attempt = 0; attempt < maxTry; attempt++) {
+    let combo = null;
+    if (tier === 'DUCK') {
+      combo = ['DUCK', 'DUCK', 'DUCK'];
+    } else if (['SEVEN', 'BAR3', 'BAR2', 'BAR1'].includes(tier)) {
+      combo = [tier, tier, tier];
+      shuffleArr([0, 1, 2], rng).slice(0, ducks).forEach(p => { combo[p] = 'DUCK'; });
+    } else if (tier === 'ANYBAR') {
+      const bars = shuffleArr(BARS, rng);
+      combo = [bars[0], bars[1], bars[0]];
+      shuffleArr([0, 1, 2], rng).slice(0, ducks).forEach(p => { combo[p] = 'DUCK'; });
+      combo = shuffleArr(combo, rng);
+    } else if (tier && tier.indexOf('CHERRY') === 0) {
+      const total = tier === 'CHERRY3' ? 3 : tier === 'CHERRY2' ? 2 : 1;
+      const realCherries = total - ducks;
+      if (realCherries < 0) return null;
+      combo = [];
+      for (let i = 0; i < ducks; i++) combo.push('DUCK');
+      for (let i = 0; i < realCherries; i++) combo.push('CHERRY');
+      const fillers = ['BLANK', 'BLANK', 'SEVEN', 'BAR1', 'BAR2', 'BAR3'];
+      while (combo.length < 3) combo.push(pick(fillers));
+      combo = shuffleArr(combo, rng);
+    }
+    if (!combo) return null;
+    const ev = evaluateCombo(combo);
+    if (ev && ev.tier === tier && ev.ducks === ducks) return combo;
+  }
+  return null;
 }
 
-/* Build a reel combo that evaluates to the requested tier (or a natural
-   loser). Returns [s1, s2, s3]. */
-function comboForTier(tier, rng) {
+/* A natural loser under the wild rules (near-misses that still pay 0:
+   two sevens + blank, two bars + blank). Anything with a duck next to a
+   cherry — or a duck alone — PAYS now, so it can never be dealt as a
+   loser; the rejection loop enforces that against evaluateCombo. */
+function loserCombo(rng) {
   const pick = arr => arr[Math.floor(rng() * arr.length)];
-  switch (tier) {
-    case 'DUCK': return ['DUCK', 'DUCK', 'DUCK'];
-    case 'SEVEN': return ['SEVEN', 'SEVEN', 'SEVEN'];
-    case 'BAR3': return ['BAR3', 'BAR3', 'BAR3'];
-    case 'BAR2': return ['BAR2', 'BAR2', 'BAR2'];
-    case 'BAR1': return ['BAR1', 'BAR1', 'BAR1'];
-    case 'ANYBAR': {
-      let combo;
-      do { combo = [pick(BARS), pick(BARS), pick(BARS)]; } while (evaluateCombo(combo) !== 'ANYBAR');
-      return combo;
-    }
-    case 'CHERRY3': return ['CHERRY', 'CHERRY', 'CHERRY'];
-    case 'CHERRY2': {
-      const other = pick(['BLANK', 'SEVEN', 'DUCK', 'BAR1', 'BAR2', 'BAR3']);
-      const pos = Math.floor(rng() * 3);
-      const combo = ['CHERRY', 'CHERRY', 'CHERRY'];
-      combo[pos] = other;
-      return combo;
-    }
-    case 'CHERRY1': {
-      const pos = Math.floor(rng() * 3);
-      const others = ['BLANK', 'SEVEN', 'DUCK', 'BAR1', 'BAR2', 'BAR3'];
-      let combo;
-      do {
-        combo = [pick(others), pick(others), pick(others)];
-        combo[pos] = 'CHERRY';
-      } while (evaluateCombo(combo) !== 'CHERRY1');
-      return combo;
-    }
-    default: { // loser — sometimes a near miss (two ducks / two sevens)
-      const roll = rng();
-      if (roll < 0.10) { const c = ['DUCK', 'DUCK', pick(['BLANK', 'BAR1', 'BAR2'])]; if (evaluateCombo(c) === null) return c; }
-      if (roll < 0.18) { const c = ['SEVEN', 'SEVEN', 'BLANK']; if (evaluateCombo(c) === null) return c; }
-      let combo;
-      do { combo = [pick(SYMBOLS), pick(SYMBOLS), pick(SYMBOLS)]; } while (evaluateCombo(combo) !== null);
-      return combo;
+  const roll = rng();
+  if (roll < 0.10) { const c = ['SEVEN', 'SEVEN', 'BLANK']; if (!evaluateCombo(c)) return c; }
+  if (roll < 0.18) { const c = [pick(BARS), pick(BARS), 'BLANK']; if (!evaluateCombo(c)) return c; }
+  let combo = null, guard = 0;
+  do { combo = [pick(SYMBOLS), pick(SYMBOLS), pick(SYMBOLS)]; } while (evaluateCombo(combo) !== null && ++guard < 80);
+  if (evaluateCombo(combo) !== null) combo = ['SEVEN', 'BAR1', 'BLANK'];
+  return combo;
+}
+
+/* One base-game spin: draw the tier, deal the display (with the duck
+   variant roll), and score the dealt combo. The combo IS the result —
+   what the reels show is exactly what gets paid. */
+function drawResult(coins, rng) {
+  const tier = pickTier(rng);
+  if (!tier) return resultForCombo(loserCombo(rng), coins);
+  if (tier === 'DUCK') return resultForCombo(['DUCK', 'DUCK', 'DUCK'], coins);
+  const r = rng();
+  const ducksWanted = r < DUCK_ROLL[0] ? 0 : r < DUCK_ROLL[0] + DUCK_ROLL[1] ? 1 : 2;
+  const combo = comboForResult(tier, ducksWanted, rng) || comboForResult(tier, 0, rng, 40);
+  return resultForCombo(combo, coins);
+}
+
+/* Red-screen re-spin draw: a result whose pay is >= minPay (the real
+   machine guarantees at least the triggering win, and the re-spin's size
+   normally corresponds to it — candidates are weighted toward the closest
+   pays above the floor). */
+function pickResultAtLeast(minPay, coins, rng) {
+  const cands = [];
+  for (const t of TIER_ORDER) {
+    for (let d = 0; d <= 2; d++) {
+      const pay = payFor(t, coins) * Math.pow(2, d);
+      if (pay >= minPay) cands.push({ t, d, pay });
     }
   }
+  cands.sort((a, b) => a.pay - b.pay);
+  const weighted = [];
+  cands.forEach((c, i) => {
+    let w = Math.round(100 * Math.pow(minPay / c.pay, 3.2));
+    if (i === 0) w = Math.max(w, 100); // closest tier always dominates
+    for (let k = 0; k < w; k++) weighted.push(c);
+  });
+  for (let tries = 0; tries < 12 && weighted.length; tries++) {
+    const c = weighted[Math.floor(rng() * weighted.length)];
+    const combo = comboForResult(c.t, c.d, rng);
+    if (combo) return resultForCombo(combo, coins);
+  }
+  for (const c of cands) {
+    const combo = comboForResult(c.t, c.d, rng, 40);
+    if (combo) return resultForCombo(combo, coins);
+  }
+  return resultForCombo(['DUCK', 'DUCK', 'DUCK'], coins);
 }
 
 /* Find a stop index on a strip whose symbol == sym (random among matches). */
@@ -159,7 +243,9 @@ function stopFor(stripIdx, sym, rng) {
    A bingo "game": 38 gold numbers drawn from 75; the rest are called in
    white, ~1 per second, until the game resets. Each spin deals a fresh
    5x5 card. Winning patterns are made of GOLD numbers only. Each reel tier
-   maps to a pattern — the same display logic the floor machine uses. */
+   maps to a pattern — the same display logic the floor machine uses: the
+   card decides the prize, the reels act it out (the floor machine's own
+   top screen prints "PRIZES AWARDED FOR BINGO CARD ONLY"). */
 const PATTERNS = {
   DUCK:    { name: 'LUCKY X',        cells: [0, 4, 6, 8, 12, 16, 18, 20, 24] },
   SEVEN:   { name: 'SIX PACK',       cells: [1, 2, 3, 6, 7, 8] },
@@ -264,6 +350,6 @@ function jewelPrize(coins, rng) {
   return 10 * coins;
 }
 
-const api = { SYMBOLS, BARS, PAYTABLE, TIER_ORDER, TIER_WEIGHTS, TOTAL_WEIGHT, RED_CHANCE, RED_CHAIN_CHANCE, RED_MAX, PICK_CHANCE, STRIPS, PATTERNS, LINES, evaluateCombo, payFor, pickTier, pickTierAtLeast, comboForTier, stopFor, genCard, newGoldSet, pickDuckPrize, JEWELS_TO_TRIGGER, jewelPrize };
+const api = { SYMBOLS, BARS, PAYTABLE, TIER_ORDER, TIER_WEIGHTS, TOTAL_WEIGHT, RED_CHANCE, RED_CHAIN_CHANCE, RED_MAX, PICK_CHANCE, DUCK_ROLL, STRIPS, PATTERNS, LINES, evaluateCombo, payFor, resultForCombo, pickTier, comboForResult, loserCombo, drawResult, pickResultAtLeast, stopFor, genCard, newGoldSet, pickDuckPrize, JEWELS_TO_TRIGGER, jewelPrize };
 if (typeof module !== 'undefined' && module.exports) module.exports = api;
 if (typeof window !== 'undefined') window.LuckyLogic = api;
