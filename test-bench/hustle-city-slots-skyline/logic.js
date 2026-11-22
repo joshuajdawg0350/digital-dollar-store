@@ -85,7 +85,7 @@ function evaluateGrid(grid, lineBet, cfg) {
   let bonusCount = 0;
   for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) {
     if (grid[r][row] === 'SC') scatterCount++;
-    if (grid[r][row] === 'BN') bonusCount++;
+    if (grid[r][row] === 'DL') bonusCount++;
   }
   const totalBet = lineBet * PAYLINES.length;
   const capped = Math.min(scatterCount, 5);

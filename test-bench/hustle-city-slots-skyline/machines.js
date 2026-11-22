@@ -3,7 +3,11 @@
    here is generated rendered art — see assets-src). Symbol set: VAULT DOOR (VT,
    top/jackpot), SKYSCRAPER (SK), FULL MOON (MN), TAXI (TX, pays from 2),
    LASER (LM), SEARCHLIGHT (SL) low fillers, WILD (WD), SCATTER (SC),
-   WIN x2 (X2) / WIN x3 (X3) line multipliers, BONUS DICE (BN).
+   WIN x2 (X2) / WIN x3 (X3) line multipliers, BONUS DOOR (DL — the big
+   green dollar; DL replaced BN on the strips 2026-11-22, and Joshua set
+   the final door frequency the same day: reels 1/3/5 carry a second DL
+   stop, so 3+ dollars land ~1 in 20 paid spins — proven in
+   sim/door-verify.js).
    NO blank stops — every strip position is a real symbol.
    Strip geometry mirrors Casino Classics v2.1 (same position pattern, proven
    base) with exactly one SEARCHLIGHT per reel swapped for a BONUS die,
@@ -52,15 +56,19 @@ const SKYLINE = {
   name: 'Hustle City Slots — Midnight Skyline',
   scatterPay: { 3: 2, 4: 8, 5: 40 },
   scatterSpins: { 3: 7, 4: 10, 5: 15 },
-  bonusStart: { 3: 0, 4: 30, 5: 60 },
-  diceUnit: 3, /* credits per dice point, x betPerLine */
+  bonusStart: { 3: 0, 4: 15, 5: 30 },
+  diceUnit: 2, /* credits per dice point, x betPerLine */
   /* BONUS WHEEL (ported from Pearl's Paws, 2026-11-22): alongside Dice
      Roll, replaces nothing — when the dice bonus would open, wheelShare
      of triggers open the wheel instead (bonus frequency unchanged).
-     Wedges pay x total bet; EV = (25+3+8+2+15+6+3+9+4+2+7+5)/12 = 7.42x.
-     tunable — unification pass owns final numbers */
-  wheel: [25, 3, 8, 2, 15, 6, 3, 9, 4, 2, 7, 5],
-  wheelTiers: { 25: 'GRAND', 15: 'MAJOR', 9: 'MINOR', 4: 'MINI' },
+     Wedges pay x total bet; EV = (4+1+1+1+3+1+1+2+1+1+1+1)/12 = 1.50x.
+     REBALANCED 2026-11-22 with the 1-in-20 door retune: the door fires
+     ~3.5x as often, so per-trigger prize values behind the door were
+     scaled down to hold the door's total RTP share at its previous
+     ~7% (dice unit 3->2, start pots halved, wheel wedges scaled) —
+     see sim/door-verify.js for the proven rate + RTP. */
+  wheel: [4, 1, 1, 1, 3, 1, 1, 2, 1, 1, 1, 1],
+  wheelTiers: { 4: 'GRAND', 3: 'MAJOR', 2: 'MINOR', 1: 'MINI' },
   wheelShare: 0.5,
   paytable: {
     VT: { 3: 61, 4: 219, 5: 2500 },
@@ -72,11 +80,11 @@ const SKYLINE = {
     SL: { 3: 5, 4: 12, 5: 29 }
   },
   strips: [
-    ['SL', 'SL', 'TX', 'TX', 'TX', 'MN', 'SL', 'LM', 'LM', 'WD', 'X2', 'SC', 'VT', 'SL', 'LM', 'SK', 'BN', 'LM', 'TX', 'TX', 'TX', 'MN', 'SL', 'LM', 'TX'],
-    ['SL', 'SC', 'TX', 'LM', 'TX', 'SL', 'SL', 'VT', 'SL', 'LM', 'LM', 'BN', 'X3', 'TX', 'SK', 'TX', 'TX', 'WD', 'LM', 'MN', 'SL', 'LM', 'VT', 'SL', 'TX'],
-    ['SL', 'SK', 'MN', 'SL', 'SL', 'VT', 'LM', 'X2', 'SC', 'TX', 'LM', 'BN', 'LM', 'SL', 'WD', 'SL', 'LM', 'TX', 'TX', 'TX', 'SL', 'SK', 'LM', 'TX', 'SL'],
-    ['LM', 'MN', 'WD', 'LM', 'VT', 'SL', 'SL', 'SK', 'TX', 'LM', 'TX', 'TX', 'SL', 'TX', 'BN', 'LM', 'TX', 'LM', 'WD', 'SC', 'SL', 'SL', 'MN', 'LM', 'TX'],
-    ['LM', 'TX', 'LM', 'SK', 'SL', 'WD', 'MN', 'TX', 'SL', 'TX', 'X2', 'TX', 'LM', 'LM', 'TX', 'SC', 'BN', 'SL', 'VT', 'LM', 'LM', 'TX', 'SL', 'LM', 'TX']
+    ['SL', 'SL', 'TX', 'TX', 'TX', 'MN', 'DL', 'LM', 'LM', 'WD', 'X2', 'SC', 'VT', 'SL', 'LM', 'SK', 'DL', 'LM', 'TX', 'TX', 'TX', 'MN', 'SL', 'LM', 'TX'],
+    ['SL', 'SC', 'TX', 'LM', 'TX', 'SL', 'SL', 'VT', 'SL', 'LM', 'LM', 'DL', 'X3', 'TX', 'SK', 'TX', 'TX', 'WD', 'LM', 'MN', 'SL', 'LM', 'VT', 'SL', 'TX'],
+    ['SL', 'SK', 'MN', 'SL', 'SL', 'VT', 'LM', 'X2', 'SC', 'TX', 'LM', 'DL', 'LM', 'SL', 'WD', 'SL', 'LM', 'TX', 'TX', 'TX', 'SL', 'SK', 'LM', 'TX', 'DL'],
+    ['LM', 'MN', 'WD', 'LM', 'VT', 'SL', 'SL', 'SK', 'TX', 'LM', 'TX', 'TX', 'SL', 'TX', 'DL', 'LM', 'TX', 'LM', 'WD', 'SC', 'SL', 'SL', 'MN', 'LM', 'TX'],
+    ['LM', 'TX', 'LM', 'SK', 'SL', 'WD', 'MN', 'TX', 'DL', 'TX', 'X2', 'TX', 'LM', 'LM', 'TX', 'SC', 'DL', 'SL', 'VT', 'LM', 'LM', 'TX', 'SL', 'LM', 'TX']
   ]
 };
 

@@ -28,12 +28,12 @@
     VT: 'assets/sym-vt.webp', SK: 'assets/sym-sk.webp', MN: 'assets/sym-mn.webp',
     TX: 'assets/sym-tx.webp', LM: 'assets/sym-lm.webp', SL: 'assets/sym-sl.webp',
     WD: 'assets/sym-wd.webp', SC: 'assets/sym-sc.webp',
-    X2: 'assets/sym-x2.webp', X3: 'assets/sym-x3.webp', BN: 'assets/sym-bn.webp'
+    X2: 'assets/sym-x2.webp', X3: 'assets/sym-x3.webp', DL: 'assets/sym-dl.webp'
   };
   const NAMES = {
     VT: 'Vault Door', SK: 'Skyscraper', MN: 'Full Moon', TX: 'Taxi',
     LM: 'Laser', SL: 'Searchlight', WD: 'WILD', SC: 'SCATTER',
-    X2: 'WIN ×2', X3: 'WIN ×3', BN: 'BONUS DICE'
+    X2: 'WIN ×2', X3: 'WIN ×3', DL: 'BONUS DOOR'
   };
 
   const $ = id => document.getElementById(id);
@@ -176,13 +176,20 @@
      that: 829.2 symbols/sec. Distance grows with the speed — the spin
      keeps its ~2-2.5s shape, the strip just travels ~20x farther. */
   const PEAK_SYM_PER_SEC = 829.2;
-  function spinReel(r, finalStops, duration) {
+  function spinReel(r, finalStops, duration, opts) {
     return new Promise(resolve => {
       const reel = reelsEl[r], H = cellH(r), strip = cfg.strips[r];
       const grid = core.windowForStops(cfg.strips, finalStops);
+      /* DOLLAR DOOR anticipation (Joshua's settled behavior, 2026-11-22):
+         when this reel carries the deciding third dollar, it does NOT
+         stop on the normal stagger — it crawls at a fraction of peak
+         speed (the whole machine hears/sees it slow down) and then the
+         shared firm brake + spring settle SLAMS it onto the stop. */
+      const slow = !!(opts && opts.slow);
+      if (slow) reel.classList.add('anticipation');
 
       const len = strip.length;
-      const vmax = PEAK_SYM_PER_SEC * H;   /* this machine's 20x peak, px/s */
+      const vmax = PEAK_SYM_PER_SEC * H * (slow ? 0.3 : 1);   /* this machine's 20x peak, px/s */
       let N = Math.max(24, Math.round(core.reelDistance(vmax, H, duration) / H));
       N += ((finalStops[r] - stops[r] - N) % len + len) % len;  /* land exactly on the dealt stop */
       const D = N * H;                     /* total travel, px */
@@ -216,6 +223,12 @@
         track.style.filter = '';
         track.innerHTML = grid[r].map(s => cellHTML(s, H)).join('');
         track.style.transform = 'translateY(0px)';
+        if (slow) {
+          reel.classList.remove('anticipation');
+          /* the SLAM: the cabinet takes the hit as the deciding dollar lands */
+          const wrap = reel.parentElement;
+          if (wrap) { wrap.classList.remove('slam'); void wrap.offsetWidth; wrap.classList.add('slam'); setTimeout(() => wrap.classList.remove('slam'), 240); }
+        }
         landThunk();
         resolve();
       };
@@ -333,7 +346,7 @@
       `<div class="payrow"><div class="thumb"><img src="${ART.X2}" alt="WIN ×2"></div><div class="nm">WIN ×2</div><span class="pv wide">Anywhere on a winning line, this line's win is DOUBLED (×2)</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.X3}" alt="WIN ×3"></div><div class="nm">WIN ×3</div><span class="pv wide">Anywhere on a winning line, this line's win is TRIPLED (×3). Two multipliers on the same line multiply together — ×2 and ×3 pay ×6</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.SC}" alt="SCATTER"></div><div class="nm">SCATTER</div><span class="pv wide">3+ anywhere: pays 2× / 8× / 40× total bet + 7 / 10 / 15 FREE SPINS at 2× line wins</span></div>` +
-      `<div class="payrow"><div class="thumb"><img src="${ART.BN}" alt="BONUS DICE"></div><div class="nm">BONUS DICE</div><span class="pv wide">3+ anywhere starts the DICE ROLL bonus: the pot starts at 0 / ${fmt(Math.round(cfg.bonusStart[4] * lineBet()))} / ${fmt(Math.round(cfg.bonusStart[5] * lineBet()))} for 3 / 4 / 5 dice. Every roll adds its total × ${cfg.diceUnit} × line bet to the pot. Roll a 7 and the pot BUSTS. Bank the pot after any safe roll — or push your luck. Half the time the BONUS WHEEL opens instead: one spin, 12 wedges, every wedge pays × your total bet — MINI 4× · MINOR 9× · MAJOR 15× · GRAND 25×</span></div>` +
+      `<div class="payrow"><div class="thumb"><img src="${ART.DL}" alt="BONUS DOOR"></div><div class="nm">BONUS DOOR</div><span class="pv wide">3+ anywhere opens the BONUS DOOR — the ONLY way into the bonus games. Behind the door: the DICE ROLL (pot starts at 0 / ${fmt(Math.round(cfg.bonusStart[4] * lineBet()))} / ${fmt(Math.round(cfg.bonusStart[5] * lineBet()))} for 3 / 4 / 5 dollars; every roll adds its total × ${cfg.diceUnit} × line bet; roll a 7 and the pot BUSTS), the BONUS WHEEL (12 wedges, every wedge pays × your total bet — MINI 1× · MINOR 2× · MAJOR 3× · GRAND 4×), and BRIDGE RUN in the bonus pool</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.VT}" alt="BET"></div><div class="nm">BET</div><span class="pv wide">Bets run in $25 steps: $25, $50, $75 … all the way up to $2,500 a spin. A step unlocks the first time your balance reaches it — and stays unlocked even if your balance dips. Use the −25 / +25 buttons or MAX BET. NEW GAME resets you to a $25 bet. Your current max is on the machine under the buttons</span></div>`;
   }
 
@@ -438,7 +451,7 @@
   function openBonus(count, isFree, onDone) {
     const startPot = Math.round(cfg.bonusStart[Math.min(count, 5)] * lineBet());
     bonus = { pot: startPot, rolls: 0, isFree, resolve: onDone, rolling: false };
-    bonusTriggerEl.textContent = `${count} BONUS DICE — the pot starts at ${fmt(startPot)}!`;
+    bonusTriggerEl.textContent = `${count} BIG DOLLARS — through the BONUS DOOR! The pot starts at ${fmt(startPot)}!`;
     bonusPotEl.textContent = fmt(startPot);
     bonusLadderEl.innerHTML = '';
     bonusTotalEl.textContent = '–';
@@ -1171,9 +1184,24 @@
     msgEl.textContent = isFree ? `Free spin — ${freeSpinsLeft} left after this one. Wins pay double!` : 'Good luck!';
     const finalStops = core.randomStops(Math.random, cfg.strips);
     const durations = [1700, 1900, 2100, 2300, 2500]; /* staggered stops, reel 1 first, ~200ms apart */
+    /* DOLLAR DOOR anticipation: the dealt grid is known before the reels
+       move. If 3+ dollars are coming, the reel that lands the THIRD one
+       (after two are already down) slows to a crawl and slams — the
+       slow-down IS the tell, per Joshua's settled door behavior. */
+    const dealtGrid = core.windowForStops(cfg.strips, finalStops);
+    const dlPerReel = dealtGrid.map(col => col.filter(s => s === 'DL').length);
+    let slowReel = -1;
+    if (dlPerReel.reduce((a, b) => a + b, 0) >= 3) {
+      let cum = 0;
+      for (let r = 0; r < 5; r++) {
+        if (cum === 2 && dlPerReel[r] > 0) { slowReel = r; break; }
+        cum += dlPerReel[r];
+      }
+    }
+    if (slowReel >= 0) durations[slowReel] += 1700;
     setStopMode(true);
     if (soundOn) Kit.rollStart();
-    await Promise.all(finalStops.map((_, r) => spinReel(r, finalStops, durations[r])));
+    await Promise.all(finalStops.map((_, r) => spinReel(r, finalStops, durations[r], r === slowReel ? { slow: true } : null)));
     Kit.rollStop(false);
     setStopMode(false);
     spinBtn.disabled = true; /* payout / bonus phase: button rests until controls return */
@@ -1190,7 +1218,7 @@
       if (w.mult > 1 && w.multCells) for (const r of w.multCells) markCell(r, core.PAYLINES[w.line - 1][r], 'win');
     }
     if (ev.scatterCount >= 1) for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) if (grid[r][row] === 'SC') markCell(r, row, 'scatterhit');
-    if (ev.bonus) for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) if (grid[r][row] === 'BN') markCell(r, row, 'bonushit');
+    if (ev.bonus) for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) if (grid[r][row] === 'DL') markCell(r, row, 'bonushit');
 
     if (totalWin > 0) {
       winFlash.classList.add('on');
@@ -1240,15 +1268,21 @@
       await celebrate('bonus', 'FIVE OF A KIND!', 'Five on a line — that is a big one!', celebDur());
     }
     if (ev.bonus) {
+      /* GROW AND POP: the landed dollars swell up and pop on the glass
+         (CSS .cell.bonushit img animation) — hold a beat so the player
+         actually sees it before the door opens (Joshua, 2026-11-22). */
+      await new Promise(res => setTimeout(res, 850));
+    }
+    if (ev.bonus) {
       /* Trigger split (2026-11-22): the BONUS WHEEL joins Dice Roll
          alongside it — when the dice bonus would open, wheelShare of
          triggers open the wheel instead. The celebration fires for the
          wheel trigger the same way, before the wheel opens. Bonus
          frequency is unchanged by construction. */
       if (Math.random() < cfg.wheelShare) {
-        msgEl.textContent = `${ev.bonusCount} bonus dice — BONUS WHEEL!`;
+        msgEl.textContent = `${ev.bonusCount} big dollars — BONUS DOOR to the WHEEL!`;
         spinning = false;
-        await celebrate('bonus', 'BONUS WHEEL!', `${ev.bonusCount} bonus dice — spin the wheel!`, celebDur());
+        await celebrate('bonus', 'BONUS DOOR!', `${ev.bonusCount} big dollars — spin the wheel!`, celebDur());
         const wheelPay = await runBonusWheel(totalBet());
         if (wheelPay > 0) {
           if (isFree) freeSpinTotal += wheelPay;
@@ -1258,10 +1292,10 @@
         finishSpin();
         return;
       }
-      msgEl.textContent = `${ev.bonusCount} bonus dice — DICE ROLL bonus!`;
+      msgEl.textContent = `${ev.bonusCount} big dollars — BONUS DOOR to the DICE ROLL!`;
       spinning = false;
       /* celebrate first, THEN the dice come out (Joshua, 12:52 CT) */
-      await celebrate('bonus', 'DICE ROLL!', `${ev.bonusCount} bonus dice — push your luck!`, celebDur());
+      await celebrate('bonus', 'BONUS DOOR!', `${ev.bonusCount} big dollars — push your luck!`, celebDur());
       {
         openBonus(ev.bonusCount, isFree, async prize => {
           if (prize > 0) {

@@ -555,6 +555,29 @@ body {
   box-shadow: inset 0 0 0 3px #ffd76a, inset 0 0 26px rgba(255, 190, 60, .8), 0 0 20px rgba(255, 190, 60, .85);
   animation: winPulse .4s ease-in-out infinite alternate;
 }
+/* DOLLAR DOOR behavior (Joshua, 2026-11-22): the deciding reel glows
+   while it crawls in slow motion; the cabinet shakes on the slam; and
+   the landed dollars GROW BIGGER AND POP on the glass. */
+.reel.anticipation {
+  box-shadow: inset 0 0 0 3px #2eff8f, inset 0 0 30px rgba(46, 255, 143, .5), 0 0 26px rgba(46, 255, 143, .8);
+  animation: winPulse .3s ease-in-out infinite alternate;
+  z-index: 6;
+}
+.reels.slam { animation: slamShake .22s linear; }
+@keyframes slamShake {
+  0% { transform: translateY(0); } 30% { transform: translateY(3px); }
+  60% { transform: translateY(-1px); } 100% { transform: translateY(0); }
+}
+.cell.bonushit img {
+  position: relative; z-index: 4;
+  animation: dollarPop .7s cubic-bezier(.2, 2.4, .4, 1) both;
+}
+@keyframes dollarPop {
+  0% { transform: scale(1); filter: brightness(1); }
+  45% { transform: scale(1.58) rotate(-3deg); filter: brightness(1.4); }
+  70% { transform: scale(1.3) rotate(1deg); filter: brightness(1.15); }
+  100% { transform: scale(1.45); filter: brightness(1.25); }
+}
 
 /* ---------- PICK-A-GARAGE bonus game ---------- */
 .bonus-backdrop {
