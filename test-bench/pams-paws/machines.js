@@ -9,12 +9,12 @@
    free spins, SAME pick-bonus math. Only the faces changed:
      DL chrome dollar  -> GP Brown Yorkie (top symbol)
      SV seven          -> SP White Shih Tzu
-     HS horseshoe      -> CP Shih Tzu Puppy (topknot + gold bow)
+     HS horseshoe      -> CP Shih Tzu Puppy (topknot + silver bow)
      CH cherry         -> BO Bone (pays from 2, like the cherry did)
      BL bell           -> BA Ball
      B1 BAR            -> PW Paw Print
      WD / X2 / X3      -> paw-print medallions (WILD, WIN x2, WIN x3)
-     SC scatter        -> golden paw SCATTER
+     SC scatter        -> chrome paw SCATTER
      BN bonus          -> dog house (opens PICK A PUPPY HOUSE)
    Because the strips and paytable are position-for-position identical to
    Casino Classics v2.3, the theoretical RTP is the same 98.02% (lines
@@ -22,11 +22,11 @@
    bonus fires ~1 in 38.6 paid spins and free spins at the same rate
    (Joshua's ~1-in-40 bonus standard). Verified independently on THIS
    config in sim/rtp.js (exact enumeration + Monte Carlo).
-   PICK A PUPPY HOUSE bonus: 9 dog houses, 8 prizes + 1 BATH TIME (bust).
+   PICK A PUPPY HOUSE bonus: 9 dog houses, 8 prizes + 1 BIG AL (bust, candidate #2).
    Prizes and the completion bonus are multiples of the TOTAL bet of the
    triggering spin — identical to Pick-a-Garage: random-pick EV =
    (sum of prizes)/2 + completion/9 = 7.42x total bet. Banked prizes are
-   kept when Bath Time ends the round.
+   kept when Big Al ends the round.
    (c) 2026 J-Dawgs Industries. */
 'use strict';
 
@@ -35,7 +35,7 @@ const PEARLS = {
   name: "Pearl's Paws and Buster's Bones",
   scatterPay: { 3: 2, 4: 8, 5: 40 },
   scatterSpins: { 3: 7, 4: 10, 5: 15 },
-  /* PICK A PUPPY HOUSE bonus: 9 dog houses, 8 prizes + 1 BATH TIME (bust).
+  /* PICK A PUPPY HOUSE bonus: 9 dog houses, 8 prizes + 1 BIG AL (bust, candidate #2).
      Prizes and the completion bonus are multiples of the TOTAL bet of the
      triggering spin. Random-pick EV = (sum of prizes)/2 + completion/9
      = 7.42x total bet. */

@@ -3,8 +3,8 @@
    same strips/paytable/bonus math in machines.js — verified identical RTP
    98.02% in sim/rtp.js) and re-faced as a warm puppy machine: photoreal
    puppy heads as the premium faces, paw prints, dog bones, paw-print WILD /
-   x2 / x3 medallions, a golden-paw SCATTER, and the PICK A PUPPY HOUSE
-   bonus (9 dog houses, 8 prizes + BATH TIME, banked prizes kept — the
+   x2 / x3 medallions, a chrome-paw SCATTER, and the PICK A PUPPY HOUSE
+   bonus (9 dog houses, 8 prizes + BIG AL bust, banked prizes kept — the
    Pick-a-Garage math exactly). Bonus and free spins both fire ~1 in 38.6
    paid spins (the ~1-in-40 standard); SPIN becomes STOP while the reels
    turn; NEW GAME restarts a broke player at 1,000 credits; bets climb the
@@ -364,7 +364,7 @@
       `<div class="payrow"><div class="thumb"><img src="${ART.X3}" alt="WIN ×3"></div><div class="nm">WIN ×3</div><span class="pv wide">Anywhere on a winning line, this line's win is TRIPLED (×3). Two multipliers on the same line multiply together — ×2 and ×3 pay ×6</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.SC}" alt="SCATTER"></div><div class="nm">SCATTER</div><span class="pv wide">3+ anywhere: pays 2× / 8× / 40× total bet + 7 / 10 / 15 FREE SPINS at 2× line wins</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.BN}" alt="BONUS"></div><div class="nm">BONUS — BUSTER'S BONES</div><span class="pv wide">3+ dog houses anywhere on a paid spin opens the yard: 9 houses — 8 hide BONES with amounts on them (½×–4× total bet), 1 hides BIG AL, the tall redheaded cowboy — pick him and the round ends (banked bones are kept). Clear all 8 bone houses for a 6× BUSTER BONUS</span></div>` +
-      `<div class="payrow"><div class="thumb"><img src="${ART.WH}" alt="WHEEL"></div><div class="nm">WHEEL — PEARL'S PAWS</div><span class="pv wide">The gold WHEEL token rides reels 2, 3 and 4 — one in each of those windows on a paid spin opens Pearl's wheel. Every wedge pays little PAWS with amounts (× your total bet): MINI 8× · MINOR 15× · MAJOR 30× · GRAND 50× — and one wedge hides BIG AL, who pays nothing. Not the scatter: the plain gold PAW is free spins, the WHEEL medallion is the wheel</span></div>` +
+      `<div class="payrow"><div class="thumb"><img src="${ART.WH}" alt="WHEEL"></div><div class="nm">WHEEL — PEARL'S PAWS</div><span class="pv wide">The chrome WHEEL token rides reels 2, 3 and 4 — one in each of those windows on a paid spin opens Pearl's wheel. Every wedge pays little PAWS with amounts (× your total bet): MINI 8× · MINOR 15× · MAJOR 30× · GRAND 50× — and the GRAND wedge carries BIG AL himself: land on him for the top prize. Every wedge pays. Not the scatter: the plain chrome PAW is free spins, the WHEEL medallion is the wheel</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.GP}" alt="BET"></div><div class="nm">BET</div><span class="pv wide">Bets run in $25 steps: $25, $50, $75 … all the way up to $2,500 a spin. A step unlocks the first time your balance reaches it — and stays unlocked even if your balance dips. Use the −25 / +25 buttons or MAX BET. NEW GAME resets you to a $25 bet</span></div>`;
   }
 
@@ -382,7 +382,7 @@
   function celebrate(kind, title, sub, durMs) {
     return new Promise(res => {
       celebEl.className = 'celeb on k-' + kind;
-      celebKickEl.textContent = kind === 'fs' ? '★ FREE SPINS ★' : '★ BONUS ★';
+      celebKickEl.textContent = kind === 'fs' ? 'FREE SPINS' : kind === 'win' ? 'BIG WIN' : kind === 'grand' ? 'JACKPOT' : 'BONUS';
       celebTitleEl.textContent = title;
       celebSubEl.textContent = sub || '';
       celebEl.setAttribute('aria-hidden', 'false');
@@ -437,10 +437,10 @@
      order: "do the wheel too" + tiered jackpots 18:56 CT + the realism
      standard 18:56 CT + named Pearl's Paws 19:01 CT) ----------
      A layered SVG wheel, not flat wedges on a disc: lit radial-gradient
-     wedges with raised separators, a machined brass rim with bolts, real
+     wedges with raised separators, a machined dark-blue rim with bolts, real
      peg spheres at every boundary, a glass gloss that does NOT rotate,
-     and Big Al's face (Joshua's pick #2) on the bust wedge. Prizes are
-     presented as little black PAWS carrying gold amounts. The wedge table
+     and Big Al's face (Joshua's pick #2) on the GRAND wedge. Prizes are
+     presented as little black PAWS carrying chrome amounts. The wedge table
      is cfg.wheel — the same table the RTP simulator models. Physics mirror
      the platform wheel: the winning wedge is drawn first, then the wheel
      spins (hard launch, friction decay, real-kit peg clicks) and settles
@@ -477,7 +477,7 @@
       const p = document.createElementNS(SVGNS, 'path');
       p.setAttribute('d', `M ${x0} ${y0} A ${rO} ${rO} 0 0 1 ${x1} ${y1} L ${x2} ${y2} A ${rI} ${rI} 0 0 0 ${x3} ${y3} Z`);
       p.setAttribute('fill', wedgeFill(v, i));
-      p.setAttribute('stroke', 'rgba(20,10,0,.85)');
+      p.setAttribute('stroke', 'rgba(6,10,18,.85)');
       p.setAttribute('stroke-width', '1.6');
       wheelRotor.appendChild(p);
       /* label group at the wedge center angle */
@@ -506,11 +506,11 @@
         }
         const t1 = document.createElementNS(SVGNS, 'text');
         t1.setAttribute('x', cx); t1.setAttribute('y', cy - rO + (TIERS[v] === 'GRAND' ? 48 : 56));
-        t1.setAttribute('class', 'wlabel tier');
+        t1.setAttribute('class', 'wlabel tier' + (TIERS[v] === 'GRAND' ? '' : ' wtier'));
         t1.textContent = TIERS[v];
         const t2 = document.createElementNS(SVGNS, 'text');
         t2.setAttribute('x', cx); t2.setAttribute('y', cy - rO + (TIERS[v] === 'GRAND' ? 66 : 74));
-        t2.setAttribute('class', 'wlabel tierval');
+        t2.setAttribute('class', 'wlabel tierval' + (TIERS[v] === 'GRAND' ? '' : ' wtier'));
         t2.textContent = v + '×';
         g.appendChild(t1); g.appendChild(t2);
       } else {
@@ -593,9 +593,9 @@
           wheelPawPrize.querySelector('.paw-amt').textContent = '+' + fmt(pay);
           wheelPawPrize.classList.add('on');
           if (tier === 'GRAND') {
-            wheelMsg.innerHTML = `★ BIG AL — GRAND JACKPOT! The cowboy himself pays <b>${fmt(pay)}</b> credits! ★`;
+            wheelMsg.innerHTML = `BIG AL — GRAND JACKPOT! The cowboy himself pays <b>${fmt(pay)}</b> credits!`;
             Kit.jackpot();
-            await celebrate('grand', '★ GRAND JACKPOT! ★', `Pearl's biggest paw — ${fmt(pay)} credits!`, 5000);
+            await celebrate('grand', 'GRAND JACKPOT!', `Pearl's biggest paw — ${fmt(pay)} credits!`, 5000);
           } else if (tier) {
             wheelMsg.innerHTML = `${tier} JACKPOT! The paw pays <b>${fmt(pay)}</b> credits!`;
             Kit.jackpot();
@@ -677,7 +677,7 @@
     }
     const finishTurn = () => {
       if (ev.freeSpins > 0) {
-        fsBanner.textContent = `★ ${ev.freeSpins} FREE SPINS ★ LINE WINS ×2 ★`;
+        fsBanner.textContent = `${ev.freeSpins} FREE SPINS — LINE WINS ×2`;
         fsBanner.classList.add('on');
         msgEl.textContent = `${ev.scatterCount} scatters! ${ev.freeSpins} free spins${isFree ? ' added' : ''} — here they come!`;
         spinning = false;
@@ -714,6 +714,15 @@
       spinning = false;
       setControlsEnabled(true);
     };
+    /* FIVE OF A KIND on any payline gets the Puppy Party too (Joshua,
+       2026-11-21 20:57 CT: "a celebration for every type of small bonus
+       there is — or wheel, or five of a kind"). Fires before any bonus
+       game on the same spin opens; free-spins retriggers already take
+       the FS celebration path above. */
+    const w5 = ev.lineWins.find(w => w.count >= 5);
+    if (w5) {
+      await celebrate('win', 'FIVE OF A KIND!', `Five ${NAMES[w5.symbol]} on one line — Puppy Party time!`, celebDur());
+    }
     if (bonusHit || wheelHit) {
       /* celebrate first, THEN the bonus games; any free spins won on this
          spin run after them (platform order: bonuses first, free spins
@@ -773,7 +782,7 @@
         if (card.scotty) {
           over = true;
           b.classList.add('scotty');
-          b.innerHTML = `<img src="assets/house-open.webp" alt="" draggable="false"><span class="busted-tag">BIG AL!</span>`;
+          b.innerHTML = `<img src="assets/big-al-face.webp" alt="Big Al" draggable="false"><span class="busted-tag">BIG AL!</span>`;
           Kit.bust(); /* the shared bust sting — round over */
           bonusResultEl.innerHTML = `<img class="scotty-img" src="assets/big-al.webp" alt="Big Al, a tall redheaded cowboy with a big red mustache, tipping his hat from inside a dog house">BIG AL! That house was hiding Big Al — the tall redheaded cowboy himself! Bonus over — you keep your banked <b>${fmt(banked)}</b> credits. Only the un-picked houses are lost.`;
           bonusCollectBtn.textContent = `COLLECT ${fmt(banked)}`;
