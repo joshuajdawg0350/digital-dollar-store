@@ -80,10 +80,14 @@ function evaluateGrid(grid, lineBet, cfg) {
       lineWinTotal += credits;
     }
   }
+  /* DOLLAR DOOR: bonusCount counts the door symbol (cfg.doorSymbol, 'DD'
+     on Classics) anywhere in the window — 3+ opens the bonus.
+     (Before 2026-11-22 this counted the retired BN trigger token.) */
+  const doorSym = cfg.doorSymbol || 'BN';
   let scatterCount = 0, bonusCount = 0;
   for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) {
     if (grid[r][row] === 'SC') scatterCount++;
-    if (grid[r][row] === 'BN') bonusCount++;
+    if (grid[r][row] === doorSym) bonusCount++;
   }
   const totalBet = lineBet * PAYLINES.length;
   const capped = Math.min(scatterCount, 5);

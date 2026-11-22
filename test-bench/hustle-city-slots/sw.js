@@ -1,5 +1,5 @@
 /* Hustle City Slots — Casino Classics v2.3 service worker. (c) 2026 J-Dawgs Industries. */
-const CACHE = 'hc-slots-classics-v2-18';
+const CACHE = 'hc-slots-classics-v2-19';
 const ASSETS = [
   './', './index.html', './style.css', './celeb-title.css', './game.js', './logic.js', './machines.js', './soundkit.js', './cabinet-life.js', './assets/celeb-show.mp4', './assets/celeb-title.png', './assets/fonts/bebas-neue.woff2',
   './assets/sfx/bell.mp3', './assets/sfx/win-small.mp3', './assets/sfx/win-med.mp3',
@@ -15,7 +15,7 @@ const ASSETS = [
   './assets/marquee.webp', './assets/deck-plate.webp', './assets/belly.webp', './assets/coin-tray.webp', './assets/sym-dl.webp', './assets/sym-sv.webp',
   './assets/sym-ch.webp', './assets/sym-hs.webp', './assets/sym-bl.webp',
   './assets/sym-b1.webp', './assets/sym-wd.webp', './assets/sym-sc.webp',
-  './assets/sym-x2.webp', './assets/sym-x3.webp', './assets/sym-bn.webp',
+  './assets/sym-x2.webp', './assets/sym-x3.webp', './assets/sym-bn.webp', './assets/sym-dd.webp',
   './assets/garage-bg.webp', './assets/trunk-closed.webp',
   './assets/trunk-open.webp', './assets/scotty.webp',
   './assets/car-1.webp', './assets/car-2.webp', './assets/car-3.webp',

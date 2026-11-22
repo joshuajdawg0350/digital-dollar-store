@@ -35,11 +35,13 @@
     DL: 'assets/sym-dl.webp', SV: 'assets/sym-sv.webp', CH: 'assets/sym-ch.webp',
     HS: 'assets/sym-hs.webp', BL: 'assets/sym-bl.webp', B1: 'assets/sym-b1.webp',
     WD: 'assets/sym-wd.webp', SC: 'assets/sym-sc.webp', BN: 'assets/sym-bn.webp',
+    DD: 'assets/sym-dd.webp',
     X2: 'assets/sym-x2.webp', X3: 'assets/sym-x3.webp'
   };
   const NAMES = {
     DL: 'Dollar Sign', SV: 'Seven', HS: 'Horseshoe', CH: 'Cherry',
     BL: 'Bell', B1: 'BAR', WD: 'WILD', SC: 'SCATTER', BN: 'BONUS',
+    DD: 'BIG DOLLAR',
     X2: 'WIN ×2', X3: 'WIN ×3'
   };
 
@@ -162,7 +164,7 @@
     return grid;
   }
   function clearWinMarks() {
-    document.querySelectorAll('.cell.win,.cell.scatterhit,.cell.bonushit').forEach(c => c.classList.remove('win', 'scatterhit', 'bonushit'));
+    document.querySelectorAll('.cell.win,.cell.scatterhit,.cell.bonushit,.cell.doorhit').forEach(c => c.classList.remove('win', 'scatterhit', 'bonushit', 'doorhit'));
     winFlash.classList.remove('on');
   }
   function markCell(reel, row, cls) {
@@ -185,13 +187,17 @@
      319.7 symbols/sec. Distance grows with the speed — the spin keeps
      its ~2-2.5s shape, the strip just travels ~20x farther. */
   const PEAK_SYM_PER_SEC = 319.7;
-  function spinReel(r, finalStops, duration) {
+  /* DOLLAR DOOR beats 1+2 (Joshua, 2026-11-22): when this reel carries the
+     third dollar (fx.slow), it crawls at ~38% speed under a rising tension
+     sound while the cabinet glows — then SLAMS to a stop: a heavy thunk, a
+     cabinet jolt and a hard bounce, nothing like a normal reel stop. */
+  function spinReel(r, finalStops, duration, fx) {
     return new Promise(resolve => {
       const reel = reelsEl[r], H = cellH(r), strip = cfg.strips[r];
       const grid = core.windowForStops(cfg.strips, finalStops);
 
       const len = strip.length;
-      const vmax = PEAK_SYM_PER_SEC * H;   /* this machine's 20x peak, px/s */
+      const vmax = PEAK_SYM_PER_SEC * H * (fx && fx.slow ? 0.38 : 1);   /* this machine's 20x peak, px/s */
       let N = Math.max(24, Math.round(core.reelDistance(vmax, H, duration) / H));
       N += ((finalStops[r] - stops[r] - N) % len + len) % len;  /* land exactly on the dealt stop */
       const D = N * H;                     /* total travel, px */
@@ -226,6 +232,13 @@
         track.innerHTML = grid[r].map(s => cellHTML(s, H)).join('');
         track.style.transform = 'translateY(0px)';
         sStop();
+        if (fx && fx.slow) {
+          /* BEAT 2 — THE SLAM */
+          reel.classList.remove('anticipating');
+          reel.classList.add('slamming');
+          setTimeout(() => reel.classList.remove('slamming'), 480);
+          try { Kit.thunk(); Kit.play('thunk', { gain: 1.8 }); } catch (e) {}
+        }
         RollSound.reelDone();
         resolve();
       };
@@ -240,6 +253,11 @@
       const hardStop = setTimeout(finish, duration + 1600);
       activeReelStops.add(stopper);
       RollSound.reelStart();
+      if (fx && fx.slow) {
+        /* BEAT 1 — THE SLOW-DOWN: tension rises, the reel glows */
+        try { Kit.tension(); } catch (e) {}
+        reel.classList.add('anticipating');
+      }
       function frame(now) {
         if (finished) return;
         /* dt clamp is generous (0.25s) so a slow device still spins in
@@ -373,7 +391,7 @@
       `<div class="payrow"><div class="thumb"><img src="${ART.X2}" alt="WIN ×2"></div><div class="nm">WIN ×2</div><span class="pv wide">Anywhere on a winning line, this line's win is DOUBLED (×2)</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.X3}" alt="WIN ×3"></div><div class="nm">WIN ×3</div><span class="pv wide">Anywhere on a winning line, this line's win is TRIPLED (×3). Two multipliers on the same line multiply together — ×2 and ×3 pay ×6</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.SC}" alt="SCATTER"></div><div class="nm">SCATTER</div><span class="pv wide">3+ anywhere: pays 2.4× / 9.6× / 48× total bet + 7 / 10 / 15 FREE SPINS at 2× line wins</span></div>` +
-      `<div class="payrow"><div class="thumb"><img src="${ART.BN}" alt="BONUS"></div><div class="nm">BONUS — PICK-A-GARAGE / WHEEL</div><span class="pv wide">3+ anywhere on a paid spin opens the garage: 9 real cars — pop a trunk! 8 trunks hide prizes (0.6×–4.8× total bet), 1 hides SCOTTY. Banked prizes are kept; Scotty ends it. Pop all 8 for a 7.2× GARAGE BONUS — the last closed trunk then stays live as a no-risk reveal of SCOTTY. Half the time the BONUS WHEEL opens instead: 12 wedges, every wedge pays × total bet — MINI 4× · MINOR 8× · MAJOR 15× · GRAND 30×</span></div>` +
+      `<div class="payrow"><div class="thumb"><img src="${ART.DD}" alt="DOLLAR DOOR"></div><div class="nm">THE DOLLAR DOOR</div><span class="pv wide">3+ BIG GREEN DOLLARS anywhere on a paid spin — the ONLY way into a bonus. The third dollar slows the reels, they SLAM to a stop, the dollars grow and POP, and the bonus opens. Half the time it's PICK-A-GARAGE: 9 real cars — pop a trunk! 8 trunks hide prizes (0.25×–2.2× total bet), 1 hides SCOTTY. Banked prizes are kept; Scotty ends it. Pop all 8 for a 3.2× GARAGE BONUS — the last closed trunk then stays live as a no-risk reveal of SCOTTY. The other half the BONUS WHEEL opens: 12 wedges, every wedge pays × total bet — MINI 2× · MINOR 3.5× · MAJOR 7× · GRAND 13×</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.DL}" alt="BET"></div><div class="nm">BET</div><span class="pv wide">Bets run in $25 steps: $25, $50, $75 … all the way up to $2,500 a spin. A step unlocks the first time your balance reaches it — and stays unlocked even if your balance dips. Use the −25 / +25 buttons or MAX BET. NEW GAME resets you to a $25 bet</span></div>`;
   }
 
@@ -632,6 +650,21 @@
     });
   }
 
+  /* ---------- DOLLAR DOOR beat 3: grow + pop ---------- */
+  let lastDoor = { hit: false, reel: -1, count: 0 };
+  function doorPopSequence(cells) {
+    return new Promise(res => {
+      cells.forEach((c, i) => {
+        const track = reelsEl[c.r].firstElementChild;
+        const cell = track && track.children[c.row];
+        if (cell) { cell.classList.add('doorhit'); cell.style.animationDelay = (i * 0.13) + 's'; }
+        setTimeout(() => { try { Kit.play('bell', { rate: 1 + i * 0.09 }); } catch (e) {} }, 420 + i * 130);
+      });
+      try { Kit.play('coins'); } catch (e) {}
+      setTimeout(res, 620 + cells.length * 130 + 450);
+    });
+  }
+
   /* ---------- spin flow ---------- */
   async function doSpin(isFree) {
     if (spinning) return;
@@ -654,7 +687,26 @@
     msgEl.textContent = isFree ? `Free spin — ${freeSpinsLeft} left after this one. Wins pay double!` : 'Good luck!';
     const finalStops = core.randomStops(Math.random, cfg.strips);
     const durations = [1700, 1900, 2100, 2300, 2500]; /* staggered stops, reel 1 first, ~200ms apart */
-    await Promise.all(finalStops.map((_, r) => spinReel(r, finalStops, durations[r])));
+    /* DOLLAR DOOR choreography: the dealt grid is known before the reels
+       move, so the reel that lands the THIRD dollar is singled out up
+       front — it crawls in slow motion (beat 1) and slams (beat 2). */
+    const dealtGrid = core.windowForStops(cfg.strips, finalStops);
+    const dealtEv = core.evaluateGrid(dealtGrid, lineBet(), cfg);
+    let doorReel = -1;
+    if (!isFree && dealtEv.bonusCount >= 3) {
+      let cum = 0;
+      for (let r = 0; r < 5; r++) {
+        cum += dealtGrid[r].filter(s => s === cfg.doorSymbol).length;
+        if (cum >= 3) { doorReel = r; break; }
+      }
+    }
+    const reelFx = [null, null, null, null, null];
+    if (doorReel >= 0) {
+      durations[doorReel] = 3600;
+      reelFx[doorReel] = { slow: true };
+      msgEl.textContent = 'The dollars are on the reels — watch for the third one…';
+    }
+    await Promise.all(finalStops.map((_, r) => spinReel(r, finalStops, durations[r], reelFx[r])));
     stops = finalStops;
     const grid = core.windowForStops(cfg.strips, stops);
     const ev = core.evaluateGrid(grid, lineBet(), cfg);
@@ -667,8 +719,16 @@
       if (w.mult > 1 && w.multCells) for (const r of w.multCells) markCell(r, core.PAYLINES[w.line - 1][r], 'win');
     }
     if (ev.scatterCount >= 1) for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) if (grid[r][row] === 'SC') markCell(r, row, 'scatterhit');
-    const bonusHit = !isFree && ev.bonusCount >= 3; /* Pick-a-Garage: paid spins only */
-    if (bonusHit) for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) if (grid[r][row] === 'BN') markCell(r, row, 'bonushit');
+    const bonusHit = !isFree && ev.bonusCount >= 3; /* Dollar Door: paid spins only */
+    lastDoor = { hit: bonusHit, reel: doorReel, count: ev.bonusCount };
+    if (bonusHit) {
+      /* BEAT 3 — GROW AND POP: every landed dollar swells up and pops,
+         one after another, bells rising, before the bonus opens. */
+      const cells = [];
+      for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) if (grid[r][row] === cfg.doorSymbol) cells.push({ r, row });
+      await doorPopSequence(cells);
+      msgEl.textContent = `${ev.bonusCount} BIG GREEN DOLLARS — the door is open!`;
+    }
 
     if (totalWin > 0) {
       winFlash.classList.add('on');
@@ -735,14 +795,14 @@
          bonus-door frequency (and the combined feature frequency) is
          unchanged by construction. */
       if (Math.random() < (cfg.wheelShare ?? 0.5)) {
-        msgEl.textContent = `${ev.bonusCount} BONUS doors — the bonus wheel is open!`;
-        await celebrate('bonus', 'BONUS WHEEL!', `${ev.bonusCount} BONUS doors hit — spin the wheel!`, celebDur());
+        msgEl.textContent = `${ev.bonusCount} BIG GREEN DOLLARS — the bonus wheel is open!`;
+        await celebrate('bonus', 'BONUS WHEEL!', `${ev.bonusCount} big green dollars — spin the wheel!`, celebDur());
         await runBonusWheel(totalBet());
         finishTurn();
         return;
       }
-      msgEl.textContent = `${ev.bonusCount} BONUS doors — the garage is open!`;
-      await celebrate('bonus', 'PICK-A-GARAGE!', `${ev.bonusCount} BONUS doors hit — pop a trunk, dodge Scotty!`, celebDur());
+      msgEl.textContent = `${ev.bonusCount} BIG GREEN DOLLARS — the garage is open!`;
+      await celebrate('bonus', 'PICK-A-GARAGE!', `${ev.bonusCount} big green dollars — pop a trunk, dodge Scotty!`, celebDur());
       openBonus(totalBet(), finishTurn);
       return;
     }
@@ -873,7 +933,7 @@
     celebrate: (kind, title, sub, dur) => celebrate(kind || 'bonus', title || 'PICK-A-GARAGE!', sub || '', dur || 3000),
     wheel: (idx) => runBonusWheel(totalBet(), idx),
     kit: Kit,
-    getState: () => ({ credits, bet: betSel, betPerLine: lineBet(), maxBet: unlockedMax(), peak, spinning, wheelArmed: !!wheelArmed, wheelSpinning, rolling: RollSound.isActive(), rollLevel: Math.round(RollSound.level() * 100) / 100, stops: stops.slice() })
+    getState: () => ({ credits, bet: betSel, betPerLine: lineBet(), maxBet: unlockedMax(), peak, spinning, wheelArmed: !!wheelArmed, wheelSpinning, rolling: RollSound.isActive(), rollLevel: Math.round(RollSound.level() * 100) / 100, stops: stops.slice(), door: { ...lastDoor } })
   };
   function runFreeSpins() { if (freeSpinsLeft > 0 && !spinning) doSpin(true); }
 

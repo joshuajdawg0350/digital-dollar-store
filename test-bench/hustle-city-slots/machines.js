@@ -62,11 +62,26 @@ const CLASSICS = {
   name: 'Hustle City Slots — Casino Classics',
   scatterPay: { 3: 2.4, 4: 9.6, 5: 48 },
   scatterSpins: { 3: 7, 4: 10, 5: 15 },
+  /* DOLLAR DOOR (2026-11-22, Joshua's program-wide ruling): the ONLY way
+     into a bonus is 3+ BIG GREEN DOLLAR SIGNS (DD) anywhere in the
+     window. DD is a door-only symbol (green medallion art, pays nothing
+     on lines) — the line-paying DL keeps its original stops, so base
+     pays are untouched. The old BN trigger is gone: its five stops
+     became DD, plus three low-filler stops (B1/B1/BL) — DD counts
+     [2,1,2,1,2]. Exact door rate 1 in 20.2 paid spins (enumeration);
+     free-spin geometry untouched (still 1 in 69.8). Behind the door the
+     garage/wheel prizes were scaled so the total RTP holds at the
+     pre-door measured line (see the door record in the vault). */
+  doorSymbol: 'DD',
   /* PICK-A-GARAGE bonus: 9 trunks, 8 prizes + 1 SCOTTY (bust). Prizes and the
      completion bonus are multiples of the TOTAL bet of the triggering spin.
      Random-pick EV = (sum of prizes)/2 + completion/9 = 8.90x total bet
      (was 7.42x before the 2026-11-21 x1.2 payout scale below). */
-  bonus: { prizes: [0.6, 0.6, 1.2, 1.2, 1.8, 2.4, 3.6, 4.8], completion: 7.2 },
+  /* DOLLAR DOOR rebalance (2026-11-22): the door fires ~3.5x as often as
+     the old BN trigger, so garage prizes + completion were scaled x0.45
+     (EV 8.90x -> 3.96x) to hold the machine's total RTP at its pre-door
+     measured line (~131%). Base pays NOT touched. */
+  bonus: { prizes: [0.25, 0.25, 0.5, 0.5, 0.8, 1.1, 1.6, 2.2], completion: 3.2 },
   /* BONUS WHEEL (2026-11-22, ported from Pearl's Paws): when the garage
      would open, wheelShare of the time the BONUS WHEEL opens instead —
      the bonus-door frequency itself is unchanged, so the combined
@@ -74,8 +89,10 @@ const CLASSICS = {
      (multiples of the TOTAL bet of the triggering spin, in wheel order).
      EV = 89/12 = 7.42x total bet, matching the garage's design EV.
      tunable — unification pass owns final numbers. */
-  wheel: [30, 2, 8, 3, 15, 5, 3, 8, 4, 2, 6, 3],
-  wheelTiers: { 30: 'GRAND', 15: 'MAJOR', 8: 'MINOR', 4: 'MINI' },
+  /* Door rebalance (2026-11-22): wedges scaled x0.45 with the garage
+     (EV 7.42x -> 3.38x) so the blended behind-door EV holds the total. */
+  wheel: [13, 1, 3.5, 1.5, 7, 2.5, 1.5, 3.5, 2, 1, 2.5, 1.5],
+  wheelTiers: { 13: 'GRAND', 7: 'MAJOR', 3.5: 'MINOR', 2: 'MINI' },
   wheelShare: 0.5,
   paytable: {
     DL: { 3: 64.8, 4: 232.8, 5: 2650.8 },
@@ -87,11 +104,11 @@ const CLASSICS = {
     B1: { 3: 4.8, 4: 13.2, 5: 26.4 }
   },
   strips: [
-    ['B1', 'B1', 'CH', 'B1', 'CH', 'HS', 'B1', 'BL', 'BL', 'WD', 'X2', 'SC', 'DL', 'BL', 'BL', 'SV', 'BN', 'BL', 'CH', 'CH', 'BL', 'HS', 'B1', 'CH', 'BL'],
-    ['B1', 'SC', 'CH', 'BL', 'CH', 'B1', 'DL', 'B1', 'BL', 'BL', 'BN', 'X3', 'CH', 'SV', 'CH', 'BL', 'WD', 'BL', 'HS', 'B1', 'BL', 'DL', 'B1', 'CH', 'BL'],
-    ['B1', 'B1', 'HS', 'B1', 'SV', 'DL', 'BL', 'X2', 'SC', 'CH', 'BL', 'B1', 'BL', 'B1', 'WD', 'B1', 'BL', 'BL', 'CH', 'CH', 'BN', 'B1', 'CH', 'BL', 'B1'],
-    ['BL', 'HS', 'WD', 'BL', 'DL', 'B1', 'SV', 'CH', 'BL', 'CH', 'BL', 'B1', 'CH', 'BN', 'BL', 'CH', 'HS', 'WD', 'SC', 'B1', 'BL', 'B1', 'HS', 'CH', 'BL'],
-    ['BL', 'CH', 'BL', 'SV', 'B1', 'WD', 'B1', 'SV', 'B1', 'CH', 'X2', 'CH', 'HS', 'BL', 'CH', 'SC', 'BN', 'B1', 'DL', 'BL', 'SV', 'HS', 'BL', 'CH', 'B1']
+    ['DD', 'B1', 'CH', 'B1', 'CH', 'HS', 'B1', 'BL', 'BL', 'WD', 'X2', 'SC', 'DL', 'BL', 'BL', 'SV', 'DD', 'BL', 'CH', 'CH', 'BL', 'HS', 'B1', 'CH', 'BL'],
+    ['B1', 'SC', 'CH', 'BL', 'CH', 'B1', 'DL', 'B1', 'BL', 'BL', 'DD', 'X3', 'CH', 'SV', 'CH', 'BL', 'WD', 'BL', 'HS', 'B1', 'BL', 'DL', 'B1', 'CH', 'BL'],
+    ['DD', 'B1', 'HS', 'B1', 'SV', 'DL', 'BL', 'X2', 'SC', 'CH', 'BL', 'B1', 'BL', 'B1', 'WD', 'B1', 'BL', 'BL', 'CH', 'CH', 'DD', 'B1', 'CH', 'BL', 'B1'],
+    ['BL', 'HS', 'WD', 'BL', 'DL', 'B1', 'SV', 'CH', 'BL', 'CH', 'BL', 'B1', 'CH', 'DD', 'BL', 'CH', 'HS', 'WD', 'SC', 'B1', 'BL', 'B1', 'HS', 'CH', 'BL'],
+    ['DD', 'CH', 'BL', 'SV', 'B1', 'WD', 'B1', 'SV', 'B1', 'CH', 'X2', 'CH', 'HS', 'BL', 'CH', 'SC', 'DD', 'B1', 'DL', 'BL', 'SV', 'HS', 'BL', 'CH', 'B1']
   ]
 };
 
