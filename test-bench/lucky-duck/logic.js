@@ -37,9 +37,17 @@ const TIER_ORDER = ['DUCK', 'SEVEN', 'BAR3', 'BAR2', 'BAR1', 'ANYBAR', 'CHERRY3'
    2026-11-22 for the wild build: duck variants multiply the average win
    ~1.3x, so the tier weights came down to hold the same return. */
 const TIER_WEIGHTS = {
-  DUCK: 3, SEVEN: 26, BAR3: 100, BAR2: 180, BAR1: 400,
-  ANYBAR: 980, CHERRY3: 140, CHERRY2: 1550, CHERRY1: 9100
+  DUCK: 3, SEVEN: 23, BAR3: 88, BAR2: 158, BAR1: 352,
+  ANYBAR: 862, CHERRY3: 123, CHERRY2: 1364, CHERRY1: 8008
 };
+/* Re-tuned 2026-11-22 (v4): the red-screen routing fix means EVERY red
+   trigger now re-spins (the old build diverted 25% of them into Pick a
+   Duck), which lifted the return ~+12 points in sim. Weights trimmed
+   ~12% across the board to hold the v3 band — Monte Carlo (2M spins,
+   ../sim.js): 87.2% @ 1 coin / ~90.5% @ 3 coins, vs the pre-fix build's
+   85.4% / 92.2% at 400k. Hit frequency eases 12.5% -> ~11.0% while red
+   screens fire MORE often (0.023 -> 0.027 per spin): the feature Joshua
+   plays for got more common, base hits slightly fewer. */
 const TOTAL_WEIGHT = 100000;
 
 /* Feature odds (documented/inferred — see RESEARCH.md):
@@ -48,7 +56,13 @@ const TOTAL_WEIGHT = 100000;
 const RED_CHANCE = 0.20;       // per winning spin (player-reported ~1 in 5)
 const RED_CHAIN_CHANCE = 0.20; // a red spin can flash red again
 const RED_MAX = 5;             // reported maximum chain
-const PICK_CHANCE = 0.25;      // share of red triggers that become Pick a Duck
+/* Pick a Duck's OWN trigger: an independent roll on a winning spin.
+   Until 2026-11-22 this was 0.25 as a SHARE OF RED TRIGGERS, and the red
+   screen diverted into the pond instead of re-spinning — Joshua, from
+   the real machine: "the red screen does the re-spins." The pick never
+   diverts a red screen now; 0.05 per winning spin is the old effective
+   rate (0.20 red x 0.25 share), so the pay band holds. */
+const PICK_CHANCE = 0.05;
 
 /* How many ducks show in a WINNING display (the base tier is drawn first,
    then the display is dealt): 0 ducks ~78%, 1 duck ~17%, 2 ducks ~5%.
@@ -58,11 +72,22 @@ const PICK_CHANCE = 0.25;      // share of red triggers that become Pick a Duck
 const DUCK_ROLL = [0.83, 0.13, 0.04];
 
 /* 22-stop mechanical strips (reconstructed; counts set the near-miss feel —
-   the tier draw above decides outcomes, strips decide what the eye sees). */
+   the tier draw above decides outcomes, strips decide what the eye sees).
+   2026-11-22 rework, second pass (Joshua, 13:12 CT: "make it spin down
+   and fill in the reels"): ZERO blank stops — every position on every
+   strip is a real symbol from the evidenced set, so no empty slot ever
+   shows in the window or rolls past. (The v1-v3 strips alternated
+   blank/symbol — 11 blanks per reel; a first rework cut that to 4;
+   Joshua's word is none.) Counts per reel — R1: DUCK 1 SEVEN 2 BAR3 2
+   BAR2 4 BAR1 7 CHERRY 6; R2: DUCK 1 SEVEN 2 BAR3 2 BAR2 5 BAR1 7
+   CHERRY 5; R3: DUCK 1 SEVEN 2 BAR3 3 BAR2 4 BAR1 6 CHERRY 6. The duck
+   stays at 1 per reel (the top symbol stays rare in the window
+   dressing). Dealt combos never contain BLANK either — see loserCombo
+   and the cherry fillers in comboForResult. */
 const STRIPS = [
-  ['BLANK','BAR1','BLANK','CHERRY','BLANK','BAR2','BLANK','SEVEN','BLANK','BAR1','BLANK','DUCK','BLANK','BAR3','BLANK','CHERRY','BLANK','BAR1','BLANK','BAR2','BLANK','SEVEN'],
-  ['BLANK','BAR2','BLANK','CHERRY','BLANK','BAR1','BLANK','BAR3','BLANK','SEVEN','BLANK','BAR1','BLANK','DUCK','BLANK','CHERRY','BLANK','BAR2','BLANK','BAR1','BLANK','SEVEN'],
-  ['BLANK','BAR1','BLANK','SEVEN','BLANK','BAR2','BLANK','CHERRY','BLANK','BAR1','BLANK','BAR3','BLANK','DUCK','BLANK','BAR2','BLANK','CHERRY','BLANK','SEVEN','BLANK','BAR1']
+  ['BAR1','CHERRY','BAR2','CHERRY','BAR1','SEVEN','BAR3','CHERRY','BAR1','BAR1','BAR2','DUCK','BAR1','CHERRY','BAR3','BAR2','BAR1','BAR2','SEVEN','CHERRY','CHERRY','BAR1'],
+  ['BAR2','BAR1','CHERRY','SEVEN','BAR1','BAR1','BAR3','BAR2','CHERRY','BAR1','CHERRY','BAR2','DUCK','BAR1','CHERRY','BAR3','BAR2','SEVEN','BAR1','BAR2','CHERRY','BAR1'],
+  ['BAR1','SEVEN','BAR2','BAR3','CHERRY','BAR1','BAR2','BAR3','CHERRY','BAR1','CHERRY','BAR2','DUCK','BAR1','BAR1','CHERRY','BAR3','BAR1','SEVEN','CHERRY','BAR2','CHERRY']
 ];
 
 /* ---------- the duck: WILD, with multipliers (2026-11-22 research) ----------
@@ -161,7 +186,7 @@ function comboForResult(tier, ducks, rng, attempts) {
       combo = [];
       for (let i = 0; i < ducks; i++) combo.push('DUCK');
       for (let i = 0; i < realCherries; i++) combo.push('CHERRY');
-      const fillers = ['BLANK', 'BLANK', 'SEVEN', 'BAR1', 'BAR2', 'BAR3'];
+      const fillers = ['SEVEN', 'BAR1', 'BAR2', 'BAR3', 'SEVEN', 'BAR1']; // no BLANK: strips carry none (2026-11-22)
       while (combo.length < 3) combo.push(pick(fillers));
       combo = shuffleArr(combo, rng);
     }
@@ -173,17 +198,21 @@ function comboForResult(tier, ducks, rng, attempts) {
 }
 
 /* A natural loser under the wild rules (near-misses that still pay 0:
-   two sevens + blank, two bars + blank). Anything with a duck next to a
-   cherry — or a duck alone — PAYS now, so it can never be dealt as a
-   loser; the rejection loop enforces that against evaluateCombo. */
+   two sevens + a bar, two bars + a seven). Anything with a duck next to
+   a cherry — or a duck alone — PAYS now, so it can never be dealt as a
+   loser; the rejection loop enforces that against evaluateCombo. And
+   since the strips carry no blank stops (2026-11-22), a loser is dealt
+   from real faces only: the random draw comes from {SEVEN, BAR1, BAR2,
+   BAR3} — no cherries (any cherry pays), no ducks (a duck pays). */
 function loserCombo(rng) {
   const pick = arr => arr[Math.floor(rng() * arr.length)];
   const roll = rng();
-  if (roll < 0.10) { const c = ['SEVEN', 'SEVEN', 'BLANK']; if (!evaluateCombo(c)) return c; }
-  if (roll < 0.18) { const c = [pick(BARS), pick(BARS), 'BLANK']; if (!evaluateCombo(c)) return c; }
+  if (roll < 0.10) { const c = ['SEVEN', 'SEVEN', pick(BARS)]; if (!evaluateCombo(c)) return c; }
+  if (roll < 0.18) { const c = [pick(BARS), pick(BARS), 'SEVEN']; if (!evaluateCombo(c)) return c; }
   let combo = null, guard = 0;
-  do { combo = [pick(SYMBOLS), pick(SYMBOLS), pick(SYMBOLS)]; } while (evaluateCombo(combo) !== null && ++guard < 80);
-  if (evaluateCombo(combo) !== null) combo = ['SEVEN', 'BAR1', 'BLANK'];
+  const FACES = ['SEVEN', 'BAR1', 'BAR2', 'BAR3'];
+  do { combo = [pick(FACES), pick(FACES), pick(FACES)]; } while (evaluateCombo(combo) !== null && ++guard < 80);
+  if (evaluateCombo(combo) !== null) combo = ['SEVEN', 'BAR1', 'SEVEN'];
   return combo;
 }
 
@@ -191,7 +220,10 @@ function loserCombo(rng) {
    variant roll), and score the dealt combo. The combo IS the result —
    what the reels show is exactly what gets paid. */
 function drawResult(coins, rng) {
-  const tier = pickTier(rng);
+  /* through the api object, so the QA suites can stub the tier draw
+     (LuckyLogic.pickTier = ...) and have it take effect — a plain
+     internal call would bypass the stub (found 2026-11-22, v4 QA). */
+  const tier = api.pickTier(rng);
   if (!tier) return resultForCombo(loserCombo(rng), coins);
   if (tier === 'DUCK') return resultForCombo(['DUCK', 'DUCK', 'DUCK'], coins);
   const r = rng();

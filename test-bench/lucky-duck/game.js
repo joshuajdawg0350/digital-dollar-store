@@ -26,15 +26,21 @@ function gemSVG() {
     <polyline points="30,34 50,4 70,34" stroke="#eaf9ff" stroke-width="1.8" fill="none"/>
   </svg>`;
 }
-function coinPileSVG() {
-  return `<svg class="coinPile" viewBox="0 0 100 44" aria-hidden="true">
-    <rect x="56" y="2" width="34" height="17" rx="2.5" fill="#3f9e4d" stroke="#1d6b41" stroke-width="1.6" transform="rotate(9 73 10)"/>
-    <text x="73" y="15.5" font-size="11.5" text-anchor="middle" fill="#d9f2dc" font-family="Georgia,serif" font-weight="bold" transform="rotate(9 73 10)">$</text>
-    <g fill="url(#coinG)" stroke="#9a6b0d" stroke-width="1.3">
-      <ellipse cx="24" cy="36" rx="15" ry="5.2"/><ellipse cx="24" cy="30.5" rx="15" ry="5.2"/><ellipse cx="24" cy="25" rx="15" ry="5.2"/>
-      <ellipse cx="52" cy="38" rx="14" ry="4.8"/><ellipse cx="52" cy="33" rx="14" ry="4.8"/>
-      <ellipse cx="76" cy="39" rx="13" ry="4.5"/><ellipse cx="38" cy="40" rx="12" ry="4.2"/><ellipse cx="64" cy="42" rx="11" ry="4"/>
+/* The red 7 drawn to Joshua's photos of the real machine (R10/R11,
+   2026-11-22): a heavy slab-form red 7 — bright red gradient, dark red
+   outline, pale top highlight — standing in a pile of gold coins at its
+   base. Our own drawing; the look is the photo's. */
+function sevenSVG() {
+  return `<svg class="sevenSVG" viewBox="0 0 100 100" aria-hidden="true">
+    <defs><linearGradient id="sevenG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff6a4d"/><stop offset="45%" stop-color="#ec1c24"/><stop offset="100%" stop-color="#b30f1d"/>
+    </linearGradient></defs>
+    <g fill="url(#coinG)" stroke="#9a6b0d" stroke-width="1.4">
+      <ellipse cx="29" cy="90" rx="16" ry="6.8"/><ellipse cx="52" cy="93" rx="18" ry="7.4"/><ellipse cx="75" cy="90" rx="15" ry="6.8"/>
+      <ellipse cx="41" cy="85" rx="14" ry="6.2"/><ellipse cx="64" cy="85" rx="14" ry="6.2"/>
     </g>
+    <path d="M14 12 L90 8 L48 84 L30 84 L60 26 L14 30 Z" fill="url(#sevenG)" stroke="#7a0d16" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M19 17 L83 13 L79 19 L19 23 Z" fill="#ffffff" opacity=".28"/>
   </svg>`;
 }
 function cherrySVG() {
@@ -53,11 +59,11 @@ document.querySelectorAll('.badgeDuck').forEach(el => { el.innerHTML = `<img src
 
 function symHTML(sym) {
   switch (sym) {
-    case 'DUCK': return `<div class="sym"><div class="duckMedal"><img src="${MEDAL_IMG}" alt="Lucky Ducky"></div><div class="duckLogoText">LUCKY DUCKY</div></div>`;
-    case 'SEVEN': return `<div class="sym"><div class="sevenWrap"><div class="sevenRed">7<span class="emboss">$</span></div>${coinPileSVG()}</div></div>`;
-    case 'BAR3': return `<div class="sym"><div class="bar"><small>BAR</small><small>BAR</small><small>BAR</small></div></div>`;
-    case 'BAR2': return `<div class="sym"><div class="bar"><small>BAR</small><small>BAR</small></div></div>`;
-    case 'BAR1': return `<div class="sym"><div class="bar">BAR</div></div>`;
+    case 'DUCK': return `<div class="sym"><div class="duckMedal"><img src="${MEDAL_IMG}" alt="Lucky Ducky"></div><div class="duckLogoText">LUCKY<br>DUCKY</div></div>`;
+    case 'SEVEN': return `<div class="sym">${sevenSVG()}</div>`;
+    case 'BAR3': return `<div class="sym"><div class="barStack"><div class="barPlate">BAR</div><div class="barPlate">BAR</div><div class="barPlate">BAR</div></div></div>`;
+    case 'BAR2': return `<div class="sym"><div class="barStack"><div class="barPlate">BAR</div><div class="barPlate">BAR</div></div></div>`;
+    case 'BAR1': return `<div class="sym"><div class="barStack one"><div class="barPlate">BAR</div></div></div>`;
     case 'CHERRY': return `<div class="sym">${cherrySVG()}</div>`;
     default: return `<div class="sym"></div>`;
   }
@@ -224,6 +230,9 @@ function stopAttract() { if (attractTimer) clearInterval(attractTimer); attractT
    height: getComputedStyle returns the --cell clamp() UNRESOLVED and
    parseFloat of it is NaN — the rendered height is the truth. */
 const ROW_OFF = 0.39;
+const REEL_BORDER = 3; // .reel's border width: the strip's containing box starts
+                       // this far inside the window, so the payline cell needs
+                       // the same nudge to sit exactly on the payline
 const CELL_H = () => { const s = document.querySelector('#reel0 .strip .sym'); return s ? s.getBoundingClientRect().height : 100; };
 const reelEls = [$('reel0'), $('reel1'), $('reel2')];
 const strips = [];
@@ -239,10 +248,10 @@ reelEls.forEach((el, ri) => {
 function setReelInstant(ri, stopIdx) {
   const st = strips[ri], h = CELL_H();
   const m = stopIdx + 22; // middle repetition: cell m sits on the payline
-  st.el.style.transform = `translateY(${-(m - ROW_OFF) * h}px)`;
+  st.el.style.transform = `translateY(${-(m - ROW_OFF) * h - REEL_BORDER}px)`;
   st.pos = stopIdx;
 }
-reelEls.forEach((_, ri) => setReelInstant(ri, 3 + ri * 5));
+reelEls.forEach((_, ri) => setReelInstant(ri, [11, 6, 4][ri])); // boot window: DUCK · BAR3 · CHERRY
 function spinReelTo(ri, stopIdx, dur) {
   return new Promise(res => {
     const st = strips[ri], h = CELL_H();
@@ -250,16 +259,43 @@ function spinReelTo(ri, stopIdx, dur) {
     let cur = st.pos;
     const candidates = [stopIdx, stopIdx + stripLen, stopIdx + stripLen * 2].filter(p => p > cur + 8);
     const finalPos = candidates.length ? candidates[0] : stopIdx + stripLen * 2;
-    const fromY = -(cur + stripLen - ROW_OFF) * h;
-    const toY = -(finalPos + stripLen - ROW_OFF) * h;
+    const fromY = -(cur + stripLen - ROW_OFF) * h - REEL_BORDER;
+    const toY = -(finalPos + stripLen - ROW_OFF) * h - REEL_BORDER;
     st.el.classList.add('spinning');
+    /* Mechanical reel profile (Joshua, 2026-11-22: "make it spin down"):
+       SPIN UP (accelerating, first 15% of the travel time, ~10% of the
+       distance) -> ROLL (full speed, linear) -> SPIN DOWN (a long strong
+       deceleration over the last ~40%) -> SETTLE (the reel lands ~7px
+       past its stop and eases back onto it, like a real reel's weight
+       settling). The motion blur sharpens away as it slows. */
+    const dist = toY - fromY;
     const anim = st.el.animate(
-      [{ transform: `translateY(${fromY}px)` }, { transform: `translateY(${toY}px)` }],
-      { duration: dur, easing: 'cubic-bezier(.15,.55,.25,1)', fill: 'forwards' }
+      [
+        { transform: `translateY(${fromY}px)`, easing: 'cubic-bezier(.55,.06,.68,.19)' },
+        { transform: `translateY(${fromY + dist * 0.10}px)`, offset: 0.15, easing: 'linear' },
+        { transform: `translateY(${fromY + dist * 0.72}px)`, offset: 0.58, easing: 'cubic-bezier(.23,1,.32,1)' },
+        { transform: `translateY(${toY - 7}px)`, offset: 0.94, easing: 'ease-out' },
+        { transform: `translateY(${toY}px)`, offset: 1 }
+      ],
+      { duration: dur, fill: 'forwards' }
+    );
+    const blurAnim = st.el.animate(
+      [{ filter: 'blur(2px) brightness(1.04)' }, { filter: 'blur(0px) brightness(1)' }],
+      { duration: dur, easing: 'ease-out', fill: 'forwards' }
     );
     const tickInt = setInterval(tickSnd, 58);
-    anim.onfinish = () => {
-      try { anim.commitStyles(); anim.cancel(); } catch (e) {}
+    /* Settle exactly once, whichever way the animation ends. A WAAPI
+       animation that gets CANCELED on a phone (tab throttling, overlay
+       churn) never fires onfinish — without an oncancel path the spin
+       promise would hang forever and the game would sit dead after an
+       announcement screen (the red-screen stall Joshua hit). The
+       timeout is the belt-and-braces path to the same settle. */
+    let settledSpin = false;
+    const finish = () => {
+      if (settledSpin) return; settledSpin = true;
+      try { anim.commitStyles(); } catch (e) {}
+      try { anim.cancel(); } catch (e) {}
+      try { blurAnim.cancel(); } catch (e) {}
       clearInterval(tickInt);
       st.el.classList.remove('spinning');
       st.pos = ((finalPos % stripLen) + stripLen) % stripLen;
@@ -267,6 +303,9 @@ function spinReelTo(ri, stopIdx, dur) {
       thunk();
       res();
     };
+    anim.onfinish = finish;
+    anim.oncancel = finish;
+    setTimeout(finish, dur + 700);
   });
 }
 
@@ -274,6 +313,9 @@ function spinReelTo(ri, stopIdx, dur) {
 const fmt$ = n => '$' + Math.floor(n).toLocaleString('en-US');
 function renderMeters(won, paid) {
   $('mBet').textContent = coinsBet;
+  [['betOneBtn', 1], ['betTwoBtn', 2], ['betMaxBtn', 3]].forEach(([id, n]) => {
+    const b = $(id); if (b) b.classList.toggle('sel', coinsBet === n);
+  });
   $('mWon').textContent = won !== undefined ? won : state.lastWon;
   $('mPaid').textContent = paid !== undefined ? paid : sessionPaid;
   $('mCash').textContent = fmt$(state.cash);
@@ -314,9 +356,9 @@ async function doSpin(isRed, minPay) {
   const stops = res.combo.map((s, ri) => L.stopFor(ri, s, rng));
   banner(null);
   await Promise.all([
-    spinReelTo(0, stops[0], 950),
-    spinReelTo(1, stops[1], 1250),
-    spinReelTo(2, stops[2], 1550)
+    spinReelTo(0, stops[0], 1150),
+    spinReelTo(1, stops[1], 1450),
+    spinReelTo(2, stops[2], 1750)
   ]);
   let pay = res.pay, jackpot = false;
   if (res.tier === 'DUCK' && coinsBet === 3) { pay = Math.max(pay, Math.floor(state.progressive)); jackpot = true; }
@@ -339,7 +381,7 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
 
 async function playSpin() {
   if (busy) return;
-  if (state.cash < coinsBet) { msg('OUT OF CASH — TAP + $1,000 CASH'); return; }
+  if (state.cash < coinsBet) { banner('over', 'GAME OVER'); msg('OUT OF CASH — TAP + $1,000 CASH'); return; }
   busy = true; document.body.dataset.busy = '1'; stopAttract(); renderMeters();
   state.cash -= coinsBet;
   state.progressive += coinsBet * 0.01;
@@ -378,9 +420,11 @@ async function playSpin() {
     /* RED SCREEN — the game's bonus: the top screen floods red and the
        machine RE-SPINS, guaranteed to pay at least the win that
        triggered it; a re-spin can flash red again and chain (max 5).
-       Every re-spin's pay ADDS to the session total. Sometimes Pick a
-       Duck steps in instead of a re-spin. (Player-reported + filmed:
-       RESEARCH.md.) */
+       Every re-spin's pay ADDS to the session total. The red screen
+       ALWAYS re-spins — nothing diverts it. Pick a Duck is a separate
+       bonus on its own trigger, rolled after this chain settles
+       (Joshua, 2026-11-22: "the red screen does the re-spins").
+       (Player-reported + filmed: RESEARCH.md.) */
     let chain = 0, triggerPay = r.pay;
     while (chain < L.RED_MAX && rng() < (chain === 0 ? L.RED_CHANCE : L.RED_CHAIN_CHANCE)) {
       chain++;
@@ -397,12 +441,6 @@ async function playSpin() {
          stays up a full couple of seconds before anything can move past it */
       await wait(2150);
       $('redFlash').classList.remove('on');
-      if (chain === 1 && rng() < L.PICK_CHANCE) {
-        document.body.classList.remove('redspin'); $('screen').classList.remove('redflood');
-        await pickADuck(triggerPay);
-        totalWon = state.lastWon;
-        break;
-      }
       msg(`RED SCREEN RE-SPIN ${chain}!`);
       const rr = await doSpin(true, triggerPay);
       await collectJewels(rr.ducks);
@@ -414,8 +452,18 @@ async function playSpin() {
       sessionPaid = totalWon; state.lastWon = totalWon; renderMeters(totalWon, sessionPaid);
       document.body.classList.remove('redspin'); $('screen').classList.remove('redflood');
     }
+
+    /* PICK A DUCK — its own bonus on its own trigger: an independent
+       roll on a winning spin, taken only after any red-screen chain
+       has fully settled. It never interrupts or replaces a re-spin. */
+    if (rng() < L.PICK_CHANCE) {
+      await pickADuck(r.pay);
+      totalWon = state.lastWon;
+    }
   } else {
-    banner('over', 'GAME OVER');
+    /* A losing spin just settles — no GAME OVER in the spin loop
+       (Joshua, 2026-11-22). GAME OVER belongs to session end only:
+       see the out-of-cash stop in playSpin. */
     msg('NO WIN — SPIN AGAIN');
   }
 
@@ -474,12 +522,13 @@ function pickADuck(triggerPay) {
 }
 
 /* ---------------- controls ---------------- */
-$('betOneBtn').onclick = () => { if (busy) return; coinsBet = coinsBet % 3 + 1; beep(880, .05, 'square', .05); renderMeters(); msg(`BET ${coinsBet} — SPIN WHEN READY`); };
+$('betOneBtn').onclick = () => { if (busy) return; coinsBet = 1; beep(880, .05, 'square', .05); renderMeters(); msg('BET 1 — SPIN WHEN READY'); };
+$('betTwoBtn').onclick = () => { if (busy) return; coinsBet = 2; beep(880, .05, 'square', .05); renderMeters(); msg('BET 2 — SPIN WHEN READY'); };
 $('betMaxBtn').onclick = () => { if (busy) return; coinsBet = 3; beep(880, .05, 'square', .05); beep(1174, .06, 'square', .05, .06); renderMeters(); msg('MAX BET 3 — SPIN WHEN READY'); };
 $('spinBtn').onclick = () => { ac(); playSpin(); };
 $('paysBtn').onclick = () => { $('paySheet').classList.toggle('open'); };
 $('soundBtn').onclick = () => { soundOn = !soundOn; $('soundBtn').textContent = soundOn ? 'SOUND ON' : 'SOUND OFF'; persist(); };
-$('refillBtn').onclick = () => { if (busy) return; state.cash += 1000; jingle(false); renderMeters(); persist(); msg('$1,000 CASH ADDED — GOOD LUCK!'); };
+$('refillBtn').onclick = () => { if (busy) return; state.cash += 1000; banner(null); jingle(false); renderMeters(); persist(); msg('$1,000 CASH ADDED — GOOD LUCK!'); };
 $('soundBtn').textContent = soundOn ? 'SOUND ON' : 'SOUND OFF';
 
 /* paytable sheet */
