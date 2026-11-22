@@ -14,7 +14,32 @@
    MATH (Joshua's settled target, 2026-11-21): total RTP 98% — exact
    closed form including wheels landed during free spins; verified
    breakdown and Monte Carlo in sim/sim-results.txt.
-   (c) 2026 J-Dawgs Industries. */
+   (c) 2026 J-Dawgs Industries.
+   PAYOUT REBALANCE (2026-11-21, Joshua's ruling from real play: "They need
+   to pay out better on individual spins") — BASE GAME ONLY: 3/4-of-a-kind
+   pays x1.75, pairs x1.5 (5-of-a-kind untouched), reel weights shifted
+   toward the common symbols (WD/SC/BN/X2/X3 keep their exact stops, so
+   the free-spin and wheel geometry is unchanged: FS 1 in 39.6, wheel
+   1 in 40.7, wheel EV 12.08x total bet — all as settled). Measured after:
+   line RTP 74.68%, base-game share 115.96%, TOTAL theoretical RTP 152.28%
+   (Monte Carlo 153.83% over 200k paid spins) — deliberately above the old
+   98% design point; these are play credits and the owner's feel ruling
+   governs. Net-positive base spins 11.2% -> 28.2%; average line win per
+   hit 14.1 -> 24.7 credits at 1/line.
+   FEATURE RETUNE (2026-11-21 21:47 CT, Joshua's ruling: "one in 35 spins
+   to be one of the random bonuses — free spins or a bonus"): strips
+   lengthened with regular symbols only (25/24/25/25/25 stops; every
+   special keeps its count, position and window coverage), superseding
+   the 'geometry unchanged' line above for FREQUENCIES only — wheel
+   wedges and EV untouched (12.08x). Exact: free spins 1 in 68.2, wheel
+   1 in 69.4, COMBINED 1 in 35.0. Final measured base game after both
+   passes: line RTP 79.54%, base-game share 102.23%, TOTAL theoretical
+   RTP 121.68% (Monte Carlo 121.92% over 200k paid spins); net-positive
+   base spins 29.5%; average line win per hit 23.1 credits at 1/line.
+   CHIP RECOLOR (2026-11-21 21:49 CT, Joshua's ruling "turn the chips
+   blue"): the poker-chip stack art (assets/sym-cg.webp) recolored red
+   -> electric blue. The WILD dollar coin, the SCATTER skull word and
+   the cabinet's red LED readouts stay RED by his earlier ruling. */
 'use strict';
 
 const LUXE = {
@@ -27,22 +52,22 @@ const LUXE = {
      0 = BANKRUPT (one wedge), 100 = JACKPOT. EV = 145/12 ≈ 12.08x bet. */
   wheel: [100, 5, 7, 2, 4, 8, 0, 3, 6, 1, 5, 4],
   paytable: {
-    AC: { 3: 26, 4: 83, 5: 1500 },
-    WD: { 3: 15, 4: 49, 5: 338 },
-    KG: { 3: 9, 4: 38, 5: 225 },
-    DM: { 3: 6, 4: 19, 5: 90 },
-    QN: { 3: 4, 4: 11, 5: 41 },
-    CG: { 3: 3, 4: 8, 5: 34 },
-    JK: { 3: 2, 4: 7, 5: 26 },
-    DK: { 3: 2, 4: 6, 5: 23 },
-    CP: { 2: 2, 3: 2, 4: 6, 5: 21 }
+    AC: { 3: 46, 4: 145, 5: 1500 },
+    WD: { 3: 26, 4: 86, 5: 338 },
+    KG: { 3: 16, 4: 67, 5: 225 },
+    DM: { 3: 11, 4: 33, 5: 90 },
+    QN: { 3: 7, 4: 19, 5: 41 },
+    CG: { 3: 5, 4: 14, 5: 34 },
+    JK: { 3: 4, 4: 12, 5: 26 },
+    DK: { 3: 4, 4: 11, 5: 23 },
+    CP: { 2: 3, 3: 4, 4: 11, 5: 21 }
   },
   strips: [
-    ['JK', 'CP', 'DM', 'CP', 'CG', 'KG', 'JK', 'CG', 'CP', 'WD', 'X2', 'SC', 'AC', 'KG', 'CG', 'QN', 'JK', 'DK', 'CP', 'DM'],
-    ['JK', 'SC', 'CP', 'CG', 'CP', 'JK', 'AC', 'QN', 'CG', 'BN', 'JK', 'X3', 'CP', 'KG', 'CP', 'DM', 'WD', 'CG', 'DM', 'BN'],
-    ['JK', 'KG', 'DM', 'JK', 'KG', 'AC', 'CG', 'X2', 'BN', 'SC', 'CP', 'CG', 'QN', 'CG', 'JK', 'WD', 'DK', 'CP', 'DM', 'CP', 'BN', 'CP'],
-    ['CG', 'DM', 'WD', 'X2', 'AC', 'JK', 'KG', 'CP', 'BN', 'CP', 'KG', 'QN', 'CP', 'JK', 'CG', 'QN', 'DM', 'WD', 'SC', 'BN'],
-    ['QN', 'CP', 'CG', 'KG', 'JK', 'WD', 'DM', 'KG', 'JK', 'CP', 'X2', 'CP', 'DM', 'CG', 'CP', 'SC', 'JK', 'DK', 'AC', 'CG']
+    ['JK', 'CP', 'CP', 'CP', 'CG', 'CG', 'JK', 'CG', 'CP', 'WD', 'X2', 'SC', 'AC', 'KG', 'CG', 'JK', 'JK', 'DK', 'CP', 'DM', 'CP', 'AC', 'JK', 'CG', 'CP'],
+    ['JK', 'SC', 'CP', 'CG', 'CP', 'JK', 'CP', 'JK', 'CG', 'BN', 'JK', 'X3', 'CP', 'KG', 'CP', 'CP', 'WD', 'CG', 'DM', 'BN', 'CP', 'CG', 'JK', 'CP'],
+    ['JK', 'KG', 'DM', 'JK', 'CG', 'CP', 'CG', 'X2', 'BN', 'SC', 'CP', 'CG', 'JK', 'CG', 'JK', 'WD', 'DK', 'CP', 'DM', 'CP', 'BN', 'CP', 'CP', 'JK', 'CG'],
+    ['CG', 'DM', 'WD', 'X2', 'CP', 'JK', 'KG', 'CP', 'BN', 'CP', 'JK', 'QN', 'CP', 'JK', 'CG', 'QN', 'CG', 'WD', 'SC', 'BN', 'CP', 'QN', 'CG', 'JK', 'CP'],
+    ['CP', 'CP', 'CG', 'KG', 'JK', 'WD', 'DM', 'JK', 'JK', 'CP', 'X2', 'CP', 'CG', 'CG', 'CP', 'SC', 'JK', 'DK', 'AC', 'CG', 'CP', 'KG', 'CG', 'JK', 'CP']
   ]
 };
 
