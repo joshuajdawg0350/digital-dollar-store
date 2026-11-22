@@ -103,7 +103,7 @@ window.SlotKit = (() => {
     src.buffer = buf; src.loop = true;
     src.playbackRate.value = 0.72;
     const g = a.createGain(); g.gain.value = 0;
-    g.gain.setTargetAtTime(0.10, a.currentTime, 0.07);
+    g.gain.setTargetAtTime(0.12, a.currentTime, 0.07);
     src.connect(g); g.connect(master);
     src.start();
     rollNodes = { src, g };
@@ -120,7 +120,7 @@ window.SlotKit = (() => {
     const n = Math.max(0, Math.min(1, norm || 0));
     const t = a.currentTime;
     rollNodes.src.playbackRate.setTargetAtTime(0.72 + 0.58 * n, t, 0.06);
-    rollNodes.g.gain.setTargetAtTime(0.08 + 0.42 * n, t, 0.06);
+    rollNodes.g.gain.setTargetAtTime(0.10 + 0.45 * n, t, 0.06);
   }
   function rollStop(quick) {
     rollWanted = false;

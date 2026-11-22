@@ -1461,3 +1461,147 @@ body, button, input, select, textarea,
 .bonus-title { font-size: 30px; }
 .celeb-title { font-size: clamp(38px, 11vw, 58px); }
 .led { font-size: clamp(19px, 6vw, 26px); }
+
+/* ---------- PHOTOREAL CABINET PASS (2026-11-21, Joshua's live verdict) ----------
+   Joshua, playing the live build on his phone (23:20 CT): "Use that as a
+   still and use your realism package to bring that thing to life. Like,
+   make it look real. We're back to the janky default look." What read as
+   janky: the flat red plastic-looking shell, the marquee sitting ON the
+   cabinet instead of behind glass in it, the pasted-photo belly panel,
+   and the coin tray clipped into a thin strip. This pass rebuilds the
+   cabinet's MATERIALS, composition untouched: black lacquer with a fine
+   grain and polished bevels (Stealth Black & Red stays the identity —
+   red is LIGHT on this machine, not body color), the marquee recessed
+   in a machined frame behind glass spilling real blue sign-light down
+   the shell, the belly art replaced with this machine's own printed
+   glass (assets/belly.webp, marquee-style skyline, no baked frame) in a
+   metal bezel, and a full-height base where the tray sits in a recess
+   behind a front lip with the coin heap in frame. Skin only — no
+   handler, ID, layout, or logic change. */
+.room {
+  background:
+    radial-gradient(130% 60% at 50% -10%, rgba(46, 120, 220, .20) 0%, rgba(46, 120, 220, 0) 60%),
+    radial-gradient(90% 34% at 50% 108%, rgba(255, 46, 55, .07) 0%, rgba(255, 46, 55, 0) 65%),
+    linear-gradient(180deg, #05070f 0%, #02030a 55%, #010103 100%);
+}
+.cabinet {
+  background:
+    linear-gradient(180deg, rgba(150, 200, 255, .10) 0%, rgba(150, 200, 255, 0) 30%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E"),
+    linear-gradient(180deg, rgba(0, 0, 0, 0) 52%, rgba(120, 10, 16, .13) 84%, rgba(50, 4, 8, .20) 100%),
+    linear-gradient(168deg, #26272b 0%, #131315 30%, #0a0a0b 58%, #101012 82%, #060607 100%);
+  background-blend-mode: normal, overlay, normal, normal;
+  border: 1px solid #3a3b40;
+  box-shadow:
+    0 0 0 2px #030304,
+    0 30px 70px rgba(0, 0, 0, .90),
+    0 6px 18px rgba(0, 0, 0, .80),
+    0 22px 48px rgba(255, 46, 55, .08),
+    inset 0 1px 0 rgba(255, 255, 255, .35),
+    inset 0 -1px 0 rgba(0, 0, 0, .90),
+    inset 14px 0 26px -14px rgba(0, 0, 0, .85),
+    inset -14px 0 26px -14px rgba(0, 0, 0, .85);
+}
+.cab-glow {
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, .13) 0%, rgba(255, 255, 255, .02) 30%, rgba(255, 255, 255, 0) 46%),
+    radial-gradient(120% 90% at 50% 42%, rgba(0, 0, 0, 0) 58%, rgba(0, 0, 0, .26) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  background-blend-mode: normal, normal, overlay;
+}
+.cab-glow::before, .cab-glow::after {
+  background: linear-gradient(180deg, rgba(var(--acc-rgb), 0) 0%, rgba(var(--acc-rgb), .09) 50%, rgba(var(--acc-rgb), 0) 100%);
+}
+.marquee-wrap {
+  border: 1px solid #55565c;
+  box-shadow:
+    0 0 0 2px #030304,
+    0 0 0 3px #2a2b2f,
+    0 14px 30px rgba(110, 180, 255, .16),
+    0 0 26px rgba(255, 46, 55, .20),
+    0 3px 10px rgba(0, 0, 0, .80),
+    inset 0 2px 14px rgba(0, 0, 0, .55),
+    inset 0 0 26px rgba(46, 155, 255, .22);
+}
+.marquee-shine {
+  background:
+    linear-gradient(112deg, rgba(255, 255, 255, .24) 0%, rgba(255, 255, 255, .05) 24%, rgba(255, 255, 255, 0) 44%),
+    linear-gradient(0deg, rgba(0, 0, 0, .30) 0%, rgba(0, 0, 0, 0) 26%),
+    linear-gradient(180deg, rgba(255, 255, 255, .08) 0%, rgba(255, 255, 255, 0) 22%);
+}
+.reel-bezel {
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .020) 0 1px, rgba(0, 0, 0, .025) 1px 2px),
+    linear-gradient(180deg, #43464c 0%, #26282d 6%, #121317 22%, #0a0a0c 55%, #17181b 92%, #33353b 100%);
+  box-shadow:
+    0 0 0 2px #04060a,
+    0 0 22px rgba(255, 46, 55, .12),
+    inset 0 2px 3px rgba(255, 255, 255, .40),
+    inset 0 -3px 6px rgba(0, 0, 0, .70),
+    inset 0 10px 18px rgba(0, 0, 0, .35),
+    0 4px 14px rgba(0, 0, 0, .80);
+}
+.deck {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cdefs%3E%3CradialGradient id='g' cx='35%25' cy='30%25'%3E%3Cstop offset='0%25' stop-color='%23f2f5f9'/%3E%3Cstop offset='45%25' stop-color='%2398a5b5'/%3E%3Cstop offset='80%25' stop-color='%23454f5c'/%3E%3Cstop offset='100%25' stop-color='%23141920'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='10' cy='10' r='9' fill='url(%23g)'/%3E%3Crect x='2.6' y='8.8' width='14.8' height='2.4' rx='1.2' fill='%2310141a' transform='rotate(38 10 10)'/%3E%3C/svg%3E") left 6px top 6px / 12px 12px no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cdefs%3E%3CradialGradient id='g' cx='35%25' cy='30%25'%3E%3Cstop offset='0%25' stop-color='%23f2f5f9'/%3E%3Cstop offset='45%25' stop-color='%2398a5b5'/%3E%3Cstop offset='80%25' stop-color='%23454f5c'/%3E%3Cstop offset='100%25' stop-color='%23141920'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='10' cy='10' r='9' fill='url(%23g)'/%3E%3Crect x='2.6' y='8.8' width='14.8' height='2.4' rx='1.2' fill='%2310141a' transform='rotate(115 10 10)'/%3E%3C/svg%3E") right 6px top 6px / 12px 12px no-repeat,
+    linear-gradient(180deg, rgba(22, 22, 26, .74) 0%, rgba(9, 9, 11, .86) 52%, rgba(3, 3, 4, .93) 100%),
+    url('assets/deck-plate.webp') center / cover no-repeat,
+    #070708;
+  border-color: #3f4046;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .22), inset 0 0 0 1px rgba(0, 0, 0, .60),
+    inset 0 -16px 28px rgba(0, 0, 0, .78), 0 6px 16px rgba(0, 0, 0, .75);
+}
+/* belly glass in a real metal bezel — the art is frameless now, the
+   frame is the cabinet's */
+.belly-frame {
+  padding: 5px;
+  background: linear-gradient(180deg, #4a4b51 0%, #232428 30%, #101113 55%, #2c2d31 85%, #434449 100%);
+  border: 1px solid #17181a;
+  box-shadow:
+    0 0 0 2px #030304,
+    0 0 24px rgba(255, 46, 55, .24),
+    0 5px 14px rgba(0, 0, 0, .75),
+    inset 0 1px 0 rgba(255, 255, 255, .35),
+    inset 0 -2px 6px rgba(0, 0, 0, .70);
+}
+.belly-art { border-radius: 9px; }
+/* full-height base: the tray is a recess you look INTO, not a strip */
+.cab-base { height: 100px; }
+@media (max-width: 400px) { .cab-base { height: 88px; } }
+.tray-art { object-position: 50% 42%; }
+.tray::after {
+  content: "";
+  position: absolute; left: 0; right: 0; bottom: 0; height: 15px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, .06) 0%, rgba(0, 0, 0, .34) 26%, #17181b 74%, #26272c 100%);
+  border-top: 1px solid rgba(255, 255, 255, .22);
+  box-shadow: 0 -1px 5px rgba(0, 0, 0, .35);
+  pointer-events: none;
+}
+.grille {
+  box-shadow:
+    inset 0 3px 12px rgba(0, 0, 0, .90),
+    inset 0 -1px 0 rgba(255, 255, 255, .07),
+    0 2px 6px rgba(0, 0, 0, .55);
+}
+/* the pull knob is a glossy lacquer ball on a chrome collar now */
+.lever-knob {
+  background: radial-gradient(circle at 33% 27%, rgba(255, 255, 255, .95) 0%, rgba(255, 255, 255, .22) 10%, rgba(255, 90, 90, .30) 27%, #2a0508 56%, #0a0205 100%);
+  border: 1px solid #000;
+  box-shadow:
+    0 5px 12px rgba(0, 0, 0, .75),
+    inset 0 -6px 10px rgba(0, 0, 0, .60),
+    inset 0 3px 6px rgba(255, 255, 255, .25),
+    0 0 14px rgba(255, 46, 55, .35);
+}
+.lever-arm::before {
+  content: "";
+  position: absolute;
+  left: 50%; top: 35px;
+  transform: translateX(-50%);
+  width: 17px; height: 11px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #d7dee7 0%, #79879a 45%, #39424f 100%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .60), inset 0 1px 0 rgba(255, 255, 255, .70);
+}
