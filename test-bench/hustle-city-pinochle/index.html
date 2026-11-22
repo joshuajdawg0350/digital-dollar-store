@@ -142,7 +142,7 @@ select.bidsel{flex:1;background:var(--panel2);color:var(--ink);border:1px solid 
 #hs-action .hsact-lab{font-weight:800;font-size:13px;letter-spacing:.05em;color:var(--mut);white-space:nowrap}
 #hs-action .hsact-lab b{color:var(--ink)}
 #hs-action .btn{flex:1;min-height:46px}
-#handsheet .hshandle{height:27px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:grab;touch-action:none;padding-top:4px}
+#handsheet .hshandle{height:40px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:grab;touch-action:none;padding-top:4px}
 #handsheet .hshandle .bar{width:52px;height:5px;border-radius:99px;background:#5f7189}
 #handsheet .hshandle .hlab{font-size:10px;font-weight:800;letter-spacing:.22em;color:var(--dim);text-transform:uppercase}
 #handsheet .seat{padding:1px 2px 0}
@@ -179,7 +179,7 @@ select.bidsel{flex:1;background:var(--panel2);color:var(--ink);border:1px solid 
 #sheet .tabs{flex:0 0 auto;display:flex;gap:6px;padding:0 12px 8px}
 #sheet .tabs .btn{min-height:40px;padding:6px 10px;font-size:14px;flex:1}
 #sheet .tabs .btn.on{border-color:var(--cyan);color:#57ccff}
-#sheet .sbody{flex:1 1 auto;overflow-y:auto;padding:2px 14px 18px;font-size:14.5px;color:#dbe6f4;line-height:1.5;touch-action:pan-y;overscroll-behavior:contain}
+#sheet .sbody{flex:1 1 auto;overflow-y:auto;padding:2px 14px 18px;font-size:14.5px;color:#dbe6f4;line-height:1.5;touch-action:none;overscroll-behavior:contain}
 #sheet .sbody h3{font-family:"Bebas Neue","Archivo",sans-serif;font-weight:400;letter-spacing:.05em;font-size:20px;margin:10px 0 4px;color:#fff}
 #sheet .sbody table{width:100%;border-collapse:collapse;font-size:13.5px;margin:4px 0 10px}
 #sheet .sbody td,#sheet .sbody th{border-bottom:1px solid var(--line);padding:4px 6px;text-align:left}
@@ -287,12 +287,19 @@ function clickSnd(f){ try{ actx = actx || new (window.AudioContext||window.webki
   const o = actx.createOscillator(), g = actx.createGain(); o.type = "triangle"; o.frequency.value = f || 660;
   g.gain.setValueAtTime(.045, actx.currentTime); g.gain.exponentialRampToValueAtTime(.001, actx.currentTime + .07);
   o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime + .08); }catch(e){} }
-function mulberry32(a){ return function(){ a|=0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a>>>15, 1|a); t = t + Math.imul(t ^ t>>>7, 61|t) ^ t; return ((t ^ t>>>14)>>>0)/4294967296; }; }
+/* Fresh entropy for every shuffle. The deal used to run off a stored
+   seed (mulberry32(dealerSeed + hand*7919)) — deterministic by design,
+   which combined with the saved-game restore meant the same hand came
+   back on every visit. A new game must never repeat a hand. */
+function randBelow(n){
+  const buf = new Uint32Array(1);
+  if(window.crypto && crypto.getRandomValues){ crypto.getRandomValues(buf); return Math.floor((buf[0] / 4294967296) * n); }
+  return Math.floor(Math.random() * n);
+}
 
 /* ---------------- state ---------------- */
 function newMatch(){
   G = { phase:"idle", scores:[0,0], hand:1, dealer:3, hands:[[],[],[],[]],
-    dealerSeed: (Date.now() % 2147483647) || 7,
     currentBid:0, highBidder:-1, passed:[false,false,false,false], turn:0,
     trump:null, declarer:-1, passStage:null, selected:[], passReceived:[],
     melds:null, meldTeamRaw:[0,0], trick:[], tricksWon:[0,0,0,0],
@@ -307,9 +314,8 @@ function sortHand(p){
 }
 function sortAll(){ for(let p=0;p<4;p++) sortHand(p); }
 function deal(){
-  const rng = mulberry32(G.dealerSeed + G.hand * 7919);
   const deck = L.buildDeck();
-  for(let i = deck.length-1; i > 0; i--){ const j = Math.floor(rng() * (i+1)); const t = deck[i]; deck[i] = deck[j]; deck[j] = t; }
+  for(let i = deck.length-1; i > 0; i--){ const j = randBelow(i+1); const t = deck[i]; deck[i] = deck[j]; deck[j] = t; }
   G.hands = [[],[],[],[]];
   deck.forEach((c,i)=> G.hands[i % 4].push(c));
   G.currentBid = 0; G.highBidder = -1; G.passed = [false,false,false,false];
@@ -663,7 +669,7 @@ function renderHsAction(){
   bar.innerHTML = '<span class="hsact-lab"><b>' + G.selected.length + "/4</b> picked</span>" +
     '<button class="btn gold" id="btn-hssend"' + (G.selected.length === 4 ? "" : " disabled") + ">" +
     (G.passStage === "toDeclarer" ? "SEND 4 CARDS" : "RETURN 4 CARDS") + "</button>";
-  const b = $("#btn-hssend"); if(b) b.addEventListener("click", confirmPass);
+  tapAction($("#btn-hssend"), confirmPass);
 }
 function renderHand(){
   const wrap = $("#myhand"); const hand = G.hands[0];
@@ -681,7 +687,7 @@ function renderHand(){
     const isNew = G.passReceived.includes(c.id) ? '<span class="newbdg">NEW</span>' : "";
     return '<button class="' + cls + '" data-card="' + c.id + '" aria-label="' + L.cardName(c) + '"><img src="deck/' + c.rank + c.suit + '.webp" alt="">' + dup + isNew + '</button>';
   }).join("");
-  wrap.querySelectorAll("[data-card]").forEach(b => b.addEventListener("click", ()=>{
+  wrap.querySelectorAll("[data-card]").forEach(b => tapAction(b, ()=>{
     const id = parseInt(b.getAttribute("data-card"), 10);
     if(inPass){ toggleSelect(id); return; }
     if(G.phase === "play" && G.turn === 0){
@@ -696,7 +702,7 @@ function renderHand(){
         setCall(why, true); render();
       }
     }
-  }));
+  }, "card" + b.getAttribute("data-card")));
 }
 function renderPanel(){
   const panel = $("#panel");
@@ -713,8 +719,8 @@ function renderPanel(){
       (G.currentBid ? "High bid <b>" + G.currentBid + "</b> · " : "") + marr + '</span></div>' +
       '<div class="btnrow"><select class="bidsel" id="bid-amt">' + opts + '</select>' +
       '<button class="btn gold" id="btn-bid">BID</button><button class="btn" id="btn-passbid">PASS</button></div>';
-    $("#btn-bid").addEventListener("click", humanBid);
-    $("#btn-passbid").addEventListener("click", humanPassBid);
+    tapAction($("#btn-bid"), humanBid);
+    tapAction($("#btn-passbid"), humanPassBid);
   }
   else if(phase === "auction"){
     panel.innerHTML = '<div class="prow"><span class="pt">Auction</span><span class="phint">' + (G.currentBid ? "High bid <b>" + G.currentBid + "</b> — " + NAMES[G.highBidder] + " · " : "") + NAMES[G.turn] + " is thinking…</span></div>";
@@ -726,21 +732,21 @@ function renderPanel(){
         const ok = suits.includes(s);
         return '<button class="btn suitbtn' + (s === "H" || s === "D" ? " red" : "") + '" data-suit="' + s + '"' + (ok ? "" : " disabled") + '>' + L.SUIT_GLYPH[s] + '<small>' + L.SUIT_NAME[s] + (ok ? " · meld " + L.computeMeld(G.hands[0], s).total : " · no marriage") + '</small></button>';
       }).join("") + '</div>';
-    panel.querySelectorAll("[data-suit]").forEach(b => b.addEventListener("click", ()=>{ nameTrump(b.getAttribute("data-suit")); save(); render(); maybeAI(); }));
+    panel.querySelectorAll("[data-suit]").forEach(b => tapAction(b, ()=>{ nameTrump(b.getAttribute("data-suit")); save(); render(); maybeAI(); }, "suit" + b.getAttribute("data-suit")));
   }
   else if(phase === "trump"){
     panel.innerHTML = '<div class="prow"><span class="pt">Trump</span><span class="phint">' + NAMES[G.declarer] + ' is naming trump…</span></div>';
   }
   else if(phase === "pass"){
     const partner = partnerOf(G.declarer);
+    /* ONE pass action only: the gold SEND/RETURN button lives in the hand
+       sheet, directly above the cards (renderHsAction) — reachable at any
+       sheet position. The panel just says what to do; a second identical
+       button here was part of the stuck-step confusion. */
     if(G.passStage === "toDeclarer" && partner === 0){
-      panel.innerHTML = '<div class="prow"><span class="pt">Pass 4 to ' + NAMES[G.declarer] + '</span><span class="phint">Trump <b>' + L.SUIT_GLYPH[G.trump] + " " + L.SUIT_NAME[G.trump] + '</b> · send trump &amp; aces · <b>' + G.selected.length + '/4</b> picked</span></div>' +
-        '<div class="btnrow"><button class="btn gold big" id="btn-sendpass"' + (G.selected.length === 4 ? "" : " disabled") + '>SEND 4 CARDS</button></div>';
-      const b = $("#btn-sendpass"); if(b) b.addEventListener("click", confirmPass);
+      panel.innerHTML = '<div class="prow"><span class="pt">Pass 4 to ' + NAMES[G.declarer] + '</span><span class="phint">Trump <b>' + L.SUIT_GLYPH[G.trump] + " " + L.SUIT_NAME[G.trump] + '</b> · send trump &amp; aces · <b>' + G.selected.length + '/4</b> picked — then tap <b>SEND 4 CARDS</b> above your hand</span></div>';
     } else if(G.passStage === "return" && G.declarer === 0){
-      panel.innerHTML = '<div class="prow"><span class="pt">Send 4 back</span><span class="phint">Ace\'s 4 are marked NEW · keep trump, aces &amp; meld · <b>' + G.selected.length + '/4</b> picked</span></div>' +
-        '<div class="btnrow"><button class="btn gold big" id="btn-sendpass"' + (G.selected.length === 4 ? "" : " disabled") + '>RETURN 4 CARDS</button></div>';
-      const b = $("#btn-sendpass"); if(b) b.addEventListener("click", confirmPass);
+      panel.innerHTML = '<div class="prow"><span class="pt">Send 4 back</span><span class="phint">Ace\'s 4 are marked NEW · keep trump, aces &amp; meld · <b>' + G.selected.length + '/4</b> picked — then tap <b>RETURN 4 CARDS</b> above your hand</span></div>';
     } else {
       panel.innerHTML = '<div class="prow"><span class="pt">The pass</span><span class="phint">Partners are exchanging 4 cards…</span></div>';
     }
@@ -749,8 +755,8 @@ function renderPanel(){
     panel.innerHTML = '<div class="prow"><span class="pt">Meld is down</span><span class="phint">Us <b>' + G.meldTeamRaw[0] + '</b> · Them <b>' + G.meldTeamRaw[1] + '</b> · under 20 scores nothing · per-player meld in the Meld sheet</span></div>' +
       '<div class="btnrow"><button class="btn gold big" id="btn-beginplay">PLAY THE HAND</button>' +
       (G.declarer === 0 ? '<button class="btn danger" id="btn-throwin">THROW IN (−' + G.currentBid + ')</button>' : "") + '</div>';
-    $("#btn-beginplay").addEventListener("click", ()=>{ beginPlay(); });
-    const tb = $("#btn-throwin"); if(tb) tb.addEventListener("click", ()=> forfeitHand("throwin"));
+    tapAction($("#btn-beginplay"), ()=>{ beginPlay(); });
+    tapAction($("#btn-throwin"), ()=> forfeitHand("throwin"));
   }
   else if(phase === "score" || phase === "matchover"){
     const r = G.lastResult;
@@ -764,8 +770,8 @@ function renderPanel(){
       (phase === "matchover"
         ? '<div class="btnrow"><button class="btn gold big" id="btn-newmatch2">NEW MATCH</button></div>'
         : '<div class="btnrow"><button class="btn gold big" id="btn-nexthand">DEAL THE NEXT HAND</button></div>');
-    const nh = $("#btn-nexthand"); if(nh) nh.addEventListener("click", nextHand);
-    const nm = $("#btn-newmatch2"); if(nm) nm.addEventListener("click", ()=>{ newMatch(); deal(); });
+    tapAction($("#btn-nexthand"), nextHand);
+    tapAction($("#btn-newmatch2"), ()=>{ newMatch(); deal(); });
   }
   else panel.innerHTML = "";
 }
@@ -846,14 +852,62 @@ function swallowDraggedClicks(root){
     if(Date.now() < suppressClickUntil){ e.stopPropagation(); e.preventDefault(); }
   }, true);
 }
+/* ---- bulletproof tap ---------------------------------------------------
+   A real thumb press DRIFTS. The old wiring relied on the click event:
+   once a press inside a sheet moved a few px, the sheet engine captured
+   the pointer, the click was retargeted to the sheet and then swallowed
+   — so drifting taps on cards and on RETURN 4 CARDS simply died, while
+   the pinpoint taps QA used always worked (Joshua's retest, 2026-11-22:
+   "the return cards doesn't work"). tapAction fires the action on
+   pointerup when the press stayed on the same control (up to 26px of
+   drift still counts as a tap), and keeps the plain click as a fallback
+   for mouse/keyboard — guarded so one press can never fire twice. */
+const TAPLOG = {};   // action key -> { t, disp, fired } for the latest press
+function tapAction(el, fn, key){
+  if(!el) return;
+  key = key || el.id || "";
+  let downId = null, dx = 0, dy = 0;
+  el.addEventListener("pointerdown", e => {
+    if(e.button !== undefined && e.button > 0) return;
+    downId = e.pointerId; dx = e.clientX; dy = e.clientY;
+    if(key) TAPLOG[key] = { t: Date.now(), disp: 0, fired: false };
+  });
+  el.addEventListener("pointerup", e => {
+    if(e.pointerId !== downId) return;
+    downId = null;
+    const disp = Math.hypot(e.clientX - dx, e.clientY - dy);
+    if(key && TAPLOG[key]){ TAPLOG[key].disp = disp; TAPLOG[key].t = Date.now(); }
+    if(el.disabled) return;
+    if(disp > 26) return;   // a drag, not a tap
+    if(key && TAPLOG[key]) TAPLOG[key].fired = true;
+    fn(e);
+  });
+  el.addEventListener("pointercancel", ()=>{
+    downId = null;
+    if(key && TAPLOG[key]) TAPLOG[key].disp = 999;
+  });
+  el.addEventListener("click", e => {
+    /* Pointer-generated clicks (detail >= 1) are NEVER activated here:
+       the pointerup above already fired the action, and the game
+       re-renders inside fn, so this trailing click can land on a fresh
+       replacement element and fire it a second time (one tap selecting
+       AND deselecting a card). Only keyboard clicks (detail === 0)
+       activate through here. The TAPLOG check stays as a second lock. */
+    if(e.detail !== 0) return;
+    const rec = key ? TAPLOG[key] : null;
+    if(rec && Date.now() - rec.t < 600 && (rec.fired || rec.disp > 26)) return;
+    fn();
+  });
+}
 function dragDelta(dy){ return dy < -220 ? 2 : dy < -36 ? 1 : dy > 220 ? -2 : dy > 36 ? -1 : 0; }
 /* Score sheet: positional stops. Drag from handle, tabs, or the body
    (a downward pull when the body is scrolled to its top hands off to
-   the sheet); the body otherwise scrolls natively. */
+   the sheet); the body otherwise scrolls — driven by this engine,
+   because native pan-y scrolling cancels the pointer stream. */
 (function(){
   const sh = $("#sheet"), handle = $("#sheet-handle"), body = $("#sheet-body");
   swallowDraggedClicks(sh);
-  document.querySelectorAll("#sheet .tabs .btn").forEach(b => b.addEventListener("click", ()=> setSheet(sheetSnap === 0 ? 1 : sheetSnap, b.getAttribute("data-tab"))));
+  document.querySelectorAll("#sheet .tabs .btn").forEach(b => tapAction(b, ()=> setSheet(sheetSnap === 0 ? 1 : sheetSnap, b.getAttribute("data-tab")), "tab" + b.getAttribute("data-tab")));
   const stopY = (snap, H) => snap === 0 ? H - 54 : snap === 1 ? H * 0.52 : 0;
   let pid = null, mode = null, startY = 0, lastY = 0, startSnap = 0, onHandle = false, moved = false, captured = false;
   sh.addEventListener("pointerdown", e => {
@@ -867,16 +921,27 @@ function dragDelta(dy){ return dy < -220 ? 2 : dy < -36 ? 1 : dy > 220 ? -2 : dy
   });
   sh.addEventListener("pointermove", e => {
     if(e.pointerId !== pid) return;
+    const prevY = lastY;
     lastY = e.clientY;
     const dy = e.clientY - startY;
-    if(Math.abs(dy) > 8) moved = true;
+    if(Math.abs(dy) > 10) moved = true;
     if(mode === "pending"){
       if(dy > 10 && body.scrollTop <= 0 && sheetSnap > 0){ mode = "drag"; }
-      else if(dy < -6 || body.scrollTop > 0){ mode = "scroll"; return; }
+      else if(dy < -4 || body.scrollTop > 0 || dy > 4){ mode = "scroll"; }
+      else return;
+    }
+    if(mode === "scroll"){
+      /* .sbody is touch-action:none now: with pan-y the browser scrolled
+         the body natively and CANCELLED the pointer stream, so body
+         drags on this sheet never landed at all. Scroll it by hand
+         instead; a pull-down at the very top hands off to the sheet. */
+      body.scrollTop -= (e.clientY - prevY);
+      if(body.scrollTop <= 0 && dy > 24 && sheetSnap > 0){ mode = "drag"; }
       else return;
     }
     if(mode !== "drag") return;
-    if(moved && !captured){ captured = true; try{ sh.setPointerCapture(pid); }catch(_){} }
+    if(moved && !captured && Math.abs(dy) > 28){ captured = true; try{ sh.setPointerCapture(pid); }catch(_){} }
+    if(!captured) return;
     const H = sh.offsetHeight;
     const y = Math.max(0, Math.min(H - 54, stopY(startSnap, H) + dy));
     sh.style.transition = "none";
@@ -931,10 +996,14 @@ function setHsStop(n){
     if(e.pointerId !== pid) return;
     lastY = e.clientY;
     const dy = e.clientY - startY;
-    if(Math.abs(dy) > 8) moved = true;
+    if(Math.abs(dy) > 10) moved = true;
     if(!moved) return;
-    if(!captured){ captured = true; try{ hs.setPointerCapture(pid); }catch(_){} }
-    const y = Math.max(-70, Math.min(70, dy));
+    /* Capture only once the gesture is unmistakably a drag (>28px —
+       beyond tapAction's 26px tap tolerance, so a drifting tap on a
+       card or the pass button is never captured out from under it). */
+    if(!captured && Math.abs(dy) > 28){ captured = true; try{ hs.setPointerCapture(pid); }catch(_){} }
+    if(!captured) return;
+    const y = Math.max(-170, Math.min(170, dy));
     hs.style.transition = "none";
     hs.style.transform = "translate(-50%," + y + "px)";
   });
