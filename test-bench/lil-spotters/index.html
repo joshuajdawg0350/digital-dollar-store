@@ -281,6 +281,70 @@ select.pinput{appearance:none;}
 .starbtns button{background:none; border:none; font-size:21px; padding:2px; filter:grayscale(1) opacity(.45);}
 .starbtns button.lit{filter:none;}
 
+/* ---------- PLAN MY TRIP (pre-trip planner + Get Ready) ----------
+   Joshua 2026-11-21: the hunt is planned BEFORE the trip from real places,
+   and during play a kid never has to ask a grown-up for anything — all the
+   adult steps (planning, the one-time camera grant, the play zone) happen
+   in this pre-trip flow. The planner is a family surface: sunny kid chrome,
+   big type, big targets. */
+#planApp{position:fixed; inset:0; z-index:65; overflow-y:auto; display:none;
+  background:linear-gradient(180deg,var(--sky) 0%,var(--sky2) 34%,#eafaff 100%);}
+#planApp.on{display:block;}
+.planwrap{max-width:640px; margin:0 auto; padding:12px 12px 70px;}
+.planhead{position:sticky; top:8px; z-index:20; display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:18px;
+  background:linear-gradient(180deg,#6dbdf2,#8fd2fa); border:4px solid #fff; box-shadow:0 4px 0 rgba(31,90,140,.2); margin-bottom:14px;}
+.planhead .pt{font-weight:900; font-size:20px; color:#fff; text-shadow:0 2px 0 rgba(20,80,130,.35);}
+.planhead .pt small{display:block; font-size:9.5px; font-weight:700; letter-spacing:1.6px; text-transform:uppercase; opacity:.9; text-shadow:none;}
+.plancard{background:var(--paper); border:4px solid #fff; border-radius:24px; padding:16px; box-shadow:0 6px 0 rgba(31,90,140,.18); margin-bottom:14px;}
+.plancard h3{margin:0 0 8px; font-size:21px; font-weight:900;}
+.plancard p{font-size:15px; line-height:1.45; font-weight:700;}
+.planlab{display:block; font-weight:900; font-size:15.5px; margin:12px 0 6px;}
+.planinput{width:100%; border:3.5px solid #bfe0f7; border-radius:16px; padding:14px; font-size:17px; font-weight:800; font-family:var(--kidfont); color:var(--ink); background:#fff; min-height:56px;}
+.planinput:focus{outline:none; border-color:var(--sun);}
+.planrow{display:flex; gap:8px;}
+.planrow .planinput{flex:1; min-width:0;}
+.planmini{flex:none; min-height:56px; border-radius:16px; border:3.5px solid #bfe0f7; background:#eaf6ff; font-weight:900; font-size:15px; padding:10px 12px; font-family:var(--kidfont); color:var(--ink);}
+.plansafety{background:#fff3bf; border:3px dashed #e0aa35; border-radius:16px; padding:12px 14px; font-weight:800; font-size:14.5px; line-height:1.45; margin-top:14px;}
+.plansub{font-size:13.5px !important; opacity:.75;}
+.planerr{background:#ffe9e6; border:3px solid #ff9d8f; border-radius:16px; padding:12px 14px; font-weight:800; font-size:15px; line-height:1.45; margin-top:12px;}
+.planmap{height:340px;}
+.spotcard{display:flex; gap:12px; align-items:center; background:var(--paper); border:4px solid #fff; border-radius:20px; padding:12px; margin-bottom:10px; box-shadow:0 4px 0 rgba(31,90,140,.15); cursor:pointer; text-align:left; width:100%; font-family:var(--kidfont); color:var(--ink);}
+.spotcard .spoticon{font-size:42px; line-height:1; flex:none; width:58px; height:58px; display:flex; align-items:center; justify-content:center; background:#eaf6ff; border-radius:16px;}
+.spotcard .spotmain{flex:1; min-width:0;}
+.spotcard b{font-size:17.5px; display:block; line-height:1.2;}
+.spotcard .spotline{font-size:14px; font-weight:700; opacity:.8; display:block; margin-top:2px; line-height:1.35;}
+.spotcard .spotdist{font-size:13px; font-weight:900; color:#1f7ae0; display:block; margin-top:3px;}
+.spotcard .spotord{flex:none; background:var(--sun); color:#7a5200; font-weight:900; font-size:14px; border-radius:999px; padding:5px 10px; border:2.5px solid #fff; box-shadow:0 2px 0 rgba(0,0,0,.15);}
+.spotadd{flex:none; min-height:56px; min-width:96px; border-radius:16px; border:3.5px solid #155a9e; background:var(--blue); color:#fff; font-weight:900; font-size:15.5px; padding:10px; font-family:var(--kidfont);}
+.spotcard.picked{border-color:var(--grass); background:#effbea;}
+.spotcard.picked .spotadd{background:var(--grass); border-color:#3d9e57;}
+.spotcard.flash{animation:spotflash 1.1s ease-out;}
+@keyframes spotflash{0%{box-shadow:0 0 0 6px var(--sun);}100%{box-shadow:0 4px 0 rgba(31,90,140,.15);}}
+.planbar{display:flex; flex-direction:column; gap:10px; margin-top:4px;}
+.planbar .bigplay{margin-top:0;}
+.planbar .bigplay:disabled{opacity:.45; border-bottom-width:6px; transform:none;}
+#btnPlanAuto{background:#fff; color:var(--ink); border:3.5px solid var(--sun); border-bottom:6px solid #e0aa35; border-radius:20px; padding:14px; font-size:18px; font-weight:900; font-family:var(--kidfont); width:100%;}
+.readyrow{display:flex; gap:12px; align-items:center; background:#fff; border:3.5px solid #dfeefb; border-radius:18px; padding:12px; margin-bottom:10px;}
+.readyrow .ric{font-size:34px; flex:none;}
+.readyrow .rmain{flex:1; min-width:0;}
+.readyrow b{font-size:16.5px; display:block;}
+.readyrow span{font-size:13.5px; font-weight:700; opacity:.78; display:block; line-height:1.4; margin-top:2px;}
+.readyrow .rbtn{flex:none; min-height:52px; border-radius:14px; border:3.5px solid #155a9e; background:var(--blue); color:#fff; font-weight:900; font-size:15px; padding:10px 13px; font-family:var(--kidfont);}
+.readyrow.done{border-color:var(--grass); background:#effbea;}
+.readyrow.done .rbtn{display:none;}
+#btnPlanTrip{background:var(--grass); border-bottom-color:#3d9e57;}
+#camIntroScrim{z-index:80;}
+@media (min-width:700px){
+  .planwrap{max-width:1020px; padding:18px 18px 80px;}
+  .planhead .pt{font-size:24px;}
+  .plancard{padding:22px;}
+  .plancard h3{font-size:25px;}
+  #planSpotList{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .spotcard{margin-bottom:0;}
+  .planmap{height:460px;}
+  .planinput{font-size:18px;}
+}
+
 /* ---------- TABLET (>=700px): use the whole screen, kid-size targets ----------
    Added 2026-11-21 at Joshua's order ("definitely make that game very tablet
    friendly"). Phone layout below 700px is untouched. */
@@ -402,6 +466,7 @@ select.pinput{appearance:none;}
         <div class="tierrow" id="tierRow"></div>
       </div>
       <div id="deckList"></div>
+      <button class="bigplay plan" id="btnPlanTrip">🗺️ Plan My Trip</button>
       <div class="howto">
         <div><span class="big">👀</span>1. Spot it!</div>
         <div><span class="big">📸</span>2. Snap it!</div>
@@ -516,6 +581,94 @@ select.pinput{appearance:none;}
 
 <div id="toast"></div>
 
+<!-- PLAN MY TRIP (pre-trip: plan the route, pick real places, Get Ready, Start) -->
+<div id="planApp">
+  <div class="planwrap">
+    <div class="planhead">
+      <button class="backbtn" id="btnPlanBack" aria-label="Back">← Back</button>
+      <div class="pt">🗺️ Plan My Trip<small>Planned before the trip · kids play on their own</small></div>
+    </div>
+
+    <!-- STEP 1 · where are we going? -->
+    <div id="planForm">
+      <div class="plancard">
+        <h3>🚗 Where are we going?</h3>
+        <p>Tell the game about your trip and it finds the <b>real</b> cool places along your road — then those places become the hunt!</p>
+        <label class="planlab" for="planFrom">We start at</label>
+        <div class="planrow">
+          <input class="planinput" id="planFrom" type="text" placeholder="Type a town — or tap Right Here" autocomplete="off">
+          <button class="planmini" id="btnPlanHere" type="button">📍 Right Here</button>
+        </div>
+        <label class="planlab" for="planTo">We are going to</label>
+        <input class="planinput" id="planTo" type="text" placeholder="A town or place — like Branson, MO" autocomplete="off">
+        <button class="bigplay go" id="btnPlanGo" type="button">🔍 Find the Fun Along the Way!</button>
+        <div class="planerr" id="planErr" hidden></div>
+        <div class="plansafety">🚗 <b>Grown-ups:</b> plan and navigate from the passenger seat, or before you drive — the driver never plays. Planning happens <b>before</b> the trip, on purpose: once the trip starts, kids play the whole hunt on their own and never have to ask a grown-up for anything. That's the whole point.</div>
+        <p class="plansub">The game looks on the real map (OpenStreetMap) for real places — zoos, museums, parks, waterfalls and more — all along your road. Planning needs the internet. The saved hunt then works on the road, even with spotty signal.</p>
+      </div>
+      <div class="plancard" id="planOld" hidden>
+        <h3>🎒 Your planned trip</h3>
+        <p id="planOldText"></p>
+        <button class="bigplay go" id="btnPlanReady2" type="button">🎒 Get Ready for This Trip</button>
+        <button class="bigplay alt" id="btnPlanPrintOld" type="button">🖨️ Print the Route Sheet</button>
+        <p class="plansub">Want a different trip? Just fill in the form above and search again — making a new hunt replaces this one.</p>
+      </div>
+    </div>
+
+    <!-- STEP 2 · searching -->
+    <div id="planBusy" class="plancard" hidden>
+      <h3>🗺️ Planning your trip…</h3>
+      <p id="planBusyText">Drawing your road and looking for fun places along the way. This can take a little while — the map is big!</p>
+    </div>
+
+    <!-- STEP 3 · pick the spots -->
+    <div id="planResults" hidden>
+      <div class="plancard">
+        <h3 id="planRouteTitle">Your road</h3>
+        <p id="planRouteSub"></p>
+        <div class="mapframe"><div class="mapbox planmap" id="planMap"></div></div>
+        <p class="plansub">The pins are in trip order — 1 is the first stop on your road. Tap a pin or a card below to pick the places for the hunt.</p>
+      </div>
+      <div id="planSpotList"></div>
+      <div class="plancard" id="planEmpty" hidden>
+        <h3>🤔 No spots on that road yet</h3>
+        <p>The map doesn't know everything — we couldn't find kid-fun places along that road. The places were <b>not</b> made up. Try one of these:</p>
+        <button class="bigplay alt" id="btnPlanWider" type="button">🔍 Look a Little Wider</button>
+        <button class="bigplay alt" id="btnPlanNearDest" type="button">🏁 Find Spots Near the End of the Trip</button>
+        <button class="bigplay alt" id="btnPlanBuiltin" type="button">🚗 Play a Ready-Made Hunt Instead</button>
+      </div>
+      <div class="planbar">
+        <button id="btnPlanAuto" type="button">⭐ Pick the Best Ones for Me</button>
+        <button class="bigplay go" id="btnMakeHunt" type="button" disabled>⭐ Make My Hunt (0 picked)</button>
+      </div>
+    </div>
+
+    <!-- STEP 4 · GET READY (all the grown-up steps, once, before the trip) -->
+    <div id="planReady" hidden>
+      <div class="plancard">
+        <h3>🎒 Get Ready</h3>
+        <p>Grown-ups do these steps <b>once, before the trip</b>. After START, the game is kids-only — no asking a grown-up for anything, ever.</p>
+        <div class="readyrow done" id="readyTrip">
+          <div class="ric">🗺️</div>
+          <div class="rmain"><b>Step 1 · Trip planned</b><span id="readyTripText">Your hunt is built from real places on your road.</span></div>
+        </div>
+        <div class="readyrow" id="readyCam">
+          <div class="ric">📸</div>
+          <div class="rmain"><b>Step 2 · Turn on the camera — one time</b><span id="readyCamText">Do it now, at home, so the camera just opens on the road. The first photo of the trip should never be a permission question.</span></div>
+          <button class="rbtn" id="btnReadyCam" type="button">📸 Turn It On</button>
+        </div>
+        <div class="readyrow" id="readyZone">
+          <div class="ric">🟩</div>
+          <div class="rmain"><b>Step 3 · Play zone — only for neighborhood hunts</b><span>Most car trips skip this. The zone tools live in Grown-ups → Map. You can set it up any time before the trip — it never pops up during play.</span></div>
+          <button class="rbtn" id="btnReadyZone" type="button">🟩 Open Zone Tools</button>
+        </div>
+        <div class="plansafety">✅ Every find in this game counts the moment it happens — no stamps to wait for, no grown-up to ask, on any hunt. The planning and the one-time camera grant happen here, before the trip, so play never has to stop. If the camera stays off, that's fine too: finds can use Pick a Photo. Nothing interrupts the hunter.</div>
+        <button class="bigplay go" id="btnTripStart" type="button">▶ START THE TRIP!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- PARENT VIEW -->
 <div id="parentApp">
   <div class="pwrap">
@@ -575,16 +728,6 @@ select.pinput{appearance:none;}
     </div>
 
     <div class="ppanel" id="pp-pfinds">
-      <div class="pcard hidden" id="pendingCard">
-        <h3>👍 Photos waiting for your stamp</h3>
-        <p>Little Spotters' photos need a grown-up stamp before they count. Shaky and blurry still counts — did they get the thing in the picture?</p>
-        <div id="pendingList"></div>
-      </div>
-      <div class="pcard hidden" id="hintCard">
-        <h3>🙋 Hint requests</h3>
-        <p>Your hunter asked for help on these. Releasing shows an extra hint on their card.</p>
-        <div id="hintReqList"></div>
-      </div>
       <div id="parentFinds"></div>
       <div class="pcard">
         <h3>🏆 Keepsakes — print the adventure</h3>
@@ -602,12 +745,17 @@ select.pinput{appearance:none;}
       </div>
       <div class="pcard">
         <h3>No camera or no GPS? Check off by hand</h3>
-        <p>If the camera or location didn't work for a find, you can approve it here. It will be marked “checked off by a grown-up” — no photo, and a map pin only if we know where you are.</p>
+        <p>If the camera or location didn't work for a find, you can check it off here as a convenience. It counts right away, with no photo, and a map pin only if we know where you are. Nothing in the kid's game ever asks for or waits on this — it is here for you, not for them.</p>
         <div id="checkoffList"></div>
       </div>
     </div>
 
     <div class="ppanel" id="pp-psetup">
+      <div class="pcard">
+        <h3>🗺️ Plan My Trip — before you go</h3>
+        <p>Plan the route, pick the real places, turn the camera on once, then start. Everything a grown-up has to do happens here, before the trip — during play, kids never have to ask a grown-up for anything.</p>
+        <button class="kidlink" id="btnPlanTripParent">🗺️ Open Plan My Trip</button>
+      </div>
       <div class="pcard">
         <h3>1 · Who is playing? (age tier)</h3>
         <p>The tier sets the list length, how hard the finds are, and how much reading the game asks for. <span class="small">(Interim tiers — being finalized against child-development research.)</span></p>
@@ -687,6 +835,15 @@ select.pinput{appearance:none;}
 <input type="file" id="galInput" accept="image/*" class="hidden">
 <script>
 'use strict';
+/* ================= GEO ================= */
+/* Great-circle distance in meters. Shared by the trip-hunt card distance
+   line (app-js-2) and the whole Plan My Trip search layer (app-js-6). */
+function haversineM(lat1, lon1, lat2, lon2){
+  const R=6371000, p1=lat1*Math.PI/180, p2=lat2*Math.PI/180;
+  const dp=(lat2-lat1)*Math.PI/180, dl=(lon2-lon1)*Math.PI/180;
+  const h=Math.sin(dp/2)*Math.sin(dp/2)+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)*Math.sin(dl/2);
+  return 2*R*Math.asin(Math.sqrt(h));
+}
 /* ================= DATA ================= */
 function svgIcon(kind){
   const o='stroke="#22303c" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"';
@@ -723,7 +880,7 @@ function svgIcon(kind){
 }
 /* icon: emoji string, or 'svg:<kind>'. diff 1 easy(50pts) / 2 medium(100) / 3 rare(150).
    hint = Tier-3 clue text & Tier-2 short phrase · riddle = Tier-2 clue · fact = Tier-3 fun fact ·
-   step2 = Tier-3 second clue step · hint2 = grown-up-released extra hint (Tier 2). */
+   step2 = Tier-3 second clue step · hint2 = extra hint the kid opens themselves (Tier 2). */
 const TARGETS = {
   legends:[
     {id:'liberty',   name:'Statue of Liberty', icon:'svg:liberty', diff:3, hint:'A giant lady holding a torch, in New York Harbor.', fact:'Her torch was the first thing immigrants saw when their ships reached America.', riddle:'I hold a torch up high by the sea — who am I?', step2:'She is green because her copper skin turned color in the weather.', hint2:'Look toward the harbor — she stands on her own little island.'},
@@ -760,13 +917,14 @@ const DECKS = {
   legends:{name:'Road Trip Legends', icon:'🏆', blurb:'Famous American monuments & landmarks'},
   carride:{name:'Any Car Ride',      icon:'🚗', blurb:'Everyday finds for any drive, long or short'},
   expedition:{name:'Expedition',     icon:'🧭', blurb:'Every find in one giant running collection — no finish line'},
-  custom:{ name:'My Custom Hunt',    icon:'✏️', blurb:'A list your family built together'}
+  custom:{ name:'My Custom Hunt',    icon:'✏️', blurb:'A list your family built together'},
+  trip:{ name:'My Trip Hunt',    icon:'🗺️', blurb:'Real places on YOUR road trip — planned before you go'}
 };
 /* Age tiers — per ~/workspace/road-trip-hunt/AGE-TIERS.md (researched spec, 2026-11-21). */
 const TIERS = {
   t1:{name:'Lil Spotters', ages:'Ages 3–5', icon:'🌱', counts:{legends:5, carride:6}, showNames:false, audioAuto:true,
       pinScale:1.4, pathW:12, points:false, stickers:true, session:'10–15 minute hunts',
-      blurb:'Picture-only cards that talk out loud. One giant camera button. A grown-up stamps each photo. Stickers, not points.'},
+      blurb:'Picture-only cards that talk out loud. One giant camera button. Every photo counts right away. Stickers, not points.'},
   t2:{name:'Explorers', ages:'Ages 6–8', icon:'🧭', counts:{legends:10, carride:10}, showNames:true, audioAuto:false,
       pinScale:1.12, pathW:7, points:true, stickers:false, session:'20–30 minute hunts',
       blurb:'Pictures + short phrases + riddles. Kids run the camera. Points (50/100/150) and badges.'},
@@ -792,6 +950,15 @@ S.alerts = S.alerts || [];                /* [{ts, name, ack}] out-of-bounds ale
 S.checkinMins = S.checkinMins || 15;      /* Tier 3 timed check-ins */
 S.lastCheckin = S.lastCheckin || 0;
 S.mapTheme = S.mapTheme || 'classic';     /* chosen map look — all 15 sample looks + Classic (2026-11-21) */
+S.tripTargets = S.tripTargets || [];      /* Plan My Trip (2026-11-21): real places picked for this trip, in route order */
+S.tripPlan = S.tripPlan || null;          /* {fromName,toName,distMi,durMin,route:[[lat,lon]...],madeTs,wide} */
+/* NO-GROWN-UP RULE (Joshua, 2026-11-21, game-wide): a kid's find NEVER waits
+   for an adult — no stamps to approve, no hints to release. Saves written by
+   older builds can hold 'pending' finds and hint requests; settle them here:
+   pending finds count as found, and stale hint requests are dropped because
+   hints now open in the game itself. */
+Object.values(S.finds||{}).forEach(f=>{ if(f && f.status==='pending') f.status='ok'; });
+S.hintReq = {};
 function saveState(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(S)); return true; }catch(e){ return false; } }
 function tier(){ return TIERS[S.tier] || TIERS.t2; }
 function allTargets(){
@@ -799,10 +966,12 @@ function allTargets(){
   TARGETS.legends.forEach(t=>list.push({...t, deck:'legends'}));
   TARGETS.carride.forEach(t=>list.push({...t, deck:'carride'}));
   S.custom.forEach(t=>list.push({...t, deck:'custom'}));
+  S.tripTargets.forEach(t=>list.push({...t, deck:'trip'}));
   return list;
 }
 function targetById(id){ return allTargets().find(t=>t.id===id) || null; }
 function deckTargets(deckId){
+  if(deckId==='trip') return S.tripTargets.map(t=>({...t, deck:'trip'})); /* route order, exactly as the family picked */
   if(deckId==='custom') return S.custom.map(t=>({...t, deck:'custom'}));
   if(deckId==='expedition'){
     const all=[...TARGETS.legends.map(t=>({...t,deck:'legends'})), ...TARGETS.carride.map(t=>({...t,deck:'carride'}))];
@@ -916,7 +1085,9 @@ function renderTiers(){
   $('#welcomeCard').classList.toggle('hidden', !!S.tier);
 }
 function availableDecks(){
-  const ids=['carride','legends'];
+  const ids=[];
+  if(S.tripTargets.length) ids.push('trip'); /* the family's planned trip comes first */
+  ids.push('carride','legends');
   if(S.tier==='t3') ids.push('expedition');
   if(S.custom.length) ids.push('custom');
   if(!ids.includes(S.activeDeck)) S.activeDeck='carride';
@@ -934,6 +1105,9 @@ function renderDecks(){
   document.querySelectorAll('[data-deck]').forEach(b=> b.addEventListener('click', ()=>{
     S.activeDeck=b.dataset.deck; saveState(); renderDecks(); renderHunt();
   }));
+  const pb=$('#btnPlanTrip');
+  if(pb) pb.textContent = (S.tripPlan && S.tripTargets.length)
+    ? `🎒 My Trip to ${S.tripPlan.toName} — Get Ready!` : '🗺️ Plan My Trip';
   const dp=$('#deckPickParent');
   if(dp){
     dp.innerHTML = availableDecks().map(id=>{
@@ -951,6 +1125,14 @@ function clueText(t){
   if(S.tier==='t3') return t.hint || 'Find it!';
   if(S.tier==='t2') return t.riddle || t.hint || 'Find it!';
   return '';
+}
+function tripDistText(tg){
+  if(currentPos && tg.lat!=null){
+    const mi=haversineM(currentPos.lat, currentPos.lon, tg.lat, tg.lon)/1609.34;
+    if(mi<0.25) return '📍 You are HERE — look around!';
+    return `📍 About ${mi<10? mi.toFixed(1): Math.round(mi)} miles from you — keep looking!`;
+  }
+  return '📍 It is on your trip map!';
 }
 function renderHunt(){
   const dt=deckTargets(S.activeDeck);
@@ -972,20 +1154,17 @@ function renderHunt(){
         : `<div class="nophoto">${iconHTML(tg.icon)}</div>`;
       return `<div class="card found ${f.manual?'manual':''}" data-card="${tg.id}">${inner}
         <div class="stamp">FOUND ⭐</div>
-        <div class="fname">${t.showNames? esc(tg.name):''}<small>${fmtTime(f.ts)}${f.manual?' · checked off by a grown-up':''}</small></div></div>`;
-    }
-    if(f && f.status==='pending'){
-      return `<div class="card found" data-card="${tg.id}">
-        ${f.photo? `<img class="photo" src="${f.photo}" alt=""><div class="veil"></div>` : `<div class="nophoto">${iconHTML(tg.icon)}</div>`}
-        <div class="stamp">GROWN-UP CHECK 👍</div>
-        <div class="fname">${t.showNames? esc(tg.name):''}<small>Show a grown-up to stamp it!</small></div></div>`;
+        <div class="fname">${t.showNames? esc(tg.name):''}<small>${fmtTime(f.ts)}${f.manual?' · no photo':''}</small></div></div>`;
     }
     let extra='';
     if(S.tier==='t2'){
+      /* The extra hint lives IN the game — the kid opens it themselves.
+         (It was an "Ask a grown-up" button that waited on a parent release
+         until Joshua's game-wide no-grown-up rule, 2026-11-21.) */
       extra=`<div class="minirow">
         <button data-listen="${tg.id}">🔊 Listen</button>
-        ${S.hintOpen[tg.id] ? '' : `<button data-ask="${tg.id}">🙋 Ask a grown-up</button>`}
-      </div>${S.hintOpen[tg.id] && tg.hint2 ? `<div class="step2 on">💡 Grown-up hint: ${esc(tg.hint2)}</div>`:''}`;
+        ${tg.hint2 && !S.hintOpen[tg.id] ? `<button data-hint="${tg.id}">💡 Hint</button>`:''}
+      </div>${S.hintOpen[tg.id] && tg.hint2 ? `<div class="step2 on">💡 Hint: ${esc(tg.hint2)}</div>`:''}`;
     }
     if(S.tier==='t3'){
       extra=`${tg.fact? `<div class="fact">🤓 ${esc(tg.fact)}</div>`:''}
@@ -995,19 +1174,19 @@ function renderHunt(){
     return `<div class="card" data-card="${tg.id}">
       <div class="icon">${iconHTML(tg.icon)}</div>
       ${t.showNames? `<div class="nm">${esc(tg.name)}</div><div class="hint">${esc(clueText(tg))}</div>`:''}
+      ${tg.deck==='trip' && tg.lat!=null && t.showNames? `<div class="hint">${tripDistText(tg)}</div>`:''}
       ${extra}
       <button class="snap" data-snap="${tg.id}">📸 Snap it!</button>
     </div>`;
   }).join('');
   document.querySelectorAll('[data-snap]').forEach(b=> b.addEventListener('click', e=>{ e.stopPropagation(); openSheet(b.dataset.snap); }));
   document.querySelectorAll('[data-listen]').forEach(b=> b.addEventListener('click', e=>{ e.stopPropagation(); const tg=targetById(b.dataset.listen); if(tg) speak(`${tg.name}. ${clueText(tg)||tg.hint||''}`); }));
-  document.querySelectorAll('[data-ask]').forEach(b=> b.addEventListener('click', e=>{ e.stopPropagation();
-    S.hintReq[b.dataset.ask]=true; saveState(); toast('🙋 Ask your grown-up — they can unlock a hint!'); }));
+  document.querySelectorAll('[data-hint]').forEach(b=> b.addEventListener('click', e=>{ e.stopPropagation();
+    S.hintOpen[b.dataset.hint]=true; saveState(); renderHunt(); }));
   document.querySelectorAll('[data-clue2]').forEach(b=> b.addEventListener('click', e=>{ e.stopPropagation(); const el=$('#step2-'+b.dataset.clue2); if(el) el.classList.toggle('on'); }));
   document.querySelectorAll('[data-card]').forEach(c=> c.addEventListener('click', ()=>{
     const id=c.dataset.card; const f=findOf(id); const tg=targetById(id);
     if(f && f.status==='ok'){ openPhoto(id); return; }
-    if(f && f.status==='pending'){ speak('Show a grown-up to stamp your photo!'); toast('👍 Show a grown-up to stamp it!'); return; }
     if(S.tier==='t1' && tg){ speak(`Find ${tg.name}!`); }
     openSheet(id);
   }));
@@ -1029,7 +1208,7 @@ function renderFinds(){
   list.innerHTML = ids.map(id=>{
     const tg=targetById(id); const f=findOf(id); if(!tg||!f) return '';
     const place = f.lat!=null ? '📌 Pinned on your map' : 'No location saved';
-    const status = f.status==='pending' ? ' · ⏳ Waiting for a grown-up 👍' : (f.manual ? ' · Checked off by a grown-up' : '');
+    const status = f.manual ? ' · no photo' : '';
     return `<div class="findrow" data-find="${id}">
       ${f.photo? `<img src="${f.photo}" alt="">` : `<div class="noimg">${iconHTML(tg.icon)}</div>`}
       <div><b>${esc(tg.name)}</b><span>${fmtTime(f.ts)}<br>${place}${status}</span></div></div>`;
@@ -1124,12 +1303,34 @@ const CamMgr = (()=>{
     /* first time ever: one friendly explanation, then the browser asks — once */
     $('#camIntroScrim').classList.add('on');
   }
+  let setupCb=null; /* pending Get Ready callback while the intro is up for setup */
   function startFromIntro(){
     $('#camIntroScrim').classList.remove('on');
-    ensure().then(showView).catch(err=>{
+    ensure().then(()=>{
+      if(setupCb){ const cb=setupCb; setupCb=null; cb(true); return; } /* setup: grant done, no camera view */
+      showView();
+    }).catch(err=>{
+      if(setupCb){ const cb=setupCb; setupCb=null; if(err && err.name==='NotAllowedError') noteDeny(); cb(false); return; }
       if(err && err.name==='NotAllowedError'){ noteDeny(); fallback('No worries! You can pick a photo instead. 🖼️'); }
       else fallback('📷 Camera could not start — pick a photo instead!');
     });
+  }
+  /* GET READY (pre-trip setup): run the one-time camera grant NOW, at home,
+     so the first photo of the trip is never a permission ask. cb(true) =
+     camera ready · cb(false) = camera off (the game still plays fully via
+     Pick a Photo) · cb(null) = skipped for now. Never opens the camera view
+     and never opens a file picker — this is a setup moment, not a photo. */
+  function setupGrant(cb){
+    if(!supported){ cb&&cb(false); return; }
+    if(live()){ cb&&cb(true); return; }
+    if(denied || permState==='denied'){ cb&&cb(false); return; }
+    if(permState==='granted'){ ensure().then(()=>cb&&cb(true)).catch(()=>{ noteDeny(); cb&&cb(false); }); return; }
+    setupCb=cb||null;
+    $('#camIntroScrim').classList.add('on');
+  }
+  function introClosed(){
+    $('#camIntroScrim').classList.remove('on');
+    if(setupCb){ const cb=setupCb; setupCb=null; cb(null); }
   }
   function snap(){
     const v=$('#camVideo');
@@ -1144,13 +1345,15 @@ const CamMgr = (()=>{
     if(cv.toBlob) cv.toBlob(done,'image/jpeg',0.92);
     else fetch(cv.toDataURL('image/jpeg',0.92)).then(r=>r.blob()).then(done).catch(()=>fallback());
   }
-  return { open, startFromIntro, snap, hideView,
-    pickInstead(){ $('#camIntroScrim').classList.remove('on'); $('#galInput').click(); } };
+  return { open, startFromIntro, snap, hideView, setupGrant, introClosed,
+    isReady(){ return live() || permState==='granted'; },
+    isDenied(){ return denied || permState==='denied'; },
+    pickInstead(){ if(setupCb){ introClosed(); return; } $('#camIntroScrim').classList.remove('on'); $('#galInput').click(); } };
 })();
 $('#btnCamGo').addEventListener('click', ()=> CamMgr.startFromIntro());
 $('#btnCamPick').addEventListener('click', ()=> CamMgr.pickInstead());
-$('#btnCamIntroBack').addEventListener('click', ()=> $('#camIntroScrim').classList.remove('on'));
-$('#camIntroScrim').addEventListener('click', e=>{ if(e.target.id==='camIntroScrim') $('#camIntroScrim').classList.remove('on'); });
+$('#btnCamIntroBack').addEventListener('click', ()=> CamMgr.introClosed());
+$('#camIntroScrim').addEventListener('click', e=>{ if(e.target.id==='camIntroScrim') CamMgr.introClosed(); });
 $('#btnCamBack').addEventListener('click', ()=> CamMgr.hideView());
 $('#btnSnap').addEventListener('click', ()=> CamMgr.snap());
 
@@ -1190,8 +1393,12 @@ function recordFind(id, data){
   S.lastFindTs = now;
   let pts=0;
   if(tier().points){ pts=(PTS[tg.diff]||50) + (S.tier==='t3' ? Math.min(S.streak,5)*10 : 0); }
+  /* NO-GROWN-UP RULE (Joshua, 2026-11-21, game-wide): every find stamps the
+     moment it is recorded — no tier, no deck, no photo ever waits for an
+     adult to approve it. Grown-ups can review finds later in Parent View;
+     reviewing is fine, gating is not. */
   const find={photo:data.photo||null, lat:data.lat, lon:data.lon, ts:now, manual:!!data.manual,
-              pts, status: S.tier==='t1' && !data.manual ? 'pending':'ok', stars:0};
+              pts, status:'ok', stars:0};
   S.finds[id]=find;
   if(!S.order.includes(id)) S.order.push(id);
   if(!saveState() && find.photo){
@@ -1218,11 +1425,6 @@ function processImageFromDataURL(dataUrl){
 }
 function afterFind(id, tg, find){
   renderAll();
-  if(find.status==='pending'){
-    speak('Great job! Show a grown-up!');
-    toast('🎉 Got it! Show a grown-up to stamp your sticker!');
-    return;
-  }
   speak(`You found ${tg.name}!`);
   toast(tier().points ? `⭐ Found the ${tg.name}! +${find.pts} points` : `🎉 You found the ${tg.name}!`);
   const dt=deckTargets(S.activeDeck);
@@ -1249,7 +1451,7 @@ $('#celebPrintBtn').addEventListener('click', ()=>{ $('#celebrate').classList.re
 /* photo viewer */
 function openPhoto(id){
   const tg=targetById(id); const f=findOf(id); if(!tg||!f) return;
-  if(!f.photo){ toast(f.manual? 'Checked off by a grown-up — no photo.' : 'No photo saved for this one.'); return; }
+  if(!f.photo){ toast('No photo saved for this one.'); return; }
   $('#bigPhoto').src=f.photo;
   $('#photoTitle').textContent=tg.name;
   $('#photoMeta').textContent=`${fmtTime(f.ts)}${f.lat!=null? ' · 📌 pinned on the map':''}${S.tier==='t3'&&tg.fact? '\n🤓 '+tg.fact:''}`;
@@ -1523,7 +1725,17 @@ function initKidMap(){
 }
 function refreshMaps(){
   const ids=okFinds();
-  const pins=mapPinsFromFinds(ids), path=mapPathFromFinds(ids);
+  let pins=mapPinsFromFinds(ids), path=mapPathFromFinds(ids);
+  /* Plan My Trip: on a trip hunt the kid map draws the PLANNED road and the
+     spots still to find (numbered in trip order), with the finds so far. */
+  if(S.activeDeck==='trip' && S.tripPlan && S.tripTargets.length){
+    const foundSet=new Set(ids);
+    const ahead=[];
+    S.tripTargets.forEach((tg,i)=>{ if(!foundSet.has(tg.id) && tg.lat!=null)
+      ahead.push({id:'', lat:tg.lat, lon:tg.lon, iconHTML:iconHTML(tg.icon), label:tg.name, ord:i+1, blue:true}); });
+    pins=ahead.concat(pins);
+    if(S.tripPlan.route && S.tripPlan.route.length>1) path=S.tripPlan.route;
+  }
   const me=currentPos? {lat:currentPos.lat, lon:currentPos.lon} : null;
   if(kidMap) kidMap.setData({pins, path, me, boundary: boundaryFor('kid')});
   if(parentMap) parentMap.setData({pins, path, me, boundary: boundaryFor('parent'), draft: drawMode? draftPts : null});
@@ -1744,7 +1956,7 @@ function renderParentAll(){ renderParentFinds(); renderParentSetup(); updateZone
 function findRowHTML(id, opts){
   const tg=targetById(id); const f=findOf(id); if(!tg||!f) return '';
   const place = f.lat!=null ? `📌 ${f.lat.toFixed(5)}, ${f.lon.toFixed(5)} · <a href="https://www.google.com/maps?q=${f.lat},${f.lon}" target="_blank" rel="noopener">Open in Maps</a>` : 'No location saved';
-  const tags = `${f.manual?' · checked off by a grown-up':''}${f.status==='pending'?' · ⏳ waiting for your stamp':''}`;
+  const tags = `${f.manual?' · checked off by a grown-up':''}`;
   const stars = (opts && opts.stars) ? `<span class="starbtns" data-stars="${id}">${[1,2,3].map(n=>`<button data-star="${n}" class="${f.stars>=n?'lit':''}">⭐</button>`).join('')}</span>` : '';
   return `<div class="pfind">
     ${f.photo? `<img src="${f.photo}" alt="">` : `<div class="noimg">${iconHTML(tg.icon)}</div>`}
@@ -1766,42 +1978,14 @@ function wireFindRows(container){
   });
 }
 function renderParentFinds(){
-  /* pending approvals (Tier 1) */
-  const pend=S.order.filter(id=>isPending(id));
-  $('#pendingCard').classList.toggle('hidden', !pend.length);
-  $('#pendingList').innerHTML = pend.map(id=>{
-    const tg=targetById(id); const f=findOf(id);
-    return `<div class="pfind">
-      ${f.photo? `<img src="${f.photo}" alt="">` : `<div class="noimg">${iconHTML(tg.icon)}</div>`}
-      <div style="flex:1;"><b>${esc(tg.name)}</b><span>${fmtTime(f.ts)}${f.lat!=null?' · 📌 location saved':' · no location'}</span></div>
-      <button class="pbtn" data-approve="${id}">👍 Stamp it</button>
-      <button class="pbtn ghost" data-retake="${id}">↩ Retake</button>
-    </div>`;
-  }).join('');
-  $('#pendingList').querySelectorAll('[data-approve]').forEach(b=> b.addEventListener('click', ()=>{
-    const f=findOf(b.dataset.approve); if(!f) return;
-    f.status='ok'; saveState(); renderAll(); renderParentFinds(); refreshMaps(); toast('Stamped! 🎟️ Sticker earned.');
-  }));
-  $('#pendingList').querySelectorAll('[data-retake]').forEach(b=> b.addEventListener('click', ()=>{
-    const id=b.dataset.retake;
-    delete S.finds[id]; S.order=S.order.filter(x=>x!==id);
-    saveState(); renderAll(); renderParentFinds(); refreshMaps(); toast('Photo sent back for a retake.');
-  }));
-  /* hint requests (Tier 2) */
-  const reqs=Object.keys(S.hintReq||{}).filter(id=>!S.hintOpen[id]);
-  $('#hintCard').classList.toggle('hidden', !reqs.length);
-  $('#hintReqList').innerHTML = reqs.map(id=>{
-    const tg=targetById(id); if(!tg) return '';
-    return `<div class="checkrow"><span class="ci">${iconHTML(tg.icon)}</span><b>${esc(tg.name)}</b><button class="pbtn" data-release="${id}">Release hint 💡</button></div>`;
-  }).join('');
-  $('#hintReqList').querySelectorAll('[data-release]').forEach(b=> b.addEventListener('click', ()=>{
-    S.hintOpen[b.dataset.release]=true; delete S.hintReq[b.dataset.release];
-    saveState(); renderHunt(); renderParentFinds(); toast('Hint released 💡');
-  }));
+  /* No approval queue and no hint-release queue live here any more: finds
+     stamp instantly and hints open in the game itself (Joshua's game-wide
+     no-grown-up rule, 2026-11-21). This tab is for REVIEW — looking back,
+     undoing, rating — never for gating the kid's play. */
   /* all finds — the collection atlas */
   const wrap=$('#parentFinds');
   const ids=[...S.order].reverse();
-  wrap.innerHTML = (S.tier==='t3' ? `<div class="pcard"><h3>🗺️ Collection Atlas</h3><p>Every find ever stamped, with its date and place. Rate Trailblazer photos 1–3 stars — feedback, never a gate: a 1-star photo still counts.</p></div>` : '')
+  wrap.innerHTML = (S.tier==='t3' ? `<div class="pcard"><h3>🗺️ Collection Atlas</h3><p>Every find, with its date and place. Rate Trailblazer photos 1–3 stars — feedback, never a gate: a 1-star photo still counts.</p></div>` : '')
     + (ids.length ? ids.map(id=> findRowHTML(id, {stars: S.tier==='t3', undo:true})).join('') : `<div class="pcard"><p>No finds yet. When your hunter snaps one, it lands here with its photo and map pin.</p></div>`);
   wireFindRows(wrap);
   /* manual check-off */
@@ -1909,7 +2093,7 @@ $('#btnWatch').addEventListener('click', ()=>{
 $('#checkinMins').addEventListener('change', e=>{ S.checkinMins=Number(e.target.value); saveState(); });
 $('#btnCheckin').addEventListener('click', ()=>{
   S.lastCheckin=Date.now(); saveState(); updateZoneUI();
-  toast('💚 Checked in! Your grown-up can see you are safe.'); speak('Checked in!');
+  toast('💚 Checked in!'); speak('Checked in!');
 });
 
 /* ================= PARENT LINK (snapshot) ================= */
@@ -1967,7 +2151,7 @@ function scrapbookText(){
     `Tier: ${tier().name} (${tier().ages}) · Score: ${score()} points · Finds: ${okFinds().length}`, ''];
   S.order.forEach((id,i)=>{
     const f=findOf(id); const tg=targetById(id); if(!f||!tg) return;
-    lines.push(`${i+1}. ${tg.name} — ${fmtTime(f.ts)}${f.lat!=null? ` — location ${f.lat.toFixed(5)}, ${f.lon.toFixed(5)}`:' — no location saved'}${f.manual?' — checked off by a grown-up':''}${f.status==='pending'?' — waiting for a grown-up stamp':''}${f.stars?` — photo stars: ${'⭐'.repeat(f.stars)}`:''}`);
+    lines.push(`${i+1}. ${tg.name} — ${fmtTime(f.ts)}${f.lat!=null? ` — location ${f.lat.toFixed(5)}, ${f.lon.toFixed(5)}`:' — no location saved'}${f.manual?' — checked off by a grown-up':''}${f.stars?` — photo stars: ${'⭐'.repeat(f.stars)}`:''}`);
     if(tg.fact) lines.push(`   Fun fact: ${tg.fact}`);
   });
   const bd=badges(); if(bd.length) lines.push('', 'Badges: '+bd.map(b=>`${b.icon} ${b.name}`).join(' · '));
@@ -2085,6 +2269,19 @@ function renderStaticMap(el, pins, path, boundary){
     });
   });
 }
+/* Plan My Trip printables: a planned trip's route sheet shows the planned
+   road + every picked spot in trip order (found or not) — it is the trip
+   plan sheet as much as a keepsake. */
+function isTripHunt(){ return S.activeDeck==='trip' && !!S.tripPlan && S.tripTargets.length>0; }
+function printMapData(){
+  const ids=okFinds();
+  if(isTripHunt()){
+    const pins=S.tripTargets.filter(tg=>tg.lat!=null).map(tg=>({id:'', lat:tg.lat, lon:tg.lon, iconHTML:iconHTML(tg.icon), label:tg.name}));
+    const path=(S.tripPlan.route && S.tripPlan.route.length>1)? S.tripPlan.route : mapPathFromFinds(ids);
+    return {pins, path};
+  }
+  return {pins: mapPinsFromFinds(ids), path: mapPathFromFinds(ids)};
+}
 function buildPrintSheet(mode){
   const ids=okFinds();
   const complete=huntComplete();
@@ -2111,22 +2308,26 @@ function buildPrintSheet(mode){
     </div></div>`;
   })() : '';
   /* route sheet */
-  const pins=mapPinsFromFinds(ids), path=mapPathFromFinds(ids);
+  const pmd=printMapData(); const pins=pmd.pins, path=pmd.path;
+  const trip=isTripHunt();
   const dateLine = first? (fmtDateLong(first.ts) + (last && fmtDateLong(last.ts)!==fmtDateLong(first.ts)? ' → '+fmtDateLong(last.ts):'')) : '';
   $('#routeSlot').innerHTML = `
     <div class="routesheet">
       <h2>🗺️ My Adventure Map</h2>
-      <p class="rs-meta">${esc(DECKS[S.activeDeck].name)} · ${ids.length} spot${ids.length===1?'':'s'} found${tier().points? ` · ${score()} points`:''}${dateLine? `<br>${dateLine}`:''}${dur? ` · Hunt time: ${dur}`:''} · Map style: ${esc(T.name)}</p>
+      <p class="rs-meta">${trip? `🗺️ <b>${esc(S.tripPlan.fromName)} → ${esc(S.tripPlan.toName)}</b> · about ${Math.round(S.tripPlan.distMi)} miles · `:''}${esc(DECKS[S.activeDeck].name)} · ${ids.length} spot${ids.length===1?'':'s'} found${tier().points? ` · ${score()} points`:''}${dateLine? `<br>${dateLine}`:''}${dur? ` · Hunt time: ${dur}`:''} · Map style: ${esc(T.name)}</p>
       <div id="printMap"></div>
-      ${ids.length? `<ol class="rs-list">${ids.map(id=>{ const tg=targetById(id); const f=findOf(id); return `<li class="rs-item"><b>${esc(tg?tg.name:id)}</b> <small>— ${fmtTime(f.ts)}${f.lat!=null?'':' · no location saved'}</small></li>`; }).join('')}</ol>` : `<p class="rs-meta">No finds yet — the adventure map fills in with every spot you find!</p>`}
-      <p class="rs-foot">The dashed line is the trip path — the spots in the order they were found. J-Dawgs Lil Spotters™ · © 2026 J-Dawgs Industries · Big dreams for a small world.</p>
+      ${trip? `<ol class="rs-list">${S.tripTargets.map(tg=>{ const f=findOf(tg.id); const gotF=f&&f.status==='ok'; return `<li class="rs-item"><b>${esc(tg.name)}</b> <small>— ${gotF? 'found at '+fmtTime(f.ts) : 'not found yet — keep looking!'}</small></li>`; }).join('')}</ol>`
+        : ids.length? `<ol class="rs-list">${ids.map(id=>{ const tg=targetById(id); const f=findOf(id); return `<li class="rs-item"><b>${esc(tg?tg.name:id)}</b> <small>— ${fmtTime(f.ts)}${f.lat!=null?'':' · no location saved'}</small></li>`; }).join('')}</ol>`
+        : `<p class="rs-meta">No finds yet — the adventure map fills in with every spot you find!</p>`}
+      <p class="rs-foot">${trip? 'The line is your planned road — every spot on the hunt, in trip order.' : 'The dashed line is the trip path — the spots in the order they were found.'} J-Dawgs Lil Spotters™ · © 2026 J-Dawgs Industries · Big dreams for a small world.</p>
     </div>`;
   renderStaticMap($('#printMap'), pins, path, S.boundary? {pts:S.boundary.pts} : null);
   return {complete, count:ids.length, cert:showCert};
 }
 function openPrint(mode){
   const r=buildPrintSheet(mode);
-  if(!r.count){ toast('No finds yet — find a spot first, then print the adventure! 🗺️'); return; }
+  /* a planned trip's route sheet is the trip plan — it prints before any finds */
+  if(!r.count && !isTripHunt()){ toast('No finds yet — find a spot first, then print the adventure! 🗺️'); return; }
   if(mode==='both' && !r.complete) toast('The award certificate is earned when every spot is found — printing the route sheet for now. 🏆');
   setTimeout(()=>{ try{ window.print(); }catch(e){} }, 400);
 }
@@ -2134,14 +2335,18 @@ function openPrint(mode){
    true print width the moment the print dialog takes over */
 window.addEventListener('beforeprint', ()=>{
   const pm=$('#printMap'); if(!pm || !$('#routeSlot').innerHTML) return;
-  const ids=okFinds();
-  renderStaticMap(pm, mapPinsFromFinds(ids), mapPathFromFinds(ids), S.boundary? {pts:S.boundary.pts} : null);
+  const pmd=printMapData();
+  renderStaticMap(pm, pmd.pins, pmd.path, S.boundary? {pts:S.boundary.pts} : null);
 });
 $('#btnPrintBoth').addEventListener('click', ()=> openPrint('both'));
 $('#btnPrintRoute').addEventListener('click', ()=> openPrint('route'));
 function renderPrintCard(){
   const el=$('#printStateText'); if(!el) return;
   const n=okFinds().length;
+  if(isTripHunt() && !huntComplete()){
+    el.innerHTML=`🗺️ <b>Trip planned: ${esc(S.tripPlan.fromName)} → ${esc(S.tripPlan.toName)}</b> — ${S.tripTargets.length} spots on the hunt, ${n} found so far. The route sheet prints the whole planned trip any time — every spot in order. The award certificate unlocks when every spot is found.`;
+    return;
+  }
   if(huntComplete()){
     const dt=deckTargets(S.activeDeck);
     el.innerHTML=`🎉 <b>Hunt complete — all ${dt.length} spots found!</b> The award certificate is earned and prints first, with the route sheet on page two.`;
@@ -2167,6 +2372,366 @@ function renderPrintCard(){
 window.RTH={ get state(){ return S; }, saveState, zoneStatus, huntComplete, buildPrintSheet, themeDef,
   setPos(lat, lon){ currentPos={lat, lon, ts:Date.now()}; refreshMapMarkers(); },
   get pos(){ return currentPos; }, enterParent, exitParent };
+</script>
+<script>
+/* ================= PLAN MY TRIP =================
+   Joshua's order (2026-11-21): "Before that game even starts, you gotta have
+   a Plan My Trip — so you know what to look for. Do the Plan My Trip search
+   thing: find out where they're going, map out the cool things along the
+   way, and then put the things on the game."
+   A grown-up plans the trip BEFORE it starts: geocode the start and the
+   destination (Nominatim), route the drive (OSRM), and find real kid-safe
+   places along the road corridor (Overpass / OpenStreetMap) — free,
+   keyless, browser-direct, no accounts. The picked places become a real
+   hunt (the 'trip' deck) with real names + real GPS coordinates, ordered
+   along the route, saved in the normal game state — so the hunt survives
+   reloads and plays on the road with spotty signal and NO re-searching.
+   Places are NEVER invented: every target came back from the search with
+   its real name and coordinates.
+   Joshua's design rule (2026-11-21): "Don't make them ask a grown up
+   anything. That'll all be pre-planned in the game before the trip." So
+   planning, the ONE-TIME camera grant, and the play zone all live in this
+   pre-trip Get Ready flow — after START, the game runs kid-only. */
+const PLAN={ step:'form', fromParent:false, results:null, picked:new Set(), map:null, cache:{}, nearDest:false };
+const PLAN_AUTO={t1:5, t2:8, t3:12}; /* suggested hunt sizes by age tier */
+/* Kid-safe spot categories ONLY — a whitelist. Anything not on this list
+   (bars, liquor, adult, gambling, …) can never become a target. w = how
+   big/famous the category tends to be (auto-pick ranking), diff = game
+   difficulty for the target. */
+const PLAN_CATS={
+  zoo:{icon:'🦁', line:'A zoo — real animals to spot!', w:10, diff:2},
+  aquarium:{icon:'🐠', line:'An aquarium — fish and sea animals!', w:10, diff:2},
+  theme_park:{icon:'🎡', line:'A theme park with rides!', w:10, diff:2},
+  museum:{icon:'🏛️', line:'A museum full of cool things to discover!', w:9, diff:2},
+  castle:{icon:'🏰', line:'A real castle!', w:9, diff:2},
+  waterfall:{icon:'💦', line:'A waterfall — listen for the splashing!', w:9, diff:2},
+  attraction:{icon:'⭐', line:'A famous place people travel to see!', w:8, diff:2},
+  monument:{icon:'🗽', line:'A big monument — something famous happened here!', w:8, diff:2},
+  lighthouse:{icon:'💡', line:'A lighthouse that guides the boats!', w:8, diff:2},
+  viewpoint:{icon:'🔭', line:'A viewpoint — a wow-lookout over everything!', w:7, diff:1},
+  ruins:{icon:'🏺', line:'Ruins — the leftovers of a very old building!', w:7, diff:2},
+  nature_reserve:{icon:'🦌', line:'A nature reserve — wild animals live here!', w:7, diff:1},
+  peak:{icon:'⛰️', line:'A mountain peak — look up!', w:7, diff:1},
+  beach:{icon:'🏖️', line:'A beach!', w:7, diff:1},
+  memorial:{icon:'🌟', line:'A memorial that remembers important people.', w:6, diff:1},
+  park:{icon:'🌳', line:'A park — grass, trees and room to wiggle!', w:6, diff:1},
+  playground:{icon:'🛝', line:'A playground!', w:6, diff:1},
+  gallery:{icon:'🖼️', line:'An art gallery — pictures and statues!', w:6, diff:1},
+  artwork:{icon:'🎨', line:'Outdoor art to spot!', w:5, diff:1},
+  wood:{icon:'🌲', line:'A forest — a whole wood of trees!', w:4, diff:1},
+};
+function planCatOf(tags){
+  const t=tags||{};
+  const checks=[
+    ['tourism','zoo','zoo'],['tourism','aquarium','aquarium'],['tourism','theme_park','theme_park'],
+    ['tourism','museum','museum'],['historic','castle','castle'],['natural','waterfall','waterfall'],
+    ['tourism','attraction','attraction'],['historic','monument','monument'],['tourism','viewpoint','viewpoint'],
+    ['historic','ruins','ruins'],['leisure','nature_reserve','nature_reserve'],['natural','peak','peak'],
+    ['natural','beach','beach'],['historic','memorial','memorial'],['leisure','park','park'],
+    ['leisure','playground','playground'],['tourism','gallery','gallery'],['tourism','artwork','artwork'],
+    ['natural','wood','wood'],['man_made','lighthouse','lighthouse'],
+  ];
+  for(const c of checks){ if(t[c[0]]===c[1]) return c[2]; }
+  return null;
+}
+/* ---------- search layer (free, keyless, fair-use: cached, one search per plan) ---------- */
+function planFetch(url, opts, ms){
+  const ctl=new AbortController(); const to=setTimeout(()=>ctl.abort(), ms||20000);
+  return fetch(url, Object.assign({}, opts||{}, {signal:ctl.signal})).finally(()=>clearTimeout(to));
+}
+async function planGeocode(q){
+  const key='geo:'+q.toLowerCase();
+  if(PLAN.cache[key]) return PLAN.cache[key];
+  const r=await planFetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+encodeURIComponent(q), null, 20000);
+  if(!r.ok) throw {code:'net'};
+  const j=await r.json();
+  if(!j.length) throw {code:'notfound', q};
+  const out={lat:parseFloat(j[0].lat), lon:parseFloat(j[0].lon)};
+  PLAN.cache[key]=out; return out;
+}
+async function planRoute(from, to){
+  const key=`route:${from.lat.toFixed(4)},${from.lon.toFixed(4)}>${to.lat.toFixed(4)},${to.lon.toFixed(4)}`;
+  if(PLAN.cache[key]) return PLAN.cache[key];
+  const url=`https://router.project-osrm.org/route/v1/driving/${from.lon},${from.lat};${to.lon},${to.lat}?overview=full&geometries=geojson`;
+  const r=await planFetch(url, null, 25000);
+  if(!r.ok) throw {code:'net'};
+  const j=await r.json();
+  if(!j.routes || !j.routes.length) throw {code:'noroute'};
+  const rt=j.routes[0];
+  const pts=rt.geometry.coordinates.map(c=>[c[1],c[0]]);
+  const cum=[0];
+  for(let i=1;i<pts.length;i++) cum.push(cum[i-1]+haversineM(pts[i-1][0],pts[i-1][1],pts[i][0],pts[i][1]));
+  const out={pts, cum, totalM:cum[cum.length-1], distMi:rt.distance/1609.34, durMin:rt.duration/60};
+  PLAN.cache[key]=out; return out;
+}
+function planSamples(route){
+  const pts=[[route.pts[0][0], route.pts[0][1]]];
+  let next=8000;
+  for(let i=1;i<route.pts.length;i++){
+    if(route.cum[i]>=next){ pts.push([route.pts[i][0], route.pts[i][1]]); next+=8000; }
+  }
+  const last=route.pts[route.pts.length-1];
+  if(haversineM(pts[pts.length-1][0], pts[pts.length-1][1], last[0], last[1])>2500) pts.push([last[0], last[1]]);
+  return pts;
+}
+function planQL(samples, radius){
+  const lines=['[out:json][timeout:60];','('];
+  for(const s of samples){
+    const a=`around:${radius},${s[0].toFixed(5)},${s[1].toFixed(5)}`;
+    lines.push(`nwr["tourism"~"^(attraction|viewpoint|museum|zoo|aquarium|theme_park|gallery|artwork)$"]["name"](${a});`);
+    lines.push(`nwr["historic"~"^(monument|castle|memorial|ruins)$"]["name"](${a});`);
+    lines.push(`nwr["leisure"~"^(park|playground|nature_reserve)$"]["name"](${a});`);
+    lines.push(`nwr["natural"~"^(peak|beach|waterfall|wood)$"]["name"](${a});`);
+    lines.push(`nwr["man_made"="lighthouse"]["name"](${a});`);
+  }
+  lines.push(');','out center tags;');
+  return lines.join('\n');
+}
+async function planOverpass(ql){
+  const eps=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter'];
+  for(const ep of eps){
+    try{
+      const r=await planFetch(ep, {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:'data='+encodeURIComponent(ql)}, 70000);
+      if(r.ok) return await r.json();
+    }catch(e){}
+    try{ /* some networks mangle POST bodies — retry the same query as a GET */
+      const r=await planFetch(ep+'?data='+encodeURIComponent(ql), null, 70000);
+      if(r.ok) return await r.json();
+    }catch(e){}
+  }
+  throw {code:'net'};
+}
+function planSpotsFrom(j, route, baseM){
+  const out=[];
+  for(const el of (j.elements||[])){
+    const tags=el.tags||{}; const name=(tags.name||'').trim(); if(!name) continue;
+    const cat=planCatOf(tags); if(!cat) continue;
+    const lat=el.lat!=null? el.lat : (el.center? el.center.lat : null);
+    const lon=el.lon!=null? el.lon : (el.center? el.center.lon : null);
+    if(lat==null||lon==null) continue;
+    let along=baseM||0;
+    if(route){ /* project onto the route: the nearest vertex's along-distance */
+      let best=1e18, bi=0;
+      for(let i=0;i<route.pts.length;i++){ const d=haversineM(lat,lon,route.pts[i][0],route.pts[i][1]); if(d<best){ best=d; bi=i; } }
+      along=route.cum[bi];
+    }
+    const info=PLAN_CATS[cat];
+    const score=info.w + (tags.wikidata?3:0) + (tags.wikipedia?2:0);
+    const spot={osm:el.type[0]+el.id, name, cat, icon:info.icon, line:info.line, diff:info.diff, lat, lon, alongM:along, score};
+    const dup=out.find(s=>s.name.toLowerCase()===name.toLowerCase() && haversineM(s.lat,s.lon,lat,lon)<600);
+    if(dup){ if(score>dup.score) Object.assign(dup, spot); }
+    else out.push(spot);
+  }
+  return out.sort((a,b)=>a.alongM-b.alongM).slice(0,60);
+}
+async function planCorridorSpots(route, samples, radius){
+  const key=`spots:${route.pts[0][0].toFixed(3)}:${Math.round(route.totalM)}:${radius}:${samples.length}`;
+  if(PLAN.cache[key]) return PLAN.cache[key];
+  const j=await planOverpass(planQL(samples, radius));
+  const spots=planSpotsFrom(j, route, 0);
+  PLAN.cache[key]=spots; return spots;
+}
+async function planDestSpots(dest, route){
+  const key=`dest:${dest.lat.toFixed(3)},${dest.lon.toFixed(3)}`;
+  if(PLAN.cache[key]) return PLAN.cache[key];
+  const j=await planOverpass(planQL([[dest.lat, dest.lon]], 12000));
+  const spots=planSpotsFrom(j, null, route? route.totalM:0);
+  PLAN.cache[key]=spots; return spots;
+}
+async function planDoSearch(fromText, toText){
+  let from;
+  if(!fromText){
+    const pos=await freshPos(7000);
+    if(!pos) throw {code:'noloc'};
+    from={lat:pos.lat, lon:pos.lon, name:'Right here'};
+  } else {
+    const g=await planGeocode(fromText); from={lat:g.lat, lon:g.lon, name:fromText};
+  }
+  const tg=await planGeocode(toText); const to={lat:tg.lat, lon:tg.lon, name:toText};
+  const route=await planRoute(from, to);
+  const samples=planSamples(route);
+  let spots=await planCorridorSpots(route, samples, 5000);
+  let wide=false;
+  if(spots.length<4){
+    const more=await planCorridorSpots(route, samples, 10000);
+    if(more.length>spots.length){ spots=more; wide=true; }
+  }
+  return {from, to, route, spots, wide};
+}
+/* ---------- planner UI ---------- */
+function planShow(step){
+  PLAN.step=step;
+  $('#planForm').hidden = step!=='form';
+  $('#planBusy').hidden = step!=='busy';
+  $('#planResults').hidden = step!=='results';
+  $('#planReady').hidden = step!=='ready';
+  $('#planApp').scrollTop=0;
+}
+function openPlanner(fromParent){
+  PLAN.fromParent=!!fromParent;
+  $('#planApp').classList.add('on');
+  const has=S.tripPlan && S.tripTargets.length;
+  $('#planOld').hidden=!has;
+  if(has) $('#planOldText').textContent=`${S.tripPlan.fromName} → ${S.tripPlan.toName} · about ${Math.round(S.tripPlan.distMi)} miles · ${S.tripTargets.length} spots on the hunt.`;
+  $('#planErr').hidden=true;
+  planShow('form');
+}
+function closePlanner(){
+  $('#planApp').classList.remove('on');
+  renderAll();
+}
+function planShowErr(e){
+  const err=$('#planErr'); err.hidden=false;
+  if(e && e.code==='notfound') err.textContent=`🤔 We couldn't find a place called “${e.q}” on the map. Check the spelling, or add the state — like “Branson, MO”.`;
+  else if(e && e.code==='noloc') err.textContent='📍 The game could not find where “Right here” is. Type your starting town in the first box instead.';
+  else if(e && e.code==='noroute') err.textContent='🚗 No road found between those two places. Try a different town.';
+  else err.textContent='📡 The map search did not answer — planning needs the internet. Check the connection and try again. The ready-made hunts always work, no internet needed!';
+}
+async function planGo(){
+  const fromText=$('#planFrom').value.trim();
+  const toText=$('#planTo').value.trim();
+  const err=$('#planErr'); err.hidden=true;
+  if(!toText){ err.textContent='Tell the game where you are going first — type the town or place in the second box. 🗺️'; err.hidden=false; return; }
+  planShow('busy');
+  $('#planBusyText').textContent='Drawing your road and looking for fun places along the way. This can take a little while — the map is big!';
+  try{
+    const res=await planDoSearch(fromText, toText);
+    PLAN.results=res; PLAN.nearDest=false; PLAN.picked=new Set();
+    planShow('results');
+    planRenderResults();
+  }catch(e){ planShow('form'); planShowErr(e); }
+}
+function planRenderResults(){
+  const res=PLAN.results; if(!res) return;
+  const spots=res.spots;
+  $('#planRouteTitle').textContent=`🚗 ${res.from.name} → ${res.to.name}`;
+  $('#planRouteSub').textContent=`About ${Math.round(res.route.distMi)} miles · ${spots.length} fun place${spots.length===1?'':'s'} found along your road${res.wide?' (we looked a little wider)':''}. Pick the ones for your hunt!`;
+  $('#planEmpty').hidden = spots.length>0;
+  $('#btnPlanWider').style.display = res.wide? 'none':'';
+  $('#planSpotList').innerHTML = spots.map((s,i)=>{
+    const mi=Math.round(s.alongM/1609.34);
+    return `<button class="spotcard ${PLAN.picked.has(s.osm)?'picked':''}" data-spot="${s.osm}" type="button">
+      <span class="spotord">${i+1}</span>
+      <span class="spoticon">${s.icon}</span>
+      <span class="spotmain"><b>${esc(s.name)}</b>
+        <span class="spotline">${esc(s.line)}</span>
+        <span class="spotdist">🚗 About ${Math.max(1,mi)} mile${mi===1?'':'s'} into your trip</span></span>
+      <span class="spotadd">${PLAN.picked.has(s.osm)?'✔ ON MY HUNT':'➕ ADD'}</span>
+    </button>`;
+  }).join('');
+  document.querySelectorAll('[data-spot]').forEach(c=> c.addEventListener('click', ()=> planToggle(c.dataset.spot)));
+  if(!PLAN.map){
+    PLAN.map=makeMap($('#planMap'), {pinScale:1.15, showLabels:true, showOrder:true, pathW:7,
+      onPin:id=>{ const el=document.querySelector(`[data-spot="${id}"]`); if(el){ el.scrollIntoView({behavior:'smooth', block:'center'}); el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); } }});
+  }
+  PLAN.map.setTheme(S.mapTheme);
+  PLAN.map.setData({pins: spots.map((s,i)=>({id:s.osm, lat:s.lat, lon:s.lon, iconHTML:s.icon, label:s.name, ord:i+1})),
+    path: res.route.pts, me: res.from.name==='Right here'? {lat:res.from.lat, lon:res.from.lon} : null});
+  planUpdateMakeBtn();
+}
+function planToggle(osm){
+  if(PLAN.picked.has(osm)) PLAN.picked.delete(osm); else PLAN.picked.add(osm);
+  const card=document.querySelector(`[data-spot="${osm}"]`);
+  if(card){ const on=PLAN.picked.has(osm); card.classList.toggle('picked', on); card.querySelector('.spotadd').textContent= on? '✔ ON MY HUNT':'➕ ADD'; }
+  planUpdateMakeBtn();
+}
+function planUpdateMakeBtn(){
+  const n=PLAN.picked.size;
+  const b=$('#btnMakeHunt'); b.disabled = n===0;
+  b.textContent=`⭐ Make My Hunt (${n} picked)`;
+}
+function planAutoPick(){
+  const res=PLAN.results; if(!res || !res.spots.length) return;
+  const want=PLAN_AUTO[S.tier||'t2']||8;
+  const top=[...res.spots].sort((a,b)=>b.score-a.score).slice(0, want);
+  PLAN.picked=new Set(top.map(s=>s.osm));
+  planRenderResults();
+  toast(`⭐ Picked the ${PLAN.picked.size} biggest, best-known places for ${tier().name}! Change any of them below.`);
+}
+async function planWider(){
+  const res=PLAN.results; if(!res) return;
+  planShow('busy'); $('#planBusyText').textContent='Looking a little wider around your road…';
+  try{
+    const spots=await planCorridorSpots(res.route, planSamples(res.route), 10000);
+    res.spots=spots; res.wide=true;
+    planShow('results'); planRenderResults();
+    if(!spots.length) toast('Still no spots — the map is quiet out there. Try spots near the end of the trip!');
+  }catch(e){ planShow('results'); planRenderResults(); toast('📡 The wider search did not answer — check the internet and try again.'); }
+}
+async function planNearDest(){
+  const res=PLAN.results; if(!res) return;
+  planShow('busy'); $('#planBusyText').textContent=`Looking for fun places near ${res.to.name}…`;
+  try{
+    const spots=await planDestSpots(res.to, res.route);
+    res.spots=spots; PLAN.nearDest=true;
+    planShow('results'); planRenderResults();
+    $('#planRouteSub').textContent=`${spots.length} fun place${spots.length===1?'':'s'} near ${res.to.name}. Pick the ones for your hunt!`;
+  }catch(e){ planShow('results'); planRenderResults(); toast('📡 That search did not answer — check the internet and try again.'); }
+}
+function planMakeHunt(){
+  const res=PLAN.results; if(!res || !PLAN.picked.size) return;
+  const chosen=res.spots.filter(s=>PLAN.picked.has(s.osm)).sort((a,b)=>a.alongM-b.alongM);
+  S.tripTargets=chosen.map(s=>({id:'trip'+s.osm, name:s.name, icon:s.icon, diff:s.diff, hint:s.line, lat:s.lat, lon:s.lon, cat:s.cat}));
+  const step=Math.max(1, Math.floor(res.route.pts.length/160));
+  const simp=[];
+  for(let i=0;i<res.route.pts.length;i+=step) simp.push(res.route.pts[i]);
+  const lastPt=res.route.pts[res.route.pts.length-1];
+  if(simp[simp.length-1]!==lastPt) simp.push(lastPt);
+  S.tripPlan={fromName:res.from.name, toName:res.to.name, distMi:Math.round(res.route.distMi*10)/10, durMin:Math.round(res.route.durMin), route:simp, madeTs:Date.now(), wide:!!res.wide};
+  S.activeDeck='trip';
+  saveState();
+  planShowReady();
+}
+/* ---------- GET READY: every grown-up step, once, before the trip ---------- */
+function planShowReady(){
+  if(!(S.tripPlan && S.tripTargets.length)){ planShow('form'); return; }
+  $('#readyTripText').textContent=`${S.tripPlan.fromName} → ${S.tripPlan.toName} · about ${Math.round(S.tripPlan.distMi)} miles · ${S.tripTargets.length} spots on the hunt.`;
+  planReadyCamUI();
+  planShow('ready');
+}
+function planReadyCamUI(){
+  const row=$('#readyCam'), txt=$('#readyCamText'), btn=$('#btnReadyCam');
+  if(CamMgr.isReady()){ row.classList.add('done'); txt.textContent='✅ Camera is ON and ready. On the road it will just open — no asking, no waiting.'; }
+  else if(CamMgr.isDenied()){ row.classList.remove('done'); txt.textContent='The camera is off on this device — that is OK. Finds can use Pick a Photo instead, and a grown-up can check them off later in Grown-ups. Nothing will pop up and bother the hunter.'; btn.textContent='📸 Try Again'; }
+  else { row.classList.remove('done'); txt.textContent='Do it now, at home, so the camera just opens on the road. The first photo of the trip should never be a permission question.'; btn.textContent='📸 Turn It On'; }
+}
+$('#btnPlanTrip').addEventListener('click', ()=> openPlanner(false));
+$('#btnPlanTripParent').addEventListener('click', ()=> openPlanner(true));
+$('#btnPlanBack').addEventListener('click', ()=>{
+  if(PLAN.step==='busy') return; /* a search is running — let it land */
+  if(PLAN.step==='results' || PLAN.step==='ready'){ planShow('form'); return; }
+  closePlanner();
+});
+$('#btnPlanHere').addEventListener('click', ()=>{ $('#planFrom').value=''; toast('📍 Starting from right here — the game finds you when you search.'); });
+$('#btnPlanGo').addEventListener('click', planGo);
+[$('#planFrom'), $('#planTo')].forEach(el=> el.addEventListener('keydown', e=>{ if(e.key==='Enter') planGo(); }));
+$('#btnPlanAuto').addEventListener('click', planAutoPick);
+$('#btnMakeHunt').addEventListener('click', planMakeHunt);
+$('#btnPlanWider').addEventListener('click', planWider);
+$('#btnPlanNearDest').addEventListener('click', planNearDest);
+$('#btnPlanBuiltin').addEventListener('click', ()=>{ closePlanner(); showView('home'); toast('🚗 Ready-made hunts are right here — pick one and play!'); });
+$('#btnPlanReady2').addEventListener('click', planShowReady);
+$('#btnPlanPrintOld').addEventListener('click', ()=>{ S.activeDeck='trip'; saveState(); openPrint('route'); });
+$('#btnReadyCam').addEventListener('click', ()=>{
+  CamMgr.setupGrant(ok=>{
+    if(ok===true){ planReadyCamUI(); toast('📸 Camera is ready — it will just open on the trip!'); }
+    else if(ok===false){ planReadyCamUI(); toast('Camera stayed off — no problem: Pick a Photo works for every find.'); }
+  });
+  freshPos(6000); /* warm up GPS in setup too, so the location ask is pre-trip as well */
+});
+$('#btnReadyZone').addEventListener('click', ()=>{
+  closePlanner(); enterParent(); switchPTab('pmap');
+  toast('🟩 Draw the play zone here — it is saved for the trip. The kid side only ever gets a gentle nudge.');
+});
+$('#btnTripStart').addEventListener('click', ()=>{
+  S.activeDeck='trip'; saveState();
+  closePlanner();
+  startGeoWatch(); showView('hunt');
+  toast(`🎒 Trip hunt is ON — ${S.tripTargets.length} real places to spot. No grown-ups needed!`);
+  speak(`Your trip hunt is ready! ${S.tripTargets.length} places to find!`);
+});
+/* QA / integration handle for the planner */
+if(window.RTH){ window.RTH.plan={ open:openPlanner, search:planDoSearch, state:()=>PLAN, makeHunt:planMakeHunt, autoPick:planAutoPick, ready:planShowReady, toggle:planToggle }; }
 </script>
 </body>
 </html>
