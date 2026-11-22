@@ -1158,3 +1158,88 @@ body {
   box-shadow: inset 0 0 24px rgba(0, 0, 0, .50);
 }
 @media (max-width: 400px) { .cab-base { height: 56px; } }
+
+/* ---------- REALISM CABINET — UPPER (2026-11-21) ----------
+   Joshua's standard, his words: "That's what I want is a realism cabinet on
+   them" + "With realism buttons, reels that roll real." The WHOLE cabinet
+   reads as one real physical machine, not just the lower half: the marquee
+   is backlit top glass in a screwed machined frame with light escaping under
+   its bottom edge and washing down the shell; the reel window is a recessed
+   display behind glass — machined bezel, corner screws, a glass sheen with
+   the marquee's light pooled at its top; the shell catches that light at the
+   top and falls dark toward the base. Together with the LOWER CABINET
+   REALISM block (deck plate, physical buttons, belly glass, coin tray) this
+   is THE REALISM CABINET — the reusable cabinet standard for every J-Dawgs
+   machine, Digital Poker next (see
+   j-dawgs-vault/hustle-city-slots/REALISM-CABINET.md). Skin only. */
+.cabinet {
+  background:
+    linear-gradient(180deg, rgba(111, 194, 255, .12) 0%, rgba(111, 194, 255, 0) 26%),
+    linear-gradient(165deg, #3a434f 0%, #171c24 14%, #0a0d12 38%, #131922 62%, #05070a 100%);
+}
+.marquee-wrap {
+  border: 1px solid #78869c;
+  box-shadow:
+    0 0 0 2px #05070a,
+    0 0 0 3px #46536a,
+    0 0 30px rgba(46, 155, 255, .42),
+    0 12px 26px rgba(46, 155, 255, .16),
+    0 3px 10px rgba(0, 0, 0, .75),
+    inset 0 0 0 1px rgba(0, 0, 0, .8),
+    inset 0 0 26px rgba(46, 155, 255, .28);
+}
+.marquee-wrap::before {
+  content: "";
+  position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cdefs%3E%3CradialGradient id='g' cx='35%25' cy='30%25'%3E%3Cstop offset='0%25' stop-color='%23f2f5f9'/%3E%3Cstop offset='45%25' stop-color='%2398a5b5'/%3E%3Cstop offset='80%25' stop-color='%23454f5c'/%3E%3Cstop offset='100%25' stop-color='%23141920'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='10' cy='10' r='9' fill='url(%23g)'/%3E%3Crect x='2.6' y='8.8' width='14.8' height='2.4' rx='1.2' fill='%2310141a' transform='rotate(38 10 10)'/%3E%3C/svg%3E") left 6px top 6px / 11px 11px no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cdefs%3E%3CradialGradient id='g' cx='35%25' cy='30%25'%3E%3Cstop offset='0%25' stop-color='%23f2f5f9'/%3E%3Cstop offset='45%25' stop-color='%2398a5b5'/%3E%3Cstop offset='80%25' stop-color='%23454f5c'/%3E%3Cstop offset='100%25' stop-color='%23141920'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='10' cy='10' r='9' fill='url(%23g)'/%3E%3Crect x='2.6' y='8.8' width='14.8' height='2.4' rx='1.2' fill='%2310141a' transform='rotate(115 10 10)'/%3E%3C/svg%3E") right 6px top 6px / 11px 11px no-repeat;
+}
+.marquee-wrap::after {
+  content: "";
+  position: absolute; left: 4%; right: 4%; bottom: 0; height: 3px; z-index: 3; pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(160, 215, 255, .85) 22%, rgba(160, 215, 255, .85) 78%, transparent);
+  filter: blur(.4px);
+}
+.marquee, .marquee-sign { filter: saturate(1.06) brightness(1.05); }
+.marquee-shine {
+  z-index: 2;
+  background:
+    linear-gradient(112deg, rgba(255, 255, 255, .20) 0%, rgba(255, 255, 255, .03) 26%, transparent 46%),
+    linear-gradient(0deg, rgba(0, 0, 0, .28) 0%, transparent 26%),
+    linear-gradient(180deg, rgba(255, 255, 255, .07) 0%, transparent 22%);
+}
+.reel-bezel {
+  box-shadow:
+    0 0 0 2px #04060a,
+    0 0 22px rgba(46, 155, 255, .16),
+    inset 0 2px 3px rgba(255, 255, 255, .55),
+    inset 0 -3px 6px rgba(0, 0, 0, .65),
+    0 4px 14px rgba(0, 0, 0, .75);
+}
+.reel-bezel::before {
+  content: "";
+  position: absolute; inset: 0; z-index: 4; pointer-events: none; border-radius: inherit;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cdefs%3E%3CradialGradient id='g' cx='35%25' cy='30%25'%3E%3Cstop offset='0%25' stop-color='%23f2f5f9'/%3E%3Cstop offset='45%25' stop-color='%2398a5b5'/%3E%3Cstop offset='80%25' stop-color='%23454f5c'/%3E%3Cstop offset='100%25' stop-color='%23141920'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='10' cy='10' r='9' fill='url(%23g)'/%3E%3Crect x='2.6' y='8.8' width='14.8' height='2.4' rx='1.2' fill='%2310141a' transform='rotate(38 10 10)'/%3E%3C/svg%3E") left 5px top 5px / 10px 10px no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cdefs%3E%3CradialGradient id='g' cx='35%25' cy='30%25'%3E%3Cstop offset='0%25' stop-color='%23f2f5f9'/%3E%3Cstop offset='45%25' stop-color='%2398a5b5'/%3E%3Cstop offset='80%25' stop-color='%23454f5c'/%3E%3Cstop offset='100%25' stop-color='%23141920'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='10' cy='10' r='9' fill='url(%23g)'/%3E%3Crect x='2.6' y='8.8' width='14.8' height='2.4' rx='1.2' fill='%2310141a' transform='rotate(115 10 10)'/%3E%3C/svg%3E") right 5px top 5px / 10px 10px no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cdefs%3E%3CradialGradient id='g' cx='35%25' cy='30%25'%3E%3Cstop offset='0%25' stop-color='%23f2f5f9'/%3E%3Cstop offset='45%25' stop-color='%2398a5b5'/%3E%3Cstop offset='80%25' stop-color='%23454f5c'/%3E%3Cstop offset='100%25' stop-color='%23141920'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='10' cy='10' r='9' fill='url(%23g)'/%3E%3Crect x='2.6' y='8.8' width='14.8' height='2.4' rx='1.2' fill='%2310141a' transform='rotate(73 10 10)'/%3E%3C/svg%3E") left 5px bottom 5px / 10px 10px no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cdefs%3E%3CradialGradient id='g' cx='35%25' cy='30%25'%3E%3Cstop offset='0%25' stop-color='%23f2f5f9'/%3E%3Cstop offset='45%25' stop-color='%2398a5b5'/%3E%3Cstop offset='80%25' stop-color='%23454f5c'/%3E%3Cstop offset='100%25' stop-color='%23141920'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='10' cy='10' r='9' fill='url(%23g)'/%3E%3Crect x='2.6' y='8.8' width='14.8' height='2.4' rx='1.2' fill='%2310141a' transform='rotate(152 10 10)'/%3E%3C/svg%3E") right 5px bottom 5px / 10px 10px no-repeat;
+}
+.reel-bezel::after {
+  content: "";
+  position: absolute; inset: 0; z-index: 3; pointer-events: none; border-radius: inherit;
+  background:
+    radial-gradient(75% 34% at 50% 0%, rgba(140, 205, 255, .12), rgba(140, 205, 255, 0) 70%),
+    linear-gradient(112deg, rgba(255, 255, 255, .075) 0%, rgba(255, 255, 255, .015) 30%, rgba(255, 255, 255, 0) 48%);
+}
+
+/* realism buttons, pass 2: a faint brushed grain on the chrome faces so the
+   metal reads as metal at arm's length, over the physical wall + sink of
+   the lower block */
+.chrome-btn {
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .028) 0 1px, rgba(0, 0, 0, .028) 1px 2px),
+    linear-gradient(180deg, rgba(255, 255, 255, .22) 0%, rgba(255, 255, 255, 0) 46%),
+    linear-gradient(180deg, #eef2f7 0%, #b4bfcc 28%, #67727f 50%, #39424e 53%, #828fa0 76%, #dde4ec 100%);
+}
