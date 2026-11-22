@@ -80,14 +80,17 @@ function evaluateGrid(grid, lineBet, cfg) {
       lineWinTotal += credits;
     }
   }
-  /* DOLLAR DOOR: bonusCount counts the door symbol (cfg.doorSymbol, 'DD'
-     on Classics) anywhere in the window — 3+ opens the bonus.
-     (Before 2026-11-22 this counted the retired BN trigger token.) */
-  const doorSym = cfg.doorSymbol || 'BN';
+  /* DOLLAR DOOR: bonusCount counts door symbols anywhere in the window —
+     3+ opens the bonus. cfg.doorSymbols lists every symbol that counts
+     (Classics v2-21, 2026-11-22: DD medallion AND DL plain dollar —
+     Joshua's rule is "three big green dollar signs", either kind, mixed
+     counts; the DD-only split silently ate 2 DD + 1 DL landings).
+     Falls back to the single cfg.doorSymbol ('BN' before 2026-11-22). */
+  const doorSyms = cfg.doorSymbols || [cfg.doorSymbol || 'BN'];
   let scatterCount = 0, bonusCount = 0;
   for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) {
     if (grid[r][row] === 'SC') scatterCount++;
-    if (grid[r][row] === doorSym) bonusCount++;
+    if (doorSyms.includes(grid[r][row])) bonusCount++;
   }
   const totalBet = lineBet * PAYLINES.length;
   const capped = Math.min(scatterCount, 5);

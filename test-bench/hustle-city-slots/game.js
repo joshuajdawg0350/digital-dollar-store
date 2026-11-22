@@ -29,6 +29,9 @@
 (function () {
   const core = window.SlotCore;
   const cfg = window.SlotMachines.CLASSICS;
+  /* v2-21: the door counts DD + DL together (Joshua's "three big green
+     dollar signs" — either kind, mixed). */
+  const DOOR_SYMS = cfg.doorSymbols || [cfg.doorSymbol];
   const LS_KEY = 'hcslots-classics-v2';
 
   const ART = {
@@ -391,7 +394,7 @@
       `<div class="payrow"><div class="thumb"><img src="${ART.X2}" alt="WIN ×2"></div><div class="nm">WIN ×2</div><span class="pv wide">Anywhere on a winning line, this line's win is DOUBLED (×2)</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.X3}" alt="WIN ×3"></div><div class="nm">WIN ×3</div><span class="pv wide">Anywhere on a winning line, this line's win is TRIPLED (×3). Two multipliers on the same line multiply together — ×2 and ×3 pay ×6</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.SC}" alt="SCATTER"></div><div class="nm">SCATTER</div><span class="pv wide">3+ anywhere: pays 2.4× / 9.6× / 48× total bet + 7 / 10 / 15 FREE SPINS at 2× line wins</span></div>` +
-      `<div class="payrow"><div class="thumb"><img src="${ART.DD}" alt="DOLLAR DOOR"></div><div class="nm">THE DOLLAR DOOR</div><span class="pv wide">3+ BIG GREEN DOLLARS anywhere on a paid spin — the ONLY way into a bonus. The third dollar slows the reels, they SLAM to a stop, the dollars grow and POP, and the bonus opens. Half the time it's PICK-A-GARAGE: 9 real cars — pop a trunk! 8 trunks hide prizes (0.25×–2.2× total bet), 1 hides SCOTTY. Banked prizes are kept; Scotty ends it. Pop all 8 for a 3.2× GARAGE BONUS — the last closed trunk then stays live as a no-risk reveal of SCOTTY. The other half the BONUS WHEEL opens: 12 wedges, every wedge pays × total bet — MINI 2× · MINOR 3.5× · MAJOR 7× · GRAND 13×</span></div>` +
+      `<div class="payrow"><div class="thumb"><img src="${ART.DD}" alt="DOLLAR DOOR"></div><div class="nm">THE DOLLAR DOOR</div><span class="pv wide">3+ BIG GREEN DOLLARS anywhere on a paid spin — plain dollars and medallion dollars count TOGETHER, any mix — the ONLY way into a bonus. The third dollar slows the reels, they SLAM to a stop, the dollars grow and POP, and the bonus opens. Half the time it's PICK-A-GARAGE: 9 real cars — pop a trunk! 8 trunks hide prizes (0.1×–1.2× total bet), 1 hides SCOTTY. Banked prizes are kept; Scotty ends it. Pop all 8 for a 1.8× GARAGE BONUS — the last closed trunk then stays live as a no-risk reveal of SCOTTY. The other half the BONUS WHEEL opens: 12 wedges, every wedge pays × total bet — MINI 1× · MINOR 2× · MAJOR 3.75× · GRAND 7×</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.DL}" alt="BET"></div><div class="nm">BET</div><span class="pv wide">Bets run in $25 steps: $25, $50, $75 … all the way up to $2,500 a spin. A step unlocks the first time your balance reaches it — and stays unlocked even if your balance dips. Use the −25 / +25 buttons or MAX BET. NEW GAME resets you to a $25 bet</span></div>`;
   }
 
@@ -696,7 +699,7 @@
     if (!isFree && dealtEv.bonusCount >= 3) {
       let cum = 0;
       for (let r = 0; r < 5; r++) {
-        cum += dealtGrid[r].filter(s => s === cfg.doorSymbol).length;
+        cum += dealtGrid[r].filter(s => DOOR_SYMS.includes(s)).length;
         if (cum >= 3) { doorReel = r; break; }
       }
     }
@@ -725,7 +728,7 @@
       /* BEAT 3 — GROW AND POP: every landed dollar swells up and pops,
          one after another, bells rising, before the bonus opens. */
       const cells = [];
-      for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) if (grid[r][row] === cfg.doorSymbol) cells.push({ r, row });
+      for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) if (DOOR_SYMS.includes(grid[r][row])) cells.push({ r, row });
       await doorPopSequence(cells);
       msgEl.textContent = `${ev.bonusCount} BIG GREEN DOLLARS — the door is open!`;
     }

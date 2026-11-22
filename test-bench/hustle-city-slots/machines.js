@@ -63,16 +63,20 @@ const CLASSICS = {
   scatterPay: { 3: 2.4, 4: 9.6, 5: 48 },
   scatterSpins: { 3: 7, 4: 10, 5: 15 },
   /* DOLLAR DOOR (2026-11-22, Joshua's program-wide ruling): the ONLY way
-     into a bonus is 3+ BIG GREEN DOLLAR SIGNS (DD) anywhere in the
-     window. DD is a door-only symbol (green medallion art, pays nothing
-     on lines) — the line-paying DL keeps its original stops, so base
-     pays are untouched. The old BN trigger is gone: its five stops
-     became DD, plus three low-filler stops (B1/B1/BL) — DD counts
-     [2,1,2,1,2]. Exact door rate 1 in 20.2 paid spins (enumeration);
-     free-spin geometry untouched (still 1 in 69.8). Behind the door the
-     garage/wheel prizes were scaled so the total RTP holds at the
-     pre-door measured line (see the door record in the vault). */
+     into a bonus is 3+ BIG GREEN DOLLAR SIGNS anywhere in the window.
+     v2-21 (2026-11-22, Joshua's correction from his own phone): the
+     dollars count TOGETHER — DD (medallion) and DL (plain line dollar)
+     mixed in any combination. The DD-only split silently ate landings
+     like 2 DD + 1 DL (his screenshot: three green dollars, no bonus).
+     Retune: six dollar stops became B1 filler (DD r1#0, r2#10, r3#0,
+     r5#0; DL r2#6, r5#18) so the combined rate stays at the settled
+     1 in 20.2 paid spins (exact enumeration) with DD [1,0,1,1,1] and
+     DL [1,1,1,1,0]; base paytable UNCHANGED, scatter geometry
+     UNCHANGED (free spins still 1 in 69.8). Behind-the-door prizes
+     were re-scaled (garage x~0.54, wheel x~0.54) so the total RTP
+     holds at ~131% (exact model 130.9%). */
   doorSymbol: 'DD',
+  doorSymbols: ['DD', 'DL'],
   /* PICK-A-GARAGE bonus: 9 trunks, 8 prizes + 1 SCOTTY (bust). Prizes and the
      completion bonus are multiples of the TOTAL bet of the triggering spin.
      Random-pick EV = (sum of prizes)/2 + completion/9 = 8.90x total bet
@@ -81,7 +85,10 @@ const CLASSICS = {
      the old BN trigger, so garage prizes + completion were scaled x0.45
      (EV 8.90x -> 3.96x) to hold the machine's total RTP at its pre-door
      measured line (~131%). Base pays NOT touched. */
-  bonus: { prizes: [0.25, 0.25, 0.5, 0.5, 0.8, 1.1, 1.6, 2.2], completion: 3.2 },
+  /* v2-21 rebalance: prizes re-scaled with the mixed-door retune (see
+     doorSymbols note) — random-pick EV = (sum)/2 + completion/9
+     = 3.90/2 + 1.8/9 = 2.15x total bet. */
+  bonus: { prizes: [0.1, 0.15, 0.25, 0.3, 0.45, 0.6, 0.85, 1.2], completion: 1.8 },
   /* BONUS WHEEL (2026-11-22, ported from Pearl's Paws): when the garage
      would open, wheelShare of the time the BONUS WHEEL opens instead —
      the bonus-door frequency itself is unchanged, so the combined
@@ -91,8 +98,10 @@ const CLASSICS = {
      tunable — unification pass owns final numbers. */
   /* Door rebalance (2026-11-22): wedges scaled x0.45 with the garage
      (EV 7.42x -> 3.38x) so the blended behind-door EV holds the total. */
-  wheel: [13, 1, 3.5, 1.5, 7, 2.5, 1.5, 3.5, 2, 1, 2.5, 1.5],
-  wheelTiers: { 13: 'GRAND', 7: 'MAJOR', 3.5: 'MINOR', 2: 'MINI' },
+  /* v2-21 rebalance: wedges re-scaled with the mixed-door retune —
+     EV = 22/12 = 1.83x total bet; tiers keyed to the new wedge values. */
+  wheel: [7, 0.5, 2, 0.75, 3.75, 1.5, 0.75, 2, 1, 0.5, 1.5, 0.75],
+  wheelTiers: { 7: 'GRAND', 3.75: 'MAJOR', 2: 'MINOR', 1: 'MINI' },
   wheelShare: 0.5,
   paytable: {
     DL: { 3: 64.8, 4: 232.8, 5: 2650.8 },
@@ -104,11 +113,11 @@ const CLASSICS = {
     B1: { 3: 4.8, 4: 13.2, 5: 26.4 }
   },
   strips: [
-    ['DD', 'B1', 'CH', 'B1', 'CH', 'HS', 'B1', 'BL', 'BL', 'WD', 'X2', 'SC', 'DL', 'BL', 'BL', 'SV', 'DD', 'BL', 'CH', 'CH', 'BL', 'HS', 'B1', 'CH', 'BL'],
-    ['B1', 'SC', 'CH', 'BL', 'CH', 'B1', 'DL', 'B1', 'BL', 'BL', 'DD', 'X3', 'CH', 'SV', 'CH', 'BL', 'WD', 'BL', 'HS', 'B1', 'BL', 'DL', 'B1', 'CH', 'BL'],
-    ['DD', 'B1', 'HS', 'B1', 'SV', 'DL', 'BL', 'X2', 'SC', 'CH', 'BL', 'B1', 'BL', 'B1', 'WD', 'B1', 'BL', 'BL', 'CH', 'CH', 'DD', 'B1', 'CH', 'BL', 'B1'],
+    ['B1', 'B1', 'CH', 'B1', 'CH', 'HS', 'B1', 'BL', 'BL', 'WD', 'X2', 'SC', 'DL', 'BL', 'BL', 'SV', 'DD', 'BL', 'CH', 'CH', 'BL', 'HS', 'B1', 'CH', 'BL'],
+    ['B1', 'SC', 'CH', 'BL', 'CH', 'B1', 'B1', 'B1', 'BL', 'BL', 'B1', 'X3', 'CH', 'SV', 'CH', 'BL', 'WD', 'BL', 'HS', 'B1', 'BL', 'DL', 'B1', 'CH', 'BL'],
+    ['B1', 'B1', 'HS', 'B1', 'SV', 'DL', 'BL', 'X2', 'SC', 'CH', 'BL', 'B1', 'BL', 'B1', 'WD', 'B1', 'BL', 'BL', 'CH', 'CH', 'DD', 'B1', 'CH', 'BL', 'B1'],
     ['BL', 'HS', 'WD', 'BL', 'DL', 'B1', 'SV', 'CH', 'BL', 'CH', 'BL', 'B1', 'CH', 'DD', 'BL', 'CH', 'HS', 'WD', 'SC', 'B1', 'BL', 'B1', 'HS', 'CH', 'BL'],
-    ['DD', 'CH', 'BL', 'SV', 'B1', 'WD', 'B1', 'SV', 'B1', 'CH', 'X2', 'CH', 'HS', 'BL', 'CH', 'SC', 'DD', 'B1', 'DL', 'BL', 'SV', 'HS', 'BL', 'CH', 'B1']
+    ['B1', 'CH', 'BL', 'SV', 'B1', 'WD', 'B1', 'SV', 'B1', 'CH', 'X2', 'CH', 'HS', 'BL', 'CH', 'SC', 'DD', 'B1', 'B1', 'BL', 'SV', 'HS', 'BL', 'CH', 'B1']
   ]
 };
 

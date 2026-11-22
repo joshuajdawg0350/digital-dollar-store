@@ -170,6 +170,11 @@ body {
   display: block;
   pointer-events: none;
 }
+/* DOLLAR DOOR medallion (v2-21, Joshua 2026-11-22): at the standard 114%
+   the medallion's chrome ring falls outside the cell and is cropped
+   away — on his phone no dollar showed a ring. The DD cell renders at
+   100% so the whole medallion — ring and all — sits inside its cell. */
+.cell[data-sym="DD"] img { width: 100%; height: 100%; }
 .cell.win { z-index: 2; }
 .cell.win::after {
   content: "";
