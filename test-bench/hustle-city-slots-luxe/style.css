@@ -1,8 +1,8 @@
 /* Hustle City Slots — Poker Luxe · presentation (generated-art build).
    House look: chrome/silver + electric blue, blue room/cabinet treatment
    (Joshua's order 2026-11-21: blue background, not black — the screen pops
-   against it), with gold luxury accents for the poker-room theme and the
-   Bonus Wheel. (c) 2026 J-Dawgs Industries. */
+   against it). Cabinet #14 Riveted Steelworks: red accents, RED LED
+   readouts, NO GOLD anywhere (Joshua's law). (c) 2026 J-Dawgs Industries. */
 :root {
   --blue: #2e9bff;
   --blue-hot: #6fc2ff;
@@ -104,8 +104,8 @@ body {
   font-size: 13px;
   letter-spacing: .55em;
   text-indent: .55em;
-  color: var(--gold);
-  text-shadow: 0 0 9px rgba(232, 194, 104, .65);
+  color: var(--blue-hot);
+  text-shadow: 0 0 9px rgba(46, 155, 255, .65);
   line-height: 1;
 }
 .marquee-line1 {
@@ -231,7 +231,7 @@ body {
   content: "";
   position: absolute; inset: 0;
   border-radius: 4px;
-  box-shadow: inset 0 0 0 3px var(--gold), inset 0 0 26px rgba(232, 194, 104, .8), 0 0 20px rgba(232, 194, 104, .9);
+  box-shadow: inset 0 0 0 3px #ff3540, inset 0 0 26px rgba(255, 42, 51, .55), 0 0 20px rgba(255, 42, 51, .8);
   animation: winPulse .4s ease-in-out infinite alternate;
 }
 /* motion blur while a reel is at speed (class toggled by the spin physics) */
@@ -391,7 +391,7 @@ body {
   white-space: nowrap;
   overflow: hidden;
 }
-.maxbet-line b { color: var(--gold); }
+.maxbet-line b { color: var(--blue-hot); text-shadow: 0 0 8px rgba(46, 155, 255, .75), 0 1px 2px #000; }
 
 .controls {
   margin-top: 10px;
@@ -1127,7 +1127,8 @@ body {
 /* cabinet base — speaker grilles flanking the coin tray */
 .cab-base {
   margin-top: 10px;
-  height: 62px;
+  height: 88px; /* taller base strip (2026-11-21): the real coin tray reads
+    fully in frame instead of a cropped sliver */
   display: flex;
   gap: 8px;
 }
@@ -1160,7 +1161,7 @@ body {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
   object-fit: cover;
-  object-position: 50% 62%;
+  object-position: 50% 58%;
   display: block;
 }
 .tray-shade {
@@ -1170,18 +1171,20 @@ body {
     linear-gradient(100deg, rgba(255, 255, 255, .10) 0%, rgba(255, 255, 255, 0) 42%);
   box-shadow: inset 0 0 24px rgba(0, 0, 0, .50);
 }
-@media (max-width: 400px) { .cab-base { height: 56px; } }
+@media (max-width: 400px) { .cab-base { height: 78px; } }
 
-/* Poker Luxe tint: gold bezel ring + warm belly glow */
-.spin-btn::before { border-color: #a8873f; border-top-color: #f0d48a; border-bottom-color: #5e4a17; }
+/* Poker Luxe tint: CHROME bezel ring + red belly glow (NO GOLD — the gold
+   ring around SPIN and the warm gold belly glow were killed 2026-11-21
+   23:22 CT on Joshua's screenshot verdict: "Same thing with this one") */
+.spin-btn::before { border-color: #79879a; border-top-color: #d7dee7; border-bottom-color: #333d4a; }
 .belly-frame {
   box-shadow:
     0 0 0 2px #05070a,
-    0 0 24px rgba(232, 194, 104, .22),
+    0 0 24px rgba(255, 42, 51, .22),
     0 5px 14px rgba(0, 0, 0, .72),
     inset 0 0 0 1px rgba(0, 0, 0, .85);
 }
-.belly-glowfx { box-shadow: inset 0 0 36px rgba(232, 194, 104, .20), inset 0 0 8px rgba(0, 0, 0, .45); }
+.belly-glowfx { box-shadow: inset 0 0 36px rgba(255, 42, 51, .20), inset 0 0 8px rgba(0, 0, 0, .45); }
 
 /* ---------- REALISM CABINET — UPPER (2026-11-21) ----------
    Joshua's standard, his words: "That's what I want is a realism cabinet on
@@ -1555,3 +1558,82 @@ body, button, input, select, textarea,
 }
 .vault-bank-btn:disabled { opacity: .42; box-shadow: none; cursor: default; }
 .vault-bank-btn:not(:disabled):active { transform: translateY(1px); }
+
+/* ---------- SKULL VAULT — BOARD #2 FACE LIFT (2026-11-21 23:23 CT) ----------
+   Joshua picked board #2 (the photoreal vault wall) and the shipped flat
+   CSS doors were NOT the pick: "That looks nothing like the skull vault I
+   picked. Make it look like the one you showed me." PICKED MEANS THE PICK:
+   the board's own art is now the vault's face — crops of the board itself
+   (assets/vault-door.webp closed door, vault-chips.webp lit compartment,
+   vault-skullroom.webp chrome skull compartment, vault-led.webp the red
+   dot-matrix strip, vault-wall.webp the dark steel wall). Mechanics,
+   prizes, readouts and flow are untouched — face lift only. */
+.bonus-card.vault-card {
+  background:
+    linear-gradient(172deg, rgba(14, 18, 25, .90) 0%, rgba(5, 7, 10, .95) 58%, rgba(3, 4, 6, .97) 100%),
+    url('assets/vault-wall.webp') center / cover no-repeat,
+    #05070a;
+  border: 2px solid #8b96a3;
+  box-shadow:
+    0 0 0 2px #05070a,
+    0 0 44px rgba(255, 30, 60, .30),
+    0 24px 60px rgba(0, 0, 0, .9),
+    inset 0 1px 0 rgba(255, 255, 255, .35),
+    inset 0 0 60px rgba(0, 0, 0, .55);
+}
+/* the readouts live in the board's red LED dot-matrix panel */
+.vault-readouts {
+  position: relative;
+  padding: 10px 10px 9px;
+  border-radius: 12px;
+  border: 1px solid #79838f;
+  background: #0a0508;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, .85),
+    inset 0 0 24px rgba(255, 42, 51, .22),
+    0 2px 8px rgba(0, 0, 0, .6);
+  overflow: hidden;
+}
+.vault-readouts::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: url('assets/vault-led.webp') center / cover no-repeat;
+  opacity: .45;
+  pointer-events: none;
+}
+.vault-readout { position: relative; z-index: 1; }
+.vault-readout label {
+  color: #f4dade;
+  text-shadow: 0 1px 2px #000, 0 0 8px rgba(255, 42, 51, .55);
+}
+.vault-led { background: linear-gradient(180deg, rgba(13, 5, 7, .94) 0%, rgba(22, 6, 10, .94) 55%, rgba(10, 4, 6, .94) 100%); }
+/* the wall: 3 x 4 board-true doors */
+.vault-grid { max-width: 336px; gap: 6px; }
+.vault-door {
+  aspect-ratio: 0.75;
+  border: 1px solid #1d2126;
+  border-radius: 7px;
+  background: #0a0c10;
+  box-shadow: 0 3px 9px rgba(0, 0, 0, .7), inset 0 0 0 1px rgba(0, 0, 0, .6);
+}
+.door-face {
+  background: url('assets/vault-door.webp') center / cover no-repeat #14171c;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .55), inset 0 -10px 18px rgba(0, 0, 0, .35), inset 0 8px 14px rgba(255, 255, 255, .06);
+  transform-origin: right center; /* the board's doors hinge on the right */
+}
+.door-handle { display: none; } /* the spoked wheel is in the board art */
+.vault-door.open .door-face { transform: perspective(520px) rotateY(82deg); opacity: .94; }
+.door-prize {
+  background: url('assets/vault-chips.webp') center / cover no-repeat #04060a;
+  justify-content: flex-end;
+  padding-bottom: 7%;
+}
+.door-prize img { display: none; } /* the compartment art replaces the flat icons */
+.vault-door.skull .door-prize { background: #05070c url('assets/vault-skullroom.webp') center / cover no-repeat; }
+.door-prize-val {
+  font-size: 20px;
+  padding: 1px 9px 0;
+  border-radius: 999px;
+  background: rgba(2, 8, 18, .74);
+  box-shadow: 0 0 12px rgba(46, 155, 255, .45), inset 0 0 0 1px rgba(111, 194, 255, .5);
+}

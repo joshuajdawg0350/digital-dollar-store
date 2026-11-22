@@ -1,5 +1,5 @@
 /* Hustle City Slots — Poker Luxe service worker. (c) 2026 J-Dawgs Industries. */
-const CACHE = 'hc-slots-luxe-v10';
+const CACHE = 'hc-slots-luxe-v11';
 const ASSETS = [
   './', './index.html', './style.css', './game.js', './logic.js', './machines.js', './soundkit.js', './cabinet-life.js',
   './assets/sfx/bell.mp3', './assets/sfx/win-small.mp3', './assets/sfx/win-med.mp3',
@@ -18,7 +18,8 @@ const ASSETS = [
   './assets/sym-wd.webp', './assets/sym-sc.webp', './assets/sym-bn.webp', './assets/celeb-title.png', './assets/fonts/bebas-neue.woff2',
   './assets/sym-x2.webp', './assets/sym-x3.webp',
   './assets/deck-plate.webp', './assets/belly.webp', './assets/marquee-steel.webp', './assets/coin-tray.webp', './assets/celeb-bonus.mp4',
-  './assets/vault-skull.webp'
+  './assets/vault-skull.webp',
+  './assets/vault-door.webp', './assets/vault-chips.webp', './assets/vault-skullroom.webp', './assets/vault-led.webp', './assets/vault-wall.webp'
 ];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
