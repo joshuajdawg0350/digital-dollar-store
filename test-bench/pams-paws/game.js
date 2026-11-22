@@ -390,6 +390,26 @@
   $('sheetHandle').addEventListener('click', closeSheet);
   sheetBackdrop.addEventListener('click', closeSheet);
 
+  /* ---------- bonus-screen minimum-view lock (Joshua, 2026-11-22 00:07 CT) ----------
+     "Make sure you have to see a couple seconds at least of the bonus
+     screen before it goes away. It's easy to accidentally push it right
+     past it." Every bonus screen arms its lock the moment it appears;
+     while locked, a tap that would skip / advance / dismiss it is
+     IGNORED — never queued, so a stray tap at 0.5s does not fire at
+     2.0s. After 2 seconds every tap works exactly as before. Deliberate
+     play inside a bonus (picking a house, spinning the wheel) is
+     untouched once its screen has been up the 2 seconds, and
+     auto-advance timers are not taps — they run as they always did.
+     Presentation only: no math, logic or sound changes. */
+  const BONUS_MIN_VIEW_MS = 2000;
+  const mkViewLock = () => ({
+    t: 0,
+    arm() { this.t = performance.now(); },
+    locked() { return performance.now() - this.t < BONUS_MIN_VIEW_MS; }
+  });
+  const celebLock = mkViewLock(), wheelLock = mkViewLock(),
+        bonusLock = mkViewLock(), bonusCollectLock = mkViewLock();
+
   /* ---------- celebration screens (Joshua, 2026-11-21 12:52–12:54 CT) ----------
      A bonus or free-spins trigger NEVER cuts straight in: a full-cabinet
      celebration plays first (~3s, tap to skip ahead — never skips the
@@ -402,6 +422,7 @@
       celebSubEl.textContent = sub || '';
       celebEl.setAttribute('aria-hidden', 'false');
       document.body.classList.add('celebrating'); /* cabinet light-chase runs with the show */
+      celebLock.arm(); /* minimum-view lock: no tap-skip for the first 2s */
       /* Each celebration clip carries its own soundtrack, so the kit
          stays quiet under the show — no double audio mush. If the clip
          can't play at all, the kit fanfare covers the moment. */
@@ -441,12 +462,14 @@
         done = true;
         celebEl.classList.remove('on');
         celebEl.setAttribute('aria-hidden', 'true');
-        celebEl.removeEventListener('click', finish);
+        celebEl.removeEventListener('click', onTap);
         document.body.classList.remove('celebrating');
         if (celebVideo) { try { celebVideo.pause(); } catch (e) {} }
         res();
       };
-      celebEl.addEventListener('click', finish);
+      /* a tap inside the first 2s is ignored outright — not queued */
+      const onTap = () => { if (celebLock.locked()) return; finish(); };
+      celebEl.addEventListener('click', onTap);
       setTimeout(finish, durMs);
     });
   }
@@ -592,6 +615,7 @@
       buildWheel();
       wheelOverlay.classList.add('on');
       wheelOverlay.setAttribute('aria-hidden', 'false');
+      wheelLock.arm(); /* minimum-view lock: the wheel must be seen 2s before a tap can spin it */
       wheelPawPrize.classList.remove('on');
       wheelMsg.textContent = 'Pull the arm — or tap SPIN!';
       msgEl.textContent = "PEARL'S PAWS! Pull the arm or tap SPIN to spin the wheel!";
@@ -796,11 +820,13 @@
       b.setAttribute('aria-label', `Dog house ${i + 1}`);
       b.innerHTML = `<img src="assets/house-closed.webp" alt="" draggable="false"><span class="car-num">${i + 1}</span>`;
       b.addEventListener('click', () => {
+        if (bonusLock.locked()) return; /* yard must be seen 2s before a pick lands */
         if (over || b.classList.contains('open')) return;
         b.classList.add('open');
         Kit.trunkOpen(); /* latch + creak on every trunk */
         if (card.scotty) {
           over = true;
+          bonusCollectLock.arm(); /* the result + COLLECT get their own 2s of screen time */
           b.classList.add('scotty');
           b.innerHTML = `<img src="assets/big-al-face.webp" alt="Big Al" draggable="false"><span class="busted-tag">BIG AL!</span>`;
           Kit.bust(); /* the shared bust sting — round over */
@@ -819,6 +845,7 @@
         bonusBankEl.textContent = fmt(banked);
         if (safePicked === cfg.bonus.prizes.length) {
           over = true;
+          bonusCollectLock.arm(); /* the result + COLLECT get their own 2s of screen time */
           banked += completion;
           bonusBankEl.textContent = fmt(banked);
           Kit.jackpot(); /* full clear = the jackpot celebration */
@@ -833,7 +860,9 @@
     bonusGame.classList.add('on');
     bonusGame.setAttribute('aria-hidden', 'false');
     bonusBackdrop.classList.add('on');
+    bonusLock.arm(); /* minimum-view lock starts as the yard appears */
     const collect = () => {
+      if (bonusCollectLock.locked()) return; /* an early tap on COLLECT is ignored, not queued */
       bonusCollectBtn.removeEventListener('click', collect);
       credits += banked;
       checkTierUnlock(false);
@@ -861,10 +890,10 @@
   function runFreeSpins() { if (freeSpinsLeft > 0 && !spinning) doSpin(true); }
 
   $('wheelSpinBtn').addEventListener('click', () => {
-    if (wheelArmed) { const f = wheelArmed; ac(); f(); }
+    if (wheelArmed) { if (wheelLock.locked()) return; const f = wheelArmed; ac(); f(); }
   });
   spinBtn.addEventListener('click', () => {
-    if (wheelArmed) { const f = wheelArmed; ac(); f(); return; }
+    if (wheelArmed) { if (wheelLock.locked()) return; const f = wheelArmed; ac(); f(); return; }
     if (spinning) { stopAllReels(); return; }
     ac(); doSpin(false);
   });
