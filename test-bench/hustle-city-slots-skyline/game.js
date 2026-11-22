@@ -350,11 +350,39 @@
   function celebrate(kind, title, sub, durMs) {
     return new Promise(res => {
       celebEl.className = 'celeb on k-' + kind;
-      celebKickEl.textContent = kind === 'bonus' ? '★ BONUS ★' : '★ FREE SPINS ★';
+      celebKickEl.textContent = kind === 'bonus' ? 'BONUS' : 'FREE SPINS';
       celebTitleEl.textContent = title;
       celebSubEl.textContent = sub || '';
       celebEl.setAttribute('aria-hidden', 'false');
-      if (kind === 'bonus') Kit.fanfare(); else Kit.fsFlourish();
+      const celebVideo = $('celebVideo');
+      const titleFx = $('celebTitleFx');
+      /* the settled #15 BONUS title image rides every celebration — bonus AND
+         free-spins triggers alike (Joshua, 2026-11-21 20:50 CT) */
+      /* The celebration SHOW: Street-Race Victory — the 5s clip Joshua
+         picked (2026-11-21 19:34 CT), rebuilt TITLE-FREE: the title rides
+         as its own overlay layer (celeb-title.css, one-step swap when his
+         graffiti pick lands). The clip carries its own soundtrack, so the
+         kit stays quiet under the show; if the clip can't play at all,
+         the kit fanfare covers the moment — never a black screen, never
+         a hang. Tap skips ahead — never skips the prize itself. */
+      if (celebVideo) {
+        try {
+          celebVideo.classList.remove('dead');
+          const seek = () => { try { celebVideo.currentTime = 0.2; } catch (e) {} };
+          if (celebVideo.readyState >= 1) seek(); else celebVideo.addEventListener('loadedmetadata', seek, { once: true });
+          celebVideo.muted = false;
+          const p = celebVideo.play();
+          if (p && p.then) p.then(() => {}).catch(() => {
+            /* autoplay-with-sound refused: retry muted (show still runs),
+               and let the kit fanfare cover the moment */
+            celebVideo.muted = true;
+            const p2 = celebVideo.play();
+            if (p2 && p2.catch) p2.catch(() => celebVideo.classList.add('dead'));
+            if (kind === 'bonus') Kit.fanfare(); else Kit.fsFlourish();
+          });
+          celebVideo.onerror = () => celebVideo.classList.add('dead');
+        } catch (e) { celebVideo.classList.add('dead'); if (kind === 'bonus') Kit.fanfare(); else Kit.fsFlourish(); }
+      } else if (kind === 'bonus') Kit.fanfare(); else Kit.fsFlourish();
       let done = false;
       const finish = () => {
         if (done) return;
@@ -362,13 +390,14 @@
         celebEl.classList.remove('on');
         celebEl.setAttribute('aria-hidden', 'true');
         celebEl.removeEventListener('click', finish);
+        if (celebVideo) { try { celebVideo.pause(); } catch (e) {} }
         res();
       };
       celebEl.addEventListener('click', finish);
       setTimeout(finish, durMs);
     });
   }
-  function celebDur() { return 2600 + Math.min(900, totalBet() * 3); }
+  function celebDur() { return 5000; } /* the show runs the full 5s clip (Joshua, 2026-11-21 19:34 CT), tap to skip */
 
   /* ---------- DICE ROLL bonus game (push your luck) ---------- */
   const PIPS = { 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
@@ -405,8 +434,10 @@
   }
   function endBonus(prize) {
     const b = bonus; bonus = null;
-    closeBonus();
-    if (b && b.resolve) b.resolve(prize);
+    const finish = () => { closeBonus(); if (b && b.resolve) b.resolve(prize); };
+    /* a banked dice pot is an award moment — it celebrates (Joshua, 2026-11-21 20:57 CT) */
+    if (prize > 0) celebrate('bonus', 'DICE WIN!', `You banked ${fmt(prize)} credits!`, celebDur()).then(finish);
+    else finish();
   }
   bonusRollBtn.addEventListener('click', () => {
     if (!bonus || bonus.rolling) return;
@@ -511,12 +542,12 @@
     const finishSpin = () => {
       if (ev.freeSpins > 0) {
         freeSpinsLeft += ev.freeSpins;
-        fsBanner.textContent = `★ ${ev.freeSpins} FREE SPINS ★ LINE WINS ×2 ★`;
+        fsBanner.textContent = `${ev.freeSpins} FREE SPINS — LINE WINS ×2`;
         fsBanner.classList.add('on');
         msgEl.textContent = `${ev.scatterCount} scatters! ${ev.freeSpins} free spins${isFree ? ' added' : ''} — here they come!`;
         spinning = false;
         /* celebration first, then the spins (Joshua, 12:54 CT) */
-        celebrate('fs', `${ev.freeSpins} FREE SPINS!`, 'Line wins pay DOUBLE — here they come!', 2400)
+        celebrate('fs', `${ev.freeSpins} FREE SPINS!`, 'Line wins pay DOUBLE — here they come!', celebDur())
           .then(() => setTimeout(runFreeSpins, 350));
         return;
       }
@@ -541,6 +572,10 @@
       updateNewGame();
     };
 
+    if (!ev.bonus && ev.lineWins.some(w => w.count >= 5)) {
+      /* FIVE OF A KIND celebrates too (Joshua, 2026-11-21 20:57 CT) */
+      await celebrate('bonus', 'FIVE OF A KIND!', 'Five on a line — that is a big one!', celebDur());
+    }
     if (ev.bonus) {
       msgEl.textContent = `${ev.bonusCount} bonus dice — DICE ROLL bonus!`;
       spinning = false;
