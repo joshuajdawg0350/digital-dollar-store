@@ -619,6 +619,7 @@ select.pinput{appearance:none;}
     <div id="planBusy" class="plancard" hidden>
       <h3>🗺️ Planning your trip…</h3>
       <p id="planBusyText">Drawing your road and looking for fun places along the way. This can take a little while — the map is big!</p>
+      <button class="bigplay" id="btnPlanCancel" type="button" style="background:#607d8b;border-bottom-color:#455a64;">✋ Stop Searching</button>
     </div>
 
     <!-- STEP 3 · pick the spots -->
@@ -2392,7 +2393,7 @@ window.RTH={ get state(){ return S; }, saveState, zoneStatus, huntComplete, buil
    anything. That'll all be pre-planned in the game before the trip." So
    planning, the ONE-TIME camera grant, and the play zone all live in this
    pre-trip Get Ready flow — after START, the game runs kid-only. */
-const PLAN={ step:'form', fromParent:false, results:null, picked:new Set(), map:null, cache:{}, nearDest:false };
+const PLAN={ step:'form', fromParent:false, results:null, picked:new Set(), map:null, cache:{}, nearDest:false, gen:0, onProgress:null };
 const PLAN_AUTO={t1:5, t2:8, t3:12}; /* suggested hunt sizes by age tier */
 /* Kid-safe spot categories ONLY — a whitelist. Anything not on this list
    (bars, liquor, adult, gambling, …) can never become a target. w = how
@@ -2435,34 +2436,74 @@ function planCatOf(tags){
   return null;
 }
 /* ---------- search layer (free, keyless, fair-use: cached, one search per plan) ---------- */
+/* Every in-flight planner fetch registers its AbortController here so the
+   busy screen's Stop button can kill the whole search instantly instead of
+   waiting out the timeouts. PLAN.gen is the search generation: starting a
+   search (or cancelling) bumps it, and any older search that wakes up
+   afterwards sees it is stale and quietly stands down. */
+const PLAN_ABORTERS=new Set();
 function planFetch(url, opts, ms){
-  const ctl=new AbortController(); const to=setTimeout(()=>ctl.abort(), ms||20000);
-  return fetch(url, Object.assign({}, opts||{}, {signal:ctl.signal})).finally(()=>clearTimeout(to));
+  const ctl=new AbortController(); PLAN_ABORTERS.add(ctl);
+  const to=setTimeout(()=>ctl.abort(), ms||20000);
+  return fetch(url, Object.assign({}, opts||{}, {signal:ctl.signal}))
+    .finally(()=>{ clearTimeout(to); PLAN_ABORTERS.delete(ctl); });
 }
-async function planGeocode(q){
+function planCancelSearch(){
+  PLAN.gen++;
+  PLAN_ABORTERS.forEach(c=>{ try{ c.abort(); }catch(e){} });
+  PLAN_ABORTERS.clear();
+}
+function planStale(gen){ return gen!=null && gen!==PLAN.gen; }
+function planSleep(ms){ return new Promise(r=>setTimeout(r, ms)); }
+function planBusy(msg){ const el=$('#planBusyText'); if(el && PLAN.step==='busy') el.textContent=msg; }
+async function planGeocode(q, gen){
   const key='geo:'+q.toLowerCase();
   if(PLAN.cache[key]) return PLAN.cache[key];
-  const r=await planFetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+encodeURIComponent(q), null, 20000);
-  if(!r.ok) throw {code:'net'};
-  const j=await r.json();
-  if(!j.length) throw {code:'notfound', q};
-  const out={lat:parseFloat(j[0].lat), lon:parseFloat(j[0].lon)};
-  PLAN.cache[key]=out; return out;
+  let lastErr=null;
+  for(let attempt=0; attempt<2; attempt++){
+    if(planStale(gen)) throw {code:'cancelled'};
+    try{
+      const r=await planFetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+encodeURIComponent(q), null, 20000);
+      if(!r.ok) throw {code:'net'};
+      const j=await r.json();
+      if(!j.length) throw {code:'notfound', q};
+      const out={lat:parseFloat(j[0].lat), lon:parseFloat(j[0].lon)};
+      PLAN.cache[key]=out; return out;
+    }catch(e){
+      if(e && e.code==='notfound') throw e;
+      if(planStale(gen)) throw {code:'cancelled'};
+      lastErr=e;
+      if(attempt===0) await planSleep(1200); /* one retry — phone networks blink */
+    }
+  }
+  throw lastErr||{code:'net'};
 }
-async function planRoute(from, to){
+async function planRoute(from, to, gen){
   const key=`route:${from.lat.toFixed(4)},${from.lon.toFixed(4)}>${to.lat.toFixed(4)},${to.lon.toFixed(4)}`;
   if(PLAN.cache[key]) return PLAN.cache[key];
   const url=`https://router.project-osrm.org/route/v1/driving/${from.lon},${from.lat};${to.lon},${to.lat}?overview=full&geometries=geojson`;
-  const r=await planFetch(url, null, 25000);
-  if(!r.ok) throw {code:'net'};
-  const j=await r.json();
-  if(!j.routes || !j.routes.length) throw {code:'noroute'};
-  const rt=j.routes[0];
-  const pts=rt.geometry.coordinates.map(c=>[c[1],c[0]]);
-  const cum=[0];
-  for(let i=1;i<pts.length;i++) cum.push(cum[i-1]+haversineM(pts[i-1][0],pts[i-1][1],pts[i][0],pts[i][1]));
-  const out={pts, cum, totalM:cum[cum.length-1], distMi:rt.distance/1609.34, durMin:rt.duration/60};
-  PLAN.cache[key]=out; return out;
+  let lastErr=null;
+  for(let attempt=0; attempt<2; attempt++){
+    if(planStale(gen)) throw {code:'cancelled'};
+    try{
+      const r=await planFetch(url, null, 25000);
+      if(!r.ok) throw {code:'net'};
+      const j=await r.json();
+      if(!j.routes || !j.routes.length) throw {code:'noroute'};
+      const rt=j.routes[0];
+      const pts=rt.geometry.coordinates.map(c=>[c[1],c[0]]);
+      const cum=[0];
+      for(let i=1;i<pts.length;i++) cum.push(cum[i-1]+haversineM(pts[i-1][0],pts[i-1][1],pts[i][0],pts[i][1]));
+      const out={pts, cum, totalM:cum[cum.length-1], distMi:rt.distance/1609.34, durMin:rt.duration/60};
+      PLAN.cache[key]=out; return out;
+    }catch(e){
+      if(e && e.code==='noroute') throw e;
+      if(planStale(gen)) throw {code:'cancelled'};
+      lastErr=e;
+      if(attempt===0) await planSleep(1200);
+    }
+  }
+  throw lastErr||{code:'net'};
 }
 function planSamples(route){
   const pts=[[route.pts[0][0], route.pts[0][1]]];
@@ -2475,7 +2516,7 @@ function planSamples(route){
   return pts;
 }
 function planQL(samples, radius){
-  const lines=['[out:json][timeout:60];','('];
+  const lines=['[out:json][timeout:25];','('];
   for(const s of samples){
     const a=`around:${radius},${s[0].toFixed(5)},${s[1].toFixed(5)}`;
     lines.push(`nwr["tourism"~"^(attraction|viewpoint|museum|zoo|aquarium|theme_park|gallery|artwork)$"]["name"](${a});`);
@@ -2487,17 +2528,26 @@ function planQL(samples, radius){
   lines.push(');','out center tags;');
   return lines.join('\n');
 }
-async function planOverpass(ql){
+async function planOverpass(ql, msEach, gen){
+  /* Interleave the two free servers (POST each, then GET each — some
+     networks mangle POST bodies) instead of exhausting one server first:
+     when one is at capacity the other often still answers. Per-try cap is
+     short (25s) — a query the server cannot start in 25s is not going to
+     save the search, and the old 70s caps stacked into minutes of frozen
+     busy screen (Joshua's phone, 2026-11-21: "can't get the trip to plan"). */
   const eps=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter'];
-  for(const ep of eps){
+  const cap=msEach||25000;
+  const tries=[];
+  for(const ep of eps) tries.push(['POST', ep]);
+  for(const ep of eps) tries.push(['GET', ep]);
+  for(const t of tries){
+    if(planStale(gen)) throw {code:'cancelled'};
     try{
-      const r=await planFetch(ep, {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:'data='+encodeURIComponent(ql)}, 70000);
+      const r = t[0]==='POST'
+        ? await planFetch(t[1], {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:'data='+encodeURIComponent(ql)}, cap)
+        : await planFetch(t[1]+'?data='+encodeURIComponent(ql), null, cap);
       if(r.ok) return await r.json();
-    }catch(e){}
-    try{ /* some networks mangle POST bodies — retry the same query as a GET */
-      const r=await planFetch(ep+'?data='+encodeURIComponent(ql), null, 70000);
-      if(r.ok) return await r.json();
-    }catch(e){}
+    }catch(e){ if(planStale(gen)) throw {code:'cancelled'}; }
   }
   throw {code:'net'};
 }
@@ -2524,37 +2574,79 @@ function planSpotsFrom(j, route, baseM){
   }
   return out.sort((a,b)=>a.alongM-b.alongM).slice(0,60);
 }
-async function planCorridorSpots(route, samples, radius){
+async function planCorridorSpots(route, samples, radius, gen, deadlineMs){
   const key=`spots:${route.pts[0][0].toFixed(3)}:${Math.round(route.totalM)}:${radius}:${samples.length}`;
   if(PLAN.cache[key]) return PLAN.cache[key];
-  const j=await planOverpass(planQL(samples, radius));
-  const spots=planSpotsFrom(j, route, 0);
+  /* One SMALL query per sample stop instead of one giant corridor query.
+     Why (2026-11-21, Joshua's phone): the single combined query is the
+     hardest thing a busy free server can be asked to serve — measured
+     that night hanging past 75s and drawing the server's own "at
+     capacity" 502. Small per-stop queries are far more likely to get
+     served, they run 3 at a time, whatever stops answer get used (a
+     partial corridor still makes a real plan), and a deadline bounds
+     the whole sweep so the busy screen can never sit for minutes. */
+  const deadline=Date.now()+(deadlineMs||90000);
+  const elements=[]; let answered=0, done=0;
+  const queue=samples.map((s,i)=>i);
+  async function worker(){
+    while(queue.length){
+      if(planStale(gen)) throw {code:'cancelled'};
+      if(Date.now()>deadline) return;
+      const s=samples[queue.shift()];
+      try{
+        const j=await planOverpass(planQL([s], radius), 20000, gen);
+        if(j && j.elements){ for(const el of j.elements) elements.push(el); answered++; }
+      }catch(e){ if(e && e.code==='cancelled') throw e; }
+      done++;
+      if(PLAN.onProgress) PLAN.onProgress(done, samples.length);
+    }
+  }
+  await Promise.all([worker(), worker(), worker()]);
+  if(planStale(gen)) throw {code:'cancelled'};
+  if(!answered) throw {code:'net'};
+  const spots=planSpotsFrom({elements}, route, 0);
   PLAN.cache[key]=spots; return spots;
 }
-async function planDestSpots(dest, route){
+async function planDestSpots(dest, route, gen){
   const key=`dest:${dest.lat.toFixed(3)},${dest.lon.toFixed(3)}`;
   if(PLAN.cache[key]) return PLAN.cache[key];
-  const j=await planOverpass(planQL([[dest.lat, dest.lon]], 12000));
+  const j=await planOverpass(planQL([[dest.lat, dest.lon]], 12000), 25000, gen);
   const spots=planSpotsFrom(j, null, route? route.totalM:0);
   PLAN.cache[key]=spots; return spots;
 }
-async function planDoSearch(fromText, toText){
+async function planDoSearch(fromText, toText, gen){
+  const stale=()=>{ if(planStale(gen)) throw {code:'cancelled'}; };
   let from;
   if(!fromText){
     const pos=await freshPos(7000);
+    stale();
     if(!pos) throw {code:'noloc'};
     from={lat:pos.lat, lon:pos.lon, name:'Right here'};
   } else {
-    const g=await planGeocode(fromText); from={lat:g.lat, lon:g.lon, name:fromText};
+    planBusy('Finding your towns on the map…');
+    const g=await planGeocode(fromText, gen); stale();
+    from={lat:g.lat, lon:g.lon, name:fromText};
   }
-  const tg=await planGeocode(toText); const to={lat:tg.lat, lon:tg.lon, name:toText};
-  const route=await planRoute(from, to);
+  const tg=await planGeocode(toText, gen); stale();
+  const to={lat:tg.lat, lon:tg.lon, name:toText};
+  planBusy('Found your towns ✓ — drawing your road…');
+  const route=await planRoute(from, to, gen); stale();
   const samples=planSamples(route);
-  let spots=await planCorridorSpots(route, samples, 5000);
-  let wide=false;
+  planBusy(`Road drawn ✓ — now looking for fun places along the way… checked 0 of ${samples.length} stops.`);
+  PLAN.onProgress=(done,total)=> planBusy(`Road drawn ✓ — looking for fun places along the way… checked ${done} of ${total} stops.`);
+  let spots, wide=false;
+  try{ spots=await planCorridorSpots(route, samples, 5000, gen, 90000); }
+  finally{ PLAN.onProgress=null; }
+  stale();
   if(spots.length<4){
-    const more=await planCorridorSpots(route, samples, 10000);
-    if(more.length>spots.length){ spots=more; wide=true; }
+    planBusy('Only a few spots so far — looking a little wider around your road…');
+    PLAN.onProgress=(done,total)=> planBusy(`Looking a little wider around your road… checked ${done} of ${total} stops.`);
+    try{
+      const more=await planCorridorSpots(route, samples, 10000, gen, 45000);
+      if(more.length>spots.length){ spots=more; wide=true; }
+    }catch(e){ if(e && e.code==='cancelled') throw e; /* keep the spots we already have */ }
+    finally{ PLAN.onProgress=null; }
+    stale();
   }
   return {from, to, route, spots, wide};
 }
@@ -2585,21 +2677,26 @@ function planShowErr(e){
   if(e && e.code==='notfound') err.textContent=`🤔 We couldn't find a place called “${e.q}” on the map. Check the spelling, or add the state — like “Branson, MO”.`;
   else if(e && e.code==='noloc') err.textContent='📍 The game could not find where “Right here” is. Type your starting town in the first box instead.';
   else if(e && e.code==='noroute') err.textContent='🚗 No road found between those two places. Try a different town.';
-  else err.textContent='📡 The map search did not answer — planning needs the internet. Check the connection and try again. The ready-made hunts always work, no internet needed!';
+  else err.textContent='📡 The map search did not answer — the free map computers are very busy right now, and planning needs the internet. Wait a little, then try again! The ready-made hunts always work, no internet needed!';
 }
 async function planGo(){
   const fromText=$('#planFrom').value.trim();
   const toText=$('#planTo').value.trim();
   const err=$('#planErr'); err.hidden=true;
   if(!toText){ err.textContent='Tell the game where you are going first — type the town or place in the second box. 🗺️'; err.hidden=false; return; }
+  const gen=++PLAN.gen;
   planShow('busy');
   $('#planBusyText').textContent='Drawing your road and looking for fun places along the way. This can take a little while — the map is big!';
   try{
-    const res=await planDoSearch(fromText, toText);
+    const res=await planDoSearch(fromText, toText, gen);
+    if(planStale(gen)) return; /* a cancel or a newer search owns the screen now */
     PLAN.results=res; PLAN.nearDest=false; PLAN.picked=new Set();
     planShow('results');
     planRenderResults();
-  }catch(e){ planShow('form'); planShowErr(e); }
+  }catch(e){
+    if((e && e.code==='cancelled') || planStale(gen)){ planShow('form'); return; }
+    planShow('form'); planShowErr(e);
+  }
 }
 function planRenderResults(){
   const res=PLAN.results; if(!res) return;
@@ -2650,23 +2747,34 @@ function planAutoPick(){
 }
 async function planWider(){
   const res=PLAN.results; if(!res) return;
+  const gen=++PLAN.gen;
   planShow('busy'); $('#planBusyText').textContent='Looking a little wider around your road…';
+  PLAN.onProgress=(done,total)=> planBusy(`Looking a little wider around your road… checked ${done} of ${total} stops.`);
   try{
-    const spots=await planCorridorSpots(res.route, planSamples(res.route), 10000);
+    const spots=await planCorridorSpots(res.route, planSamples(res.route), 10000, gen, 60000);
+    if(planStale(gen)) return;
     res.spots=spots; res.wide=true;
     planShow('results'); planRenderResults();
     if(!spots.length) toast('Still no spots — the map is quiet out there. Try spots near the end of the trip!');
-  }catch(e){ planShow('results'); planRenderResults(); toast('📡 The wider search did not answer — check the internet and try again.'); }
+  }catch(e){
+    if((e && e.code==='cancelled') || planStale(gen)){ planShow('results'); planRenderResults(); return; }
+    planShow('results'); planRenderResults(); toast('📡 The wider search did not answer — check the internet and try again.');
+  }finally{ PLAN.onProgress=null; }
 }
 async function planNearDest(){
   const res=PLAN.results; if(!res) return;
+  const gen=++PLAN.gen;
   planShow('busy'); $('#planBusyText').textContent=`Looking for fun places near ${res.to.name}…`;
   try{
-    const spots=await planDestSpots(res.to, res.route);
+    const spots=await planDestSpots(res.to, res.route, gen);
+    if(planStale(gen)) return;
     res.spots=spots; PLAN.nearDest=true;
     planShow('results'); planRenderResults();
     $('#planRouteSub').textContent=`${spots.length} fun place${spots.length===1?'':'s'} near ${res.to.name}. Pick the ones for your hunt!`;
-  }catch(e){ planShow('results'); planRenderResults(); toast('📡 That search did not answer — check the internet and try again.'); }
+  }catch(e){
+    if((e && e.code==='cancelled') || planStale(gen)){ planShow('results'); planRenderResults(); return; }
+    planShow('results'); planRenderResults(); toast('📡 That search did not answer — check the internet and try again.');
+  }
 }
 function planMakeHunt(){
   const res=PLAN.results; if(!res || !PLAN.picked.size) return;
@@ -2698,10 +2806,11 @@ function planReadyCamUI(){
 $('#btnPlanTrip').addEventListener('click', ()=> openPlanner(false));
 $('#btnPlanTripParent').addEventListener('click', ()=> openPlanner(true));
 $('#btnPlanBack').addEventListener('click', ()=>{
-  if(PLAN.step==='busy') return; /* a search is running — let it land */
+  if(PLAN.step==='busy'){ planCancelSearch(); return; } /* Back while searching = Stop: the search's own catch puts the right screen back */
   if(PLAN.step==='results' || PLAN.step==='ready'){ planShow('form'); return; }
   closePlanner();
 });
+$('#btnPlanCancel').addEventListener('click', ()=> planCancelSearch());
 $('#btnPlanHere').addEventListener('click', ()=>{ $('#planFrom').value=''; toast('📍 Starting from right here — the game finds you when you search.'); });
 $('#btnPlanGo').addEventListener('click', planGo);
 [$('#planFrom'), $('#planTo')].forEach(el=> el.addEventListener('keydown', e=>{ if(e.key==='Enter') planGo(); }));
