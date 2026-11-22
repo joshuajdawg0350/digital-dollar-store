@@ -54,6 +54,14 @@ const SKYLINE = {
   scatterSpins: { 3: 7, 4: 10, 5: 15 },
   bonusStart: { 3: 0, 4: 30, 5: 60 },
   diceUnit: 3, /* credits per dice point, x betPerLine */
+  /* BONUS WHEEL (ported from Pearl's Paws, 2026-11-22): alongside Dice
+     Roll, replaces nothing — when the dice bonus would open, wheelShare
+     of triggers open the wheel instead (bonus frequency unchanged).
+     Wedges pay x total bet; EV = (25+3+8+2+15+6+3+9+4+2+7+5)/12 = 7.42x.
+     tunable — unification pass owns final numbers */
+  wheel: [25, 3, 8, 2, 15, 6, 3, 9, 4, 2, 7, 5],
+  wheelTiers: { 25: 'GRAND', 15: 'MAJOR', 9: 'MINOR', 4: 'MINI' },
+  wheelShare: 0.5,
   paytable: {
     VT: { 3: 61, 4: 219, 5: 2500 },
     WD: { 3: 37, 4: 137, 5: 500 },

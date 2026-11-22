@@ -51,6 +51,7 @@
   const bonusRollBtn = $('bonusRollBtn'), bonusBankBtn = $('bonusBankBtn');
   const bonusTotalEl = $('bonusRollTotal'), bonusTriggerEl = $('bonusTriggerText');
   const dieEls = [$('die0'), $('die1')];
+  const wheelOverlay = $('wheelOverlay'), wheelMsg = $('wheelMsg'), wheelRotor = $('wheelRotor'), wheelPointer = $('wheelPointer'), wheelPrize = $('wheelPrize');
 
   /* Bet ladder (Joshua, 2026-11-21 13:02 CT): the bet is a TOTAL bet per
      spin in $25 steps — 25, 50, 75 … up to 2,500. A step unlocks the first
@@ -332,7 +333,7 @@
       `<div class="payrow"><div class="thumb"><img src="${ART.X2}" alt="WIN ×2"></div><div class="nm">WIN ×2</div><span class="pv wide">Anywhere on a winning line, this line's win is DOUBLED (×2)</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.X3}" alt="WIN ×3"></div><div class="nm">WIN ×3</div><span class="pv wide">Anywhere on a winning line, this line's win is TRIPLED (×3). Two multipliers on the same line multiply together — ×2 and ×3 pay ×6</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.SC}" alt="SCATTER"></div><div class="nm">SCATTER</div><span class="pv wide">3+ anywhere: pays 2× / 8× / 40× total bet + 7 / 10 / 15 FREE SPINS at 2× line wins</span></div>` +
-      `<div class="payrow"><div class="thumb"><img src="${ART.BN}" alt="BONUS DICE"></div><div class="nm">BONUS DICE</div><span class="pv wide">3+ anywhere starts the DICE ROLL bonus: the pot starts at 0 / ${fmt(Math.round(cfg.bonusStart[4] * lineBet()))} / ${fmt(Math.round(cfg.bonusStart[5] * lineBet()))} for 3 / 4 / 5 dice. Every roll adds its total × ${cfg.diceUnit} × line bet to the pot. Roll a 7 and the pot BUSTS. Bank the pot after any safe roll — or push your luck</span></div>` +
+      `<div class="payrow"><div class="thumb"><img src="${ART.BN}" alt="BONUS DICE"></div><div class="nm">BONUS DICE</div><span class="pv wide">3+ anywhere starts the DICE ROLL bonus: the pot starts at 0 / ${fmt(Math.round(cfg.bonusStart[4] * lineBet()))} / ${fmt(Math.round(cfg.bonusStart[5] * lineBet()))} for 3 / 4 / 5 dice. Every roll adds its total × ${cfg.diceUnit} × line bet to the pot. Roll a 7 and the pot BUSTS. Bank the pot after any safe roll — or push your luck. Half the time the BONUS WHEEL opens instead: one spin, 12 wedges, every wedge pays × your total bet — MINI 4× · MINOR 9× · MAJOR 15× · GRAND 25×</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.VT}" alt="BET"></div><div class="nm">BET</div><span class="pv wide">Bets run in $25 steps: $25, $50, $75 … all the way up to $2,500 a spin. A step unlocks the first time your balance reaches it — and stays unlocked even if your balance dips. Use the −25 / +25 buttons or MAX BET. NEW GAME resets you to a $25 bet. Your current max is on the machine under the buttons</span></div>`;
   }
 
@@ -342,6 +343,23 @@
   $('payBtn').addEventListener('click', openSheet);
   $('sheetHandle').addEventListener('click', closeSheet);
   sheetBackdrop.addEventListener('click', closeSheet);
+
+  /* ---------- BONUS-SCREEN MINIMUM-VIEW LOCK (Joshua's standing rule,
+     2026-11-22): "Make sure you have to see a couple seconds at least of
+     the bonus screen before it goes away. It's easy to accidentally push
+     it right past it." Every bonus screen arms its lock the moment it
+     appears; while locked, a tap that would skip / advance / dismiss it
+     is IGNORED — never queued, so a stray tap at 0.5s does not fire at
+     2.0s. After 2 seconds every tap works exactly as before. Deliberate
+     play inside a bonus (the dice ROLL / BANK buttons) is NOT locked.
+     Presentation only: no math, logic or sound changes. */
+  const BONUS_MIN_VIEW_MS = 2000;
+  const mkViewLock = () => ({
+    t: 0,
+    arm() { this.t = performance.now(); },
+    locked() { return performance.now() - this.t < BONUS_MIN_VIEW_MS; }
+  });
+  const celebLock = mkViewLock(), wheelLock = mkViewLock();
 
   /* ---------- celebration screens (Joshua, 2026-11-21 12:52–12:54 CT) ----------
      A bonus or free-spins trigger NEVER cuts straight in: a full-cabinet
@@ -354,6 +372,7 @@
       celebTitleEl.textContent = title;
       celebSubEl.textContent = sub || '';
       celebEl.setAttribute('aria-hidden', 'false');
+      celebLock.arm(); /* minimum-view lock: no tap-skip for the first 2s */
       const celebVideo = $('celebVideo');
       const titleFx = $('celebTitleFx');
       /* the settled #15 BONUS title image rides every celebration — bonus AND
@@ -389,11 +408,13 @@
         done = true;
         celebEl.classList.remove('on');
         celebEl.setAttribute('aria-hidden', 'true');
-        celebEl.removeEventListener('click', finish);
+        celebEl.removeEventListener('click', onTap);
         if (celebVideo) { try { celebVideo.pause(); } catch (e) {} }
         res();
       };
-      celebEl.addEventListener('click', finish);
+      /* a tap inside the first 2s is ignored outright — not queued */
+      const onTap = () => { if (celebLock.locked()) return; finish(); };
+      celebEl.addEventListener('click', onTap);
       setTimeout(finish, durMs);
     });
   }
@@ -487,6 +508,182 @@
     setTimeout(() => endBonus(prize), 450);
   });
 
+  /* ---------- BONUS WHEEL (ported from Pearl's Paws, 2026-11-22) ----------
+     Alongside the Dice Roll bonus, replaces nothing: when the dice bonus
+     would open, cfg.wheelShare of triggers open this wheel instead (see
+     doSpin) — bonus frequency unchanged by construction. Dressed midnight
+     deco: deep blue/black wedges, a machined chrome rim with bolts,
+     electric-blue glow, red neon reserved for the GRAND wedge. NO GOLD.
+     Physics mirror Pearl's: the winning wedge is drawn first, then the
+     wheel spins (6 full turns, quartic ease-out 5.6–6.3s, real-kit peg
+     clicks + pointer flick, near-GRAND Kit.nearBell) and settles exactly
+     on it. Pay = wedge × total bet, presented on a chrome prize plaque. */
+  const WEDGES = cfg.wheel, TIERS = cfg.wheelTiers || {};
+  const WSEG = 360 / WEDGES.length;
+  let wheelBuilt = false, wheelAngle = 0, wheelSpinning = false, wheelArmed = null;
+  let lastBonusPaid = 0;
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  function wedgeFill(v, i) {
+    if (TIERS[v] === 'GRAND') return 'url(#wgGrand)';
+    if (TIERS[v] === 'MAJOR') return 'url(#wgMajor)';
+    if (TIERS[v] === 'MINOR') return 'url(#wgMinor)';
+    if (TIERS[v] === 'MINI') return 'url(#wgMini)';
+    return i % 2 ? 'url(#wgA)' : 'url(#wgB)';
+  }
+  function buildWheel() {
+    if (wheelBuilt) return;
+    wheelBuilt = true;
+    /* machined bolts around the static chrome rim */
+    const bolts = $('wheelBolts');
+    if (bolts) for (let i = 0; i < 12; i++) {
+      const a = (i * 30 - 90) * Math.PI / 180;
+      const b = document.createElementNS(SVGNS, 'circle');
+      b.setAttribute('cx', 170 + 165 * Math.cos(a)); b.setAttribute('cy', 170 + 165 * Math.sin(a));
+      b.setAttribute('r', 3.4); b.setAttribute('fill', 'url(#wgPeg)'); b.setAttribute('stroke', 'rgba(0,0,0,.55)'); b.setAttribute('stroke-width', '0.7');
+      bolts.appendChild(b);
+    }
+    const cx = 170, cy = 170, rO = 148, rI = 54;
+    const pt = (r, aDeg) => { const a = (aDeg - 90) * Math.PI / 180; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; };
+    WEDGES.forEach((v, i) => {
+      const a0 = i * WSEG - WSEG / 2, a1 = a0 + WSEG;
+      const [x0, y0] = pt(rO, a0), [x1, y1] = pt(rO, a1), [x2, y2] = pt(rI, a1), [x3, y3] = pt(rI, a0);
+      const p = document.createElementNS(SVGNS, 'path');
+      p.setAttribute('d', `M ${x0} ${y0} A ${rO} ${rO} 0 0 1 ${x1} ${y1} L ${x2} ${y2} A ${rI} ${rI} 0 0 0 ${x3} ${y3} Z`);
+      p.setAttribute('fill', wedgeFill(v, i));
+      p.setAttribute('stroke', 'rgba(3,6,14,.85)');
+      p.setAttribute('stroke-width', '1.6');
+      wheelRotor.appendChild(p);
+      /* label group at the wedge center angle */
+      const g = document.createElementNS(SVGNS, 'g');
+      const mid = i * WSEG;
+      g.setAttribute('transform', `rotate(${mid} ${cx} ${cy})`);
+      if (TIERS[v]) {
+        const star = document.createElementNS(SVGNS, 'use');
+        star.setAttribute('href', '#wgStar');
+        star.setAttribute('transform', `translate(${cx} ${cy - rO + 22}) scale(0.55)`);
+        star.setAttribute('fill', TIERS[v] === 'GRAND' ? '#ffd7da' : '#0a1526');
+        star.setAttribute('stroke', TIERS[v] === 'GRAND' ? '#ffffff' : '#6fc2ff');
+        star.setAttribute('stroke-width', '1.4');
+        g.appendChild(star);
+        const t1 = document.createElementNS(SVGNS, 'text');
+        t1.setAttribute('x', cx); t1.setAttribute('y', cy - rO + 50);
+        t1.setAttribute('class', 'wlabel tier' + (TIERS[v] === 'GRAND' ? ' grand' : ''));
+        t1.textContent = TIERS[v];
+        const t2 = document.createElementNS(SVGNS, 'text');
+        t2.setAttribute('x', cx); t2.setAttribute('y', cy - rO + 68);
+        t2.setAttribute('class', 'wlabel tierval' + (TIERS[v] === 'GRAND' ? ' grand' : ''));
+        t2.textContent = v + '×';
+        g.appendChild(t1); g.appendChild(t2);
+      } else {
+        const t = document.createElementNS(SVGNS, 'text');
+        t.setAttribute('x', cx); t.setAttribute('y', cy - rO + 62);
+        t.setAttribute('class', 'wlabel');
+        t.textContent = v + '×';
+        g.appendChild(t);
+      }
+      wheelRotor.appendChild(g);
+      /* a machined peg sphere on every boundary */
+      const [px, py] = pt(157, a0);
+      const peg = document.createElementNS(SVGNS, 'circle');
+      peg.setAttribute('cx', px); peg.setAttribute('cy', py); peg.setAttribute('r', 5.6);
+      peg.setAttribute('fill', 'url(#wgPeg)');
+      peg.setAttribute('stroke', 'rgba(0,0,0,.6)');
+      peg.setAttribute('stroke-width', '0.8');
+      wheelRotor.appendChild(peg);
+    });
+  }
+  function spinWheelPhysics(targetIdx) {
+    return new Promise(resolve => {
+      wheelSpinning = true;
+      const current = wheelAngle % 360;
+      let delta = ((-targetIdx * WSEG) - current) % 360;
+      if (delta < 0) delta += 360;
+      const total = 360 * 6 + delta;
+      const start = wheelAngle;
+      const dur = 5600 + Math.random() * 700;
+      const easeOut = u => 1 - Math.pow(1 - u, 4.2);
+      let lastPeg = Math.floor(start / WSEG);
+      const t0 = performance.now();
+      (function frame(now) {
+        const u = Math.min(1, (now - t0) / dur);
+        wheelAngle = start + total * easeOut(u);
+        wheelRotor.setAttribute('transform', `rotate(${wheelAngle} 170 170)`);
+        const peg = Math.floor(wheelAngle / WSEG);
+        if (peg !== lastPeg) {
+          lastPeg = peg;
+          if (u < 0.985) {
+            let nearGrand = false;
+            if (u > 0.8) {
+              const gCenter = WEDGES.indexOf(Math.max(...WEDGES)) * WSEG;
+              const ptr = (((-wheelAngle) % 360) + 360) % 360;
+              let d = Math.abs(ptr - gCenter); if (d > 180) d = 360 - d;
+              nearGrand = d < WSEG * 1.1;
+            }
+            if (nearGrand) Kit.nearBell(); else Kit.peg();
+            wheelPointer.classList.remove('flick'); void wheelPointer.offsetWidth; wheelPointer.classList.add('flick');
+          }
+        }
+        if (u < 1) requestAnimationFrame(frame);
+        else { wheelSpinning = false; resolve(); }
+      })(t0);
+    });
+  }
+  function runBonusWheel(betAtTrigger, forceIdx) {
+    return new Promise(resolve => {
+      buildWheel();
+      wheelOverlay.classList.add('on');
+      wheelOverlay.setAttribute('aria-hidden', 'false');
+      wheelLock.arm(); /* minimum-view lock: the wheel must be seen 2s before a tap can spin it */
+      wheelPrize.classList.remove('on');
+      wheelMsg.textContent = 'Pull the arm — or tap SPIN!';
+      msgEl.textContent = 'BONUS WHEEL! Pull the arm or tap SPIN to spin the wheel!';
+      betDownBtn.disabled = true; betUpBtn.disabled = true; maxBetBtn.disabled = true;
+      spinBtn.disabled = false;
+      spinFace.textContent = 'SPIN THE WHEEL';
+      const lv = $('lever');
+      if (lv) { lv.classList.remove('off'); lv.setAttribute('aria-disabled', 'false'); }
+      wheelArmed = async () => {
+        wheelArmed = null;
+        spinBtn.disabled = true;
+        const idx = (typeof forceIdx === 'number') ? forceIdx : Math.floor(Math.random() * WEDGES.length);
+        const val = WEDGES[idx];
+        wheelMsg.textContent = 'The wheel is spinning…';
+        await spinWheelPhysics(idx);
+        const pay = Math.round(val * betAtTrigger);
+        {
+          const tier = TIERS[val];
+          wheelPrize.querySelector('.plaque-amt').textContent = '+' + fmt(pay);
+          wheelPrize.classList.add('on');
+          if (tier === 'GRAND') {
+            wheelMsg.innerHTML = `GRAND! The wheel pays <b>${fmt(pay)}</b> credits!`;
+            Kit.jackpot();
+            await celebrate('bonus', 'GRAND!', `The wheel's top wedge — ${fmt(pay)} credits!`, celebDur());
+          } else if (tier) {
+            wheelMsg.innerHTML = `${tier}! The wheel pays <b>${fmt(pay)}</b> credits!`;
+            Kit.jackpot();
+          } else {
+            wheelMsg.innerHTML = `The wheel pays <b>${fmt(pay)}</b> credits!`;
+            Kit.win(val);
+          }
+        }
+        if (pay > 0) {
+          const before = parseInt(winEl.textContent.replace(/[^0-9]/g, ''), 10) || 0;
+          credits += pay;
+          await countUp(winEl, before, before + pay, Math.min(1500, 400 + pay));
+          renderReadouts(before + pay);
+          lastBonusPaid = pay;
+          save();
+        }
+        setTimeout(() => {
+          wheelOverlay.classList.remove('on');
+          wheelOverlay.setAttribute('aria-hidden', 'true');
+          spinFace.textContent = 'SPIN'; /* restore the resting face (the wheel borrowed it) */
+          resolve(pay);
+        }, 2100);
+      };
+    });
+  }
+
   /* ---------- spin flow ---------- */
   async function doSpin(isFree) {
     if (spinning) return;
@@ -578,6 +775,24 @@
       await celebrate('bonus', 'FIVE OF A KIND!', 'Five on a line — that is a big one!', celebDur());
     }
     if (ev.bonus) {
+      /* Trigger split (2026-11-22): the BONUS WHEEL joins Dice Roll
+         alongside it — when the dice bonus would open, wheelShare of
+         triggers open the wheel instead. The celebration fires for the
+         wheel trigger the same way, before the wheel opens. Bonus
+         frequency is unchanged by construction. */
+      if (Math.random() < cfg.wheelShare) {
+        msgEl.textContent = `${ev.bonusCount} bonus dice — BONUS WHEEL!`;
+        spinning = false;
+        await celebrate('bonus', 'BONUS WHEEL!', `${ev.bonusCount} bonus dice — spin the wheel!`, celebDur());
+        const wheelPay = await runBonusWheel(totalBet());
+        if (wheelPay > 0) {
+          if (isFree) freeSpinTotal += wheelPay;
+          totalWin += wheelPay;
+        }
+        spinning = true;
+        finishSpin();
+        return;
+      }
       msgEl.textContent = `${ev.bonusCount} bonus dice — DICE ROLL bonus!`;
       spinning = false;
       /* celebrate first, THEN the dice come out (Joshua, 12:52 CT) */
@@ -603,7 +818,11 @@
   }
   function runFreeSpins() { if (freeSpinsLeft > 0 && !spinning) doSpin(true); }
 
+  $('wheelSpinBtn').addEventListener('click', () => {
+    if (wheelArmed) { if (wheelLock.locked()) return; const f = wheelArmed; ac(); f(); }
+  });
   spinBtn.addEventListener('click', () => {
+    if (wheelArmed) { if (wheelLock.locked()) return; const f = wheelArmed; ac(); f(); return; }
     ac();
     if (reelsRolling) { requestStop(); return; }
     if (!spinning) doSpin(false);
@@ -618,7 +837,7 @@
     leverArm.style.transition = animate ? 'transform .5s cubic-bezier(.25,1.35,.4,1)' : 'none';
     leverArm.style.transform = `translateY(${y}px)`;
   }
-  const machineBusy = () => spinning || !!bonus;
+  const machineBusy = () => spinning || !!bonus || wheelSpinning;
   function leverFire() { if (!machineBusy()) spinBtn.click(); }
   function leverScriptedPull() {
     leverArm.style.transition = 'transform .16s ease-in';
@@ -685,7 +904,8 @@
     celebrate: (kind, title, sub, dur) => celebrate(kind || 'bonus', title || 'DICE ROLL!', sub || '', dur || 3000),
     kit: Kit,
     openBonus: (count, isFree) => openBonus(count || 3, !!isFree, () => setControlsEnabled(true)),
-    getState: () => ({ credits, bet: betSel, betPerLine: lineBet(), maxBet: unlockedMax(), peak, spinning, bonus: !!bonus, stops: stops.slice() })
+    wheel: (idx) => runBonusWheel(totalBet(), idx),
+    getState: () => ({ credits, bet: betSel, betPerLine: lineBet(), maxBet: unlockedMax(), peak, spinning, bonus: !!bonus, wheelArmed: !!wheelArmed, wheelSpinning, lastBonusPaid, stops: stops.slice() })
   };
   soundStateEl.textContent = soundOn ? 'ON' : 'OFF';
 

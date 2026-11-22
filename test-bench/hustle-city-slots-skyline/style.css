@@ -917,8 +917,8 @@ body {
   100% { border-color: #ffd76a; box-shadow: 0 0 14px rgba(255, 215, 106, .8); }
 }
 .celeb-kick {
-  font-size: 15px; font-weight: 800; letter-spacing: 4px; color: #eef3f9;
-  text-shadow: 0 0 10px rgba(255, 70, 85, .75);
+  font-size: 15px; font-weight: 800; letter-spacing: 4px; color: #ffd76a;
+  text-shadow: 0 0 10px rgba(255, 215, 106, .8);
 }
 .celeb-title {
   margin-top: 8px;
@@ -1432,7 +1432,7 @@ body {
   color: #ffffff; font-size: 16.5px;
   text-shadow: 0 0 12px rgba(64, 170, 255, .6), 0 1px 2px rgba(0, 0, 0, .9);
 }
-.celeb-kick { color: #eef3f9; text-shadow: 0 0 12px rgba(255, 70, 85, .95), 0 1px 2px rgba(0, 0, 0, .9); }
+.celeb-kick { color: #ffe9a8; text-shadow: 0 0 12px rgba(255, 200, 60, .95), 0 1px 2px rgba(0, 0, 0, .9); }
 .celeb-title { color: #ffffff; text-shadow: 0 0 22px rgba(64, 170, 255, 1), 0 2px 0 #06263f, 0 2px 6px rgba(0, 0, 0, .9); }
 .celeb-sub { color: #eaf6ff; }
 .celeb-tap { color: #cfe9ff; }
@@ -1605,3 +1605,121 @@ body, button, input, select, textarea,
   background: linear-gradient(180deg, #d7dee7 0%, #79879a 45%, #39424f 100%);
   box-shadow: 0 2px 4px rgba(0, 0, 0, .60), inset 0 1px 0 rgba(255, 255, 255, .70);
 }
+
+/* ---------- BONUS WHEEL (ported from Pearl's Paws, 2026-11-22) ----------
+   Midnight deco dress: deep blue/black wedges, a machined chrome rim
+   with bolts, electric-blue glow, red neon reserved for the GRAND
+   wedge. NO GOLD anywhere on this wheel. The wheel itself is a layered
+   SVG (lit wedges, chrome rim, peg spheres) built by game.js; the
+   gloss below is a still sheen of light over it — light doesn't rotate. */
+.wheel-overlay {
+  position: fixed; inset: 0;
+  z-index: 65;
+  pointer-events: none;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  background: rgba(2, 6, 14, .86);
+}
+.wheel-overlay.on { display: flex; }
+.wheel-card {
+  pointer-events: auto;
+  width: min(100%, 430px);
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+  border-radius: 22px;
+  padding: 18px 16px 16px;
+  text-align: center;
+  background:
+    radial-gradient(120% 60% at 50% 0%, rgba(46, 155, 255, .16) 0%, transparent 60%),
+    linear-gradient(170deg, #0a1526 0%, #060d1d 55%, #03060f 100%);
+  border: 1px solid #59667a;
+  box-shadow: 0 0 0 2px #05070a, 0 0 44px rgba(46, 155, 255, .35), 0 24px 60px rgba(0, 0, 0, .8);
+}
+.wheel-title {
+  font-family: 'Bebas Neue', 'Arial Narrow', Arial, sans-serif;
+  font-size: 30px; font-weight: 900; letter-spacing: .14em;
+  color: #eaf3fc;
+  text-shadow: 0 0 18px rgba(46, 155, 255, .85), 0 2px 3px rgba(0, 0, 0, .9);
+}
+.wheel-rules { margin-top: 8px; font-size: 13.5px; line-height: 1.55; color: #c3d6ec; }
+.wheel-rules .tier-line-blue { color: #6fc2ff; }
+.wheel-rules .tier-line-red { color: #ff5b68; text-shadow: 0 0 10px rgba(255, 46, 62, .8); }
+.wheel-wrap {
+  position: relative;
+  width: min(76vw, 320px);
+  aspect-ratio: 1;
+  margin: 16px auto 6px;
+}
+.wheel-wrap::before {
+  content: ""; position: absolute; inset: -11px; border-radius: 50%; z-index: 0;
+  background: conic-gradient(from 210deg, #79879a, #141a24 25%, #d7dee7 50%, #0a0f18 75%, #79879a);
+  box-shadow: 0 18px 34px rgba(0, 0, 0, .75), 0 0 26px rgba(46, 155, 255, .35), inset 0 2px 3px rgba(255, 255, 255, .35), inset 0 -3px 7px rgba(0, 0, 0, .75);
+}
+.wheel-svg {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  z-index: 1;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, .55));
+}
+.wheel-svg .wlabel {
+  font-size: 15px; font-weight: 900; letter-spacing: .03em;
+  fill: #dcebfb; text-anchor: middle;
+}
+.wheel-svg .wlabel.tier { font-size: 12px; letter-spacing: .08em; }
+.wheel-svg .wlabel.tierval { font-size: 14.5px; }
+.wheel-svg .wlabel.grand { fill: #ffffff; text-shadow: none; }
+.wheel-gloss {
+  position: absolute; inset: 0; border-radius: 50%;
+  z-index: 2; pointer-events: none;
+  background:
+    radial-gradient(ellipse 65% 42% at 32% 16%, rgba(160, 210, 255, .16) 0%, rgba(160, 210, 255, .04) 46%, transparent 70%),
+    radial-gradient(ellipse 120% 120% at 50% 50%, transparent 72%, rgba(0, 0, 0, .30) 100%);
+}
+.wheel-pointer {
+  position: absolute;
+  left: 50%; top: -15px;
+  z-index: 3;
+  width: 0; height: 0;
+  transform: translateX(-50%);
+  border-left: 11px solid transparent;
+  border-right: 11px solid transparent;
+  border-top: 20px solid #d7dee7;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8)) drop-shadow(0 0 6px rgba(46, 155, 255, .7));
+  transform-origin: 50% 0;
+}
+.wheel-pointer.flick { animation: ptrFlick .18s ease-out; }
+@keyframes ptrFlick { 0% { transform: translateX(-50%) rotate(-16deg); } 100% { transform: translateX(-50%) rotate(0deg); } }
+/* the prize lands on a simple machined chrome plaque (no paw token here) */
+.wheel-prize {
+  display: none;
+  position: relative;
+  width: 132px; height: 52px;
+  margin: 10px auto 0;
+  border-radius: 10px;
+  border: 1px solid #0a0f18;
+  background: linear-gradient(180deg, #eef2f7 0%, #aeb9c6 38%, #5f6b7a 55%, #d7dee7 78%, #39424f 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .65), 0 0 18px rgba(46, 155, 255, .35), inset 0 1px 0 rgba(255, 255, 255, .8);
+}
+.wheel-prize.on { display: block; animation: celebPop .45s ease-out; }
+.wheel-prize .plaque-amt {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 900; letter-spacing: .06em;
+  color: #0a1526;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .65);
+}
+.wheel-msg { margin-top: 10px; font-size: 15px; line-height: 1.5; color: #e2f1ff; min-height: 24px; }
+.wheel-spin-btn {
+  margin-top: 12px;
+  padding: 13px 30px;
+  border-radius: 999px;
+  border: 1px solid #0a2547;
+  background: linear-gradient(180deg, #2e9bff 0%, #155a9e 55%, #0a2547 100%);
+  box-shadow: 0 3px 0 #04101f, 0 8px 18px rgba(0, 0, 0, .5), 0 0 18px rgba(46, 155, 255, .45), inset 0 1px 0 rgba(255, 255, 255, .55);
+  font-size: 16px; font-weight: 900; letter-spacing: .1em;
+  color: #eef6ff;
+  cursor: pointer;
+}
+.wheel-spin-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #04101f, 0 4px 10px rgba(0, 0, 0, .45); }
