@@ -332,6 +332,14 @@ function renderMeters(won, paid) {
   $('mWon').textContent = won !== undefined ? won : state.lastWon;
   $('mPaid').textContent = paid !== undefined ? paid : sessionPaid;
   $('mCash').textContent = fmt$(state.cash);
+  /* the red screen's meter boxes mirror the main meters (live values) */
+  const redWonEl = $('redWon');
+  if (redWonEl) {
+    redWonEl.textContent = $('mWon').textContent;
+    $('redPaid').textContent = $('mPaid').textContent;
+    $('redBet').textContent = coinsBet;
+    $('redCash').textContent = $('mCash').textContent;
+  }
   $('progressiveAmt').textContent = '$' + state.progressive.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   $('refillBtn').style.display = state.cash < coinsBet && !busy ? 'block' : 'none';
 }
@@ -443,7 +451,9 @@ async function playSpin() {
       chain++;
       $('redSub').textContent = chain > 1 ? `RE-SPIN ${chain} — STILL GUARANTEED` : 'GUARANTEED WIN — NO CHARGE';
       $('redJewels').innerHTML = Array.from({ length: L.JEWELS_TO_TRIGGER }, (_, i) =>
-        `<div class="jewel ${i < state.jewels ? 'on' : 'off'}">${gemSVG()}</div>`).join('');
+        `<img class="rmed ${i < state.jewels ? 'lit' : 'off'}" src="assets/diamond-${i < state.jewels ? 'lit' : 'off'}-photo.png" alt="">`).join('');
+      $('redCard').innerHTML = [...document.querySelectorAll('#bingoCard .cell')].map(c =>
+        `<div class="rc ${c.classList.contains('marked') ? 'hit' : ''}">${c.classList.contains('free') ? 'F' : c.textContent}</div>`).join('');
       $('redJewelText').textContent = state.jewels >= L.JEWELS_TO_TRIGGER ? 'JEWEL HUNT!' :
         `COLLECT ${L.JEWELS_TO_TRIGGER - state.jewels} MORE DIAMOND${L.JEWELS_TO_TRIGGER - state.jewels === 1 ? '' : 'S'}!`;
       $('redFlash').classList.add('on');
