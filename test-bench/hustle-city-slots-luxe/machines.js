@@ -1,16 +1,17 @@
-/* Hustle City Slots — Poker Luxe machine definition (strips + paytable + wheel).
+/* Hustle City Slots — Poker Luxe machine definition (strips + paytable + vault).
    Grown-up rebuild 2026-11-21 (the hand-drawn v1 was junked by Joshua).
    Symbol set: ACE OF SPADES top (AC), KING (KG), QUEEN (QN), JACK (JK),
    DIAMOND (DM), POKER CHIPS (CP, pays from 2), CHAMPAGNE (CG), DICE (DK),
    WILD (WD, substitutes for everything except SCATTER), SCATTER (SC, free
    spins), WIN x2 (X2) / WIN x3 (X3) line multipliers, BONUS token (BN).
    NO blank stops — every strip position is a real symbol.
-   BONUS WHEEL: BONUS tokens ride reels 2, 3 and 4 only (two per strip,
-   spaced so at most one can show per window); when all three windows show
-   one, the Bonus Wheel triggers — one spin of the wheel, wedges pay
-   multiples of the total bet. Trigger probability is exactly
-   (6/20)(6/22)(6/20) = 1 in 40.7 spins (Joshua's standard, 2026-11-21:
-   a bonus on average 1 in every 40 spins).
+   BONUS (SKULL VAULT): BONUS tokens ride reels 2, 3 and 4 only (two per
+   strip, spaced so at most one can show per window); when all three
+   windows show one, the Skull Vault opens — 12 doors, 9 blue-chip
+   prizes + 3 skulls, stop-and-bank picks (see the vault note at the
+   config below). Trigger probability is exactly (6/24)(6/25)(6/25) =
+   1 in 69.4 spins after the feature retune; combined with free spins
+   the features land 1 in 35.0 (Joshua's standard, 2026-11-21).
    MATH (Joshua's settled target, 2026-11-21): total RTP 98% — exact
    closed form including wheels landed during free spins; verified
    breakdown and Monte Carlo in sim/sim-results.txt.
@@ -32,7 +33,10 @@
    special keeps its count, position and window coverage), superseding
    the 'geometry unchanged' line above for FREQUENCIES only — wheel
    wedges and EV untouched (12.08x). Exact: free spins 1 in 68.2, wheel
-   1 in 69.4, COMBINED 1 in 35.0. Final measured base game after both
+   1 in 69.4, COMBINED 1 in 35.0. (The wheel's seat is now the SKULL
+   VAULT — same BN trigger, same 1 in 69.4, so the combined 1 in 35.0
+   stands; only the feature EV changed, 12.08x wheel -> ~6.9x vault.
+   See the vault note at the config.) Final measured base game after both
    passes: line RTP 79.54%, base-game share 102.23%, TOTAL theoretical
    RTP 121.68% (Monte Carlo 121.92% over 200k paid spins); net-positive
    base spins 29.5%; average line win per hit 23.1 credits at 1/line.
@@ -48,9 +52,19 @@ const LUXE = {
   scatterPay: { 3: 2, 4: 7, 5: 35 },
   scatterSpins: { 3: 7, 4: 10, 5: 15 },
   bonusAt: 3,
-  /* Bonus wheel wedges, in wheel order, as multiples of the TOTAL bet.
-     0 = BANKRUPT (one wedge), 100 = JACKPOT. EV = 145/12 ≈ 12.08x bet. */
-  wheel: [100, 5, 7, 2, 4, 8, 0, 3, 6, 1, 5, 4],
+  /* SKULL VAULT (Joshua's pick #2, 2026-11-21 23:02 CT — replaces the
+     press-and-watch Bonus Wheel on the BN door; free spins untouched):
+     12 riveted vault doors — the 9 prizes below (multiples of the TOTAL
+     bet, summing to 38x) plus 3 skulls, shuffled face-down. The player
+     picks doors one at a time and may STOP & BANK after any safe door;
+     a skull loses everything unbanked; clearing all 9 pays the full 38x.
+     Prize table tuned 2026-11-21 so the game lands in the ~7x bonus
+     band under stop-and-bank play: exact optimal-stopping EV 6.93x,
+     Monte Carlo (200k plays) 6.89x optimal / 6.85x bank-at-15x — the
+     top-heavy table (one 25x diamond door) is what carries the EV; an
+     even spread of the same 38x measures only ~5.0x. The old wheel
+     (EV 12.08x, wedges [100,5,7,2,4,8,0,3,6,1,5,4]) is retired. */
+  vault: { prizes: [25, 3, 2, 2, 2, 1, 1, 1, 1], skulls: 3 },
   paytable: {
     AC: { 3: 46, 4: 145, 5: 1500 },
     WD: { 3: 26, 4: 86, 5: 338 },

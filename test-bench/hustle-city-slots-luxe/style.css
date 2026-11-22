@@ -613,9 +613,12 @@ body {
   padding: 14px;
   background: rgba(1, 3, 9, .86);
 }
-.bonus-overlay.on { display: flex; }
+.bonus-overlay.on { display: flex; overflow-y: auto; }
 .bonus-card {
   pointer-events: auto;
+  margin: auto; /* safe centering: card scrolls instead of clipping when
+    it is taller than a short phone viewport (Skull Vault card, 2026-11-21) */
+  flex: none;
   width: min(100%, 430px);
   border-radius: 22px;
   padding: 18px 16px 16px;
@@ -1448,3 +1451,107 @@ body, button, input, select, textarea,
 .lever-rod {
   background: linear-gradient(90deg, #39434f, #e8eef5 45%, #788696 60%, #232b34);
 }
+
+/* ---------- SKULL VAULT (2026-11-21, Joshua's pick #2) ----------
+   12 riveted steel doors over a dark vault interior, blue-chip prizes,
+   red LED readouts — board #2's look, built in CSS + the machine's own
+   chip/skull art. NO GOLD. */
+.vault-readouts {
+  display: flex; gap: 8px; margin-top: 8px;
+}
+.vault-readout { flex: 1; }
+.vault-readout label {
+  display: block;
+  font-size: 12px;
+  letter-spacing: .18em;
+  color: #9db4cc;
+  margin-bottom: 4px;
+  text-shadow: 0 1px 2px #000;
+}
+.vault-led {
+  color: #ff3548;
+  border-color: #4f2b33;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, .95), inset 0 0 18px rgba(215, 11, 40, .30), 0 1px 0 rgba(255, 255, 255, .08);
+  text-shadow: 0 0 9px rgba(255, 53, 72, .9), 0 0 2px rgba(255, 143, 157, .9);
+}
+.vault-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+  margin: 10px auto 10px;
+  max-width: 348px;
+}
+.vault-door {
+  position: relative;
+  aspect-ratio: 1.09;
+  border-radius: 9px;
+  border: 1px solid #4a545f;
+  background: #04060a;
+  overflow: hidden;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.vault-door:disabled { cursor: default; }
+.door-prize {
+  position: absolute; inset: 0; z-index: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 1px;
+  background: radial-gradient(85% 85% at 50% 38%, #141c28 0%, #04060a 78%);
+}
+.door-prize img { width: 66%; max-height: 62%; object-fit: contain; }
+.door-prize-val {
+  font-size: 21px;
+  color: #57b6ff;
+  letter-spacing: .06em;
+  text-shadow: 0 0 10px rgba(46, 155, 255, .85), 0 1px 2px #000;
+}
+.vault-door.skull .door-prize {
+  background: radial-gradient(85% 85% at 50% 38%, #430b14 0%, #0a0406 78%);
+}
+.door-face {
+  position: absolute; inset: 0; z-index: 2;
+  display: flex; align-items: center; justify-content: center;
+  background:
+    radial-gradient(circle 3px at 11px 11px, #c3cedb 42%, #10131a 62%, transparent 72%),
+    radial-gradient(circle 3px at calc(100% - 11px) 11px, #c3cedb 42%, #10131a 62%, transparent 72%),
+    radial-gradient(circle 3px at 11px calc(100% - 11px), #c3cedb 42%, #10131a 62%, transparent 72%),
+    radial-gradient(circle 3px at calc(100% - 11px) calc(100% - 11px), #c3cedb 42%, #10131a 62%, transparent 72%),
+    linear-gradient(155deg, #3d454f 0%, #232830 46%, #14171d 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), inset 0 -8px 14px rgba(0, 0, 0, .55), inset 0 0 0 3px rgba(5, 7, 10, .55);
+  transition: transform .5s cubic-bezier(.3, .7, .3, 1), opacity .5s;
+  transform-origin: left center;
+}
+.vault-door:not(.open):active .door-face { filter: brightness(1.18); }
+.vault-door.open .door-face {
+  transform: perspective(520px) rotateY(-82deg);
+  opacity: .9;
+}
+.door-handle {
+  position: relative;
+  width: 47%; aspect-ratio: 1;
+  border-radius: 50%;
+  border: 3px solid #b6c2d1;
+  background: radial-gradient(circle, #788696 0%, #454f5b 55%, #272d36 100%);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, .75), inset 0 1px 3px rgba(255, 255, 255, .55), inset 0 -3px 6px rgba(0, 0, 0, .5);
+}
+.door-handle::before, .door-handle::after {
+  content: ""; position: absolute; background: #c3cedb; border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .6);
+}
+.door-handle::before { left: 7%; right: 7%; top: 50%; height: 3px; transform: translateY(-50%); }
+.door-handle::after { top: 7%; bottom: 7%; left: 50%; width: 3px; transform: translateX(-50%); }
+.vault-bank-btn {
+  width: 100%;
+  padding: 11px 10px 9px;
+  font-size: 21px;
+  letter-spacing: .14em;
+  color: #eaf4ff;
+  background: linear-gradient(180deg, #4b5966 0%, #2a313b 55%, #1a1f27 100%);
+  border: 1px solid #8b98a8;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 255, 255, .35), 0 0 18px rgba(46, 155, 255, .25);
+  cursor: pointer;
+}
+.vault-bank-btn:disabled { opacity: .42; box-shadow: none; cursor: default; }
+.vault-bank-btn:not(:disabled):active { transform: translateY(1px); }
