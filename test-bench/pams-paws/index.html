@@ -52,6 +52,11 @@
 
     <div class="message" id="msg" aria-live="polite">Set your bet, then press SPIN.</div>
 
+    <div class="broke-panel" id="brokePanel" aria-hidden="true">
+      <div class="broke-title">OUT OF COINS</div>
+      <button class="btn broke-back-btn" id="brokeBackBtn" type="button">&#9664; BACK — GET MORE COINS</button>
+    </div>
+
     <section class="deck">
       <div class="readouts">
         <div class="readout">
@@ -120,7 +125,7 @@
 </div>
 
 <div class="celeb" id="celeb" aria-hidden="true" role="alertdialog" aria-label="Celebration">
-  <video class="celeb-video" id="celebVideo" playsinline preload="auto" src="assets/celeb-show.mp4"></video>
+  <video class="celeb-video" id="celebVideo" playsinline preload="auto" src="assets/celeb-big-catch.mp4"></video>
   <div class="celeb-frame">
     <div class="celeb-kick" id="celebKick">BONUS</div>
     <div class="celeb-title" id="celebTitle">BUSTER'S BONES!</div>

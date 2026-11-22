@@ -458,6 +458,45 @@ body {
 }
 .refill-btn.on { display: block; }
 
+/* ---------- out-of-coins BACK panel (Joshua, 2026-11-21 21:59 CT) ----------
+   Big and impossible to miss: Pam plays with a stylus, so the tap target
+   is a full-width 68px Bebas button in the chrome/dark-blue house style,
+   sitting right under the message line on the main screen. */
+.broke-panel {
+  display: none;
+  margin: 12px 0 4px;
+  text-align: center;
+}
+.broke-panel.on { display: block; }
+.broke-title {
+  font-family: 'Bebas Neue', 'Arial Narrow', Arial, sans-serif;
+  font-size: 34px;
+  letter-spacing: .16em;
+  color: #f2f7fc;
+  text-shadow: 0 2px 0 #0b3057, 0 0 18px rgba(64, 156, 255, .55);
+  margin-bottom: 8px;
+}
+.broke-back-btn {
+  width: 100%;
+  min-height: 68px;
+  padding: 14px 12px;
+  border-radius: 12px;
+  border: 2px solid #c8d6e4;
+  font-family: 'Bebas Neue', 'Arial Narrow', Arial, sans-serif;
+  font-size: 27px;
+  letter-spacing: .1em;
+  color: #eaf4ff;
+  background: linear-gradient(180deg, #3a78c2, #144a80 55%, #0b3057);
+  box-shadow: 0 4px 0 #052a47, 0 0 22px rgba(64, 156, 255, .5), inset 0 1px 0 rgba(255, 255, 255, .55);
+  cursor: pointer;
+  animation: brokePulse 1.6s ease-in-out infinite;
+}
+.broke-back-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #052a47, 0 0 22px rgba(64, 156, 255, .5); }
+@keyframes brokePulse {
+  0%, 100% { box-shadow: 0 4px 0 #052a47, 0 0 14px rgba(64, 156, 255, .35), inset 0 1px 0 rgba(255, 255, 255, .55); }
+  50% { box-shadow: 0 4px 0 #052a47, 0 0 30px rgba(64, 156, 255, .75), inset 0 1px 0 rgba(255, 255, 255, .55); }
+}
+
 .legal {
   margin-top: 10px;
   text-align: center;

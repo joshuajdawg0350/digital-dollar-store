@@ -27,7 +27,31 @@
    triggering spin — identical to Pick-a-Garage: random-pick EV =
    (sum of prizes)/2 + completion/9 = 7.42x total bet. Banked prizes are
    kept when Big Al ends the round.
-   (c) 2026 J-Dawgs Industries. */
+   (c) 2026 J-Dawgs Industries.
+   PAYOUT REBALANCE (2026-11-21, Joshua's ruling from real play: "They need
+   to pay out better on individual spins") — BASE GAME ONLY: 3/4-of-a-kind
+   pays x1.75, pairs x1.5 (5-of-a-kind untouched), reel weights shifted
+   toward the low symbols (WD/SC/BN/WH/X2/X3 keep their exact stops, so
+   the free-spin, Buster's Bones and wheel geometry is unchanged: FS
+   1 in 38.6, houses 1 in 86.4 EV 7.42x, wheel 1 in 77.8 EV 13.67x — all
+   as settled; the "identical to Classics" note above is now historical).
+   Measured after: line RTP 73.87%, base-game share 116.38%, TOTAL
+   theoretical RTP 142.54% (Monte Carlo 141.64% over 200k paid spins) —
+   deliberately above the old 98% design point; these are play credits and
+   the owner's feel ruling governs. Net-positive base spins 13.1% -> 26.1%;
+   average line win per hit 16.5 -> 25.4 credits at 1/line.
+   FEATURE RETUNE (2026-11-21 21:47 CT, Joshua's ruling: "one in 35 spins
+   to be one of the random bonuses — free spins or a bonus"): strips
+   lengthened with regular symbols only (24/24/25/25/25 stops; every
+   special keeps its count, position and window coverage), superseding
+   the 'geometry unchanged' line above for FREQUENCIES only — houses
+   prizes/EV (7.42x) and the wheel table/EV (13.67x) untouched. Exact:
+   free spins 1 in 66.7, puppy houses 1 in 154.3, bonus wheel 1 in
+   138.9 (bonus games combined 1 in 73.4), ALL FEATURES COMBINED
+   1 in 35.0. Final measured base game after both passes: line RTP
+   72.43%, base-game share 94.12%, TOTAL theoretical RTP 108.77%
+   (Monte Carlo 108.53% over 200k paid spins); net-positive base spins
+   25.5%; average line win per hit 22.9 credits at 1/line. */
 'use strict';
 
 const PEARLS = {
@@ -51,20 +75,20 @@ const PEARLS = {
   wheel: [50, 5, 15, 7, 30, 11, 6, 13, 8, 2, 14, 3],
   wheelTiers: { 50: 'GRAND', 30: 'MAJOR', 15: 'MINOR', 8: 'MINI' },
   paytable: {
-    GP: { 3: 31, 4: 111, 5: 2209 },
-    WD: { 3: 18, 4: 62, 5: 442 },
-    SP: { 3: 10, 4: 40, 5: 265 },
-    CP: { 3: 7, 4: 22, 5: 88 },
-    BO: { 2: 2, 3: 2, 4: 6, 5: 22 },
-    BA: { 3: 3, 4: 9, 5: 35 },
-    PW: { 3: 2, 4: 6, 5: 22 }
+    GP: { 3: 54, 4: 194, 5: 2209 },
+    WD: { 3: 32, 4: 109, 5: 442 },
+    SP: { 3: 18, 4: 70, 5: 265 },
+    CP: { 3: 12, 4: 39, 5: 88 },
+    BO: { 2: 3, 3: 4, 4: 11, 5: 22 },
+    BA: { 3: 5, 4: 16, 5: 35 },
+    PW: { 3: 4, 4: 11, 5: 22 }
   },
   strips: [
-    ['PW', 'PW', 'BO', 'CP', 'BO', 'CP', 'PW', 'BA', 'BA', 'WD', 'X2', 'SC', 'GP', 'SP', 'BA', 'SP', 'PW', 'BA', 'BO', 'BO'],
-    ['PW', 'SC', 'BO', 'WH', 'BO', 'PW', 'GP', 'PW', 'BA', 'BA', 'BN', 'X3', 'WH', 'SP', 'BO', 'CP', 'WD', 'BO', 'CP', 'PW'],
-    ['PW', 'SP', 'CP', 'PW', 'SP', 'GP', 'BA', 'X2', 'SC', 'BO', 'BO', 'PW', 'BA', 'PW', 'WD', 'PW', 'BA', 'CP', 'WH', 'BO', 'BN'],
-    ['WH', 'CP', 'WD', 'BA', 'GP', 'PW', 'SP', 'BO', 'WH', 'BO', 'SP', 'PW', 'BO', 'BN', 'BA', 'BO', 'CP', 'WD', 'SC', 'PW'],
-    ['BA', 'BO', 'BA', 'SP', 'PW', 'WD', 'CP', 'SP', 'PW', 'BO', 'X2', 'BO', 'CP', 'BA', 'BO', 'SC', 'BN', 'PW', 'GP', 'BA']
+    ['PW', 'PW', 'BO', 'PW', 'BO', 'CP', 'PW', 'BA', 'BA', 'WD', 'X2', 'SC', 'GP', 'BA', 'BA', 'SP', 'PW', 'BA', 'BO', 'BO', 'BO', 'CP', 'PW', 'BA'],
+    ['PW', 'SC', 'BO', 'WH', 'BO', 'PW', 'GP', 'PW', 'BA', 'BA', 'BN', 'X3', 'WH', 'BO', 'BO', 'CP', 'WD', 'BO', 'BA', 'PW', 'BO', 'BA', 'PW', 'BO'],
+    ['PW', 'PW', 'CP', 'PW', 'SP', 'GP', 'BA', 'X2', 'SC', 'BO', 'BO', 'PW', 'BA', 'PW', 'WD', 'PW', 'BA', 'BA', 'WH', 'BO', 'BN', 'PW', 'BO', 'BA', 'PW'],
+    ['WH', 'CP', 'WD', 'BA', 'GP', 'PW', 'BO', 'BO', 'WH', 'BO', 'SP', 'PW', 'BO', 'BN', 'BA', 'BO', 'BA', 'WD', 'SC', 'PW', 'BO', 'CP', 'BA', 'PW', 'BO'],
+    ['BA', 'BO', 'BA', 'BO', 'PW', 'WD', 'CP', 'SP', 'PW', 'BO', 'X2', 'BO', 'BA', 'BA', 'BO', 'SC', 'BN', 'PW', 'GP', 'BA', 'BA', 'BO', 'PW', 'BA', 'BO']
   ]
 };
 

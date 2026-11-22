@@ -40,6 +40,7 @@
   const celebVideo = $('celebVideo');
   const wheelOverlay = $('wheelOverlay'), wheelMsg = $('wheelMsg'), wheelRotor = $('wheelRotor'), wheelPointer = $('wheelPointer'), wheelPawPrize = $('wheelPawPrize');
   const fsBanner = $('fsBanner'), newGameBtn = $('newGameBtn'), soundBtn = $('soundBtn');
+  const brokePanel = $('brokePanel'), brokeBackBtn = $('brokeBackBtn');
   const spinFace = spinBtn.querySelector('.spin-face'), tierLineEl = $('tierLine');
   const soundStateEl = $('soundState'), winFlash = $('winFlash');
   const paySheet = $('paySheet'), sheetBackdrop = $('sheetBackdrop');
@@ -278,6 +279,20 @@
     creditsEl.textContent = fmt(credits);
     betEl.textContent = fmt(totalBet());
     if (typeof winVal === 'number') winEl.textContent = fmt(winVal);
+    syncBroke();
+  }
+  /* OUT OF COINS (Joshua, 2026-11-21 21:59 CT — Pam hit the dead end
+     playing live): when the balance can't cover the smallest bet, a big
+     BACK panel shows right under the message line. One tap on BACK runs
+     the same refill as NEW GAME — back on the main screen with a fresh
+     1,000 coins, ready to spin. Never shows over a bonus/wheel/free-spin
+     flow that is still playing out. */
+  function syncBroke() {
+    if (!brokePanel) return;
+    const overlayUp = document.querySelector('.bonus.on, .wheel-overlay.on, .celeb.on');
+    const broke = credits < BET_MIN && freeSpinsLeft <= 0 && !overlayUp;
+    brokePanel.classList.toggle('on', broke);
+    brokePanel.setAttribute('aria-hidden', broke ? 'false' : 'true');
   }
   let controlsOn = true;
   function renderBet() {
@@ -387,17 +402,22 @@
       celebSubEl.textContent = sub || '';
       celebEl.setAttribute('aria-hidden', 'false');
       document.body.classList.add('celebrating'); /* cabinet light-chase runs with the show */
-      /* The picked Puppy Party clip carries its own soundtrack (piano
-         flourish + payout + bell + soft coins, verified loud and clean),
-         so the kit stays quiet under the show — no double audio mush.
-         If the clip can't play at all, the kit fanfare covers the moment. */
-      /* the celebration SHOW: "Puppy Party" — the 5s clip Joshua picked
-         (2026-11-21 19:22 CT: puppies in party hats, confetti). If the
-         clip can't play, the CSS celebration underneath shows instead —
+      /* Each celebration clip carries its own soundtrack, so the kit
+         stays quiet under the show — no double audio mush. If the clip
+         can't play at all, the kit fanfare covers the moment. */
+      /* the celebration SHOW (Joshua, 2026-11-21 22:00–22:02 CT): a
+         RANDOM pick per trigger from his three chosen clips — #3 THE
+         BIG CATCH, #4 TREAT JAR POP, #5 PAW PRINT TRAIL. The old Puppy
+         Party clip was REMOVED from the game at his order the same
+         night (its master stays preserved in the vault). If a clip
+         can't play, the CSS celebration underneath shows instead —
          never a black screen, never a hang. */
       let videoLive = false;
       if (celebVideo) {
         try {
+          const CELEB_CLIPS = ['assets/celeb-big-catch.mp4', 'assets/celeb-treat-jar.mp4', 'assets/celeb-paw-trail.mp4'];
+          const pick = CELEB_CLIPS[Math.floor(Math.random() * CELEB_CLIPS.length)];
+          if (celebVideo.getAttribute('src') !== pick) { celebVideo.src = pick; celebVideo.load(); }
           celebVideo.classList.remove('dead');
           const startAt = kind === 'grand' ? 2.5 : 0.2; /* grand starts on the finale half of the clip */
           const seek = () => { try { celebVideo.currentTime = startAt; } catch (e) {} };
@@ -630,7 +650,7 @@
     winEl.textContent = '0';
     if (!isFree) {
       if (credits < totalBet()) {
-        msgEl.textContent = credits < BET_MIN ? 'Out of credits — hit NEW GAME below to start over with 1,000.' : 'Not enough credits for that bet — lower the bet.';
+        msgEl.textContent = credits < BET_MIN ? 'Out of coins — tap the big BACK button below to get 1,000 more coins.' : 'Not enough credits for that bet — lower the bet.';
         newGameBtn.classList.toggle('on', credits < BET_MIN);
         spinning = false; setControlsEnabled(true);
         return;
@@ -714,14 +734,14 @@
       spinning = false;
       setControlsEnabled(true);
     };
-    /* FIVE OF A KIND on any payline gets the Puppy Party too (Joshua,
+    /* FIVE OF A KIND on any payline gets a celebration too (Joshua,
        2026-11-21 20:57 CT: "a celebration for every type of small bonus
        there is — or wheel, or five of a kind"). Fires before any bonus
        game on the same spin opens; free-spins retriggers already take
        the FS celebration path above. */
     const w5 = ev.lineWins.find(w => w.count >= 5);
     if (w5) {
-      await celebrate('win', 'FIVE OF A KIND!', `Five ${NAMES[w5.symbol]} on one line — Puppy Party time!`, celebDur());
+      await celebrate('win', 'FIVE OF A KIND!', `Five ${NAMES[w5.symbol]} on one line — celebration time!`, celebDur());
     }
     if (bonusHit || wheelHit) {
       /* celebrate first, THEN the bonus games; any free spins won on this
@@ -905,13 +925,16 @@
   /* NEW GAME (Joshua, 2026-11-21): a broke player restarts clean — the
      machine's standard 1,000 starting credits, $25 bet, unlocks reset to
      the fresh 1,000-credit peak. */
-  newGameBtn.addEventListener('click', () => {
+  function startNewGame() {
     credits = START_CREDITS; betSel = BET_MIN; peak = START_CREDITS; lastUnlocked = unlockedMax();
     newGameBtn.classList.remove('on');
     renderReadouts(0); renderBet(); buildPaytable(); save();
     msgEl.textContent = 'New game — 1,000 credits on the house. Good luck!';
     Kit.coin();
-  });
+  }
+  newGameBtn.addEventListener('click', startNewGame);
+  /* the big BACK button on the out-of-coins panel runs the same refill */
+  if (brokeBackBtn) brokeBackBtn.addEventListener('click', startNewGame);
   soundBtn.addEventListener('click', () => {
     soundOn = !soundOn;
     soundStateEl.textContent = soundOn ? 'ON' : 'OFF';
