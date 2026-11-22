@@ -1,11 +1,13 @@
 /* Hustle City Slots — Poker Luxe service worker. (c) 2026 J-Dawgs Industries. */
-const CACHE = 'hc-slots-luxe-v4';
+const CACHE = 'hc-slots-luxe-v5';
 const ASSETS = [
   './', './index.html', './style.css', './game.js', './logic.js', './machines.js', './soundkit.js',
   './assets/sfx/bell.mp3', './assets/sfx/win-small.mp3', './assets/sfx/win-med.mp3',
   './assets/sfx/win-big.mp3', './assets/sfx/coins.mp3', './assets/sfx/coin.mp3',
   './assets/sfx/count-tick.mp3', './assets/sfx/bust.mp3', './assets/sfx/fanfare.mp3',
-  './assets/sfx/fs-flourish.mp3', './assets/sfx/garage-door.mp3', './assets/sfx/trunk-open.mp3',
+  './assets/sfx/fs-flourish.mp3', './assets/sfx/garage-door.mp3',
+  './assets/sfx/lever.mp3',
+  './assets/sfx/reel-roll.mp3', './assets/sfx/trunk-open.mp3',
   './assets/sfx/tension.mp3', './assets/sfx/engine-bust.mp3', './assets/sfx/dice-shake.mp3',
   './assets/sfx/dice-roll.mp3', './assets/sfx/peg.mp3', './assets/sfx/near-bell.mp3',
   './assets/sfx/click.mp3', './assets/sfx/thunk.mp3',
