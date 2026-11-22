@@ -126,9 +126,35 @@
 
 <div class="celeb" id="celeb" aria-hidden="true" role="alertdialog" aria-label="Celebration">
   <video class="celeb-video" id="celebVideo" playsinline preload="auto" src="assets/celeb-big-catch.mp4"></video>
+  <div class="celeb-rain" id="celebRain" aria-hidden="true"></div>
   <div class="celeb-frame">
     <div class="celeb-kick" id="celebKick">BONUS</div>
     <div class="celeb-title" id="celebTitle">BUSTER'S BONES!</div>
+    <svg class="dogtag-title" id="dogTagTitle" viewBox="0 0 300 216" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#ffe259"/><stop offset=".55" stop-color="#ffb800"/><stop offset="1" stop-color="#ff9500"/>
+        </linearGradient>
+        <g id="dtPaw"><ellipse cx="0" cy="10" rx="15" ry="11.5"/><ellipse cx="-19" cy="-3" rx="6" ry="8" transform="rotate(-18 -19 -3)"/><ellipse cx="-7.5" cy="-13" rx="6.5" ry="8.5" transform="rotate(-6 -7.5 -13)"/><ellipse cx="7.5" cy="-13" rx="6.5" ry="8.5" transform="rotate(6 7.5 -13)"/><ellipse cx="19" cy="-3" rx="6" ry="8" transform="rotate(18 19 -3)"/></g>
+        <g id="dtBone"><rect x="-17" y="-6.5" width="34" height="13" rx="6.5"/><circle cx="-17" cy="-7.5" r="9"/><circle cx="-17" cy="7.5" r="9"/><circle cx="17" cy="-7.5" r="9"/><circle cx="17" cy="7.5" r="9"/></g>
+      </defs>
+      <text x="150" y="88" text-anchor="middle">BIG</text>
+      <text x="150" y="198" text-anchor="middle">WIN</text>
+    </svg>
+    <div class="celeb-amt" id="celebAmt"></div>
+    <div class="dogtag" id="dogTag" aria-hidden="true">
+      <div class="dogtag-chains" aria-hidden="true"></div>
+      <div class="dogtag-disc">
+        <div class="dogtag-hole"></div>
+        <div class="dogtag-amt" id="dogTagAmt"></div>
+        <div class="dogtag-unit">CREDITS</div>
+        <div class="dogtag-paws" aria-hidden="true">
+          <svg viewBox="-30 -25 60 50"><use href="#dtPaw"/></svg>
+          <svg viewBox="-30 -25 60 50"><use href="#dtPaw"/></svg>
+          <svg viewBox="-30 -25 60 50"><use href="#dtPaw"/></svg>
+        </div>
+      </div>
+    </div>
     <div class="celeb-sub" id="celebSub"></div>
     <div class="celeb-tap">TAP TO SKIP ▸</div>
   </div>

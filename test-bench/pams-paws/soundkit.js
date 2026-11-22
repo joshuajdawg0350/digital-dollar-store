@@ -38,6 +38,9 @@ window.SlotKit = (() => {
   const buffers = {}, loading = {}, failed = {};
   const active = []; /* { src, group, name } */
   const plays = [];
+  const playsDetailed = []; /* debug twin of plays: {name, group, t} per play —
+    lets QA tell the silver-paw dings (group 'paw') apart from the win
+    fanfare's bell arpeggio (group 'winfx'), which shares the bell file. */
 
   function ctx() {
     if (!getCtx) return null;
@@ -83,6 +86,7 @@ window.SlotKit = (() => {
     src.onended = () => { const i = active.indexOf(rec); if (i >= 0) active.splice(i, 1); };
     src.start(a.currentTime + (o.delay || 0));
     plays.push(name);
+    playsDetailed.push({ name, group, t: Date.now() });
     return true;
   }
   function stopAll() {
@@ -164,6 +168,16 @@ window.SlotKit = (() => {
       play('coin', { group: 'winfx', cut: false, delay: 0.7, gain: 0.8 });
     }
   }
+  /* SILVER PAW DING (Pam's request, relayed by Joshua 2026-11-22):
+     when a silver paw — the chrome SCATTER — lands on a stopping reel,
+     one clear strike of the real service bell (bell.mp3, the kit's real
+     recording). One ding per paw, cut:false so paws landing on
+     back-to-back reels each ring out and can be counted by ear —
+     1-2-3 silver paws = the free-spins trigger — without watching the
+     reels. Full gain: it has to carry over the reel bed on a phone
+     speaker. Fired from the cabinet's reel-stop, never at spin start
+     and never at payout. */
+  function pawDing() { play('bell', { group: 'paw', cut: false, gain: 1 }); }
   function jackpot() {
     play('winBig', { group: 'win' });
     play('coins', { group: 'winfx', delay: 0.15, gain: 0.9 });
@@ -200,8 +214,8 @@ window.SlotKit = (() => {
   }
 
   return {
-    init, preload, play, stopAll, activeCount, plays,
-    win, jackpot, prize, risingDing, bankIt, dice, countTick,
+    init, preload, play, stopAll, activeCount, plays, playsDetailed,
+    win, jackpot, prize, risingDing, bankIt, dice, countTick, pawDing,
     rollStart, rollSpeed, rollStop, rollActive,
     fanfare: () => play('fanfare', { group: 'cel' }),
     fsFlourish: () => play('fsFlourish', { group: 'cel' }),

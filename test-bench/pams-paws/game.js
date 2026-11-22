@@ -36,7 +36,8 @@
   const reelsEl = [$('reel0'), $('reel1'), $('reel2'), $('reel3'), $('reel4')];
   const creditsEl = $('credits'), betEl = $('bet'), winEl = $('win'), msgEl = $('msg');
   const spinBtn = $('spinBtn'), betDownBtn = $('betDownBtn'), betUpBtn = $('betUpBtn'), maxBetBtn = $('maxBetBtn');
-  const celebEl = $('celeb'), celebKickEl = $('celebKick'), celebTitleEl = $('celebTitle'), celebSubEl = $('celebSub');
+  const celebEl = $('celeb'), celebKickEl = $('celebKick'), celebTitleEl = $('celebTitle'), celebSubEl = $('celebSub'), celebAmtEl = $('celebAmt');
+  const celebRainEl = $('celebRain'), dogTagAmtEl = $('dogTagAmt');
   const celebVideo = $('celebVideo');
   const wheelOverlay = $('wheelOverlay'), wheelMsg = $('wheelMsg'), wheelRotor = $('wheelRotor'), wheelPointer = $('wheelPointer'), wheelPawPrize = $('wheelPawPrize');
   const fsBanner = $('fsBanner'), newGameBtn = $('newGameBtn'), soundBtn = $('soundBtn');
@@ -165,6 +166,18 @@
     const track = reelsEl[reel].firstElementChild;
     if (track && track.children[row]) track.children[row].classList.add(cls);
   }
+  /* SILVER PAW LANDING POP (Joshua, 2026-11-22 — "my mom's paws land
+     just like those green dollar signs"): on a paw slam spin, each
+     landed silver paw swells big and settles as its reel stops. */
+  function popLandedPaws(r, grid) {
+    for (let row = 0; row < 3; row++) {
+      if (grid[r][row] !== 'SC') continue;
+      markCell(r, row, 'pawpop');
+      const track = reelsEl[r].firstElementChild;
+      const cell = track && track.children[row];
+      if (cell) setTimeout(() => cell.classList.remove('pawpop'), 950);
+    }
+  }
 
   /* Real-machine reel motion, driven by the shared physics in logic.js
      (createReelMotion — identical on all three cabinets): spin-UP from
@@ -181,7 +194,7 @@
      319.7 symbols/sec. Distance grows with the speed — the spin keeps
      its ~2-2.5s shape, the strip just travels ~20x farther. */
   const PEAK_SYM_PER_SEC = 319.7;
-  function spinReel(r, finalStops, duration) {
+  function spinReel(r, finalStops, duration, opts) {
     return new Promise(resolve => {
       const reel = reelsEl[r], H = cellH(r), strip = cfg.strips[r];
       const grid = core.windowForStops(cfg.strips, finalStops);
@@ -222,6 +235,18 @@
         track.innerHTML = grid[r].map(s => cellHTML(s, H)).join('');
         track.style.transform = 'translateY(0px)';
         sStop();
+        if (opts && opts.slam) {
+          Kit.thunk(); /* the slam hit — real-kit percussion, as the door machines land it */
+          const cab = $('cabinet');
+          if (cab) { cab.classList.remove('slamming'); void cab.offsetWidth; cab.classList.add('slamming'); }
+        }
+        /* Pam's silver-paw ding (2026-11-22): if THIS reel's dealt
+           window holds a silver paw (the chrome SCATTER), ring the
+           real casino bell once — at the exact moment the reel lands,
+           one ding per paw, so she can count 1-2-3 by ear. Non-paw
+           stops keep the plain thunk above; nothing dings at spin
+           start or at payout. */
+        if (grid[r].includes('SC')) Kit.pawDing();
         RollSound.reelDone();
         resolve();
       };
@@ -382,7 +407,7 @@
       `<div class="payrow"><div class="thumb"><img src="${ART.WD}" alt="WILD"></div><div class="nm">WILD</div><span class="pv wide">Substitutes for every symbol except SCATTER</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.X2}" alt="WIN ×2"></div><div class="nm">WIN ×2</div><span class="pv wide">Anywhere on a winning line, this line's win is DOUBLED (×2)</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.X3}" alt="WIN ×3"></div><div class="nm">WIN ×3</div><span class="pv wide">Anywhere on a winning line, this line's win is TRIPLED (×3). Two multipliers on the same line multiply together — ×2 and ×3 pay ×6</span></div>` +
-      `<div class="payrow"><div class="thumb"><img src="${ART.SC}" alt="SCATTER"></div><div class="nm">SCATTER</div><span class="pv wide">3+ anywhere: pays 2× / 8× / 40× total bet + 7 / 10 / 15 FREE SPINS at 2× line wins</span></div>` +
+      `<div class="payrow"><div class="thumb"><img src="${ART.SC}" alt="SCATTER"></div><div class="nm">SCATTER</div><span class="pv wide">3+ anywhere: pays 2× / 8× / 40× total bet + 7 / 10 / 15 FREE SPINS at 2× line wins. Every silver paw DINGS as its reel lands — count 1-2-3 by ear!</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.BN}" alt="BONUS"></div><div class="nm">BONUS — BUSTER'S BONES</div><span class="pv wide">3+ dog houses anywhere on a paid spin opens the yard: 9 houses — 8 hide BONES with amounts on them (½×–4× total bet), 1 hides BIG AL, the tall redheaded cowboy — pick him and the round ends (banked bones are kept). Clear all 8 bone houses for a 6× BUSTER BONUS</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.WH}" alt="WHEEL"></div><div class="nm">WHEEL — PEARL'S PAWS</div><span class="pv wide">The chrome WHEEL token rides reels 2, 3 and 4 — one in each of those windows on a paid spin opens Pearl's wheel. Every wedge pays little PAWS with amounts (× your total bet): MINI 8× · MINOR 15× · MAJOR 30× · GRAND 50× — and the GRAND wedge carries BIG AL himself: land on him for the top prize. Every wedge pays. Not the scatter: the plain chrome PAW is free spins, the WHEEL medallion is the wheel</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.BA}" alt="BALL"></div><div class="nm">BALL — FETCH!</div><span class="pv wide">3+ red balls anywhere on a paid spin can open FETCH! (about 1 in 162 spins): Buster chases the ball past 5 bone markers and the pot climbs 1× · 2× · 3× · 5× · 8× your total bet with every good throw. After each throw, BRING IT BACK to bank the pot safe or THROW AGAIN to grow it — a butterfly can make Buster drop the ball and that pot is gone (banked pots are always safe). 3 balls — bank all 3 at the full 8× and a 15× PERFECT GAME bonus makes 39× in all</span></div>` +
@@ -421,12 +446,46 @@
      A bonus or free-spins trigger NEVER cuts straight in: a full-cabinet
      celebration plays first (~3s, tap to skip ahead — never skips the
      prize itself). Input is locked by the overlay while it shows. */
-  function celebrate(kind, title, sub, durMs) {
+  /* Bone + paw rain for the dog-tag BIG WIN screen: flat shapes in the
+     reference's tan / gold / cream, falling + tumbling like confetti.
+     Built fresh per showing, torn down when the screen closes. */
+  function buildRain() {
+    const BONE = '<svg viewBox="-30 -20 60 40"><use href="#dtBone" fill="FILL"/></svg>';
+    const PAW = '<svg viewBox="-30 -25 60 50"><use href="#dtPaw" fill="FILL"/></svg>';
+    const fills = ['#e8b04b', '#d99a35', '#f0d49b', '#c9852e'];
+    let html = '';
+    for (let i = 0; i < 26; i++) {
+      const bone = i % 3 !== 2;
+      const size = Math.round(bone ? 26 + Math.random() * 30 : 20 + Math.random() * 22);
+      const left = (Math.random() * 96).toFixed(1);
+      const dur = (2.8 + Math.random() * 2.4).toFixed(2);
+      const delay = (-Math.random() * 5).toFixed(2);
+      const sway = Math.round(Math.random() * 70 - 35);
+      const spin = Math.round(Math.random() * 520 - 260);
+      const shape = (bone ? BONE : PAW).replace('FILL', fills[i % fills.length]);
+      html += `<span class="rain-piece" style="left:${left}%;width:${size}px;animation-duration:${dur}s;animation-delay:${delay}s;--sway:${sway}px;--spin:${spin}deg">${shape}</span>`;
+    }
+    celebRainEl.innerHTML = html;
+  }
+  function clearRain() { celebRainEl.innerHTML = ''; }
+
+  function celebrate(kind, title, sub, durMs, amt, theme) {
     return new Promise(res => {
       celebEl.className = 'celeb on k-' + kind;
       celebKickEl.textContent = kind === 'fs' ? 'FREE SPINS' : kind === 'win' ? 'BIG WIN' : kind === 'grand' ? 'JACKPOT' : 'BONUS';
       celebTitleEl.textContent = title;
       celebSubEl.textContent = sub || '';
+      /* Pam's big-win amount (2026-11-22): when a celebration carries a
+         win total, it renders in the giant gold .celeb-amt line between
+         the title and the sub — front and center, impossible to miss.
+         On the dog-tag screen (theme 'dogtag', the BIG WIN celebration)
+         the same amount is engraved on the silver tag instead. */
+      celebAmtEl.textContent = amt || '';
+      celebEl.classList.toggle('has-amt', !!amt);
+      const dogtag = theme === 'dogtag';
+      celebEl.classList.toggle('dogtag', dogtag);
+      dogTagAmtEl.textContent = amt ? String(amt).replace(/\s*CREDITS$/i, '') : '';
+      if (dogtag) buildRain(); else clearRain();
       celebEl.setAttribute('aria-hidden', 'false');
       document.body.classList.add('celebrating'); /* cabinet light-chase runs with the show */
       celebLock.arm(); /* minimum-view lock: no tap-skip for the first 2s */
@@ -441,7 +500,7 @@
          can't play, the CSS celebration underneath shows instead —
          never a black screen, never a hang. */
       let videoLive = false;
-      if (celebVideo) {
+      if (celebVideo && !dogtag) { /* the dog-tag screen is a designed card, no clip behind it */
         try {
           const CELEB_CLIPS = ['assets/celeb-big-catch.mp4', 'assets/celeb-treat-jar.mp4', 'assets/celeb-paw-trail.mp4'];
           const pick = CELEB_CLIPS[Math.floor(Math.random() * CELEB_CLIPS.length)];
@@ -468,6 +527,8 @@
         if (done) return;
         done = true;
         celebEl.classList.remove('on');
+        celebEl.classList.remove('dogtag');
+        clearRain();
         celebEl.setAttribute('aria-hidden', 'true');
         celebEl.removeEventListener('click', onTap);
         document.body.classList.remove('celebrating');
@@ -590,14 +651,27 @@
       const total = 360 * 6 + delta;
       const start = wheelAngle;
       const dur = 5600 + Math.random() * 700;
-      const easeOut = u => 1 - Math.pow(1 - u, 4.2);
-      let lastPeg = Math.floor(start / WSEG);
+      /* Spin profile (fixed 2026-11-22 — Joshua, watching Pam play:
+         "in the bonus wheel and that one spun all funny"): the old
+         quartic ease-out started at full speed and spent its last
+         second-plus nearly frozen (its final second covered ~3
+         degrees), then stopped dead — the funny spin. A real wheel
+         obeys friction: fast off the pull, velocity decaying
+         exponentially, still clearly travelling as it settles onto
+         the winning peg. This profile is exact at u=1, so the wheel
+         still lands precisely on the awarded wedge; its tail keeps
+         ~27 degrees of travel in the final second — a settle, not a
+         stall. Peg clicks now fire as a peg actually crosses the
+         pointer (pegs ride the wedge boundaries, half a wedge offset
+         from the centers the old counter used). */
+      const easeOut = u => (1 - Math.exp(-4.6 * u)) / (1 - Math.exp(-4.6));
+      let lastPeg = Math.floor((start + WSEG / 2) / WSEG);
       const t0 = performance.now();
       (function frame(now) {
         const u = Math.min(1, (now - t0) / dur);
         wheelAngle = start + total * easeOut(u);
         wheelRotor.setAttribute('transform', `rotate(${wheelAngle} 170 170)`);
-        const peg = Math.floor(wheelAngle / WSEG);
+        const peg = Math.floor((wheelAngle + WSEG / 2) / WSEG);
         if (peg !== lastPeg) {
           lastPeg = peg;
           if (u < 0.985) {
@@ -646,7 +720,7 @@
           if (tier === 'GRAND') {
             wheelMsg.innerHTML = `BIG AL — GRAND JACKPOT! The cowboy himself pays <b>${fmt(pay)}</b> credits!`;
             Kit.jackpot();
-            await celebrate('grand', 'GRAND JACKPOT!', `Pearl's biggest paw — ${fmt(pay)} credits!`, 5000);
+            await celebrate('grand', 'GRAND JACKPOT!', `Pearl's biggest paw — ${fmt(pay)} credits!`, 5000, `${fmt(pay)} CREDITS`);
           } else if (tier) {
             wheelMsg.innerHTML = `${tier} JACKPOT! The paw pays <b>${fmt(pay)}</b> credits!`;
             Kit.jackpot();
@@ -693,8 +767,31 @@
     setStopMode(true);
     msgEl.textContent = isFree ? `Free spin — ${freeSpinsLeft} left after this one. Wins pay double!` : 'Good luck!';
     const finalStops = core.randomStops(Math.random, cfg.strips);
-    const durations = [1700, 1900, 2100, 2300, 2500]; /* staggered stops, reel 1 first, ~200ms apart */
-    await Promise.all(finalStops.map((_, r) => spinReel(r, finalStops, durations[r])));
+    /* SILVER PAW SLAM SPIN (Joshua, 2026-11-22: "I want my mom's paws
+       to land just like those green dollar signs" — the landing he
+       approved on the Hustle City door machines, mirrored): when the
+       dealt grid carries 3+ silver paws, this spin performs — the
+       reels stop in sequence with long hangs (the slow crawl; reels
+       still turning after the second paw glow in anticipation), each
+       reel slams home (thunk + cabinet jolt in spinReel), every paw
+       DINGS as it lands (spinReel) and POPS big (popLandedPaws), a
+       beat passes, and then the free spins open. Paid spins only —
+       free-spin retriggers land normally, like the door machines. */
+    const dealtGrid = core.windowForStops(cfg.strips, finalStops);
+    const dealtEv = core.evaluateGrid(dealtGrid, lineBet(), cfg);
+    const pawSlam = !isFree && dealtEv.scatterCount >= 3;
+    const durations = pawSlam
+      ? [2000, 2650, 3300, 3950, 4900] /* sequential slams; the deciding reels hang longest */
+      : [1700, 1900, 2100, 2300, 2500]; /* staggered stops, reel 1 first, ~200ms apart */
+    if (pawSlam) {
+      const pawReels = [0, 1, 2, 3, 4].filter(r => dealtGrid[r].includes('SC'));
+      for (let r = pawReels[1] + 1; r < 5; r++) reelsEl[r].classList.add('paw-tease');
+    }
+    window.__pawSlam = pawSlam;
+    await Promise.all(finalStops.map((_, r) => spinReel(r, finalStops, durations[r], pawSlam ? { slam: true } : undefined)
+      .then(() => { reelsEl[r].classList.remove('paw-tease'); if (pawSlam) popLandedPaws(r, dealtGrid); })));
+    window.__pawSlam = false;
+    if (pawSlam) await new Promise(res => setTimeout(res, 500)); /* the beat after the last slam — then the show goes off */
     stops = finalStops;
     const grid = core.windowForStops(cfg.strips, stops);
     const ev = core.evaluateGrid(grid, lineBet(), cfg);
@@ -776,10 +873,25 @@
        2026-11-21 20:57 CT: "a celebration for every type of small bonus
        there is — or wheel, or five of a kind"). Fires before any bonus
        game on the same spin opens; free-spins retriggers already take
-       the FS celebration path above. */
+       the FS celebration path above.
+       BIG WIN (Pam's request, via Joshua 2026-11-22: "How about
+       something to show you a big win?"): any win of 10x the total bet
+       or more gets the DOG-TAG celebration screen — Joshua's pick #3
+       from the rendered options (12:41 CT): deep blue field, bones and
+       paws raining like confetti, chunky gold BIG WIN letters, and the
+       amount engraved on a big silver dog tag hanging below them —
+       held the full celebDur() (~5s) under the same 2-second
+       minimum-view lock as every bonus screen, so it can't be tapped
+       past before she's had a real look at it. A five-of-a-kind that
+       is also a big win gets ONE combined celebration, not two. */
     const w5 = ev.lineWins.find(w => w.count >= 5);
-    if (w5) {
-      await celebrate('win', 'FIVE OF A KIND!', `Five ${NAMES[w5.symbol]} on one line — celebration time!`, celebDur());
+    const BIG_WIN_RATIO = 10;
+    if (totalWin >= BIG_WIN_RATIO * totalBet()) {
+      await celebrate('win', 'BIG WIN!',
+        w5 ? `Five ${NAMES[w5.symbol]} on one line — look at that win!` : 'Look at that win!',
+        celebDur(), `${fmt(totalWin)} CREDITS`, 'dogtag');
+    } else if (w5) {
+      await celebrate('win', 'FIVE OF A KIND!', `Five ${NAMES[w5.symbol]} on one line — celebration time!`, celebDur(), totalWin > 0 ? `${fmt(totalWin)} CREDITS` : '');
     }
     if (bonusHit || fetchHit || wheelHit) {
       /* celebrate first, THEN the bonus games; any free spins won on this
@@ -1060,7 +1172,7 @@
   });
   spinBtn.addEventListener('click', () => {
     if (wheelArmed) { if (wheelLock.locked()) return; const f = wheelArmed; ac(); f(); return; }
-    if (spinning) { stopAllReels(); return; }
+    if (spinning) { if (!window.__pawSlam) stopAllReels(); return; } /* the paw slam performance is unskippable, like the door machines */
     ac(); doSpin(false);
   });
 

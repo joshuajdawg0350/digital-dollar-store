@@ -1,7 +1,7 @@
 /* Pearl's Paws and Buster's Bones — service worker. Cache-first app shell so the machine
    opens instantly and plays offline once visited. Bump the cache name on
    every published change. (c) 2026 J-Dawgs Industries. */
-const CACHE = 'pearls-paws-and-busters-bones-v9';
+const CACHE = 'pearls-paws-and-busters-bones-v10';
 const ASSETS = [
   './',
   'index.html',
