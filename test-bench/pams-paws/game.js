@@ -1,4 +1,4 @@
-/* Pearl's Paws — cabinet UI. Built 2026-11-21 at Joshua's order for his
+/* Pearl's Paws and Buster's Bones — cabinet UI. Built 2026-11-21 at Joshua's order for his
    mom Pam: the Casino Classics machine cloned 1:1 (same engine in logic.js,
    same strips/paytable/bonus math in machines.js — verified identical RTP
    98.02% in sim/rtp.js) and re-faced as a warm puppy machine: photoreal
@@ -23,12 +23,12 @@
   const ART = {
     GP: 'assets/sym-gp.webp', SP: 'assets/sym-sp.webp', CP: 'assets/sym-cp.webp',
     BO: 'assets/sym-bo.webp', BA: 'assets/sym-ba.webp', PW: 'assets/sym-pw.webp',
-    WD: 'assets/sym-wd.webp', SC: 'assets/sym-sc.webp', BN: 'assets/sym-bn.webp',
+    WD: 'assets/sym-wd.webp', SC: 'assets/sym-sc.webp', BN: 'assets/sym-bn.webp', WH: 'assets/sym-wh.webp',
     X2: 'assets/sym-x2.webp', X3: 'assets/sym-x3.webp'
   };
   const NAMES = {
-    GP: 'Golden Puppy', SP: 'Spot Puppy', CP: 'Cocoa Puppy', BO: 'Bone',
-    BA: 'Ball', PW: 'Paw Print', WD: 'WILD', SC: 'SCATTER', BN: 'BONUS',
+    GP: 'Brown Yorkie', SP: 'White Shih Tzu', CP: 'Shih Tzu Puppy', BO: 'Bone',
+    BA: 'Ball', PW: 'Paw Print', WD: 'WILD', SC: 'SCATTER', BN: 'BONUS', WH: 'WHEEL',
     X2: 'WIN ×2', X3: 'WIN ×3'
   };
 
@@ -37,6 +37,8 @@
   const creditsEl = $('credits'), betEl = $('bet'), winEl = $('win'), msgEl = $('msg');
   const spinBtn = $('spinBtn'), betDownBtn = $('betDownBtn'), betUpBtn = $('betUpBtn'), maxBetBtn = $('maxBetBtn');
   const celebEl = $('celeb'), celebKickEl = $('celebKick'), celebTitleEl = $('celebTitle'), celebSubEl = $('celebSub');
+  const celebVideo = $('celebVideo');
+  const wheelOverlay = $('wheelOverlay'), wheelMsg = $('wheelMsg'), wheelRotor = $('wheelRotor'), wheelPointer = $('wheelPointer'), wheelPawPrize = $('wheelPawPrize');
   const fsBanner = $('fsBanner'), newGameBtn = $('newGameBtn'), soundBtn = $('soundBtn');
   const spinFace = spinBtn.querySelector('.spin-face'), tierLineEl = $('tierLine');
   const soundStateEl = $('soundState'), winFlash = $('winFlash');
@@ -361,7 +363,8 @@
       `<div class="payrow"><div class="thumb"><img src="${ART.X2}" alt="WIN ×2"></div><div class="nm">WIN ×2</div><span class="pv wide">Anywhere on a winning line, this line's win is DOUBLED (×2)</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.X3}" alt="WIN ×3"></div><div class="nm">WIN ×3</div><span class="pv wide">Anywhere on a winning line, this line's win is TRIPLED (×3). Two multipliers on the same line multiply together — ×2 and ×3 pay ×6</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.SC}" alt="SCATTER"></div><div class="nm">SCATTER</div><span class="pv wide">3+ anywhere: pays 2× / 8× / 40× total bet + 7 / 10 / 15 FREE SPINS at 2× line wins</span></div>` +
-      `<div class="payrow"><div class="thumb"><img src="${ART.BN}" alt="BONUS"></div><div class="nm">BONUS — PICK A PUPPY HOUSE</div><span class="pv wide">3+ anywhere on a paid spin opens the yard: 9 dog houses — 8 hide prizes (½×–4× total bet), 1 hides BATH TIME. Banked prizes are kept; Bath Time ends it. Clear all 8 for a 6× PUPPY BONUS</span></div>` +
+      `<div class="payrow"><div class="thumb"><img src="${ART.BN}" alt="BONUS"></div><div class="nm">BONUS — BUSTER'S BONES</div><span class="pv wide">3+ dog houses anywhere on a paid spin opens the yard: 9 houses — 8 hide BONES with amounts on them (½×–4× total bet), 1 hides BIG AL, the tall redheaded cowboy — pick him and the round ends (banked bones are kept). Clear all 8 bone houses for a 6× BUSTER BONUS</span></div>` +
+      `<div class="payrow"><div class="thumb"><img src="${ART.WH}" alt="WHEEL"></div><div class="nm">WHEEL — PEARL'S PAWS</div><span class="pv wide">The gold WHEEL token rides reels 2, 3 and 4 — one in each of those windows on a paid spin opens Pearl's wheel. Every wedge pays little PAWS with amounts (× your total bet): MINI 8× · MINOR 15× · MAJOR 30× · GRAND 50× — and one wedge hides BIG AL, who pays nothing. Not the scatter: the plain gold PAW is free spins, the WHEEL medallion is the wheel</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.GP}" alt="BET"></div><div class="nm">BET</div><span class="pv wide">Bets run in $25 steps: $25, $50, $75 … all the way up to $2,500 a spin. A step unlocks the first time your balance reaches it — and stays unlocked even if your balance dips. Use the −25 / +25 buttons or MAX BET. NEW GAME resets you to a $25 bet</span></div>`;
   }
 
@@ -379,11 +382,39 @@
   function celebrate(kind, title, sub, durMs) {
     return new Promise(res => {
       celebEl.className = 'celeb on k-' + kind;
-      celebKickEl.textContent = kind === 'bonus' ? '★ BONUS ★' : '★ FREE SPINS ★';
+      celebKickEl.textContent = kind === 'fs' ? '★ FREE SPINS ★' : '★ BONUS ★';
       celebTitleEl.textContent = title;
       celebSubEl.textContent = sub || '';
       celebEl.setAttribute('aria-hidden', 'false');
-      if (kind === 'bonus') Kit.fanfare(); else Kit.fsFlourish();
+      document.body.classList.add('celebrating'); /* cabinet light-chase runs with the show */
+      /* The picked Puppy Party clip carries its own soundtrack (piano
+         flourish + payout + bell + soft coins, verified loud and clean),
+         so the kit stays quiet under the show — no double audio mush.
+         If the clip can't play at all, the kit fanfare covers the moment. */
+      /* the celebration SHOW: "Puppy Party" — the 5s clip Joshua picked
+         (2026-11-21 19:22 CT: puppies in party hats, confetti). If the
+         clip can't play, the CSS celebration underneath shows instead —
+         never a black screen, never a hang. */
+      let videoLive = false;
+      if (celebVideo) {
+        try {
+          celebVideo.classList.remove('dead');
+          const startAt = kind === 'grand' ? 2.5 : 0.2; /* grand starts on the finale half of the clip */
+          const seek = () => { try { celebVideo.currentTime = startAt; } catch (e) {} };
+          if (celebVideo.readyState >= 1) seek(); else celebVideo.addEventListener('loadedmetadata', seek, { once: true });
+          celebVideo.muted = false;
+          const p = celebVideo.play();
+          if (p && p.then) p.then(() => { videoLive = true; }).catch(() => {
+            /* autoplay-with-sound refused: retry muted (show still runs),
+               and let the kit fanfare cover the moment */
+            celebVideo.muted = true;
+            const p2 = celebVideo.play();
+            if (p2 && p2.catch) p2.catch(() => celebVideo.classList.add('dead'));
+            if (kind === 'fs') Kit.fsFlourish(); else Kit.fanfare();
+          });
+          celebVideo.onerror = () => celebVideo.classList.add('dead');
+        } catch (e) { celebVideo.classList.add('dead'); }
+      }
       let done = false;
       const finish = () => {
         if (done) return;
@@ -391,6 +422,8 @@
         celebEl.classList.remove('on');
         celebEl.setAttribute('aria-hidden', 'true');
         celebEl.removeEventListener('click', finish);
+        document.body.classList.remove('celebrating');
+        if (celebVideo) { try { celebVideo.pause(); } catch (e) {} }
         res();
       };
       celebEl.addEventListener('click', finish);
@@ -398,7 +431,195 @@
     });
   }
   /* bigger bets celebrate a touch longer/brighter */
-  function celebDur() { return 2600 + Math.min(900, totalBet() * 3); }
+  function celebDur() { return 5000; } /* the show runs ~5s (Joshua, 2026-11-21 18:53 CT), tap to skip */
+
+  /* ---------- PEARL'S PAWS — BONUS WHEEL (added 2026-11-21 at Joshua's
+     order: "do the wheel too" + tiered jackpots 18:56 CT + the realism
+     standard 18:56 CT + named Pearl's Paws 19:01 CT) ----------
+     A layered SVG wheel, not flat wedges on a disc: lit radial-gradient
+     wedges with raised separators, a machined brass rim with bolts, real
+     peg spheres at every boundary, a glass gloss that does NOT rotate,
+     and Big Al's face (Joshua's pick #2) on the bust wedge. Prizes are
+     presented as little black PAWS carrying gold amounts. The wedge table
+     is cfg.wheel — the same table the RTP simulator models. Physics mirror
+     the platform wheel: the winning wedge is drawn first, then the wheel
+     spins (hard launch, friction decay, real-kit peg clicks) and settles
+     exactly on it. */
+  const WEDGES = cfg.wheel, TIERS = cfg.wheelTiers || {};
+  const WSEG = 360 / WEDGES.length;
+  let wheelBuilt = false, wheelAngle = 0, wheelSpinning = false, wheelArmed = null;
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  function wedgeFill(v, i) {
+    if (v === 0) return 'url(#wgBust)';
+    if (TIERS[v] === 'GRAND') return 'url(#wgGrand)';
+    if (TIERS[v] === 'MAJOR') return 'url(#wgMajor)';
+    if (TIERS[v] === 'MINOR') return 'url(#wgMinor)';
+    if (TIERS[v] === 'MINI') return 'url(#wgMini)';
+    return i % 2 ? 'url(#wgA)' : 'url(#wgB)';
+  }
+  function buildWheel() {
+    if (wheelBuilt) return;
+    wheelBuilt = true;
+    /* machined bolts around the static brass rim */
+    const bolts = $('wheelBolts');
+    if (bolts) for (let i = 0; i < 12; i++) {
+      const a = (i * 30 - 90) * Math.PI / 180;
+      const b = document.createElementNS(SVGNS, 'circle');
+      b.setAttribute('cx', 170 + 165 * Math.cos(a)); b.setAttribute('cy', 170 + 165 * Math.sin(a));
+      b.setAttribute('r', 3.4); b.setAttribute('fill', 'url(#wgPeg)'); b.setAttribute('stroke', 'rgba(0,0,0,.55)'); b.setAttribute('stroke-width', '0.7');
+      bolts.appendChild(b);
+    }
+    const cx = 170, cy = 170, rO = 148, rI = 54;
+    const pt = (r, aDeg) => { const a = (aDeg - 90) * Math.PI / 180; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; };
+    WEDGES.forEach((v, i) => {
+      const a0 = i * WSEG - WSEG / 2, a1 = a0 + WSEG;
+      const [x0, y0] = pt(rO, a0), [x1, y1] = pt(rO, a1), [x2, y2] = pt(rI, a1), [x3, y3] = pt(rI, a0);
+      const p = document.createElementNS(SVGNS, 'path');
+      p.setAttribute('d', `M ${x0} ${y0} A ${rO} ${rO} 0 0 1 ${x1} ${y1} L ${x2} ${y2} A ${rI} ${rI} 0 0 0 ${x3} ${y3} Z`);
+      p.setAttribute('fill', wedgeFill(v, i));
+      p.setAttribute('stroke', 'rgba(20,10,0,.85)');
+      p.setAttribute('stroke-width', '1.6');
+      wheelRotor.appendChild(p);
+      /* label group at the wedge center angle */
+      const g = document.createElementNS(SVGNS, 'g');
+      const mid = i * WSEG;
+      g.setAttribute('transform', `rotate(${mid} ${cx} ${cy})`);
+      if (v !== 0 && TIERS[v] !== 'GRAND') {
+        const paw = document.createElementNS(SVGNS, 'use');
+        paw.setAttribute('href', '#wgPaw');
+        paw.setAttribute('transform', `translate(${cx} ${cy - rO + (TIERS[v] ? 20 : 26)}) scale(${TIERS[v] ? 0.5 : 0.62})`);
+        paw.setAttribute('fill', '#14100c');
+        paw.setAttribute('opacity', '0.92');
+        g.appendChild(paw);
+      }
+      if (TIERS[v]) {
+        if (TIERS[v] === 'GRAND') {
+          /* Big Al IS the grand prize (Joshua, 2026-11-21 19:32 CT):
+             his face rides the 50x wedge under the GRAND label */
+          const img = document.createElementNS(SVGNS, 'image');
+          img.setAttribute('href', 'assets/big-al-face.webp');
+          img.setAttribute('x', cx - 15); img.setAttribute('y', cy - rO + 4);
+          img.setAttribute('width', 30); img.setAttribute('height', 30);
+          img.setAttribute('clip-path', 'url(#grandClip)');
+          img.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+          g.appendChild(img);
+        }
+        const t1 = document.createElementNS(SVGNS, 'text');
+        t1.setAttribute('x', cx); t1.setAttribute('y', cy - rO + (TIERS[v] === 'GRAND' ? 48 : 56));
+        t1.setAttribute('class', 'wlabel tier');
+        t1.textContent = TIERS[v];
+        const t2 = document.createElementNS(SVGNS, 'text');
+        t2.setAttribute('x', cx); t2.setAttribute('y', cy - rO + (TIERS[v] === 'GRAND' ? 66 : 74));
+        t2.setAttribute('class', 'wlabel tierval');
+        t2.textContent = v + '×';
+        g.appendChild(t1); g.appendChild(t2);
+      } else {
+        const t = document.createElementNS(SVGNS, 'text');
+        t.setAttribute('x', cx); t.setAttribute('y', cy - rO + 66);
+        t.setAttribute('class', 'wlabel');
+        t.textContent = v + '×';
+        g.appendChild(t);
+      }
+      wheelRotor.appendChild(g);
+      /* a machined peg sphere on every boundary */
+      const [px, py] = pt(157, a0);
+      const peg = document.createElementNS(SVGNS, 'circle');
+      peg.setAttribute('cx', px); peg.setAttribute('cy', py); peg.setAttribute('r', 5.6);
+      peg.setAttribute('fill', 'url(#wgPeg)');
+      peg.setAttribute('stroke', 'rgba(0,0,0,.6)');
+      peg.setAttribute('stroke-width', '0.8');
+      wheelRotor.appendChild(peg);
+    });
+  }
+  function spinWheelPhysics(targetIdx) {
+    return new Promise(resolve => {
+      wheelSpinning = true;
+      const current = wheelAngle % 360;
+      let delta = ((-targetIdx * WSEG) - current) % 360;
+      if (delta < 0) delta += 360;
+      const total = 360 * 6 + delta;
+      const start = wheelAngle;
+      const dur = 5600 + Math.random() * 700;
+      const easeOut = u => 1 - Math.pow(1 - u, 4.2);
+      let lastPeg = Math.floor(start / WSEG);
+      const t0 = performance.now();
+      (function frame(now) {
+        const u = Math.min(1, (now - t0) / dur);
+        wheelAngle = start + total * easeOut(u);
+        wheelRotor.setAttribute('transform', `rotate(${wheelAngle} 170 170)`);
+        const peg = Math.floor(wheelAngle / WSEG);
+        if (peg !== lastPeg) {
+          lastPeg = peg;
+          if (u < 0.985) {
+            let nearGrand = false;
+            if (u > 0.8) {
+              const gCenter = WEDGES.indexOf(Math.max(...WEDGES)) * WSEG;
+              const ptr = (((-wheelAngle) % 360) + 360) % 360;
+              let d = Math.abs(ptr - gCenter); if (d > 180) d = 360 - d;
+              nearGrand = d < WSEG * 1.1;
+            }
+            if (nearGrand) Kit.nearBell(); else Kit.peg();
+            wheelPointer.classList.remove('flick'); void wheelPointer.offsetWidth; wheelPointer.classList.add('flick');
+          }
+        }
+        if (u < 1) requestAnimationFrame(frame);
+        else { wheelSpinning = false; resolve(); }
+      })(t0);
+    });
+  }
+  function runBonusWheel(betAtTrigger, forceIdx) {
+    return new Promise(resolve => {
+      buildWheel();
+      wheelOverlay.classList.add('on');
+      wheelOverlay.setAttribute('aria-hidden', 'false');
+      wheelPawPrize.classList.remove('on');
+      wheelMsg.textContent = 'Pull the arm — or tap SPIN!';
+      msgEl.textContent = "PEARL'S PAWS! Pull the arm or tap SPIN to spin the wheel!";
+      betDownBtn.disabled = true; betUpBtn.disabled = true; maxBetBtn.disabled = true;
+      spinBtn.disabled = false;
+      spinBtn.classList.remove('stop');
+      spinFace.textContent = 'SPIN THE WHEEL';
+      const lv = $('lever');
+      if (lv) { lv.classList.remove('off'); lv.setAttribute('aria-disabled', 'false'); }
+      wheelArmed = async () => {
+        wheelArmed = null;
+        const idx = (typeof forceIdx === 'number') ? forceIdx : Math.floor(Math.random() * WEDGES.length);
+        const val = WEDGES[idx];
+        wheelMsg.textContent = 'The wheel is spinning…';
+        await spinWheelPhysics(idx);
+        const pay = Math.round(val * betAtTrigger);
+        {
+          const tier = TIERS[val];
+          wheelPawPrize.querySelector('.paw-amt').textContent = '+' + fmt(pay);
+          wheelPawPrize.classList.add('on');
+          if (tier === 'GRAND') {
+            wheelMsg.innerHTML = `★ BIG AL — GRAND JACKPOT! The cowboy himself pays <b>${fmt(pay)}</b> credits! ★`;
+            Kit.jackpot();
+            await celebrate('grand', '★ GRAND JACKPOT! ★', `Pearl's biggest paw — ${fmt(pay)} credits!`, 5000);
+          } else if (tier) {
+            wheelMsg.innerHTML = `${tier} JACKPOT! The paw pays <b>${fmt(pay)}</b> credits!`;
+            Kit.jackpot();
+          } else {
+            wheelMsg.innerHTML = `The paw pays <b>${fmt(pay)}</b> credits!`;
+            Kit.win(val);
+          }
+        }
+        if (pay > 0) {
+          const before = parseInt(winEl.textContent.replace(/[^0-9]/g, ''), 10) || 0;
+          credits += pay;
+          await countUp(winEl, before, before + pay, Math.min(1500, 400 + pay));
+          renderReadouts(before + pay);
+          lastBonusPaid = pay;
+          save();
+        }
+        setTimeout(() => {
+          wheelOverlay.classList.remove('on');
+          wheelOverlay.setAttribute('aria-hidden', 'true');
+          resolve(pay);
+        }, 2100);
+      };
+    });
+  }
 
   /* ---------- spin flow ---------- */
   async function doSpin(isFree) {
@@ -435,8 +656,10 @@
       if (w.mult > 1 && w.multCells) for (const r of w.multCells) markCell(r, core.PAYLINES[w.line - 1][r], 'win');
     }
     if (ev.scatterCount >= 1) for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) if (grid[r][row] === 'SC') markCell(r, row, 'scatterhit');
-    const bonusHit = !isFree && ev.bonusCount >= 3; /* Pick a Puppy House: paid spins only */
+    const bonusHit = !isFree && ev.bonusCount >= 3; /* Buster's Bones: paid spins only */
     if (bonusHit) for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) if (grid[r][row] === 'BN') markCell(r, row, 'bonushit');
+    const wheelHit = !isFree && ev.wheelHit; /* Pearl's Paws wheel: paid spins only */
+    if (wheelHit) for (let r = 0; r < 5; r++) for (let row = 0; row < 3; row++) if (grid[r][row] === 'WH') markCell(r, row, 'bonushit');
 
     if (totalWin > 0) {
       winFlash.classList.add('on');
@@ -460,7 +683,7 @@
         spinning = false;
         setStopMode(false);
         /* celebration first, then the spins (Joshua, 12:54 CT) */
-        celebrate('fs', `${ev.freeSpins} FREE SPINS!`, 'Line wins pay DOUBLE — here they come!', 2400)
+        celebrate('fs', `${ev.freeSpins} FREE SPINS!`, 'Line wins pay DOUBLE — here they come!', 5000)
           .then(() => setTimeout(runFreeSpins, 350));
         return;
       }
@@ -479,7 +702,7 @@
         levelUpMsg = null;
       } else {
         msgEl.textContent = levelUpMsg || (lastBonusPaid > 0
-          ? `Pick a Puppy House paid ${fmt(lastBonusPaid)} credits!`
+          ? `Bonus paid ${fmt(lastBonusPaid)} credits!`
           : totalWin > 0
             ? (ev.lineWins.length ? `Winner! ${ev.lineWins.map(w => `${w.count}× ${NAMES[w.symbol]}${w.mult > 1 ? ` (×${w.mult})` : ''}`).join(' · ')}` : 'Scatter pay!')
             : 'Set your bet, then press SPIN — or pull the arm.');
@@ -491,22 +714,38 @@
       spinning = false;
       setControlsEnabled(true);
     };
-    if (bonusHit) {
-      /* celebrate first, THEN the garage; any free spins won on this spin
-         run after it (Joshua, 12:52 CT) */
-      msgEl.textContent = `${ev.bonusCount} BONUS dog houses — the yard is open!`;
-      await celebrate('bonus', 'PICK A PUPPY HOUSE!', `${ev.bonusCount} BONUS dog houses hit — pick your houses!`, celebDur());
-      openBonus(totalBet(), finishTurn);
+    if (bonusHit || wheelHit) {
+      /* celebrate first, THEN the bonus games; any free spins won on this
+         spin run after them (platform order: bonuses first, free spins
+         after). Both bonuses on one spin: Buster's Bones, then the wheel. */
+      const tb = totalBet();
+      if (bonusHit) {
+        msgEl.textContent = `${ev.bonusCount} BONUS dog houses — the yard is open!`;
+        await celebrate('bonus', "BUSTER'S BONES!", `${ev.bonusCount} BONUS dog houses hit — pick your houses!`, celebDur());
+        openBonus(tb, async () => {
+          if (wheelHit) {
+            await celebrate('bonus', "PEARL'S PAWS!", 'The wheel tokens lit all three middle reels — spin the wheel!', celebDur());
+            await runBonusWheel(tb);
+          }
+          finishTurn();
+        });
+        return;
+      }
+      msgEl.textContent = 'WHEEL tokens on reels 2, 3 and 4 — the wheel is open!';
+      await celebrate('bonus', "PEARL'S PAWS!", 'The wheel tokens lit all three middle reels — spin the wheel!', celebDur());
+      await runBonusWheel(tb);
+      finishTurn();
       return;
     }
     finishTurn();
   }
 
-  /* ---------- PICK A PUPPY HOUSE bonus ----------
-     9 dog houses: 8 prizes (x total bet of the triggering spin) + 1 BATH
-     TIME. Banked prizes are KEPT even when Bath Time ends the round;
-     clearing all 8 safe houses adds the completion (PUPPY) bonus. Same
-     math as Pick-a-Garage, exactly. */
+  /* ---------- BUSTER'S BONES bonus (the Pick a Puppy House game, renamed
+     by Joshua 2026-11-21 19:01 CT) ----------
+     9 dog houses: 8 hide BONES with amounts on them (x total bet of the
+     triggering spin) + 1 hides BIG AL (Joshua's picked cowboy, candidate
+     #2). Banked bones are KEPT even when Big Al ends the round; clearing
+     all 8 bone houses adds the completion (BUSTER) bonus. Math unchanged. */
   let bonusDeck = null, lastBonusPaid = 0;
   function openBonus(tb, done) {
     setControlsEnabled(false);
@@ -534,9 +773,9 @@
         if (card.scotty) {
           over = true;
           b.classList.add('scotty');
-          b.innerHTML = `<img src="assets/house-open.webp" alt="" draggable="false"><span class="busted-tag">BATH TIME!</span>`;
-          Kit.bust(); /* the shared bust sting — splash, round over */
-          bonusResultEl.innerHTML = `<img class="scotty-img" src="assets/bath.webp" alt="A puppy in the bath">BATH TIME! That house was hiding a bath! Bonus over — you keep your banked <b>${fmt(banked)}</b> credits. Only the un-picked houses are lost.`;
+          b.innerHTML = `<img src="assets/house-open.webp" alt="" draggable="false"><span class="busted-tag">BIG AL!</span>`;
+          Kit.bust(); /* the shared bust sting — round over */
+          bonusResultEl.innerHTML = `<img class="scotty-img" src="assets/big-al.webp" alt="Big Al, a tall redheaded cowboy with a big red mustache, tipping his hat from inside a dog house">BIG AL! That house was hiding Big Al — the tall redheaded cowboy himself! Bonus over — you keep your banked <b>${fmt(banked)}</b> credits. Only the un-picked houses are lost.`;
           bonusCollectBtn.textContent = `COLLECT ${fmt(banked)}`;
           bonusCollectBtn.classList.add('on');
           setTimeout(() => bonusGame.scrollTo({ top: bonusGame.scrollHeight, behavior: 'smooth' }), 60);
@@ -544,7 +783,7 @@
         }
         banked += card.prize;
         safePicked++;
-        b.innerHTML = `<img src="assets/house-open.webp" alt="" draggable="false"><span class="prize">+${fmt(card.prize)}</span>`;
+        b.innerHTML = `<img src="assets/house-open.webp" alt="" draggable="false"><span class="prize"><img class="prize-bone" src="assets/sym-bo.webp" alt="" draggable="false"><span class="prize-amt">+${fmt(card.prize)}</span></span>`;
         /* rising prize dings as the bank grows; deep picks get tension */
         setTimeout(() => Kit.prize(safePicked - 1), 130);
         if (safePicked >= 5) setTimeout(() => Kit.tension(), 420);
@@ -554,7 +793,7 @@
           banked += completion;
           bonusBankEl.textContent = fmt(banked);
           Kit.jackpot(); /* full clear = the jackpot celebration */
-          bonusResultEl.innerHTML = `<span class="clear-title">YOU CLEARED THE YARD!</span><br>All 8 houses opened and no bath in sight — PUPPY BONUS +${fmt(completion)} credits. Total banked: <b>${fmt(banked)}</b>.`;
+          bonusResultEl.innerHTML = `<span class="clear-title">YOU CLEARED THE YARD!</span><br>All 8 bone houses opened and no Big Al in sight — BUSTER BONUS +${fmt(completion)} credits. Total banked: <b>${fmt(banked)}</b>.`;
           bonusCollectBtn.textContent = `COLLECT ${fmt(banked)}`;
           bonusCollectBtn.classList.add('on');
           setTimeout(() => bonusGame.scrollTo({ top: bonusGame.scrollHeight, behavior: 'smooth' }), 60);
@@ -585,13 +824,21 @@
     openBonus: tb => openBonus(tb || totalBet(), () => setControlsEnabled(true)),
     deck: () => bonusDeck,
     setCredits: n => { credits = Math.max(0, n | 0); notePeak(false); renderReadouts(); newGameBtn.classList.toggle('on', credits < totalBet()); save(); },
-    celebrate: (kind, title, sub, dur) => celebrate(kind || 'bonus', title || 'PICK A PUPPY HOUSE!', sub || '', dur || 3000),
+    celebrate: (kind, title, sub, dur) => celebrate(kind || 'bonus', title || "BUSTER'S BONES!", sub || '', dur || 5000),
+    wheel: forceIdx => runBonusWheel(totalBet(), forceIdx),
     kit: Kit,
-    getState: () => ({ credits, bet: betSel, betPerLine: lineBet(), maxBet: unlockedMax(), peak, spinning, rolling: RollSound.isActive(), rollLevel: Math.round(RollSound.level() * 100) / 100, stops: stops.slice() })
+    getState: () => ({ credits, bet: betSel, betPerLine: lineBet(), maxBet: unlockedMax(), peak, spinning, wheelArmed: !!wheelArmed, wheelSpinning, rolling: RollSound.isActive(), rollLevel: Math.round(RollSound.level() * 100) / 100, stops: stops.slice() })
   };
   function runFreeSpins() { if (freeSpinsLeft > 0 && !spinning) doSpin(true); }
 
-  spinBtn.addEventListener('click', () => { if (spinning) { stopAllReels(); return; } ac(); doSpin(false); });
+  $('wheelSpinBtn').addEventListener('click', () => {
+    if (wheelArmed) { const f = wheelArmed; ac(); f(); }
+  });
+  spinBtn.addEventListener('click', () => {
+    if (wheelArmed) { const f = wheelArmed; ac(); f(); return; }
+    if (spinning) { stopAllReels(); return; }
+    ac(); doSpin(false);
+  });
 
   /* ---------- pull arm (lever): drag it down, it springs back and spins.
      Tap = scripted full pull. Both paths fire the exact SPIN button path. ---------- */

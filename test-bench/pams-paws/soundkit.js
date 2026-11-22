@@ -144,6 +144,25 @@ window.SlotKit = (() => {
     if (ratio >= 25) { play('winBig', { group: 'win' }); play('coins', { group: 'winfx', delay: 0.18, gain: 0.8 }); }
     else if (ratio >= 4) play('winMed', { group: 'win' });
     else play('winSmall', { group: 'win' });
+    if (ratio >= 4) goodSpin(ratio);
+  }
+  /* GOOD-SPIN response (Joshua, 2026-11-21 18:52 CT — Pearl's Paws and
+     Buster's Bones only): a win at or above the medium tier gets an
+     unmistakable excitement answer ON TOP of the win tier — a rising bell
+     arpeggio plus a coin shower, scaled to the win. All plays pass
+     cut:false so the arpeggio notes layer instead of cutting each other
+     (or the win jingle) off. */
+  function goodSpin(ratio) {
+    const big = ratio >= 25;
+    play('bell', { group: 'winfx', cut: false, delay: 0.05, rate: 1, gain: 0.75 });
+    play('bell', { group: 'winfx', cut: false, delay: 0.17, rate: 1.19, gain: 0.8 });
+    play('bell', { group: 'winfx', cut: false, delay: 0.29, rate: 1.335, gain: 0.85 });
+    play('coins', { group: 'winfx', cut: false, delay: 0.22, gain: big ? 0.95 : 0.7 });
+    if (big) {
+      play('bell', { group: 'winfx', cut: false, delay: 0.41, rate: 1.5, gain: 0.9 });
+      play('coins', { group: 'winfx', cut: false, delay: 0.55, gain: 0.9 });
+      play('coin', { group: 'winfx', cut: false, delay: 0.7, gain: 0.8 });
+    }
   }
   function jackpot() {
     play('winBig', { group: 'win' });

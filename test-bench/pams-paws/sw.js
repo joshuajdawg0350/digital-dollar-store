@@ -1,7 +1,7 @@
-/* Pearl's Paws — service worker. Cache-first app shell so the machine
+/* Pearl's Paws and Buster's Bones — service worker. Cache-first app shell so the machine
    opens instantly and plays offline once visited. Bump the cache name on
    every published change. (c) 2026 J-Dawgs Industries. */
-const CACHE = 'pearls-paws-v1';
+const CACHE = 'pearls-paws-and-busters-bones-v4';
 const ASSETS = [
   './',
   'index.html',
@@ -20,7 +20,9 @@ const ASSETS = [
   'assets/yard-bg.webp',
   'assets/house-closed.webp',
   'assets/house-open.webp',
-  'assets/bath.webp',
+  'assets/big-al.webp',
+  'assets/big-al-face.webp',
+  'assets/celeb-show.mp4',
   'assets/sym-gp.webp',
   'assets/sym-sp.webp',
   'assets/sym-cp.webp',
@@ -30,6 +32,7 @@ const ASSETS = [
   'assets/sym-wd.webp',
   'assets/sym-sc.webp',
   'assets/sym-bn.webp',
+  'assets/sym-wh.webp',
   'assets/sym-x2.webp',
   'assets/sym-x3.webp',
   'assets/sfx/bell.mp3',

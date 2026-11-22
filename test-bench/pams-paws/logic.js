@@ -89,7 +89,9 @@ function evaluateGrid(grid, lineBet, cfg) {
   const capped = Math.min(scatterCount, 5);
   const scatterPay = scatterCount >= 3 ? cfg.scatterPay[capped] * totalBet : 0;
   const freeSpins = scatterCount >= 3 ? cfg.scatterSpins[capped] : 0;
-  return { lineWins, lineWinTotal, scatterCount, scatterPay, freeSpins, bonusCount };
+  /* BONUS WHEEL trigger: a WHEEL token in each of the reel 2, 3 and 4 windows */
+  const wheelHit = [1, 2, 3].every(r => grid[r].includes('WH'));
+  return { lineWins, lineWinTotal, scatterCount, scatterPay, freeSpins, bonusCount, wheelHit };
 }
 
 /* Reel motion model (pure + node-testable) — the SAME physics on all

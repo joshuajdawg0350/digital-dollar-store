@@ -1,4 +1,4 @@
-/* Pearl's Paws — presentation. The Casino Classics v2 cabinet (chrome realism
+/* Pearl's Paws and Buster's Bones — presentation. The Casino Classics v2 cabinet (chrome realism
    deck, belly glass, coin tray, pull arm) re-lit warm: amber/gold accents on
    warm near-black for Pam's puppy machine. Structure identical to Classics.
    House look: chrome/silver + electric blue on near-black. Background/cabinet
@@ -53,14 +53,14 @@ body {
   border-radius: 26px;
   padding: 12px 12px 10px;
   background:
-    linear-gradient(165deg, #3a434f 0%, #171c24 14%, #0a0d12 38%, #131922 62%, #0d0703 100%);
-  border: 1px solid #59667a;
+    linear-gradient(165deg, #33373d 0%, #17181c 16%, #0a0a0c 42%, #131417 64%, #08080a 100%);
+  border: 1px solid #5c6672;
   box-shadow:
-    0 0 0 2px #0d0703,
-    0 0 34px rgba(255, 166, 43, .35),
+    0 0 0 2px #060607,
+    0 0 34px rgba(215, 222, 231, .16),
     0 24px 60px rgba(0, 0, 0, .85),
-    inset 0 1px 0 rgba(255, 255, 255, .28),
-    inset 0 0 0 1px rgba(143, 212, 255, .08);
+    inset 0 1px 0 rgba(255, 255, 255, .30),
+    inset 0 0 0 1px rgba(215, 222, 231, .07);
 }
 .cabinet::before, .cabinet::after {
   content: "";
@@ -1029,3 +1029,270 @@ body {
   box-shadow: inset 0 0 24px rgba(0, 0, 0, .50);
 }
 @media (max-width: 400px) { .cab-base { height: 56px; } }
+
+/* ---------- CELEBRATION SHOW — real video clip (2026-11-21) ----------
+   Joshua: "make it a show — some kind of celebration, an exciting
+   celebration — a five second clip they can skip if they want." The clip
+   (golden fireworks, CC BY-SA 4.0 — credit in the paytable sheet) fills
+   the celebration screen behind the frame; if it can't load/play it
+   hides itself and the CSS celebration underneath carries the moment. */
+.celeb-video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: .85;
+  pointer-events: none;
+}
+.celeb-video.dead { display: none; }
+.celeb .celeb-frame { position: relative; z-index: 2; background: linear-gradient(180deg, rgba(16, 10, 2, .55), rgba(6, 3, 0, .72)); }
+/* the cabinet light-chase runs with the show */
+body.celebrating .marquee-wrap { animation: cabChase .8s linear infinite; }
+@keyframes cabChase {
+  0% { filter: brightness(1) drop-shadow(0 0 6px rgba(240, 244, 248, .32)); }
+  50% { filter: brightness(1.22) drop-shadow(0 0 18px rgba(245, 248, 251, .72)); }
+  100% { filter: brightness(1) drop-shadow(0 0 6px rgba(240, 244, 248, .32)); }
+}
+.celeb.k-grand .celeb-frame { border-color: #ffe98a; box-shadow: 0 0 54px rgba(255, 205, 60, .85), inset 0 0 30px rgba(255, 205, 60, .25); }
+.celeb.k-grand .celeb-title { color: #fff3b0; text-shadow: 0 0 26px rgba(255, 205, 60, .95), 0 2px 0 #4a2c00; }
+
+/* ---------- BUSTER'S BONES prize reveal: a white bone carrying its amount ---------- */
+.trunk .prize {
+  width: 96px; height: 42px;
+  padding: 0;
+  background: none;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+}
+.trunk .prize .prize-bone {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  border-radius: 9px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, .65), 0 0 12px rgba(255, 190, 80, .45);
+}
+.trunk .prize .prize-amt {
+  position: relative; z-index: 2;
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 100%;
+  font-size: 15px; font-weight: 900; letter-spacing: .01em;
+  color: #3a2002;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .75), 0 0 6px rgba(255, 255, 255, .5);
+}
+
+/* ---------- PEARL'S PAWS — BONUS WHEEL overlay (2026-11-21) ----------
+   The wheel itself is a layered SVG (lit wedges, machined brass rim,
+   peg spheres, Big Al's face on the bust wedge) built by game.js; the
+   gloss below is a still sheen of light over it — light doesn't rotate. */
+.wheel-overlay {
+  position: fixed; inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  background: rgba(24, 26, 30, .82);
+}
+.wheel-overlay.on { display: flex; }
+.wheel-card {
+  pointer-events: auto;
+  width: min(100%, 430px);
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+  border-radius: 22px;
+  padding: 18px 16px 16px;
+  text-align: center;
+  background:
+    radial-gradient(120% 60% at 50% 0%, rgba(255, 255, 255, .9) 0%, transparent 60%),
+    linear-gradient(170deg, #ffffff 0%, #f1f3f5 55%, #e2e6ea 100%);
+  border: 1px solid #aeb6bf;
+  box-shadow: 0 0 0 2px rgba(120, 130, 142, .35), 0 0 44px rgba(255, 255, 255, .25), 0 24px 60px rgba(0, 0, 0, .55);
+}
+.wheel-title {
+  font-size: 24px; font-weight: 900; letter-spacing: .12em;
+  color: #23272c;
+  text-shadow: 0 1px 0 #fff, 0 0 18px rgba(160, 170, 182, .5);
+}
+.wheel-rules { margin-top: 8px; font-size: 13.5px; line-height: 1.55; color: #4c4436; }
+.wheel-rules .gold { color: #8a5f04; }
+.wheel-rules .bad { color: #b03a10; }
+.wheel-wrap {
+  position: relative;
+  width: min(76vw, 320px);
+  aspect-ratio: 1;
+  margin: 16px auto 6px;
+}
+.wheel-wrap::before {
+  content: ""; position: absolute; inset: -11px; border-radius: 50%; z-index: 0;
+  background: conic-gradient(from 210deg, #7e8a99, #2c3138 25%, #c3ccd6 50%, #22262c 75%, #7e8a99);
+  box-shadow: 0 18px 34px rgba(0, 0, 0, .75), inset 0 2px 3px rgba(255, 240, 200, .35), inset 0 -3px 7px rgba(0, 0, 0, .75);
+}
+.wheel-svg {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  z-index: 1;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, .55));
+}
+.wheel-svg .wlabel {
+  font-size: 15px; font-weight: 900; letter-spacing: .03em;
+  fill: #241c10; text-anchor: middle;
+}
+.wheel-svg .wlabel.tier { font-size: 12px; fill: #31404e; letter-spacing: .08em; }
+.wheel-svg .wlabel.tierval { font-size: 14.5px; fill: #241c10; }
+.wheel-svg .wlabel.bust { font-size: 10.5px; fill: #ffe9bb; }
+.wheel-gloss {
+  position: absolute; inset: 0; border-radius: 50%;
+  z-index: 2; pointer-events: none;
+  background:
+    radial-gradient(ellipse 65% 42% at 32% 16%, rgba(255, 255, 255, .20) 0%, rgba(255, 255, 255, .05) 46%, transparent 70%),
+    radial-gradient(ellipse 120% 120% at 50% 50%, transparent 72%, rgba(0, 0, 0, .18) 100%);
+}
+.wheel-pointer {
+  position: absolute;
+  left: 50%; top: -15px;
+  z-index: 3;
+  width: 0; height: 0;
+  transform: translateX(-50%);
+  border-left: 11px solid transparent;
+  border-right: 11px solid transparent;
+  border-top: 20px solid #2b2f36;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8));
+  transform-origin: 50% 0;
+}
+.wheel-pointer.flick { animation: ptrFlick .18s ease-out; }
+@keyframes ptrFlick { 0% { transform: translateX(-50%) rotate(-16deg); } 100% { transform: translateX(-50%) rotate(0deg); } }
+.wheel-paw-prize {
+  display: none;
+  position: relative;
+  width: 104px; height: 104px;
+  margin: 8px auto 0;
+}
+.wheel-paw-prize.on { display: block; animation: celebPop .45s ease-out; }
+.wheel-paw-prize img { width: 100%; height: 100%; display: block; }
+.wheel-paw-prize .paw-amt {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  padding-top: 26px;
+  font-size: 19px; font-weight: 900;
+  color: #ffd94d;
+  text-shadow: 0 2px 3px #000, 0 0 10px rgba(0, 0, 0, .9), 0 0 18px rgba(255, 198, 26, .5);
+}
+.wheel-msg { margin-top: 10px; font-size: 15px; line-height: 1.5; color: #33302a; min-height: 24px; }
+
+/* ---------- CABINET DRESS-UP (Joshua, 2026-11-21 19:02 CT; palette
+   corrected 19:15 CT — NO GOLD on this cabinet) ----------
+   "Let's dress up the cabinet really nice" — a finish pass on this
+   machine only: polished CHROME trim, a dressed marquee frame, warm
+   cream panels and warm-white lighting. Presentation only — no layout,
+   geometry, control position or behavior changes. */
+.cabinet {
+  box-shadow: 0 0 0 1px rgba(240, 244, 248, .30), 0 0 34px rgba(235, 240, 246, .11), 0 30px 60px rgba(0, 0, 0, .8);
+}
+.marquee-wrap {
+  border: 2px solid transparent;
+  border-radius: 14px;
+  background:
+    linear-gradient(#000, #000) padding-box,
+    linear-gradient(160deg, #ffffff 0%, #c3ccd6 30%, #7e8a99 52%, #eef2f6 78%, #98a5b5 100%) border-box;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, .65), 0 0 22px rgba(235, 240, 246, .26), inset 0 0 0 1px rgba(0, 0, 0, .6);
+}
+.deck {
+  box-shadow: inset 0 1px 0 rgba(240, 244, 248, .32), inset 0 -2px 6px rgba(0, 0, 0, .6), 0 2px 0 rgba(240, 244, 248, .18);
+}
+.belly-frame {
+  border: 2px solid transparent;
+  background:
+    linear-gradient(#0a0a0c, #0a0a0c) padding-box,
+    linear-gradient(165deg, #ffffff, #c3ccd6 38%, #7e8a99 60%, #eef2f6) border-box;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, .7), 0 0 18px rgba(235, 240, 246, .18);
+}
+.belly-art { filter: saturate(1.10) brightness(1.07) contrast(1.02); }
+.tray {
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, .75), inset 0 -1px 0 rgba(240, 244, 248, .28), 0 0 16px rgba(235, 240, 246, .10);
+}
+.tray-art { filter: saturate(1.08) brightness(1.06); }
+/* paw-print inlays worked into the deck corners (inline SVG, cream) */
+.deck::after {
+  content: "";
+  position: absolute;
+  right: 10px; bottom: 6px;
+  width: 17px; height: 17px;
+  opacity: .45;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='%23d7dee7'%3E%3Cellipse cx='50' cy='66' rx='24' ry='19'/%3E%3Cellipse cx='18' cy='44' rx='10' ry='13' transform='rotate(-18 18 44)'/%3E%3Cellipse cx='38' cy='28' rx='10.5' ry='14' transform='rotate(-6 38 28)'/%3E%3Cellipse cx='62' cy='28' rx='10.5' ry='14' transform='rotate(6 62 28)'/%3E%3Cellipse cx='82' cy='44' rx='10' ry='13' transform='rotate(18 82 44)'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+  pointer-events: none;
+}
+
+/* tier line: the full "…UNLOCKS AT … BALANCE" sentence must fit (it was
+   clipped to "BALANC" at phone sizes) */
+.tier-line { letter-spacing: .03em; font-size: clamp(8.5px, 2.55vw, 10.5px); }
+
+/* ---------- WHITE MODERN MINIMAL cabinet (Joshua's pick #10, 2026-11-21
+   19:21 CT — "use 10 for my mom's too") ----------
+   Glossy white body, slim polished-chrome trim, soft neutral light.
+   Supersedes the smoke-gray finish. The reel glass, readout bezels and
+   game sheets stay dark glass insets, exactly like the example's black
+   screen set into the white body. No layout/geometry changes. */
+body { background: #e8e4de; }
+.room {
+  background:
+    radial-gradient(120% 55% at 50% -8%, rgba(255, 255, 255, .95) 0%, rgba(255, 255, 255, 0) 55%),
+    radial-gradient(90% 40% at 50% 112%, rgba(150, 140, 125, .18) 0%, transparent 60%),
+    linear-gradient(180deg, #f4f1ec 0%, #e8e4de 55%, #d8d3cb 100%);
+}
+.cabinet {
+  background: linear-gradient(168deg, #ffffff 0%, #eef0f2 34%, #dde2e7 68%, #f7f8f9 100%);
+  border: 1px solid #a7b0ba;
+  box-shadow:
+    0 0 0 2px #fbfcfd,
+    0 0 34px rgba(255, 255, 255, .5),
+    0 24px 55px rgba(70, 66, 60, .35),
+    inset 0 1px 0 rgba(255, 255, 255, .9),
+    inset 0 0 0 1px rgba(140, 150, 162, .25);
+}
+.cabinet::before, .cabinet::after {
+  background: linear-gradient(180deg, transparent, #ffffff 18%, #c9d2db 50%, #ffffff 82%, transparent);
+  box-shadow: 0 0 10px rgba(255, 255, 255, .9), 0 0 22px rgba(190, 200, 212, .55);
+}
+.marquee-wrap {
+  background:
+    linear-gradient(#fdfdfd, #fdfdfd) padding-box,
+    linear-gradient(160deg, #ffffff 0%, #c3ccd6 30%, #7e8a99 52%, #eef2f6 78%, #98a5b5 100%) border-box;
+  box-shadow: 0 4px 16px rgba(80, 76, 70, .28), 0 0 20px rgba(255, 255, 255, .55), inset 0 0 0 1px rgba(120, 130, 142, .35);
+}
+.deck {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .90) 0%, rgba(233, 237, 240, .92) 52%, rgba(206, 213, 220, .95) 100%),
+    url('assets/deck-plate.webp') center / cover no-repeat,
+    #dfe3e8;
+  border: 1px solid #9aa5b1;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    inset 0 0 0 1px rgba(255, 255, 255, .5),
+    inset 0 -14px 26px rgba(120, 128, 138, .35),
+    0 6px 16px rgba(80, 76, 70, .30);
+}
+.deck::before { background: linear-gradient(180deg, rgba(255, 255, 255, .55), transparent); }
+.msg { color: #7c4a03; text-shadow: 0 1px 0 rgba(255, 255, 255, .65); }
+.tier-line { color: #5c6a77; text-shadow: 0 1px 0 rgba(255, 255, 255, .6); }
+.readout label { color: #66727f; }
+.belly-frame {
+  background:
+    linear-gradient(#fbfcfd, #fbfcfd) padding-box,
+    linear-gradient(165deg, #ffffff, #c3ccd6 38%, #7e8a99 60%, #eef2f6) border-box;
+  box-shadow: 0 6px 20px rgba(80, 76, 70, .30), 0 0 16px rgba(255, 255, 255, .5);
+}
+.legal { color: #6f6a61; }
+
+.wheel-spin-btn {
+  margin-top: 12px;
+  padding: 13px 30px;
+  border-radius: 999px;
+  border: 1px solid #7e8a99;
+  background: linear-gradient(180deg, #ffffff 0%, #d7dee7 55%, #aeb9c4 100%);
+  box-shadow: 0 3px 0 #77828f, 0 8px 18px rgba(60, 60, 60, .35), inset 0 1px 0 #fff;
+  font-size: 16px; font-weight: 900; letter-spacing: .1em;
+  color: #23272c;
+  cursor: pointer;
+}
+.wheel-spin-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #77828f, 0 4px 10px rgba(60, 60, 60, .3); }

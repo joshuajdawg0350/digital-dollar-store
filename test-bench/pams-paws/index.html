@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0d0703">
-<title>Pearl's Paws — A Puppy Slot Machine</title>
-<meta name="description" content="Pearl's Paws. A warm puppy slot machine — 5 reels, 20 lines, puppy heads, paw prints, dog bones, free spins and the Pick a Puppy House bonus. Play credits only — no cash value, no prizes.">
+<title>Pearl's Paws and Buster's Bones — A Puppy Slot Machine</title>
+<meta name="description" content="Pearl's Paws and Buster's Bones. A warm puppy slot machine — 5 reels, 20 lines, puppy heads, paw prints, dog bones, free spins and the Pick a Puppy House bonus. Play credits only — no cash value, no prizes.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="stylesheet" href="style.css">
 <link rel="prefetch" href="assets/house-closed.webp"><link rel="prefetch" href="assets/house-open.webp">
-<link rel="prefetch" href="assets/bath.webp">
+<link rel="prefetch" href="assets/big-al.webp">
 </head>
 <body>
 <div class="room">
@@ -19,7 +19,7 @@
     <div class="cab-glow"></div>
 
     <header class="marquee-wrap">
-      <img class="marquee" src="assets/marquee.webp" alt="PEARL'S PAWS" draggable="false">
+      <img class="marquee" src="assets/marquee.webp" alt="PEARL'S PAWS AND BUSTER'S BONES" draggable="false">
       <div class="marquee-shine"></div>
     </header>
 
@@ -120,20 +120,21 @@
 </div>
 
 <div class="celeb" id="celeb" aria-hidden="true" role="alertdialog" aria-label="Celebration">
+  <video class="celeb-video" id="celebVideo" playsinline preload="auto" src="assets/celeb-show.mp4"></video>
   <div class="celeb-frame">
     <div class="celeb-kick" id="celebKick">★ BONUS ★</div>
-    <div class="celeb-title" id="celebTitle">PICK A PUPPY HOUSE!</div>
+    <div class="celeb-title" id="celebTitle">BUSTER'S BONES!</div>
     <div class="celeb-sub" id="celebSub"></div>
-    <div class="celeb-tap">TAP TO PLAY</div>
+    <div class="celeb-tap">TAP TO SKIP ▸</div>
   </div>
 </div>
 
 <div class="bonus-backdrop" id="bonusBackdrop"></div>
-<section class="bonus" id="bonusGame" aria-hidden="true" aria-label="Pick a Puppy House bonus game">
+<section class="bonus" id="bonusGame" aria-hidden="true" aria-label="Buster's Bones bonus game">
   <div class="bonus-inner">
-    <h2 class="bonus-title">PICK A PUPPY HOUSE</h2>
-    <p class="bonus-sub">Nine dog houses. Eight hide prizes — one hides <b>BATH TIME</b>.</p>
-    <p class="bonus-rule">Tap a dog house to pick it. Every prize you find is banked and yours to keep. Find BATH TIME and the bonus ends on the spot — you keep everything you banked; only the un-picked houses are lost. Pick all 8 prize houses without finding the bath and you win the PUPPY BONUS too.</p>
+    <h2 class="bonus-title">BUSTER'S BONES</h2>
+    <p class="bonus-sub">Nine dog houses. Eight hide <b>BONES</b> with amounts on them — one hides <b>BIG AL</b>.</p>
+    <p class="bonus-rule">Tap a dog house to pick it. Inside is a white bone carrying its amount — every bone you find is banked and yours to keep. Find BIG AL — the tall redheaded cowboy — and the bonus ends on the spot: you keep everything you banked; only the un-picked houses are lost. Pick all 8 bone houses without finding Big Al and you win the BUSTER BONUS too.</p>
     <div class="bonus-bank">BANKED&nbsp;<span id="bonusBank">0</span></div>
     <div class="trunks" id="trunks"></div>
     <div class="bonus-result" id="bonusResult" aria-live="polite"></div>
@@ -142,6 +143,44 @@
 </section>
 
 <div class="sheet-backdrop" id="sheetBackdrop"></div>
+<div class="wheel-overlay" id="wheelOverlay" aria-hidden="true" aria-label="Pearl's Paws bonus wheel">
+  <div class="wheel-card">
+    <h2 class="wheel-title">★ PEARL'S PAWS ★</h2>
+    <p class="wheel-rules">One WHEEL token in each of the reel 2, 3 and 4 windows lit the wheel — one spin, on the house.<br>
+      Every wedge pays a little <b>black paw</b> carrying its amount, <b>× your total bet</b>: <b class="gold">MINI 8× · MINOR 15× · MAJOR 30×</b> — and the <b class="gold">GRAND 50×</b> wedge carries <b>BIG AL</b> himself: land on the cowboy for the biggest win on the wheel.</p>
+    <div class="wheel-wrap">
+      <div class="wheel-pointer" id="wheelPointer"></div>
+      <svg class="wheel-svg" id="wheelSvg" viewBox="0 0 340 340" role="img" aria-label="Pearl's Paws bonus wheel">
+        <defs>
+          <radialGradient id="wgA" cx="50%" cy="50%" r="65%"><stop offset="55%" stop-color="#f8f0dc"/><stop offset="100%" stop-color="#e7dab8"/></radialGradient>
+          <radialGradient id="wgB" cx="50%" cy="50%" r="65%"><stop offset="55%" stop-color="#f3e7c8"/><stop offset="100%" stop-color="#ddc99c"/></radialGradient>
+          <radialGradient id="wgMini" cx="50%" cy="50%" r="65%"><stop offset="55%" stop-color="#f2f6f9"/><stop offset="100%" stop-color="#d3dee7"/></radialGradient>
+          <radialGradient id="wgMinor" cx="50%" cy="50%" r="65%"><stop offset="55%" stop-color="#e9f0f5"/><stop offset="100%" stop-color="#bfcfdd"/></radialGradient>
+          <radialGradient id="wgMajor" cx="50%" cy="50%" r="65%"><stop offset="55%" stop-color="#dde8f1"/><stop offset="100%" stop-color="#a7bfd2"/></radialGradient>
+          <radialGradient id="wgGrand" cx="50%" cy="50%" r="65%"><stop offset="40%" stop-color="#ffffff"/><stop offset="80%" stop-color="#f4f8fb"/><stop offset="100%" stop-color="#c9d8e4"/></radialGradient>
+          <radialGradient id="wgBust" cx="50%" cy="50%" r="65%"><stop offset="55%" stop-color="#2c2721"/><stop offset="100%" stop-color="#100d0a"/></radialGradient>
+          <radialGradient id="wgPeg" cx="35%" cy="30%" r="80%"><stop offset="0%" stop-color="#ffffff"/><stop offset="38%" stop-color="#dfe6ec"/><stop offset="68%" stop-color="#8b98a5"/><stop offset="100%" stop-color="#454e58"/></radialGradient>
+          <linearGradient id="wgRim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6a7686"/><stop offset="22%" stop-color="#ffffff"/><stop offset="48%" stop-color="#7e8a99"/><stop offset="74%" stop-color="#eef2f6"/><stop offset="100%" stop-color="#5c6672"/></linearGradient>
+          <radialGradient id="wgHub" cx="38%" cy="32%" r="85%"><stop offset="0%" stop-color="#ffffff"/><stop offset="45%" stop-color="#c3ccd6"/><stop offset="100%" stop-color="#77828f"/></radialGradient>
+          <g id="wgPaw"><ellipse cx="0" cy="10" rx="15" ry="11.5"/><ellipse cx="-19" cy="-3" rx="6" ry="8" transform="rotate(-18 -19 -3)"/><ellipse cx="-7.5" cy="-13" rx="6.5" ry="8.5" transform="rotate(-6 -7.5 -13)"/><ellipse cx="7.5" cy="-13" rx="6.5" ry="8.5" transform="rotate(6 7.5 -13)"/><ellipse cx="19" cy="-3" rx="6" ry="8" transform="rotate(18 19 -3)"/></g>
+          <clipPath id="hubClip"><circle cx="170" cy="59" r="21"/></clipPath>
+          <clipPath id="grandClip"><circle cx="170" cy="41" r="15"/></clipPath>
+          <clipPath id="hubFace"><circle cx="170" cy="170" r="40"/></clipPath>
+        </defs>
+        <circle cx="170" cy="170" r="165" fill="none" stroke="url(#wgRim)" stroke-width="11"/>
+        <g id="wheelBolts"></g>
+        <g id="wheelRotor"></g>
+        <circle cx="170" cy="170" r="52" fill="url(#wgHub)" stroke="rgba(30,18,0,.8)" stroke-width="2"/>
+        <use href="#wgPaw" transform="translate(170 172) scale(1.15)" fill="#14100c"/>
+      </svg>
+      <div class="wheel-gloss" aria-hidden="true"></div>
+    </div>
+    <div class="wheel-paw-prize" id="wheelPawPrize"><img src="assets/sym-pw.webp" alt="A black paw prize" draggable="false"><span class="paw-amt">+0</span></div>
+    <div class="wheel-msg" id="wheelMsg" aria-live="polite">Pull the arm — or tap SPIN!</div>
+    <button class="wheel-spin-btn" id="wheelSpinBtn" type="button">SPIN THE WHEEL</button>
+  </div>
+</div>
+
 <section class="sheet" id="paySheet" aria-hidden="true" aria-label="Paytable and how to play">
   <div class="sheet-handle" id="sheetHandle"><span></span></div>
   <div class="sheet-body">
@@ -159,9 +198,10 @@
       <li><b>No blank stops:</b> every reel position is a real symbol — all 15 windows show a symbol on every spin.</li>
       <li><b>BONE</b> pays from just 2 on a line.</li>
       <li>3+ <b>SCATTER</b> (the golden paw) anywhere pays 2× / 8× / 40× your total bet and awards 7 / 10 / 15 <b>FREE SPINS</b> — line wins pay <b>double</b> in free spins, and free spins can retrigger.</li>
-      <li>3+ <b>BONUS</b> dog houses anywhere on a paid spin opens <b>PICK A PUPPY HOUSE</b>: 9 dog houses, 8 hide prizes (½×–4× your total bet) and 1 hides BATH TIME. Prizes you find are banked and kept; find BATH TIME and the bonus ends — un-picked houses are lost. Clear all 8 and a 6× PUPPY BONUS is added.</li>
+      <li>3+ <b>BONUS</b> dog houses anywhere on a paid spin opens <b>BUSTER'S BONES</b>: 9 dog houses, 8 hide white bones with amounts on them (½×–4× your total bet) and 1 hides <b>BIG AL</b>, the tall redheaded cowboy. Bones you find are banked and kept; find Big Al and the bonus ends — un-picked houses are lost. Clear all 8 and a 6× BUSTER BONUS is added.</li>
+      <li>One <b>WHEEL</b> token (the gold wheel medallion) in each of the reel 2, 3 and 4 windows on a paid spin opens <b>PEARL'S PAWS</b>, the bonus wheel: 12 wedges pay black paws with amounts — MINI 8×, MINOR 15×, MAJOR 30× your total bet — and the GRAND 50× wedge carries BIG AL himself, the biggest win on the wheel. The two bonus games land about once every 41 spins between them. Don't mix the tokens up: the plain golden <b>PAW</b> is the free-spins scatter; the <b>WHEEL</b> medallion is the wheel.</li>
       <li>Credits are saved on this device. Out of credits? Hit <b>NEW GAME</b> to start over with a fresh 1,000.</li>
-      <li><b>Art:</b> every puppy, paw and dog house on this machine is original artwork made for Pearl's Paws by J-Dawgs Industries. Sounds are real recordings (see the game's creation record for sources).</li>
+      <li><b>Art:</b> every puppy, paw and dog house on this machine is original artwork made for Pearl's Paws and Buster's Bones by J-Dawgs Industries. Sounds are real recordings. The celebration clip is the "Puppy Party" show picked for this machine.</li>
     </ul>
     <p class="sheet-legal">Play credits only — no cash value, no prizes. © 2026 J-Dawgs Industries</p>
   </div>
