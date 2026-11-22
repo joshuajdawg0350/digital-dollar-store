@@ -15,9 +15,15 @@ const L = window.LuckyLogic;
 const $ = id => document.getElementById(id);
 const rng = Math.random;
 
-/* ---------------- the duck — generated artwork (v3) ---------------- */
-const MEDAL_IMG = 'assets/duck-medallion.jpg';
-const BILL_IMG = 'assets/duck-bill.jpg';
+/* ---------------- the duck — artwork COPIED from Joshua's photos
+   (v6, 2026-11-22; his standing order: "Don't redraw — copy the shit").
+   The medallion is the duck himself cropped out of the upper-screen
+   oval in 1000009636_30_g2f5.jpg; the bill panel is the machine's own
+   lower LUCKY DUCKY MONEY panel cropped out of 1000009633_31_13ia.jpg;
+   the reel logo, BAR plates, badges, PAYLINE marker and $1 plate are
+   likewise the photos' own pixels — see the v6 section of the vault
+   BUILD-RECORD.md for the source box of every asset. ------------- */
+const MEDAL_IMG = 'assets/duck-medallion-photo.png';
 function gemSVG() {
   return `<svg viewBox="0 0 100 100" aria-hidden="true">
     <polygon points="50,4 88,34 50,96 12,34" fill="url(#gemG)" stroke="#1d6f9e" stroke-width="3"/>
@@ -48,17 +54,14 @@ function cherrySVG() {
   </svg>`;
 }
 $('marqueeDuck').innerHTML = `<img src="${MEDAL_IMG}" alt="Lucky Ducky medallion">`;
-$('billDuck').innerHTML = `<img src="${BILL_IMG}" alt="Lucky Ducky">`;
-$('redBillDuck').innerHTML = `<img src="${BILL_IMG}" alt="Lucky Ducky">`;
-document.querySelectorAll('.badgeDuck').forEach(el => { el.innerHTML = `<img src="${MEDAL_IMG}" alt="">`; });
 
 function symHTML(sym) {
   switch (sym) {
-    case 'DUCK': return `<div class="sym"><div class="duckMedal"><img src="${MEDAL_IMG}" alt="Lucky Ducky"></div><div class="duckLogoText">LUCKY<br>DUCKY</div></div>`;
+    case 'DUCK': return `<div class="sym"><img class="duckLogoImg" src="assets/ducklogo-photo.png" alt="Lucky Ducky"></div>`;
     case 'SEVEN': return `<div class="sym">${sevenHTML()}</div>`;
-    case 'BAR3': return `<div class="sym"><div class="barStack"><div class="barPlate">BAR</div><div class="barPlate">BAR</div><div class="barPlate">BAR</div></div></div>`;
-    case 'BAR2': return `<div class="sym"><div class="barStack"><div class="barPlate">BAR</div><div class="barPlate">BAR</div></div></div>`;
-    case 'BAR1': return `<div class="sym"><div class="barStack one"><div class="barPlate">BAR</div></div></div>`;
+    case 'BAR3': return `<div class="sym"><img class="barImg" src="assets/bar3-photo.png" alt="BAR BAR BAR"></div>`;
+    case 'BAR2': return `<div class="sym"><img class="barImg" src="assets/bar2-photo.png" alt="BAR BAR"></div>`;
+    case 'BAR1': return `<div class="sym"><img class="barImg" src="assets/bar1-photo.png" alt="BAR"></div>`;
     case 'CHERRY': return `<div class="sym">${cherrySVG()}</div>`;
     default: return `<div class="sym"></div>`;
   }
@@ -548,8 +551,8 @@ $('soundBtn').textContent = soundOn ? 'SOUND ON' : 'SOUND OFF';
     ['3 DOUBLE BARS', 'BAR2'], ['3 BARS', 'BAR1'], ['ANY 3 BARS', 'ANYBAR'],
     ['3 CHERRIES', 'CHERRY3'], ['2 CHERRIES', 'CHERRY2'], ['1 CHERRY', 'CHERRY1']
   ];
-  $('payTable').innerHTML = '<tr><th>LINE PAYS</th><th>1 COIN</th><th>2 COINS</th><th>3 COINS</th></tr>' +
-    rows.map(([label, tier, top]) => `<tr class="${top ? 'top' : ''}"><td>${label}</td><td>${L.PAYTABLE[tier][0].toLocaleString()}</td><td>${L.PAYTABLE[tier][1].toLocaleString()}</td><td>${L.PAYTABLE[tier][2].toLocaleString()}</td></tr>`).join('');
+  $('payTable').innerHTML = '<tr><th>LINE PAYS</th><th class="c1">1 COIN</th><th class="c2">2 COINS</th><th class="c3">3 COINS</th></tr>' +
+    rows.map(([label, tier, top]) => `<tr class="${top ? 'top' : ''}"><td>${label}</td><td class="c1">${L.PAYTABLE[tier][0].toLocaleString()}</td><td class="c2">${L.PAYTABLE[tier][1].toLocaleString()}</td><td class="c3">${L.PAYTABLE[tier][2].toLocaleString()}</td></tr>`).join('');
 })();
 
 /* boot */
