@@ -96,75 +96,45 @@
   const sStop = () => Kit.thunk();
 
   /* ---------- rolling reel sound ----------
-     Joshua (2026-11-21): the reels must ROLL — a mechanical rolling/clatter
-     that tracks the spin, not synth blips. A looped noise bed (low rumble +
-     grit) runs through a band-pass filter; its loudness, filter pitch and
-     playback rate follow the fastest reel's speed — rising on spin-up,
-     rolling through cruise, falling as each reel brakes. Every symbol that
-     passes adds a short ratchet clack, and each reel landing keeps the low
-     mechanical clunk (sStop). When the last reel lands — naturally or via
-     STOP — the roll cuts with it. Win jingles are untouched. */
+     Joshua (2026-11-21): the reels must ROLL — and after his ear test
+     killed the modeled kit, the roll itself is now a REAL recording:
+     a loop of an actual slot machine's reels (shared kit, Kit.roll*),
+     its rate and level tracking the fastest reel's speed — rising on
+     spin-up, rolling through cruise, falling as each reel brakes.
+     Every symbol that passes adds a real prize-wheel peg click (Kit
+     'peg', rate-jittered like a real mechanism), and each reel landing
+     keeps the real mechanical clunk (sStop). When the last reel lands
+     — naturally or via STOP — the roll cuts with it. */
   const RollSound = (() => {
-    let graph = null, activeReels = 0, level = 0;
-    function ensure() {
-      const a = ac(); if (!a) return null;
-      if (graph) return graph;
-      const len = a.sampleRate;
-      const buf = a.createBuffer(1, len, a.sampleRate);
-      const d = buf.getChannelData(0);
-      let last = 0;
-      for (let i = 0; i < len; i++) { const w = Math.random() * 2 - 1; last = (last + 0.04 * w) / 1.04; d[i] = (last * 3.2 + w * 0.28) * 0.7; }
-      const src = a.createBufferSource(); src.buffer = buf; src.loop = true;
-      const filt = a.createBiquadFilter(); filt.type = 'bandpass'; filt.frequency.value = 420; filt.Q.value = 0.7;
-      const g = a.createGain(); g.gain.value = 0;
-      src.connect(filt); filt.connect(g); g.connect(a.destination);
-      src.start();
-      graph = { a, src, filt, g, buf };
-      return graph;
-    }
+    let activeReels = 0, level = 0;
     function reelStart() {
       activeReels++;
       if (!soundOn) return;
-      const gr = ensure(); if (!gr) return;
-      gr.g.gain.setTargetAtTime(Math.max(gr.g.gain.value, 0.015), gr.a.currentTime, 0.05);
+      if (activeReels === 1) Kit.rollStart();
     }
     function setSpeed(norm) {
-      if (!graph || !soundOn) return;
+      if (!soundOn) return;
       const n = Math.max(0, Math.min(1, norm));
       level = n > level ? n : level + (n - level) * 0.25;
-      const t = graph.a.currentTime;
-      graph.g.gain.setTargetAtTime(0.015 + 0.085 * level, t, 0.06);
-      graph.filt.frequency.setTargetAtTime(320 + 780 * level, t, 0.06);
-      graph.src.playbackRate.setTargetAtTime(0.72 + 0.55 * level, t, 0.06);
+      Kit.rollSpeed(level);
     }
     function clack(v) {
-      if (!soundOn || !graph) return;
-      const a = graph.a;
-      const s = a.createBufferSource(); s.buffer = graph.buf;
-      s.playbackRate.value = 1.4 + Math.random() * 0.5;
-      const f = a.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 1500 + Math.random() * 500; f.Q.value = 1.1;
-      const g = a.createGain();
-      const t = a.currentTime;
-      g.gain.setValueAtTime(Math.min(0.05, 0.014 + v / 24000), t);
-      g.gain.exponentialRampToValueAtTime(0.0008, t + 0.045);
-      s.connect(f); f.connect(g); g.connect(a.destination);
-      s.start(t, Math.random() * 0.4, 0.06);
+      if (!soundOn) return;
+      Kit.play('peg', { group: 'peg', gain: Math.min(0.85, 0.3 + v / 16000), rate: 0.92 + Math.random() * 0.18 });
     }
     function reelDone() {
       activeReels = Math.max(0, activeReels - 1);
-      if (activeReels === 0 && graph) {
-        level = 0;
-        graph.g.gain.setTargetAtTime(0, graph.a.currentTime, 0.045);
-      }
+      if (activeReels === 0) { level = 0; Kit.rollStop(false); }
     }
     function cut() { /* sound toggled off mid-spin: silence the roll at once */
       activeReels = 0; level = 0;
-      if (graph) graph.g.gain.setTargetAtTime(0, graph.a.currentTime, 0.02);
+      Kit.rollStop(true);
     }
     return { reelStart, setSpeed, clack, reelDone, cut, isActive: () => activeReels > 0, level: () => level };
   })();
-  /* STOP support: every spinning reel registers its finisher here; STOP
-     calls them all and each reel lands cleanly on its dealt stop. */
+  /* STOP support: every spinning reel registers its brake handle here;
+     STOP calls them all and each reel brakes fast — a hair of stagger,
+     left to right — onto the same dealt stop it was already rolling to. */
   const activeReelStops = new Set();
   function stopAllReels() { for (const f of [...activeReelStops]) f(); }
 
@@ -190,37 +160,58 @@
     if (track && track.children[row]) track.children[row].classList.add(cls);
   }
 
-  /* Real-machine reel motion, driven by requestAnimationFrame physics:
-     spin-UP acceleration from rest (~0.30s), a cruise at peak speed with
-     speed-proportional motion blur, a firm deceleration, then a spring
-     settle over the last fraction of a cell that overshoots a hair and
-     recoils ONCE onto the stop. The symbol sequence and the dealt result
-     are exactly the engine's — only the motion is new. */
+  /* Real-machine reel motion, driven by the shared physics in logic.js
+     (createReelMotion — identical on all three cabinets): spin-UP from
+     rest on a smoothstep torque curve (~0.42s), a cruise at peak speed
+     with speed-proportional motion blur, a firm brake, staggered stops
+     left to right, then a spring settle over the last fraction of a cell
+     that overshoots a hair and recoils ONCE onto the stop. STOP brakes
+     the reel fast into the same settle on the same dealt stop. The
+     symbol sequence and the dealt result are exactly the engine's —
+     only the motion is presentation. */
+  /* Peak reel speed — Joshua, 2026-11-21: "spin the wheels 20 times
+     faster." The old build peaked at ~943 px/s at a 59px cell
+     (16.0 symbols/sec), so every reel now cruises at 20x that:
+     319.7 symbols/sec. Distance grows with the speed — the spin keeps
+     its ~2-2.5s shape, the strip just travels ~20x farther. */
+  const PEAK_SYM_PER_SEC = 319.7;
   function spinReel(r, finalStops, duration) {
     return new Promise(resolve => {
       const reel = reelsEl[r], H = cellH(r), strip = cfg.strips[r];
       const grid = core.windowForStops(cfg.strips, finalStops);
-      const seq = [];
-      seq.push(...core.windowForStops(cfg.strips, stops)[r]);
-      const extra = 14 + r * 5;
-      let idx = Math.floor(Math.random() * strip.length);
-      for (let i = 0; i < extra; i++) { seq.push(strip[idx % strip.length]); idx++; }
-      seq.push(...grid[r]);
+
+      const len = strip.length;
+      const vmax = PEAK_SYM_PER_SEC * H;   /* this machine's 20x peak, px/s */
+      let N = Math.max(24, Math.round(core.reelDistance(vmax, H, duration) / H));
+      N += ((finalStops[r] - stops[r] - N) % len + len) % len;  /* land exactly on the dealt stop */
+      const D = N * H;                     /* total travel, px */
+      /* Recycling strip renderer: at 20x speed a spin travels hundreds
+         of cells — far past mobile layer limits if built as one tall
+         track. Only K cells live in the DOM; their symbols rotate as the
+         strip passes, exactly like a real reel band looping its drum.
+         The walk is the machine's own strip, continuous from the resting
+         window to the dealt window (guard cell first, for the settle). */
+      const K = 8;
+      const seq = new Array(N + K + 2);
+      for (let i = 0; i < seq.length; i++) seq[i] = strip[(((stops[r] + i - 1) % len) + len) % len];
       const track = document.createElement('div');
       track.className = 'track';
-      track.innerHTML = seq.map(s => cellHTML(s, H)).join('');
+      track.innerHTML = seq.slice(0, K).map(s => cellHTML(s, H)).join('');
       reel.innerHTML = '';
       reel.appendChild(track);
-
-      const D = (seq.length - 3) * H;              /* total travel, px */
-      const motion = core.createReelMotion(D, H, duration);
-      let last = performance.now(), lastCell = 0, lastTick = 0, lastBlur = 0;
-      let finished = false;
+      const cellDivs = [...track.children];
+      const cellImgs = cellDivs.map(c => c.querySelector('img'));
+      const shown = seq.slice(0, K);
+      let shownBase = 0;
+      const motion = core.createReelMotion(D, H, duration, vmax);
+      let last = performance.now(), lastCell = 0, lastTick = 0, lastBlur = -1;
+      let finished = false, stopTimer = null;
       const finish = () => {
         if (finished) return;
         finished = true;
         clearTimeout(hardStop);
-        activeReelStops.delete(finish);
+        if (stopTimer) clearTimeout(stopTimer);
+        activeReelStops.delete(stopper);
         track.style.filter = '';
         track.innerHTML = grid[r].map(s => cellHTML(s, H)).join('');
         track.style.transform = 'translateY(0px)';
@@ -228,8 +219,16 @@
         RollSound.reelDone();
         resolve();
       };
+      /* STOP: brake this reel (staggered a hair by reel order) — the
+         motion lands it on the same dealt stop through the same settle;
+         the timer is only a failsafe if the brake ever failed to land. */
+      const stopper = () => {
+        if (finished || stopTimer) return;
+        motion.brake(r * 0.05);
+        stopTimer = setTimeout(finish, 1400);
+      };
       const hardStop = setTimeout(finish, duration + 1600);
-      activeReelStops.add(finish);
+      activeReelStops.add(stopper);
       RollSound.reelStart();
       function frame(now) {
         if (finished) return;
@@ -240,11 +239,28 @@
         const { p, v, done } = motion.step(dt);
         if (done) { finish(); return; }
         RollSound.setSpeed(v / motion.vmax);
-        track.style.transform = `translateY(${-p}px)`;
-        const blur = v > 320 ? Math.min(3.2, (v - 320) / 260) : 0;
-        if (Math.abs(blur - lastBlur) >= 0.3 || (blur === 0 && lastBlur !== 0)) {
-          track.style.filter = blur > 0 ? `blur(${blur.toFixed(2)}px)` : '';
-          lastBlur = blur;
+
+        const base = Math.max(0, Math.min(N, Math.floor(p / H)));
+        if (base !== shownBase) {
+          shownBase = base;
+          for (let j = 0; j < K; j++) {
+            const code = seq[base + j];
+            if (shown[j] !== code) {
+              shown[j] = code;
+              cellDivs[j].dataset.sym = code;
+              cellImgs[j].src = ART[code];
+              cellImgs[j].alt = NAMES[code];
+            }
+          }
+        }
+        track.style.transform = `translateY(${-(p - base * H) - H}px)`;
+        /* photographic, speed-proportional blur: the smear grows with
+           the distance travelled per frame, capped so the strip still
+           reads as symbols in motion, never a digital smear */
+        const blurPx = Math.min(14, (v / 60) * 0.3);
+        if (Math.abs(blurPx - lastBlur) >= 0.75 || (blurPx < 0.05 && lastBlur >= 0.05)) {
+          lastBlur = blurPx;
+          track.style.filter = blurPx >= 0.05 ? `blur(${blurPx.toFixed(1)}px) brightness(1.07) saturate(1.12)` : '';
         }
         const cell = Math.floor(p / H);
         if (cell !== lastCell) {
@@ -278,7 +294,7 @@
     if (lv) { lv.classList.toggle('off', !on); lv.setAttribute('aria-disabled', String(!on)); }
   }
   /* While the reels turn, SPIN becomes STOP (Joshua, 2026-11-21): tapping it
-     lands every reel on its dealt stop at once — results and payouts are
+     brakes every reel fast onto its dealt stop — results and payouts are
      exactly the ones the spin dealt. */
   function setStopMode(on) {
     if (on) {
@@ -347,7 +363,7 @@
       `<div class="payrow"><div class="thumb"><img src="${ART.X2}" alt="WIN ×2"></div><div class="nm">WIN ×2</div><span class="pv wide">Anywhere on a winning line, this line's win is DOUBLED (×2)</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.X3}" alt="WIN ×3"></div><div class="nm">WIN ×3</div><span class="pv wide">Anywhere on a winning line, this line's win is TRIPLED (×3). Two multipliers on the same line multiply together — ×2 and ×3 pay ×6</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.SC}" alt="SCATTER"></div><div class="nm">SCATTER</div><span class="pv wide">3+ anywhere: pays 2× / 8× / 40× total bet + 7 / 10 / 15 FREE SPINS at 2× line wins</span></div>` +
-      `<div class="payrow"><div class="thumb"><img src="${ART.BN}" alt="BONUS"></div><div class="nm">BONUS — PICK-A-GARAGE</div><span class="pv wide">3+ anywhere on a paid spin opens the garage: 9 trunks — 8 prizes (½×–4× total bet) + SCOTTY. Banked prizes are kept; Scotty ends it. Clear all 8 for a 6× GARAGE BONUS</span></div>` +
+      `<div class="payrow"><div class="thumb"><img src="${ART.BN}" alt="BONUS"></div><div class="nm">BONUS — PICK-A-GARAGE</div><span class="pv wide">3+ anywhere on a paid spin opens the garage: 9 real cars — 8 hide prizes (½×–4× total bet), 1 hides SCOTTY. Banked prizes are kept; Scotty ends it. Clear all 8 for a 6× GARAGE BONUS</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.DL}" alt="BET"></div><div class="nm">BET</div><span class="pv wide">Bets run in $25 steps: $25, $50, $75 … all the way up to $2,500 a spin. A step unlocks the first time your balance reaches it — and stays unlocked even if your balance dips. Use the −25 / +25 buttons or MAX BET. NEW GAME resets you to a $25 bet</span></div>`;
   }
 
@@ -402,11 +418,12 @@
       }
       credits -= totalBet();
       renderReadouts();
+      Kit.lever(); /* the real lever pull that starts a paid spin */
     }
     setStopMode(true);
     msgEl.textContent = isFree ? `Free spin — ${freeSpinsLeft} left after this one. Wins pay double!` : 'Good luck!';
     const finalStops = core.randomStops(Math.random, cfg.strips);
-    const durations = [1900, 2220, 2540, 2860, 3180]; /* staggered stops, reel 1 first */
+    const durations = [1700, 1900, 2100, 2300, 2500]; /* staggered stops, reel 1 first, ~200ms apart */
     await Promise.all(finalStops.map((_, r) => spinReel(r, finalStops, durations[r])));
     stops = finalStops;
     const grid = core.windowForStops(cfg.strips, stops);
@@ -480,7 +497,7 @@
       /* celebrate first, THEN the garage; any free spins won on this spin
          run after it (Joshua, 12:52 CT) */
       msgEl.textContent = `${ev.bonusCount} BONUS doors — the garage is open!`;
-      await celebrate('bonus', 'PICK-A-GARAGE!', `${ev.bonusCount} BONUS doors hit — pick your trunks!`, celebDur());
+      await celebrate('bonus', 'PICK-A-GARAGE!', `${ev.bonusCount} BONUS doors hit — pick your cars!`, celebDur());
       openBonus(totalBet(), finishTurn);
       return;
     }
@@ -488,9 +505,9 @@
   }
 
   /* ---------- PICK-A-GARAGE bonus ----------
-     9 trunks: 8 prizes (x total bet of the triggering spin) + 1 SCOTTY.
+     9 cars: 8 prizes (x total bet of the triggering spin) + 1 SCOTTY.
      Banked prizes are KEPT even when Scotty ends the round; clearing all
-     8 safe trunks adds the completion (GARAGE) bonus. */
+     8 safe cars adds the completion (GARAGE) bonus. */
   let bonusDeck = null, lastBonusPaid = 0;
   function openBonus(tb, done) {
     setControlsEnabled(false);
@@ -509,8 +526,8 @@
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'trunk';
-      b.setAttribute('aria-label', `Trunk ${i + 1}`);
-      b.innerHTML = `<img src="assets/trunk-closed.webp" alt="" draggable="false">`;
+      b.setAttribute('aria-label', `Car ${i + 1}`);
+      b.innerHTML = `<img src="assets/car-${i + 1}.webp" alt="" draggable="false"><span class="car-num">${i + 1}</span>`;
       b.addEventListener('click', () => {
         if (over || b.classList.contains('open')) return;
         b.classList.add('open');
@@ -518,9 +535,9 @@
         if (card.scotty) {
           over = true;
           b.classList.add('scotty');
-          b.innerHTML = `<img src="assets/trunk-open.webp" alt="" draggable="false"><span class="busted-tag">SCOTTY!</span>`;
+          b.innerHTML = `<img src="assets/scotty.webp" alt="" draggable="false"><span class="busted-tag">SCOTTY!</span>`;
           Kit.engineBust(); /* engine rev + bell crash — the bust sting */
-          bonusResultEl.innerHTML = `<img class="scotty-img" src="assets/scotty.webp" alt="Scotty">SCOTTY was hiding in that trunk! Bonus over — you keep your banked <b>${fmt(banked)}</b> credits. Only the un-opened trunks are lost.`;
+          bonusResultEl.innerHTML = `<img class="scotty-img" src="assets/scotty.webp" alt="Scotty">SCOTTY was hiding in that car! Bonus over — you keep your banked <b>${fmt(banked)}</b> credits. Only the un-picked cars are lost.`;
           bonusCollectBtn.textContent = `COLLECT ${fmt(banked)}`;
           bonusCollectBtn.classList.add('on');
           setTimeout(() => bonusGame.scrollTo({ top: bonusGame.scrollHeight, behavior: 'smooth' }), 60);
@@ -528,7 +545,7 @@
         }
         banked += card.prize;
         safePicked++;
-        b.innerHTML = `<img src="assets/trunk-open.webp" alt="" draggable="false"><span class="prize">+${fmt(card.prize)}</span>`;
+        b.innerHTML = `<img src="assets/car-${i + 1}.webp" alt="" draggable="false"><span class="prize">+${fmt(card.prize)}</span>`;
         /* rising prize dings as the bank grows; deep picks get tension */
         setTimeout(() => Kit.prize(safePicked - 1), 130);
         if (safePicked >= 5) setTimeout(() => Kit.tension(), 420);
@@ -538,7 +555,7 @@
           banked += completion;
           bonusBankEl.textContent = fmt(banked);
           Kit.jackpot(); /* full clear = the jackpot celebration */
-          bonusResultEl.innerHTML = `<span class="clear-title">YOU CLEARED THE GARAGE!</span><br>All 8 trunks opened and Scotty never showed — GARAGE BONUS +${fmt(completion)} credits. Total banked: <b>${fmt(banked)}</b>.`;
+          bonusResultEl.innerHTML = `<span class="clear-title">YOU CLEARED THE GARAGE!</span><br>All 8 prize cars picked and Scotty never showed — GARAGE BONUS +${fmt(completion)} credits. Total banked: <b>${fmt(banked)}</b>.`;
           bonusCollectBtn.textContent = `COLLECT ${fmt(banked)}`;
           bonusCollectBtn.classList.add('on');
           setTimeout(() => bonusGame.scrollTo({ top: bonusGame.scrollHeight, behavior: 'smooth' }), 60);

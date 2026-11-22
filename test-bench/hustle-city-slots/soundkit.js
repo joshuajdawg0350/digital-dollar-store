@@ -1,11 +1,17 @@
 /* Hustle City Slots — shared REAL-SOUND kit (all three machines).
    Joshua (2026-11-21): "real slot machine dings and bells — not this
-   ghetto default stuff." Every melodic/mechanical event on the floor now
-   plays a file from this one kit: a real public-domain garage-door
-   recording, and physical models (inharmonic-partial bells, resonant
-   coin pings, shaped-noise mechanics) rendered offline — see the vault
-   manifest at j-dawgs-vault/hustle-city-slots/soundkit/MANIFEST.md.
-   No oscillator beep melodies remain wired to any event.
+   ghetto default stuff." And later the same day, after the first kit
+   failed his ear test: "Make it sound like a real slot machine."
+   Every event on the floor now plays a REAL RECORDING — a real slot
+   machine's payout dings and reels, a real one-armed-bandit-era lever,
+   real bells, real coins, real dice, a real prize wheel's peg clicks —
+   sourced CC0 / public domain, trimmed and mastered offline. NO
+   synthesized or physically-modeled sounds remain. Per-file sources
+   and licenses: j-dawgs-vault/hustle-city-slots/soundkit/MANIFEST.md.
+   The rolling reel bed is a loop of a real machine's reels, its rate
+   and level driven by the reels' actual speed (rollStart/rollSpeed/
+   rollStop below); repeated mechanical clicks get a small random
+   playback-rate jitter, the way real mechanisms never repeat exactly.
 
    Contract with each cabinet's game.js:
      SlotKit.init(ac, () => soundOn)  — share the cabinet's AudioContext
@@ -25,7 +31,8 @@ window.SlotKit = (() => {
     fsFlourish: 'fs-flourish.mp3', garageDoor: 'garage-door.mp3',
     trunk: 'trunk-open.mp3', tension: 'tension.mp3', engine: 'engine-bust.mp3',
     diceShake: 'dice-shake.mp3', diceRoll: 'dice-roll.mp3', peg: 'peg.mp3',
-    nearBell: 'near-bell.mp3', click: 'click.mp3', thunk: 'thunk.mp3'
+    nearBell: 'near-bell.mp3', click: 'click.mp3', thunk: 'thunk.mp3',
+    lever: 'lever.mp3', roll: 'reel-roll.mp3'
   };
   let getCtx = null, isOn = () => true, master = null;
   const buffers = {}, loading = {}, failed = {};
@@ -45,7 +52,7 @@ window.SlotKit = (() => {
     fetch(BASE + FILES[name])
       .then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
       .then(ab => a.decodeAudioData(ab))
-      .then(buf => { buffers[name] = buf; delete loading[name]; })
+      .then(buf => { buffers[name] = buf; delete loading[name]; if (name === 'roll' && rollWanted) startRollNow(); })
       .catch(() => { failed[name] = true; delete loading[name]; });
   }
   function preload() { Object.keys(FILES).forEach(load); }
@@ -81,7 +88,53 @@ window.SlotKit = (() => {
   function stopAll() {
     for (const rec of active) { try { rec.src.stop(); } catch (e) {} }
     active.length = 0;
+    rollStop(true);
   }
+
+  /* ---- the rolling reel bed: a loop of a REAL machine's reels ----
+     rollStart/rollSpeed/rollStop are driven by each cabinet from its
+     reels' actual motion: the loop's rate and level rise on spin-up,
+     cruise, and fall as reels brake; rollStop cuts it dead (STOP). */
+  let rollNodes = null, rollWanted = false;
+  function startRollNow() {
+    const a = ctx(); if (!a || rollNodes) return;
+    const buf = buffers.roll; if (!buf) return;
+    const src = a.createBufferSource();
+    src.buffer = buf; src.loop = true;
+    src.playbackRate.value = 0.72;
+    const g = a.createGain(); g.gain.value = 0;
+    g.gain.setTargetAtTime(0.10, a.currentTime, 0.07);
+    src.connect(g); g.connect(master);
+    src.start();
+    rollNodes = { src, g };
+    plays.push('roll');
+  }
+  function rollStart() {
+    if (!isOn()) return;
+    rollWanted = true;
+    if (buffers.roll) startRollNow(); else load('roll');
+  }
+  function rollSpeed(norm) {
+    if (!rollNodes) return;
+    const a = ctx(); if (!a) return;
+    const n = Math.max(0, Math.min(1, norm || 0));
+    const t = a.currentTime;
+    rollNodes.src.playbackRate.setTargetAtTime(0.72 + 0.58 * n, t, 0.06);
+    rollNodes.g.gain.setTargetAtTime(0.08 + 0.42 * n, t, 0.06);
+  }
+  function rollStop(quick) {
+    rollWanted = false;
+    if (!rollNodes) return;
+    const nodes = rollNodes; rollNodes = null;
+    const a = ctx(); if (!a) return;
+    const t = a.currentTime;
+    try {
+      nodes.g.gain.cancelScheduledValues(t);
+      nodes.g.gain.setTargetAtTime(0, t, quick ? 0.025 : 0.08);
+      nodes.src.stop(t + (quick ? 0.12 : 0.4));
+    } catch (e) { /* already stopped */ }
+  }
+  function rollActive() { return !!rollNodes; }
   function activeCount(group) {
     return group ? active.filter(r => r.group === group).length : active.length;
   }
@@ -113,7 +166,10 @@ window.SlotKit = (() => {
     play('diceShake', { group: 'dice' });
     play('diceRoll', { group: 'dice', delay: 0.3 });
   }
-  function countTick() { play('tick', { group: 'tick', gain: 0.55 }); }
+  /* mechanical jitter: real mechanisms never repeat a click at the
+     exact same pitch — repeated one-shots get a few % of random rate */
+  const jit = (spread) => 1 + (Math.random() * 2 - 1) * spread;
+  function countTick() { play('tick', { group: 'tick', gain: 0.55, rate: jit(0.03) }); }
 
   function init(gc, onFn) {
     getCtx = gc;
@@ -127,6 +183,7 @@ window.SlotKit = (() => {
   return {
     init, preload, play, stopAll, activeCount, plays,
     win, jackpot, prize, risingDing, bankIt, dice, countTick,
+    rollStart, rollSpeed, rollStop, rollActive,
     fanfare: () => play('fanfare', { group: 'cel' }),
     fsFlourish: () => play('fsFlourish', { group: 'cel' }),
     bust: () => play('bust', { group: 'bonus' }),
@@ -134,11 +191,12 @@ window.SlotKit = (() => {
     garageDoor: () => play('garageDoor', { group: 'bonus' }),
     trunkOpen: () => play('trunk', { group: 'bonusfx' }),
     tension: () => play('tension', { group: 'bonusfx' }),
-    coin: () => play('coin', { group: 'winfx' }),
+    coin: () => play('coin', { group: 'winfx', rate: jit(0.04) }),
     click: () => play('click', { group: 'ui', gain: 0.8 }),
-    peg: () => play('peg', { group: 'peg', gain: 0.9 }),
+    peg: () => play('peg', { group: 'peg', gain: 0.9, rate: jit(0.05) }),
     nearBell: () => play('nearBell', { group: 'peg', gain: 0.8 }),
     thunk: () => play('thunk', { group: 'ui' }),
+    lever: () => play('lever', { group: 'ui' }),
     loaded: name => !!buffers[name]
   };
 })();
