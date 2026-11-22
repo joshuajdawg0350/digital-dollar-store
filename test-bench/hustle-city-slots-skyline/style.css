@@ -917,8 +917,8 @@ body {
   100% { border-color: #ffd76a; box-shadow: 0 0 14px rgba(255, 215, 106, .8); }
 }
 .celeb-kick {
-  font-size: 15px; font-weight: 800; letter-spacing: 4px; color: #ffd76a;
-  text-shadow: 0 0 10px rgba(255, 215, 106, .8);
+  font-size: 15px; font-weight: 800; letter-spacing: 4px; color: #eef3f9;
+  text-shadow: 0 0 10px rgba(255, 70, 85, .75);
 }
 .celeb-title {
   margin-top: 8px;
@@ -1432,7 +1432,7 @@ body {
   color: #ffffff; font-size: 16.5px;
   text-shadow: 0 0 12px rgba(64, 170, 255, .6), 0 1px 2px rgba(0, 0, 0, .9);
 }
-.celeb-kick { color: #ffe9a8; text-shadow: 0 0 12px rgba(255, 200, 60, .95), 0 1px 2px rgba(0, 0, 0, .9); }
+.celeb-kick { color: #eef3f9; text-shadow: 0 0 12px rgba(255, 70, 85, .95), 0 1px 2px rgba(0, 0, 0, .9); }
 .celeb-title { color: #ffffff; text-shadow: 0 0 22px rgba(64, 170, 255, 1), 0 2px 0 #06263f, 0 2px 6px rgba(0, 0, 0, .9); }
 .celeb-sub { color: #eaf6ff; }
 .celeb-tap { color: #cfe9ff; }
