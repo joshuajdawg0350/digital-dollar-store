@@ -1,0 +1,22 @@
+/* ==========================================================================
+   THE CELEBRATION TITLE LAYER — BONUS (one-step swap file)
+   The celebration clips ship TITLE-FREE on purpose: the title is this
+   layer — the #celebTitleFx image (assets/celeb-title.png) floating over
+   the video. FINAL TREATMENT SETTLED (Joshua, 2026-11-21 20:45 CT):
+   round-3 pick #15 "Brushed Red Metal" — the word BONUS only, NO stars:
+   brushed-metal red face, polished electric-blue bevel + outline, 3D
+   extrusion, transparent PNG. Swapping the treatment = replacing
+   assets/celeb-title.png (and this file's placement, if ever needed).
+   (c) 2026 J-Dawgs Industries.
+   ========================================================================== */
+.celeb-titlefx {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + 40px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(88vw, 560px);
+  height: auto;
+  z-index: 3;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, .55));
+}

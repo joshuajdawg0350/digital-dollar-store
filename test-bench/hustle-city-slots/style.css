@@ -1112,3 +1112,175 @@ body {
     linear-gradient(180deg, rgba(255, 255, 255, .22) 0%, rgba(255, 255, 255, 0) 46%),
     linear-gradient(180deg, #eef2f7 0%, #b4bfcc 28%, #67727f 50%, #39424e 53%, #828fa0 76%, #dde4ec 100%);
 }
+
+/* ---------- LIVING CABINET — CARBON PERFORMANCE — Casino Classics (2026-11-21) ----------
+   Joshua's picks (2026-11-21 19:21 CT): Casino Classics = cabinet #7 'Carbon Performance' (carbon fiber + machined aluminum, electric-blue underglow). The cabinet is not a
+   picture swap: it is layered and ALIVE. cabinet-life.js mirrors the
+   game's own UI signals as classes on #cabinet (cab-spinning / cab-win /
+   cab-party) and this block drives the lighting from them:
+   - idle: a light chase travels the cabinet face, the side strips pulse,
+     the marquee breathes, a reflection sweeps the reel glass, the SPIN
+     bezel glows, and accent underglow spills from the base;
+   - spinning: every chase hurries; - win: accent flash washes the face;
+   - celebration / bonus / free spins: full-speed party chase.
+   All motion is transform/opacity (plus small pre-existing glow shadows);
+   NO GOLD anywhere. Skin only — no handler, ID, layout, or logic change. */
+.cabinet { --acc: #2e9bff; --acc-hot: #6fc2ff; --acc-rgb: 46, 155, 255; --chase-dur: 7s; --glass-dur: 9.5s; }
+.cab-glow { overflow: hidden; }
+.cab-glow::before, .cab-glow::after {
+  content: ""; position: absolute; left: -14%; right: -14%; top: 0; height: 64px;
+  background: linear-gradient(180deg, rgba(var(--acc-rgb), 0) 0%, rgba(var(--acc-rgb), .16) 50%, rgba(var(--acc-rgb), 0) 100%);
+  transform: translateY(-90px);
+  animation: cabChase var(--chase-dur) linear infinite;
+  pointer-events: none;
+}
+.cab-glow::after { animation-delay: calc(var(--chase-dur) / -2); }
+@keyframes cabChase { to { transform: translateY(1250px); } }
+.cabinet::before, .cabinet::after { animation: cabStrip 3.4s ease-in-out infinite alternate; }
+@keyframes cabStrip { from { opacity: .5; } to { opacity: 1; } }
+.marquee-wrap::after { animation: cabBreathe 3.2s ease-in-out infinite; }
+@keyframes cabBreathe { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
+.marquee-shine { animation: cabShine 4.6s ease-in-out infinite alternate; }
+@keyframes cabShine { from { opacity: .8; } to { opacity: 1; } }
+.glass { overflow: hidden; }
+.glass::after {
+  content: ""; position: absolute; top: -12%; bottom: -12%; left: 0; width: 44%;
+  background: linear-gradient(100deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, .07) 38%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .07) 62%, rgba(255, 255, 255, 0) 100%);
+  transform: translateX(-140%) skewX(-8deg);
+  animation: cabGlass var(--glass-dur) ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes cabGlass {
+  0% { transform: translateX(-140%) skewX(-8deg); }
+  52% { transform: translateX(330%) skewX(-8deg); }
+  100% { transform: translateX(330%) skewX(-8deg); }
+}
+.spin-btn::before { animation: cabBezel 2.6s ease-in-out infinite; }
+@keyframes cabBezel {
+  0%, 100% { box-shadow: inset 0 1px 1px rgba(255, 255, 255, .55), inset 0 -1px 2px rgba(0, 0, 0, .55), 0 3px 8px rgba(0, 0, 0, .65), 0 0 6px rgba(var(--acc-rgb), .35); }
+  50% { box-shadow: inset 0 1px 1px rgba(255, 255, 255, .55), inset 0 -1px 2px rgba(0, 0, 0, .55), 0 3px 8px rgba(0, 0, 0, .65), 0 0 20px rgba(var(--acc-rgb), .85); }
+}
+.cab-base { position: relative; }
+.cab-base::after {
+  content: ""; position: absolute; left: 5%; right: 5%; bottom: -6px; height: 9px; border-radius: 50%;
+  background: radial-gradient(50% 100% at 50% 50%, rgba(var(--acc-rgb), .55), rgba(var(--acc-rgb), 0) 72%);
+  filter: blur(3px); pointer-events: none; animation: cabBreathe 3.8s ease-in-out infinite;
+}
+.cabinet.cab-spinning { --chase-dur: 1.5s; --glass-dur: 2.4s; }
+.cabinet.cab-spinning::before, .cabinet.cab-spinning::after { animation-duration: .8s; }
+.cabinet.cab-spinning .spin-btn::before { animation-duration: .7s; }
+.cabinet.cab-win .cab-glow::before, .cabinet.cab-win .cab-glow::after {
+  animation-duration: 1.1s;
+  background: linear-gradient(180deg, rgba(var(--acc-rgb), 0) 0%, rgba(var(--acc-rgb), .30) 50%, rgba(var(--acc-rgb), 0) 100%);
+}
+.cabinet.cab-party { --chase-dur: .55s; --glass-dur: 1.6s; }
+.cabinet.cab-party::before, .cabinet.cab-party::after { animation-duration: .4s; }
+.cabinet.cab-party .marquee-wrap::after { opacity: 1; }
+.cabinet.cab-party .belly-frame {
+  box-shadow: 0 0 0 2px #05070a, 0 0 44px rgba(var(--acc-rgb), .55), 0 5px 14px rgba(0, 0, 0, .72), inset 0 0 0 1px rgba(0, 0, 0, .85);
+}
+@media (prefers-reduced-motion: reduce) {
+  .cab-glow::before, .cab-glow::after, .glass::after, .cabinet::before, .cabinet::after,
+  .marquee-wrap::after, .marquee-shine, .spin-btn::before, .cab-base::after { animation: none !important; }
+}
+
+/* Carbon Performance surfaces: carbon-fiber weave over machined aluminum,
+   electric-blue accent light, blue underglow (cabinet-7.png). */
+.cabinet {
+  background:
+    linear-gradient(180deg, rgba(46, 155, 255, .12) 0%, rgba(46, 155, 255, 0) 26%),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, .030) 0 2px, rgba(255, 255, 255, 0) 2px 4px),
+    repeating-linear-gradient(-45deg, rgba(0, 0, 0, .32) 0 2px, rgba(0, 0, 0, 0) 2px 4px),
+    linear-gradient(165deg, #49525e 0%, #1b2129 14%, #0a0d12 38%, #141a21 62%, #05070a 100%);
+}
+.deck::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: .55;
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, .035) 0 2px, rgba(255, 255, 255, 0) 2px 4px),
+    repeating-linear-gradient(-45deg, rgba(0, 0, 0, .35) 0 2px, rgba(0, 0, 0, 0) 2px 4px);
+}
+.readouts, .controls { position: relative; z-index: 1; }
+.marquee-wrap {
+  border-color: #a7b3c2;
+  box-shadow:
+    0 0 0 2px #05070a, 0 0 0 3px #5a6675,
+    0 0 34px rgba(46, 155, 255, .50), 0 12px 26px rgba(46, 155, 255, .18),
+    0 3px 10px rgba(0, 0, 0, .75),
+    inset 0 0 0 1px rgba(0, 0, 0, .8), inset 0 0 26px rgba(46, 155, 255, .30);
+}
+.spin-btn { background: linear-gradient(180deg, #454e59 0%, #20262e 34%, #0c0f13 52%, #11151a 55%, #2b333d 80%, #4a545f 100%); }
+.spin-btn:active:not(:disabled) {
+  box-shadow: 0 2px 0 #12171e, 0 6px 13px rgba(0, 0, 0, .80), 0 0 26px rgba(46, 155, 255, .50),
+    inset 0 2px 3px rgba(255, 255, 255, .90), inset 0 -3px 6px rgba(0, 0, 0, .55);
+}
+.grille {
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, .03) 0 2px, rgba(255, 255, 255, 0) 2px 4px),
+    repeating-linear-gradient(-45deg, rgba(0, 0, 0, .30) 0 2px, rgba(0, 0, 0, 0) 2px 4px),
+    radial-gradient(circle at 50% 42%, rgba(0, 0, 0, .92) 1.7px, rgba(190, 205, 225, .14) 2.1px, rgba(0, 0, 0, 0) 2.9px) 4px 4px / 10px 10px,
+    linear-gradient(180deg, #1b232f 0%, #0a0d12 100%);
+}
+.cabinet.cab-win .reel-bezel {
+  box-shadow: inset 0 2px 3px rgba(255, 255, 255, .55), inset 0 -3px 6px rgba(0, 0, 0, .65),
+    0 4px 14px rgba(0, 0, 0, .75), 0 0 34px rgba(46, 155, 255, .65);
+}
+
+
+/* ---------- CELEBRATION SHOW — video layer (2026-11-21) ----------
+   The picked 5s celebration clip plays full-screen inside the celeb
+   overlay at the bonus moment (title-free; the title is its own layer,
+   celeb-title.css). If the clip can't play it hides itself and the CSS
+   celebration underneath shows instead. */
+.celeb-video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: .92;
+  pointer-events: none;
+  z-index: 1;
+}
+.celeb-video.dead { display: none; }
+.celeb .celeb-frame { position: relative; z-index: 2; }
+
+/* ===== BONUS TYPE — BRIGHTNESS PASS (Joshua, 2026-11-21 20:47 CT) =====
+   Brighter, higher-contrast text on every bonus surface. The display
+   font-family swap lands as ONE standard when Joshua's font pick does. */
+.bonus-title, .bonus-head h2 {
+  color: #ffffff;
+  text-shadow: 0 0 18px rgba(64, 170, 255, .95), 0 0 34px rgba(46, 155, 255, .55), 0 2px 3px rgba(0, 0, 0, .95);
+}
+.bonus-sub { color: #eaf6ff; }
+.bonus-rule { color: #d7e7f8; }
+.bonus-result {
+  color: #ffffff; font-size: 16.5px;
+  text-shadow: 0 0 12px rgba(64, 170, 255, .6), 0 1px 2px rgba(0, 0, 0, .9);
+}
+.celeb-kick { color: #ffe9a8; text-shadow: 0 0 12px rgba(255, 200, 60, .95), 0 1px 2px rgba(0, 0, 0, .9); }
+.celeb-title { color: #ffffff; text-shadow: 0 0 22px rgba(64, 170, 255, 1), 0 2px 0 #06263f, 0 2px 6px rgba(0, 0, 0, .9); }
+.celeb-sub { color: #eaf6ff; }
+.celeb-tap { color: #cfe9ff; }
+
+/* ==========================================================================
+   THE STANDARD FONT — BEBAS NEUE (Joshua's pick, 2026-11-21 20:56 CT)
+   Picked from five stills; THE standard on every machine: headings,
+   labels, buttons, readouts and bonus-screen text, bright high-contrast.
+   Caps-only by design — that IS the look. Self-hosted (assets/fonts/),
+   no CDN. SIL Open Font License 1.1 (Dharma Type).
+   ========================================================================== */
+@font-face {
+  font-family: 'Bebas Neue';
+  src: url('assets/fonts/bebas-neue.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+body, button, input, select, textarea,
+.led, .msg, .fs-banner, .marquee-line1, .marquee-line2, .marquee-suits,
+.bonus-title, .bonus-sub, .bonus-rule, .bonus-rules, .bonus-result, .bonus-msg,
+.celeb-kick, .celeb-title, .celeb-sub, .celeb-tap, .celeb-video-cap,
+.bet-btn, .spin-face, .ctl-label, .pay-title, .sheet-title {
+  font-family: 'Bebas Neue', 'Arial Narrow', Arial, sans-serif;
+  letter-spacing: .05em;
+}
+.bonus-rule, .bonus-rules, .bonus-sub, .bonus-msg { line-height: 1.4; }
+.bonus-title { font-size: 30px; }
+.celeb-title { font-size: clamp(38px, 11vw, 58px); }
+.led { font-size: clamp(19px, 6vw, 26px); }
