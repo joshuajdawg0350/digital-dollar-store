@@ -118,7 +118,7 @@
     border-top:2px solid #0096FF;border-radius:18px 18px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.55);
     transition:height .3s ease;overflow:hidden}
   #gsheet.dragging{transition:none}
-  #gsheetHandle{flex:0 0 auto;height:38px;display:flex;align-items:center;justify-content:center;position:relative;
+  #gsheetHandle{flex:0 0 auto;height:46px;display:flex;align-items:center;justify-content:center;position:relative;
     cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;background:rgba(5,8,14,.55)}
   #gsheetHandle:active{cursor:grabbing}
   .gs-grip{width:58px;height:6px;border-radius:3px;background:linear-gradient(180deg,#FDFEFE,#A9C4DE 50%,#63798F);
@@ -305,7 +305,7 @@
     </div>
     <div id="title-saved"></div>
     <div class="title-stats" id="title-stats"></div>
-    <div class="legal">© 2026 Joshua Dawson / J-Dawgs Industries · Hustle City Drag Racing™ · v0.4.6 — Land Speed</div>
+    <div class="legal">© 2026 Joshua Dawson / J-Dawgs Industries · Hustle City Drag Racing™ · v0.4.7 — Land Speed</div>
   </div>
 </section>
 
@@ -2013,7 +2013,10 @@ let treeFired={};
   });
   function endDrag(e){
     if(!drag||(e&&e.pointerId!==drag.id)) return;
-    var wasTap=drag.moved<9, vel=drag.vel; drag=null;
+    /* v0.4.7 (Joshua, 2026-11-22): a thumb tap DRIFTS — 9px was a
+       mouse number, so real taps read as tiny drags and died. 16px
+       of wander is still a tap. */
+    var wasTap=drag.moved<16, vel=drag.vel; drag=null;
     sheet.classList.remove('dragging');
     if(wasTap){ applySnap(snap==='collapsed'?lastOpen:'collapsed'); return; }
     var target=nearest(curH());
@@ -2027,7 +2030,13 @@ let treeFired={};
   });
   window.addEventListener('resize',function(){ if(!drag) applySnap(snap); });
   applySnap(snap);
-  window.__gsheet={ open:function(name){ applySnap(name||'full'); }, snap:function(){ return snap; } };
+  window.__gsheet={ open:function(name){ applySnap(name||'full'); }, snap:function(){ return snap; },
+    /* v0.4.7 (Joshua, 2026-11-22): ENTER = a real pull-up. The sheet
+       starts folded on the street and slides up to full, so opening
+       the garage is the slide-up gesture he asked for — not a screen
+       popping in already open. */
+    enter:function(){ sheet.classList.add('dragging'); applySnap('collapsed');
+      void sheet.offsetHeight; sheet.classList.remove('dragging'); applySnap('full'); } };
 })();
 function showScreen(name){
   S.screen=name;
@@ -2039,7 +2048,7 @@ function showScreen(name){
        v0.4.5: the scroll lives in the sheet body now, and the sheet
        opens FULL on every entry. */
     var gb=$('gsheetBody'); if(gb) gb.scrollTop=0;
-    if(window.__gsheet) window.__gsheet.open('full'); }
+    if(window.__gsheet) window.__gsheet.enter(); }
   if(name==='title') renderTitleStats();
   if(name==='title'||name==='garage') applyVenue(false); /* the street is home */
 }
