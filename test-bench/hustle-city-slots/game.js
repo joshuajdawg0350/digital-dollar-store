@@ -15,6 +15,15 @@
    Reels spin with real-machine motion: spin-up acceleration, motion blur at
    speed, staggered stops 1-2-3-4-5, and a spring settle with a small recoil.
    Pull arm + SPIN button both fire the same spin.
+   v2.4 (2026-11-21 23:34 CT, Joshua's two picks): (1) Pick-a-Garage is
+   now a TRUNK game — each car keeps its real photo and the pick pops
+   that car's trunk: the lid swings open on the prize inside, or on
+   SCOTTY (banked prizes still kept when he ends it). The bust Scotty
+   is the corrected Hustle City 3 coming-soon-video Scotty (beanie,
+   sunglasses, full beard), cropped from the settled HC3 poster — the
+   earlier bonus Scotty Joshua rejected is gone. (2) EVERY payout grew
+   20% (line paytable, scatter pays, garage prizes — see machines.js):
+   total RTP ~131.6%, deliberately over 100% at his pick.
    Play credits only. (c) 2026 J-Dawgs Industries. */
 'use strict';
 (function () {
@@ -362,8 +371,8 @@
       `<div class="payrow"><div class="thumb"><img src="${ART.WD}" alt="WILD"></div><div class="nm">WILD</div><span class="pv wide">Substitutes for every symbol except SCATTER</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.X2}" alt="WIN ×2"></div><div class="nm">WIN ×2</div><span class="pv wide">Anywhere on a winning line, this line's win is DOUBLED (×2)</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.X3}" alt="WIN ×3"></div><div class="nm">WIN ×3</div><span class="pv wide">Anywhere on a winning line, this line's win is TRIPLED (×3). Two multipliers on the same line multiply together — ×2 and ×3 pay ×6</span></div>` +
-      `<div class="payrow"><div class="thumb"><img src="${ART.SC}" alt="SCATTER"></div><div class="nm">SCATTER</div><span class="pv wide">3+ anywhere: pays 2× / 8× / 40× total bet + 7 / 10 / 15 FREE SPINS at 2× line wins</span></div>` +
-      `<div class="payrow"><div class="thumb"><img src="${ART.BN}" alt="BONUS"></div><div class="nm">BONUS — PICK-A-GARAGE</div><span class="pv wide">3+ anywhere on a paid spin opens the garage: 9 real cars — 8 hide prizes (½×–4× total bet), 1 hides SCOTTY. Banked prizes are kept; Scotty ends it. Clear all 8 for a 6× GARAGE BONUS</span></div>` +
+      `<div class="payrow"><div class="thumb"><img src="${ART.SC}" alt="SCATTER"></div><div class="nm">SCATTER</div><span class="pv wide">3+ anywhere: pays 2.4× / 9.6× / 48× total bet + 7 / 10 / 15 FREE SPINS at 2× line wins</span></div>` +
+      `<div class="payrow"><div class="thumb"><img src="${ART.BN}" alt="BONUS"></div><div class="nm">BONUS — PICK-A-GARAGE</div><span class="pv wide">3+ anywhere on a paid spin opens the garage: 9 real cars — pop a trunk! 8 trunks hide prizes (0.6×–4.8× total bet), 1 hides SCOTTY. Banked prizes are kept; Scotty ends it. Pop all 8 for a 7.2× GARAGE BONUS</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.DL}" alt="BET"></div><div class="nm">BET</div><span class="pv wide">Bets run in $25 steps: $25, $50, $75 … all the way up to $2,500 a spin. A step unlocks the first time your balance reaches it — and stays unlocked even if your balance dips. Use the −25 / +25 buttons or MAX BET. NEW GAME resets you to a $25 bet</span></div>`;
   }
 
@@ -530,7 +539,7 @@
       /* celebrate first, THEN the garage; any free spins won on this spin
          run after it (Joshua, 12:52 CT) */
       msgEl.textContent = `${ev.bonusCount} BONUS doors — the garage is open!`;
-      await celebrate('bonus', 'PICK-A-GARAGE!', `${ev.bonusCount} BONUS doors hit — pick your cars!`, celebDur());
+      await celebrate('bonus', 'PICK-A-GARAGE!', `${ev.bonusCount} BONUS doors hit — pop a trunk, dodge Scotty!`, celebDur());
       openBonus(totalBet(), finishTurn);
       return;
     }
@@ -538,9 +547,11 @@
   }
 
   /* ---------- PICK-A-GARAGE bonus ----------
-     9 cars: 8 prizes (x total bet of the triggering spin) + 1 SCOTTY.
-     Banked prizes are KEPT even when Scotty ends the round; clearing all
-     8 safe cars adds the completion (GARAGE) bonus. */
+     9 cars, 9 TRUNKS: 8 prizes (x total bet of the triggering spin) +
+     1 SCOTTY. The pick pops the trunk — the lid swings open on the
+     prize inside, or on Scotty. Banked prizes are KEPT even when
+     Scotty ends the round; popping all 8 prize trunks adds the
+     completion (GARAGE) bonus. */
   let bonusDeck = null, lastBonusPaid = 0;
   function openBonus(tb, done) {
     setControlsEnabled(false);
@@ -559,8 +570,8 @@
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'trunk';
-      b.setAttribute('aria-label', `Car ${i + 1}`);
-      b.innerHTML = `<img src="assets/car-${i + 1}.webp" alt="" draggable="false"><span class="car-num">${i + 1}</span>`;
+      b.setAttribute('aria-label', `Trunk ${i + 1}`);
+      b.innerHTML = `<span class="car-photo"><img src="assets/car-${i + 1}.webp" alt="" draggable="false"></span><span class="cavity"></span><span class="lid"><span class="lid-plate">TRUNK <b>${i + 1}</b></span><span class="lid-latch"></span></span>`;
       b.addEventListener('click', () => {
         if (over || b.classList.contains('open')) return;
         b.classList.add('open');
@@ -568,9 +579,9 @@
         if (card.scotty) {
           over = true;
           b.classList.add('scotty');
-          b.innerHTML = `<img src="assets/scotty.webp" alt="" draggable="false"><span class="busted-tag">SCOTTY!</span>`;
+          b.querySelector('.cavity').innerHTML = `<img class="cavity-scotty" src="assets/scotty.webp" alt="Scotty" draggable="false"><span class="busted-tag">SCOTTY!</span>`;
           Kit.engineBust(); /* engine rev + bell crash — the bust sting */
-          bonusResultEl.innerHTML = `<img class="scotty-img" src="assets/scotty.webp" alt="Scotty">SCOTTY was hiding in that car! Bonus over — you keep your banked <b>${fmt(banked)}</b> credits. Only the un-picked cars are lost.`;
+          bonusResultEl.innerHTML = `<img class="scotty-img" src="assets/scotty.webp" alt="Scotty">SCOTTY was hiding in that trunk! Bonus over — you keep your banked <b>${fmt(banked)}</b> credits. Only the un-popped trunks are lost.`;
           bonusCollectBtn.textContent = `COLLECT ${fmt(banked)}`;
           bonusCollectBtn.classList.add('on');
           setTimeout(() => bonusGame.scrollTo({ top: bonusGame.scrollHeight, behavior: 'smooth' }), 60);
@@ -578,7 +589,7 @@
         }
         banked += card.prize;
         safePicked++;
-        b.innerHTML = `<img src="assets/car-${i + 1}.webp" alt="" draggable="false"><span class="prize">+${fmt(card.prize)}</span>`;
+        b.querySelector('.cavity').innerHTML = `<span class="prize">+${fmt(card.prize)}</span>`;
         /* rising prize dings as the bank grows; deep picks get tension */
         setTimeout(() => Kit.prize(safePicked - 1), 130);
         if (safePicked >= 5) setTimeout(() => Kit.tension(), 420);
@@ -589,7 +600,7 @@
           bonusBankEl.textContent = fmt(banked);
           Kit.jackpot(); /* full clear = the jackpot celebration */
           celebrate('bonus', 'GARAGE CLEARED!', 'Every prize car picked — big bonus!', celebDur());
-          bonusResultEl.innerHTML = `<span class="clear-title">YOU CLEARED THE GARAGE!</span><br>All 8 prize cars picked and Scotty never showed — GARAGE BONUS +${fmt(completion)} credits. Total banked: <b>${fmt(banked)}</b>.`;
+          bonusResultEl.innerHTML = `<span class="clear-title">YOU CLEARED THE GARAGE!</span><br>All 8 prize trunks popped and Scotty never showed — GARAGE BONUS +${fmt(completion)} credits. Total banked: <b>${fmt(banked)}</b>.`;
           bonusCollectBtn.textContent = `COLLECT ${fmt(banked)}`;
           bonusCollectBtn.classList.add('on');
           setTimeout(() => bonusGame.scrollTo({ top: bonusGame.scrollHeight, behavior: 'smooth' }), 60);

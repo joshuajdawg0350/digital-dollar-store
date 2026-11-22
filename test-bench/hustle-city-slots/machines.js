@@ -37,26 +37,44 @@
    game after both passes: line RTP 77.39%, base-game share 99.11%,
    TOTAL theoretical RTP 109.73% (Monte Carlo 109.06% over 200k paid
    spins); net-positive base spins 24.5%; average line win per hit
-   22.8 credits at 1/line. */
+   22.8 credits at 1/line.
+   PAYOUTS +20% (2026-11-21 23:34 CT, Joshua's pick — chosen over "win 20%
+   more often", with the option stating plainly that the return goes over
+   100%): EVERY payout this machine awards is scaled x1.2 — the whole line
+   paytable, the scatter pays (2/8/40 -> 2.4/9.6/48 x total bet) and the
+   garage prizes (1/2x-4x -> 0.6x-4.8x, clear bonus 6x -> 7.2x; garage EV
+   7.42x -> 8.90x total bet). Hit frequency, feature frequencies (FS 1 in
+   69.8, garage 1 in 69.8, combined 1 in 35.0), strips, bet ladder and
+   symbols are UNCHANGED — only the size of the pays moved. Scaled pays
+   carry at most one decimal and are paid/displayed in whole credits by
+   the game's existing win rounding, exactly as the old pays already were
+   at fractional line bets. Monte Carlo (sim/rtp.js, 400k paid spins):
+   TOTAL RTP 109.63% -> 131.55% (second seed 132.10%); line 77.61% ->
+   93.13%, scatter 3.44% -> 4.13%, free spins 17.96% -> 21.55%, garage
+   10.63% -> 12.75%. (A whole-credit-per-line rounding of the paytable to
+   the 0.8 grid was measured and rejected: rounding the nine half-step
+   pays up overshoots to ~135.4%, balancing them underpays to ~128.3% —
+   neither is the 20% he picked.) */
 'use strict';
 
 const CLASSICS = {
   id: 'classics',
   name: 'Hustle City Slots — Casino Classics',
-  scatterPay: { 3: 2, 4: 8, 5: 40 },
+  scatterPay: { 3: 2.4, 4: 9.6, 5: 48 },
   scatterSpins: { 3: 7, 4: 10, 5: 15 },
   /* PICK-A-GARAGE bonus: 9 trunks, 8 prizes + 1 SCOTTY (bust). Prizes and the
      completion bonus are multiples of the TOTAL bet of the triggering spin.
-     Random-pick EV = (sum of prizes)/2 + completion/9 = 7.42x total bet. */
-  bonus: { prizes: [0.5, 0.5, 1, 1, 1.5, 2, 3, 4], completion: 6 },
+     Random-pick EV = (sum of prizes)/2 + completion/9 = 8.90x total bet
+     (was 7.42x before the 2026-11-21 x1.2 payout scale below). */
+  bonus: { prizes: [0.6, 0.6, 1.2, 1.2, 1.8, 2.4, 3.6, 4.8], completion: 7.2 },
   paytable: {
-    DL: { 3: 54, 4: 194, 5: 2209 },
-    WD: { 3: 32, 4: 109, 5: 442 },
-    SV: { 3: 18, 4: 70, 5: 265 },
-    HS: { 3: 12, 4: 39, 5: 88 },
-    CH: { 2: 3, 3: 4, 4: 11, 5: 22 },
-    BL: { 3: 5, 4: 16, 5: 35 },
-    B1: { 3: 4, 4: 11, 5: 22 }
+    DL: { 3: 64.8, 4: 232.8, 5: 2650.8 },
+    WD: { 3: 38.4, 4: 130.8, 5: 530.4 },
+    SV: { 3: 21.6, 4: 84, 5: 318 },
+    HS: { 3: 14.4, 4: 46.8, 5: 105.6 },
+    CH: { 2: 3.6, 3: 4.8, 4: 13.2, 5: 26.4 },
+    BL: { 3: 6, 4: 19.2, 5: 42 },
+    B1: { 3: 4.8, 4: 13.2, 5: 26.4 }
   },
   strips: [
     ['B1', 'B1', 'CH', 'B1', 'CH', 'HS', 'B1', 'BL', 'BL', 'WD', 'X2', 'SC', 'DL', 'BL', 'BL', 'SV', 'BN', 'BL', 'CH', 'CH', 'BL', 'HS', 'B1', 'CH', 'BL'],
