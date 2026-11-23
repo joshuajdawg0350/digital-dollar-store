@@ -113,6 +113,13 @@ let save = { cash: 1000, progressive: 10000, sound: true, jewels: 0 };
 try { const s = JSON.parse(localStorage.getItem(SAVE_KEY)); if (s && typeof s.cash === 'number') save = Object.assign(save, s); } catch (e) {}
 soundOn = save.sound !== false;
 let coinsBet = 3, busy = false, sessionPaid = 0;
+/* v13 no-retrigger guard (Joshua, 2026-11-22 20:05 CT — "never allow
+   more than three red spins"): true while a red-screen re-spin batch
+   is running. The red award in playSpin is evaluated ONLY on a base
+   spin and is suppressed outright while a batch is open, so a re-spin
+   can never award another batch — the TOTAL re-spins from one trigger
+   can never exceed the 2-3 that redSpinCount dealt. */
+let redChainActive = false;
 const state = { cash: save.cash, progressive: Math.max(10000, save.progressive || 10000), lastWon: 0, jewels: Math.min(L.JEWELS_TO_TRIGGER - 1, Math.max(0, save.jewels | 0)), spinsSinceRed: Math.max(0, save.spinsSinceRed | 0) };
 function persist() { save.cash = state.cash; save.progressive = state.progressive; save.sound = soundOn; save.jewels = state.jewels; save.spinsSinceRed = state.spinsSinceRed || 0; try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {} }
 
@@ -436,7 +443,7 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
 
 async function playSpin() {
   if (busy) return;
-  if (state.cash < coinsBet) { banner('over', 'GAME OVER'); msg('OUT OF CASH — TAP + $1,000 CASH'); return; }
+  if (state.cash < coinsBet) { banner('over', 'GAME OVER'); msg('OUT OF CASH — TAP BUY BACK IN'); renderMeters(); return; }
   busy = true; document.body.dataset.busy = '1'; stopAttract(); renderMeters();
   state.cash -= coinsBet;
   state.progressive += coinsBet * 0.01;
@@ -464,7 +471,9 @@ async function playSpin() {
      screen at least once every 30 spins, never longer. Count every
      spin; the 30th spin since the last red is dealt as a guaranteed
      win (the bet was already taken above — it is the player's own
-     spin, dealt hot) and always goes red. */
+     spin, dealt hot) and always goes red.
+     [v13 (Joshua, 2026-11-22 20:30 CT): the guarantee cap is now 40 —
+     L.RED_CAP = 40; a red screen at least once every 40 base spins.] */
   state.spinsSinceRed = (state.spinsSinceRed || 0) + 1;
   const capSpin = state.spinsSinceRed >= L.RED_CAP;
   let r = await doSpin(capSpin, capSpin ? 5 * coinsBet : 0);
@@ -481,20 +490,26 @@ async function playSpin() {
 
     /* RED SCREEN — the game's bonus: the top screen floods red and the
        machine RE-SPINS, guaranteed to pay at least the win that
-       triggered it; a re-spin can flash red again and chain (max 5).
-       Every re-spin's pay ADDS to the session total. The red screen
-       ALWAYS re-spins — nothing diverts it. Pick a Duck is a separate
-       bonus on its own trigger, rolled after this chain settles
-       (Joshua, 2026-11-22: "the red screen does the re-spins").
+       triggered it. Every re-spin's pay ADDS to the session total. The
+       red screen ALWAYS re-spins — nothing diverts it. Pick a Duck is a
+       separate bonus on its own trigger, rolled after this batch
+       settles (Joshua, 2026-11-22: "the red screen does the re-spins").
        (Player-reported + filmed: RESEARCH.md.) */
     let triggerPay = r.pay;
     /* v10 — Joshua's numbers (2026-11-22 16:44 CT): when the red screen
        hits (RED_CHANCE roll, or a cap spin), it awards a flat random
        batch of re-spins — never one. The old 20%-continue / cap-5 chain
-       is dead. v12 (2026-11-22 19:25 CT): the batch is 2-4 re-spins —
-       four at the most (was 2-8). */
-    const redSpins = (capSpin || rng() < L.RED_CHANCE) ? L.redSpinCount(rng) : 0;
+       is dead. v12 (2026-11-22 19:25 CT): the batch was 2-4 re-spins.
+       v13 (Joshua, 2026-11-22 20:05 CT): "never allow more than three
+       red spins. It's still going up to eight." — the batch is now 2-3
+       AND the award can never retrigger: it is evaluated here, on the
+       BASE spin only; the re-spins below run through doSpin(true, …),
+       which contains no red award at all; and the redChainActive guard
+       suppresses the award outright while a batch is open. The TOTAL
+       re-spins from one trigger can never exceed 3. */
+    const redSpins = (!redChainActive && (capSpin || rng() < L.RED_CHANCE)) ? L.redSpinCount(rng) : 0;
     if (redSpins > 0) { state.spinsSinceRed = 0; persist(); }
+    redChainActive = redSpins > 0;
     for (let chain = 1; chain <= redSpins; chain++) {
       $('redSub').textContent = chain > 1 ? `RE-SPIN ${chain} OF ${redSpins} — STILL GUARANTEED` : `GUARANTEED WIN — ${redSpins} RE-SPINS!`;
       $('redJewels').innerHTML = Array.from({ length: L.JEWELS_TO_TRIGGER }, (_, i) =>
@@ -522,6 +537,7 @@ async function playSpin() {
       sessionPaid = totalWon; state.lastWon = totalWon; renderMeters(totalWon, sessionPaid);
       document.body.classList.remove('redspin'); $('screen').classList.remove('redflood');
     }
+    redChainActive = false;
 
     /* PICK A DUCK — its own bonus on its own trigger: an independent
        roll on a winning spin, taken only after any red-screen chain
@@ -616,7 +632,11 @@ $('betMaxBtn').onclick = () => { if (busy) return; coinsBet = 3; beep(880, .05, 
 $('spinBtn').onclick = () => { ac(); playSpin(); };
 $('paysBtn').onclick = () => { $('paySheet').classList.toggle('open'); };
 $('soundBtn').onclick = () => { soundOn = !soundOn; $('soundBtn').textContent = soundOn ? 'SOUND ON' : 'SOUND OFF'; persist(); };
-$('refillBtn').onclick = () => { if (busy) return; state.cash += 1000; banner(null); jingle(false); renderMeters(); persist(); msg('$1,000 CASH ADDED — GOOD LUCK!'); };
+/* v13 buy back in (Joshua, 2026-11-22 20:09 CT): one tap restores the
+   $1,000 starting bankroll and returns straight to normal play. Shown
+   by renderMeters whenever cash can't cover the selected bet — $0 or
+   just short (e.g. $2 against a 3-coin bet). */
+$('refillBtn').onclick = () => { if (busy) return; state.cash = 1000; banner(null); jingle(false); renderMeters(); persist(); msg('BOUGHT BACK IN — $1,000. GOOD LUCK!'); };
 $('soundBtn').textContent = soundOn ? 'SOUND ON' : 'SOUND OFF';
 
 /* paytable sheet */

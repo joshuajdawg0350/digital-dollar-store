@@ -83,16 +83,19 @@ const TOTAL_WEIGHT = 100000;
 const RED_CHANCE = 0.35;       // per winning spin (v10: raised from 0.20 — see below)
 /* v10 (Joshua, 2026-11-22 16:44 CT — his numbers, superseding the old
    20%-continue / cap-5 chain): every time the red screen hits it awards
-   AT LEAST 2 re-spins and at most 8, drawn flat random — never one.
-   RED_CHAIN_CHANCE and RED_MAX are dead and removed. [Award range cut
-   to 2-4 by the v12 ruling below.] */
-function redSpinCount(rng) { return 2 + Math.floor(rng() * 3); } // uniform 2..4 (v12: Joshua, 2026-11-22 19:25 CT — 2 to 4 at the most, never 1, never more than 4; frequency rule unchanged, RED_CAP stays 30)
+   a flat random batch of re-spins — never one. RED_CHAIN_CHANCE and
+   RED_MAX are dead and removed. [Award range cut to 2-4 by the v12
+   ruling (2026-11-22 19:25 CT), then to 2-3 by the v13 ruling below.] */
+function redSpinCount(rng) { return 2 + Math.floor(rng() * 2); } // uniform 2..3 (v13: Joshua, 2026-11-22 20:05 CT — "never allow more than three red spins"; never 1, never more than 3, and NO retrigger: the award is evaluated on the base spin only (game.js), so one trigger can never total more than 3. Frequency: RED_CAP below)
 /* v10 frequency (Joshua, 2026-11-22 16:54 CT, corrected 16:55 CT):
    a red screen at least once every 30 spins, never a longer wait.
-   RED_CHANCE 0.35 per winning spin puts the natural mean gap near
-   ~21 spins; RED_CAP is the hard backstop — the 30th spin since the
-   last red screen is dealt as a win and always goes red (game.js). */
-const RED_CAP = 30;
+   [v13 (Joshua, 2026-11-22 20:30 CT): "slow down the red screens just
+   a little" — the guarantee cap moves to 40: a red screen at least
+   once every 40 base spins, no longer than that, ever. RED_CHANCE
+   0.35 per winning spin still puts the natural mean gap near ~21
+   spins; RED_CAP is the hard backstop — the 40th spin since the last
+   red screen is dealt as a win and always goes red (game.js).] */
+const RED_CAP = 40;
 /* Pick a Duck's OWN trigger: an independent roll on a winning spin.
    Until 2026-11-22 this was 0.25 as a SHARE OF RED TRIGGERS, and the red
    screen diverted into the pond instead of re-spinning — Joshua, from
