@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#05070d">
+<title>Hustle City Cosmic Bowling — 3D</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; overflow: hidden; background: #05070d; }
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #e8eef7; user-select: none; -webkit-user-select: none; touch-action: none;
+  }
+  #app { display: flex; flex-direction: column; height: 100dvh; max-width: 560px; margin: 0 auto;
+         background: linear-gradient(180deg, #070a13 0%, #05070d 100%); }
+
+  /* ---------- top chrome bar ---------- */
+  #topbar {
+    display: flex; align-items: center; gap: 8px; padding: 7px 10px;
+    background: linear-gradient(180deg, #2a3242 0%, #161c28 45%, #0b0f16 55%, #1a2230 100%);
+    border-bottom: 1px solid #38b6ff55; box-shadow: 0 2px 10px #000c, inset 0 1px 0 #ffffff2a;
+  }
+  #topbar .title { font-weight: 900; letter-spacing: .06em; font-size: 12.5px; line-height: 1.05;
+    background: linear-gradient(180deg, #fff, #9fb6cc 55%, #e8f4ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  #topbar .title small { display: block; font-size: 8.5px; letter-spacing: .22em; color: #38b6ff; -webkit-text-fill-color: #38b6ff; }
+  .pill { margin-left: auto; display: flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 20px;
+    background: linear-gradient(180deg, #232c3c, #10151f); border: 1px solid #46536a; font-size: 12.5px; font-weight: 800;
+    box-shadow: inset 0 1px 0 #ffffff22, 0 1px 3px #000a; white-space: nowrap; }
+  .pill + .pill { margin-left: 0; }
+  .pill .lab { font-size: 8.5px; color: #8fb8dd; letter-spacing: .08em; }
+  #savedTag { font-size: 9px; color: #59ffa0; opacity: 0; transition: opacity .3s; letter-spacing: .08em; }
+  #savedTag.on { opacity: 1; }
+
+  /* ---------- scoreboard ---------- */
+  #scoreWrap { padding: 6px 8px 2px; }
+  #scoreTable { width: 100%; border-collapse: separate; border-spacing: 2px; }
+  #scoreTable th, #scoreTable td {
+    background: linear-gradient(180deg, #1b2331, #0d1219); border: 1px solid #39465c; border-radius: 5px;
+    text-align: center; padding: 2px 1px; box-shadow: inset 0 1px 0 #ffffff14;
+  }
+  #scoreTable th { font-size: 8.5px; color: #8fb8dd; letter-spacing: .1em; padding: 1px; }
+  #scoreTable td.name { width: 15%; font-size: 9.5px; font-weight: 900; color: #cfe6ff; letter-spacing: .02em; }
+  #scoreTable td.name small { display: block; font-size: 7.5px; color: #7d94ad; font-weight: 700; }
+  #scoreTable td.cur { border-color: #38b6ff; box-shadow: 0 0 7px #38b6ff66, inset 0 1px 0 #ffffff14; }
+  .rolls { font-size: 10px; font-weight: 800; color: #ffd75e; min-height: 12px; letter-spacing: .12em; }
+  .cum { font-size: 13px; font-weight: 900; color: #fff; min-height: 16px; }
+  tr.me td.name { color: #7fd0ff; }
+
+  /* ---------- 3D stage ---------- */
+  #stage { position: relative; flex: 1 1 auto; min-height: 0; margin: 4px 8px 0; border-radius: 12px; overflow: hidden;
+    border: 1px solid #39465c; box-shadow: 0 0 0 1px #000, 0 0 22px #38b6ff22, inset 0 0 40px #000; background: #000; }
+  #gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+  .tag { position: absolute; z-index: 5; padding: 4px 10px; border-radius: 16px; font-size: 11px; font-weight: 900; letter-spacing: .08em;
+    background: linear-gradient(180deg, #232c3ccc, #10151fdd); border: 1px solid #46536a; color: #dff1ff;
+    box-shadow: 0 2px 8px #000a, inset 0 1px 0 #ffffff22; }
+  #turnTag { top: 8px; left: 8px; }
+  #clockWrap { top: 8px; right: 8px; text-align: center; visibility: hidden; }
+  #clockNum { font-size: 17px; font-weight: 900; color: #fff; text-shadow: 0 0 8px #38b6ffe6; line-height: 1; }
+  #clockWrap .lab { font-size: 7.5px; color: #8fb8dd; letter-spacing: .14em; }
+  #clockWrap.low #clockNum { color: #ff6b6b; text-shadow: 0 0 8px #ff6b6b; }
+  #pinCard { position: absolute; z-index: 5; top: 52px; right: 8px; padding: 5px 7px; border-radius: 8px;
+    background: #0b0f16cc; border: 1px solid #39465c; }
+  #pinCard .lab { font-size: 7.5px; color: #8fb8dd; letter-spacing: .12em; text-align: center; margin-bottom: 2px; }
+  #pinDots { display: grid; grid-template-columns: repeat(4, 9px); gap: 2.5px; justify-content: center; }
+  #pinDots i { width: 9px; height: 9px; border-radius: 50%; background: #f4f7fb; box-shadow: 0 0 3px #fff8; display: block; }
+  #pinDots i.off { background: #2a3242; box-shadow: none; }
+  #pinDots i.sp { background: transparent; box-shadow: none; }
+  #mph { position: absolute; z-index: 5; left: 8px; bottom: 64px; font-size: 12px; font-weight: 900; color: #bfe6ff;
+    text-shadow: 0 0 8px #38b6ff; visibility: hidden; }
+  #banner { position: absolute; z-index: 6; left: 0; right: 0; top: 34%; text-align: center; pointer-events: none; opacity: 0; transform: scale(.8); }
+  #banner.show { opacity: 1; transform: scale(1); transition: opacity .15s, transform .15s; }
+  #banner .big { font-size: 40px; font-weight: 1000; letter-spacing: .04em; color: #fff;
+    text-shadow: 0 0 18px #38b6ff, 0 0 42px #38b6ff88, 0 3px 0 #0b3d5c; }
+  #banner .sub { font-size: 13px; font-weight: 800; color: #cfe9ff; text-shadow: 0 1px 6px #000; margin-top: 2px; }
+  #hint { position: absolute; z-index: 5; left: 0; right: 0; bottom: 6px; text-align: center; font-size: 10.5px; color: #a9c6e2;
+    text-shadow: 0 1px 4px #000; padding: 0 12px; pointer-events: none; line-height: 1.45; }
+  #hint b { color: #fff; }
+  /* hook needle */
+  #needleWrap { position: absolute; z-index: 6; left: 12%; right: 12%; bottom: 40px; visibility: hidden; }
+  #needleWrap .lab { text-align: center; font-size: 8.5px; letter-spacing: .18em; color: #8fb8dd; margin-bottom: 3px; }
+  #needleTrack { position: relative; height: 14px; border-radius: 7px; border: 1px solid #46536a;
+    background: linear-gradient(90deg, #123a5c, #0d1219 38%, #1d5c2e 50%, #0d1219 62%, #123a5c); box-shadow: 0 2px 8px #000a; }
+  #needleMark { position: absolute; top: -3px; width: 4px; height: 18px; border-radius: 2px; background: #ffd75e;
+    box-shadow: 0 0 8px #ffd75e; left: 50%; margin-left: -2px; }
+  /* angle arrows strip */
+  #angleStrip { position: absolute; z-index: 5; left: 50%; transform: translateX(-50%); bottom: 26px; width: 150px; text-align: center;
+    font-size: 15px; color: #7fd0ff; letter-spacing: .3em; text-shadow: 0 0 8px #38b6ff88; pointer-events: none; visibility: hidden; }
+  #angleStrip .deg { font-size: 10px; letter-spacing: .05em; color: #dff1ff; font-weight: 900; }
+
+  /* ---------- deck ---------- */
+  #deck { padding: 7px 8px calc(8px + env(safe-area-inset-bottom)); background: linear-gradient(180deg, #131a26, #090d14);
+    border-top: 1px solid #39465c; box-shadow: inset 0 1px 0 #ffffff14; }
+  #ballRow { display: flex; align-items: center; gap: 8px; }
+  .orb { width: 44px; height: 44px; border-radius: 50%; flex: 0 0 auto; position: relative; cursor: pointer;
+    border: 2px solid #46536a; box-shadow: inset -6px -8px 14px #000a, inset 4px 6px 10px #ffffff30, 0 2px 6px #000; }
+  .orb.sel { border-color: #38b6ff; box-shadow: 0 0 10px #38b6ff88, inset -6px -8px 14px #000a, inset 4px 6px 10px #ffffff30; }
+  .orb .lv { position: absolute; bottom: -5px; right: -5px; background: #10151f; border: 1px solid #38b6ff; color: #bfe6ff;
+    font-size: 8px; font-weight: 900; border-radius: 8px; padding: 0 4px; }
+  #ballInfo { flex: 1 1 auto; min-width: 0; }
+  #ballInfo .nm { font-size: 13.5px; font-weight: 900; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #ballInfo .tp { font-size: 9.5px; color: #8fb8dd; letter-spacing: .06em; }
+  #ballInfo .st { font-size: 9.5px; color: #ffd75e; font-weight: 800; letter-spacing: .03em; }
+  #btnRow { display: flex; gap: 7px; margin-top: 8px; }
+  .btn { flex: 1; padding: 10px 4px; border-radius: 10px; border: 1px solid #55637c; cursor: pointer;
+    background: linear-gradient(180deg, #39445a 0%, #1a2230 48%, #10151f 52%, #232c3c 100%);
+    color: #eaf4ff; font-size: 12px; font-weight: 900; letter-spacing: .07em; text-align: center;
+    box-shadow: 0 3px 8px #000a, inset 0 1px 0 #ffffff30; }
+  .btn:active { transform: translateY(1px); }
+  .btn.primary { background: linear-gradient(180deg, #57c8ff 0%, #1c6fd9 48%, #0f4d99 52%, #2f8fe8 100%); border-color: #9fdcff; color: #fff;
+    text-shadow: 0 1px 3px #00355e; box-shadow: 0 3px 10px #1c6fd966, inset 0 1px 0 #ffffff50; }
+  .btn:disabled { opacity: .45; }
+
+  /* ---------- overlay screens ---------- */
+  .screen { position: fixed; inset: 0; z-index: 20; background: #05070df2; display: none; overflow-y: auto; padding: 14px 12px 30px; }
+  .screen.open { display: block; }
+  .screen .box { max-width: 520px; margin: 0 auto; }
+  .screen h2 { font-size: 19px; font-weight: 1000; letter-spacing: .05em; color: #fff; text-shadow: 0 0 12px #38b6ff66; margin: 4px 0 2px; }
+  .screen .sub { font-size: 11.5px; color: #8fb8dd; margin-bottom: 12px; line-height: 1.5; }
+  .card { background: linear-gradient(180deg, #1b2331, #0d1219); border: 1px solid #39465c; border-radius: 12px;
+    padding: 10px 12px; margin-bottom: 9px; box-shadow: inset 0 1px 0 #ffffff14, 0 3px 10px #0008; }
+  .card .row { display: flex; align-items: center; gap: 10px; }
+  .card .nm { font-size: 14.5px; font-weight: 900; color: #fff; }
+  .card .ds { font-size: 11px; color: #a9c6e2; line-height: 1.45; margin-top: 2px; }
+  .card .st { font-size: 10px; color: #ffd75e; font-weight: 800; margin-top: 3px; letter-spacing: .03em; }
+  .tagchip { font-size: 8.5px; font-weight: 900; letter-spacing: .08em; padding: 2px 7px; border-radius: 10px; border: 1px solid #38b6ff; color: #bfe6ff; }
+  .tagchip.done { border-color: #59ffa0; color: #59ffa0; }
+  .tagchip.lock { border-color: #39465c; color: #7d94ad; }
+  .mini { flex: 0 0 auto; padding: 8px 12px; font-size: 11px; }
+  .prog { height: 6px; border-radius: 3px; background: #0a0e14; border: 1px solid #39465c; margin-top: 6px; overflow: hidden; }
+  .prog i { display: block; height: 100%; background: linear-gradient(90deg, #1c6fd9, #38b6ff); }
+  .x { float: right; }
+  #toast { position: fixed; z-index: 40; left: 50%; transform: translateX(-50%) translateY(-16px); top: 12px; opacity: 0;
+    background: linear-gradient(180deg, #232c3c, #10151f); border: 1px solid #ffd75e; color: #ffeeb0; font-size: 12.5px; font-weight: 900;
+    padding: 9px 16px; border-radius: 22px; box-shadow: 0 6px 20px #000c; transition: all .25s; pointer-events: none; text-align: center; }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #resultsCard .big { font-size: 24px; font-weight: 1000; color: #fff; text-align: center; letter-spacing: .03em; }
+  .kv { display: flex; justify-content: space-between; font-size: 12.5px; padding: 3px 0; color: #cfe6ff; }
+  .kv b { color: #fff; }
+  .help p { font-size: 12.5px; color: #cfe6ff; line-height: 1.65; margin-bottom: 8px; }
+  .help b { color: #7fd0ff; }
+  .foot { text-align: center; font-size: 9.5px; color: #5f748e; margin-top: 14px; letter-spacing: .05em; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="topbar">
+    <div class="title">HUSTLE CITY<small>COSMIC BOWLING 3D</small></div>
+    <span id="savedTag">SAVED ✓</span>
+    <div class="pill"><span class="lab">CHIPS</span><span id="chips">0</span></div>
+    <div class="pill"><span class="lab">🏆</span><span id="trophies">0</span></div>
+  </div>
+
+  <div id="scoreWrap">
+    <table id="scoreTable">
+      <tr><th></th><th>FRAME 1</th><th>FRAME 2</th><th>FRAME 3</th><th>FRAME 4</th><th>FRAME 5</th></tr>
+      <tr class="me"><td class="name">YOU<small id="myTier">ROOKIE</small></td>
+        <td data-f="0"><div class="rolls"></div><div class="cum"></div></td>
+        <td data-f="1"><div class="rolls"></div><div class="cum"></div></td>
+        <td data-f="2"><div class="rolls"></div><div class="cum"></div></td>
+        <td data-f="3"><div class="rolls"></div><div class="cum"></div></td>
+        <td data-f="4"><div class="rolls"></div><div class="cum"></div></td></tr>
+      <tr class="ai"><td class="name"><span id="aiName">—</span><small id="aiTitle">PRACTICE</small></td>
+        <td data-f="0"><div class="rolls"></div><div class="cum"></div></td>
+        <td data-f="1"><div class="rolls"></div><div class="cum"></div></td>
+        <td data-f="2"><div class="rolls"></div><div class="cum"></div></td>
+        <td data-f="3"><div class="rolls"></div><div class="cum"></div></td>
+        <td data-f="4"><div class="rolls"></div><div class="cum"></div></td></tr>
+    </table>
+  </div>
+
+  <div id="stage">
+    <canvas id="gl"></canvas>
+    <div class="tag" id="turnTag">COSMIC BOWLING</div>
+    <div class="tag" id="clockWrap"><div id="clockNum">20</div><div class="lab">SHOT CLOCK</div></div>
+    <div id="pinCard"><div class="lab">PINS</div><div id="pinDots"></div></div>
+    <div id="mph">0 MPH</div>
+    <div id="banner"><div class="big"></div><div class="sub"></div></div>
+    <div id="needleWrap"><div class="lab">HOOK</div><div id="needleTrack"><div id="needleMark"></div></div></div>
+    <div id="angleStrip">◀ <span class="deg">0.0°</span> ▶</div>
+    <div id="hint"></div>
+  </div>
+
+  <div id="deck">
+    <div id="ballRow">
+      <div class="orb" id="curOrb"></div>
+      <div id="ballInfo">
+        <div class="nm" id="ballName">House Rock</div>
+        <div class="tp" id="ballType">PRECISE · Lv 1</div>
+        <div class="st" id="ballStats"></div>
+      </div>
+      <div id="bagRow" style="display:flex;gap:6px;"></div>
+    </div>
+    <div id="btnRow">
+      <button class="btn primary" id="playBtn">PLAY</button>
+      <button class="btn" id="practiceBtn">PRACTICE</button>
+      <button class="btn" id="careerBtn">CAREER</button>
+      <button class="btn" id="bagBtn">BALLS</button>
+      <button class="btn" id="helpBtn">?</button>
+    </div>
+  </div>
+</div>
+
+<div class="screen" id="careerScreen"><div class="box">
+  <button class="btn mini x" data-close>CLOSE ✕</button>
+  <h2>CAREER LADDER</h2>
+  <div class="sub" id="careerSub">Beat the house pros one rung at a time. Every rival bowls for real — their stats are their game. Wins pay chips, trophies and ball cards. No entry fees, no energy, no ads — everything is earned by playing.</div>
+  <div id="ladderList"></div>
+  <h2 style="margin-top:16px;">MISSIONS</h2>
+  <div id="missionList"></div>
+  <h2 style="margin-top:16px;">ACHIEVEMENTS</h2>
+  <div id="achList"></div>
+  <div class="foot">© 2026 J-Dawgs Industries · Hustle City Cosmic Bowling™</div>
+</div></div>
+
+<div class="screen" id="bagScreen"><div class="box">
+  <button class="btn mini x" data-close>CLOSE ✕</button>
+  <h2>BALL BAG</h2>
+  <div class="sub">Three kinds of ball — <b style="color:#7fd0ff">Power</b> plows big sets, <b style="color:#7fd0ff">Bounce</b> throws pins hardest (split medicine), <b style="color:#7fd0ff">Precise</b> aims truest. Switch between shots. Cards unlock and upgrade — win matches and open cases to earn them.</div>
+  <div id="bagList"></div>
+  <div class="foot">© 2026 J-Dawgs Industries · Hustle City Cosmic Bowling™</div>
+</div></div>
+
+<div class="screen" id="helpScreen"><div class="box help">
+  <button class="btn mini x" data-close>CLOSE ✕</button>
+  <h2>HOW TO BOWL</h2>
+  <p><b>1 · Line up.</b> Drag the ball sideways to position it. Drag on the lane to set your angle — the arrows under the ball show it.</p>
+  <p><b>2 · Pull back &amp; hold.</b> Drag down on the ball and hold. The HOOK needle starts sweeping — dead centre throws straight, off to a side hooks the ball that way.</p>
+  <p><b>3 · Flick up to throw.</b> A fast, long flick lofts the ball; a shorter, slower one keeps it rolling on the ground. Flick speed is your power.</p>
+  <p><b>The match:</b> 5 frames against a house pro. The 5th frame plays like the 10th — strike or spare and you can throw up to three balls. 20 seconds a throw; dawdle and the throw is gone. Perfect game is 150.</p>
+  <p><b>Balls:</b> switch any time between shots with the orbs below the lane. Power, Bounce and Precise balls genuinely bowl differently — there is no single best ball, only the right ball for the leave.</p>
+  <div class="foot">© 2026 J-Dawgs Industries · Hustle City Cosmic Bowling™</div>
+</div></div>
+
+<div class="screen" id="resultsScreen"><div class="box">
+  <div class="card" id="resultsCard">
+    <div class="big" id="resTitle">—</div>
+    <div class="sub" id="resSub" style="text-align:center;"></div>
+    <div id="resRows"></div>
+    <div id="btnRow" style="margin-top:10px;">
+      <button class="btn primary" id="resAgain">REMATCH</button>
+      <button class="btn" id="resClose">DONE</button>
+    </div>
+  </div>
+</div></div>
+
+<div id="toast"></div>
+
+<script src="three.min.js"></script>
+<script src="logic3d.js"></script>
+<script src="game3d.js"></script>
+<script>
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>
