@@ -871,6 +871,10 @@ body {
   box-shadow: 0 5px 14px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 255, 255, .28);
 }
 .fetch-btn:disabled { opacity: .38; cursor: default; box-shadow: none; }
+/* Fetch end state (2026-11-22 return fix): once the game is over the throw /
+   bank row is dead weight — hide it so the COLLECT button fits on screen on
+   short phones instead of landing below the fold. */
+.bonus.fetch.ended .fetch-actions { display: none; }
 .fetch-btn:not(:disabled):active { transform: translateY(2px); }
 .fetch-throw-btn {
   background: linear-gradient(180deg, #e0483c, #a11a12 60%, #7d130c);

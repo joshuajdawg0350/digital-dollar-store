@@ -1067,6 +1067,18 @@
         fetchCollectBtn.textContent = banked > 0 ? `COLLECT ${fmt(banked)}` : 'COLLECT';
         fetchCollectBtn.classList.add('on');
         fetchCollectLock.arm(); /* the end screen + COLLECT get their own 2s */
+        /* RETURN FIX (2026-11-22, Pam's real-phone report: "after she plays
+           fetch it doesn't return to the game"): on a short viewport the
+           end screen is taller than the sheet — COLLECT landed BELOW the
+           fold, completely off-screen, and nothing scrolled it into view
+           (measured: at 360x640 the button sits 53px past the bottom edge
+           while the result text above it is visible, so the game reads as
+           stuck). Two-part fix, mirroring the dog-house game's pattern:
+           the dead THROW / BRING IT BACK row is hidden at the end (the
+           .ended CSS reclaims its ~78px), and the sheet scrolls itself to
+           the bottom so COLLECT is on screen either way. */
+        fetchGame.classList.add('ended');
+        setTimeout(() => fetchGame.scrollTo({ top: fetchGame.scrollHeight, behavior: 'smooth' }), 60);
         syncBroke();
       }
       async function bankPot(auto) {
@@ -1129,6 +1141,7 @@
         if (!over) return;
         if (fetchCollectLock.locked()) return; /* an early tap on COLLECT is ignored, not queued */
         fetchGame.classList.remove('on');
+        fetchGame.classList.remove('ended');
         fetchGame.setAttribute('aria-hidden', 'true');
         fetchBackdrop.classList.remove('on');
         fetchCollectBtn.classList.remove('on');
@@ -1141,6 +1154,7 @@
         resolve();
       };
       fetchCollectBtn.classList.remove('on');
+      fetchGame.classList.remove('ended');
       fetchButterfly.classList.remove('on');
       fetchBuster.classList.remove('dropped');
       say(`Ball 1 of ${F.balls} — tap THROW THE BALL and watch Buster run!`);
