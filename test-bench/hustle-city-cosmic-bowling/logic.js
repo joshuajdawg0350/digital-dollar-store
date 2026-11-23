@@ -349,8 +349,35 @@ function parseThrow(samples) {
   }
   if (bestVy < 170) return null;                   // a slow push up, not a throw
   const power = Math.min(1, Math.max(0.10, (bestVy - 120) / 2100));
-  const dx = last.x - from.x;
-  const errDeg = Math.max(-9, Math.min(9, Math.atan2(dx, Math.max(40, rise)) * 180 / Math.PI * 0.55));
+  /* Direction — read ROBUSTLY (2026-11-22 real-phone fix #2). The old code
+     took dx from the raw deepest and raw final samples. On a real
+     touchscreen the release sample jumps sideways as the finger lifts
+     (the contact patch shrinks and its centroid shifts 10-25 px), and the
+     deepest sample is whichever tremor point happened to sit lowest — so
+     a wobbling-but-straight flick routinely read 1.5-2.5 deg of phantom
+     angle. At the head pin 1 deg is ~0.33 m: a straight throw guttered.
+     Now both ends are averaged over their neighbouring samples (spikes
+     and dip jitter wash out) and the raw angle passes a deadzone: inside
+     +/-4.5 deg of flick direction the throw snaps to dead straight, and
+     a deliberate sideways flick keeps the excess at the same 0.55 gain —
+     skill curves survive, unintended crookedness does not. */
+  const nearX = (idx, ms) => {
+    const tC = samples[idx].t;
+    let sx = 0, n = 0;
+    for (let i = Math.max(0, idx - 2); i <= Math.min(samples.length - 1, idx + 2); i++) {
+      if (Math.abs(samples[i].t - tC) <= ms) { sx += samples[i].x; n++; }
+    }
+    return n ? sx / n : samples[idx].x;
+  };
+  const fromX = nearX(di, 60);
+  let relX = last.x, rn = 1;                       // release end: mean of the final 40 ms
+  for (let i = samples.length - 2; i >= 0 && last.t - samples[i].t <= 40; i--) { relX += samples[i].x; rn++; }
+  relX /= rn;
+  const dx = relX - fromX;
+  const rawDeg = Math.atan2(dx, Math.max(40, rise)) * 180 / Math.PI;
+  const DEAD_DEG = 4.5;
+  const errDeg = Math.abs(rawDeg) <= DEAD_DEG ? 0
+    : Math.max(-9, Math.min(9, Math.sign(rawDeg) * (Math.abs(rawDeg) - DEAD_DEG) * 0.55));
   const loft = Math.max(0, Math.min(1, (power - 0.78) / 0.22)) * 0.9;
   return { power, errDeg, loft, from: deep };
 }
@@ -361,7 +388,15 @@ function needleValue(tSec, hookControl) {
   return Math.sin(tSec * Math.PI * 2 * hz);
 }
 function effectiveHook(needle, stats) {
-  return Math.max(-1, Math.min(1, needle)) * (0.35 + stats.hook / 10 * 0.85);
+  /* Centre snap (2026-11-22): the needle sweeps ~1 Hz, so "near centre"
+     used to mean within ~30 ms of the crossing — a human timing the
+     needle a hair late still got a bending ball on a throw they aimed
+     straight. Inside +/-0.15 the needle now reads as dead centre; past
+     it the hook rescales smoothly to the same full strength, so a
+     deliberate off-centre flick still bends the ball exactly as hard. */
+  const n = Math.max(-1, Math.min(1, needle));
+  const mag = Math.abs(n) <= 0.15 ? 0 : Math.sign(n) * (Math.abs(n) - 0.15) / 0.85;
+  return mag * (0.35 + stats.hook / 10 * 0.85);
 }
 
 /* ================= AI opponent =================

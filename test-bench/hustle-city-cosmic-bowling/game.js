@@ -110,11 +110,15 @@ function show(id) {
   if (id === 'arsenal') renderArsenal();
 }
 function ballOrbStyle(def, size) {
+  // Realism pass (2026-11-22): hot specular core, environment sheen band,
+  // the ball's own glow rimming the shadow side, deep contact shading.
   return `background:
-    radial-gradient(circle at 34% 30%, rgba(255,255,255,.85) 0 6%, transparent 26%),
+    radial-gradient(circle at 34% 29%, rgba(255,255,255,.98) 0 3.5%, rgba(255,255,255,.55) 9%, transparent 27%),
+    radial-gradient(ellipse 90% 42% at 50% 16%, rgba(255,255,255,.16), transparent 70%),
+    radial-gradient(circle at 80% 84%, ${def.skin.glow}66 0 12%, transparent 42%),
     radial-gradient(circle at 62% 64%, ${def.skin.swirl} 0 26%, transparent 58%),
-    radial-gradient(circle at 50% 50%, ${def.skin.base} 0 62%, #04050c 130%);
-    box-shadow: inset -8px -10px 18px rgba(0,0,0,.6), 0 0 14px ${def.skin.glow}55, 0 4px 12px rgba(0,0,0,.5);`;
+    radial-gradient(circle at 50% 50%, ${def.skin.base} 0 60%, #04050c 128%);
+    box-shadow: inset -8px -10px 18px rgba(0,0,0,.62), inset 3px 4px 8px rgba(255,255,255,.14), 0 0 14px ${def.skin.glow}55, 0 5px 14px rgba(0,0,0,.55);`;
 }
 function statBars(def, level) {
   const st = L.ballStatsAt(def, level);
@@ -353,19 +357,25 @@ function makeLaneTexture(hue) {
     const r = Math.random() * 2.6 + 0.6;
     c.beginPath(); c.arc(Math.random() * 1024, Math.random() * 2048, r, 0, 7); c.fill();
   }
-  // 39 boards with per-board tone + grooves
+  // 39 boards with per-board tone, gloss variance + grooves
   for (let i = 0; i < 39; i++) {
     const x0 = i * 1024 / 39;
     c.fillStyle = i % 2 ? 'rgba(130,180,255,.055)' : 'rgba(0,0,0,.11)';
     c.fillRect(x0, 0, 1024 / 39, 2048);
+    if (i % 3 === 1) { c.fillStyle = 'rgba(190,225,255,.030)'; c.fillRect(x0, 0, 1024 / 39, 2048); }  // glossier boards catch more light
     c.fillStyle = 'rgba(6,8,20,.35)';
     c.fillRect(x0, 0, 1.6, 2048);
     if (i % 5 === 4) { c.fillStyle = 'rgba(150,200,255,.13)'; c.fillRect(x0 + 1024 / 39 - 2.4, 0, 2.4, 2048); }
   }
   // oil sheen: glossy heads/mid-lane that fades before the backends
   const oil = c.createLinearGradient(0, ty(13.5), 0, ty(-0.2));
-  oil.addColorStop(0, 'rgba(170,215,255,0)'); oil.addColorStop(0.55, 'rgba(170,215,255,.075)'); oil.addColorStop(1, 'rgba(190,225,255,.13)');
+  oil.addColorStop(0, 'rgba(170,215,255,0)'); oil.addColorStop(0.55, 'rgba(170,215,255,.095)'); oil.addColorStop(1, 'rgba(190,225,255,.16)');
   c.fillStyle = oil; c.fillRect(0, ty(13.5), 1024, ty(-0.2) - ty(13.5));
+  // overhead specular streak: the house lights reflecting in the oil,
+  // a soft band left of centre running the oiled length of the lane
+  const streak = c.createLinearGradient(240, 0, 580, 0);
+  streak.addColorStop(0, 'rgba(190,225,255,0)'); streak.addColorStop(0.5, 'rgba(190,225,255,0.075)'); streak.addColorStop(1, 'rgba(190,225,255,0)');
+  c.fillStyle = streak; c.fillRect(240, ty(14), 340, ty(-0.2) - ty(14));
   // range-finder arrows at ~4.6 m (tips toward the pins) + dots at ~2.3 m and ~8.6 m
   c.fillStyle = 'rgba(165,215,255,.55)';
   const arrow = (board, z) => {
@@ -385,6 +395,10 @@ function makeLaneTexture(hue) {
   const deckG = c.createLinearGradient(0, ty(19.95), 0, ty(17.8));
   deckG.addColorStop(0, 'rgba(190,215,255,.16)'); deckG.addColorStop(1, 'rgba(190,215,255,.03)');
   c.fillStyle = deckG; c.fillRect(0, ty(19.95), 1024, ty(17.8) - ty(19.95));
+  // deck gloss: a pool of light at the rack so the pins sit in it and reflect
+  const pool = c.createRadialGradient(512, ty(18.9), 10, 512, ty(18.9), 330);
+  pool.addColorStop(0, 'rgba(200,225,255,0.11)'); pool.addColorStop(1, 'rgba(200,225,255,0)');
+  c.fillStyle = pool; c.fillRect(182, ty(19.95), 660, ty(17.8) - ty(19.95));
   c.fillStyle = 'rgba(5,6,16,.5)';
   for (const n in L.rackPositions()) {
     const [px2, pz2] = L.rackPositions()[n];
@@ -431,11 +445,45 @@ function groundShadow(c, x, y, rx, ry, alpha) {
   c.drawImage(shadowSprite, x - rx, y - ry, rx * 2, ry * 2);
   c.restore();
 }
-const PIN_PROFILE = [ // [height m, radius m] — a real pin's silhouette, base -> crown
-  [0.000, 0.001], [0.000, 0.040], [0.006, 0.049], [0.030, 0.056], [0.070, 0.0605],
-  [0.115, 0.0605], [0.160, 0.053], [0.205, 0.040], [0.238, 0.0325], [0.262, 0.0315],
-  [0.290, 0.0355], [0.320, 0.0355], [0.350, 0.028], [0.368, 0.017], [0.381, 0.001],
+const PIN_PROFILE = [ // [height m, radius m] — a real pin's silhouette, base -> crown.
+  // Refined lathe (whole-game realism pass, 2026-11-22): 22 rings tracing the true
+  // curve — base flare, belly max at 0.114 m, neck pinch at 0.272 m, head swell,
+  // rounded crown. Physics never reads this; it is the render model only.
+  [0.000, 0.001], [0.000, 0.030], [0.002, 0.042], [0.008, 0.049], [0.020, 0.0545], [0.045, 0.0585],
+  [0.075, 0.0603], [0.114, 0.0605], [0.150, 0.0580], [0.185, 0.0515], [0.215, 0.0435], [0.240, 0.0365],
+  [0.258, 0.0325], [0.272, 0.0308], [0.288, 0.0328], [0.305, 0.0352], [0.322, 0.0358], [0.338, 0.0335],
+  [0.352, 0.0285], [0.364, 0.0215], [0.374, 0.0125], [0.381, 0.001],
 ];
+function pinStripe(h) { return (h >= 0.243 && h < 0.261) || (h >= 0.269 && h < 0.287); }  // twin UV neck stripes
+function shade(hex, f) {
+  const n = parseInt(hex.slice(1), 16);
+  const r = Math.min(255, Math.round(((n >> 16) & 255) * f));
+  const g = Math.min(255, Math.round(((n >> 8) & 255) * f));
+  const b = Math.min(255, Math.round((n & 255) * f));
+  return `rgb(${r},${g},${b})`;
+}
+function hexA(hex, a) {
+  const n = parseInt(hex.slice(1), 16);
+  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
+}
+/* Key light from the upper-left, wrapped around the cylinder: deep shade at
+   the edges, a bright face left of centre, and a tight specular plateau —
+   the gloss streak of a lacquered pin. Stripes shade on the same model. */
+const PIN_STOPS = [[0, '#414e68'], [0.16, '#7e8fb2'], [0.30, '#dde7fa'], [0.365, '#ffffff'], [0.44, '#eef3ff'], [0.62, '#bccbe6'], [0.84, '#71819f'], [1, '#39465e']];
+const PIN_STOPS_STRIPE = [[0, '#0d4570'], [0.16, '#1f7fc4'], [0.30, '#8fd8ff'], [0.365, '#ffffff'], [0.44, '#bfeaff'], [0.62, '#3fa9e8'], [0.84, '#19639f'], [1, '#0b3a5e']];
+function pinBandFill(c, x0, y0, x1, y1, f, stripe) {
+  const g = c.createLinearGradient(x0, y0, x1, y1);
+  for (const [o, col] of (stripe ? PIN_STOPS_STRIPE : PIN_STOPS)) g.addColorStop(o, shade(col, f));
+  return g;
+}
+const pinReflSprite = (() => {
+  const t = document.createElement('canvas'); t.width = 64; t.height = 128;
+  const c = t.getContext('2d');
+  const g = c.createLinearGradient(0, 0, 0, 128);
+  g.addColorStop(0, 'rgba(195,220,255,0.55)'); g.addColorStop(0.4, 'rgba(150,190,255,0.18)'); g.addColorStop(1, 'rgba(150,190,255,0)');
+  c.fillStyle = g; c.fillRect(0, 0, 64, 128);
+  return t;
+})();
 function pinAxis(p) {
   if (!p.down) return { x: 0, y: 1, z: 0 };
   const f = p.fallT === undefined ? 1 : Math.min(1, Math.max(0, p.fallT));
@@ -463,20 +511,43 @@ function drawPin3D(c, p) {
     c.lineTo(r1.x + px * r1.r, r1.y + py * r1.r);
     c.lineTo(r0.x + px * r0.r, r0.y + py * r0.r);
     c.closePath();
-    if (r0.h >= 0.205 && r0.h < 0.262) {
-      c.fillStyle = '#2fb9ff';                       // UV neck stripes
-    } else {
-      const g = c.createLinearGradient(r0.x - px * r0.r, r0.y - py * r0.r, r0.x + px * r0.r, r0.y + py * r0.r);
-      g.addColorStop(0, '#828fb4'); g.addColorStop(0.30, '#ffffff'); g.addColorStop(0.55, '#e9efff'); g.addColorStop(1, '#727f9e');
-      c.fillStyle = g;
-    }
+    // ambient occlusion near the base, full light at the crown
+    const f = r0.h < 0.02 ? 0.70 : 0.86 + 0.14 * Math.min(1, r0.h / 0.25);
+    c.fillStyle = pinBandFill(c, r0.x - px * r0.r, r0.y - py * r0.r, r0.x + px * r0.r, r0.y + py * r0.r, f, pinStripe(r0.h));
     c.fill();
   }
-  if (p.down) { // base cap, visible once tipped
+  // gloss sheen: one continuous specular sweep clipped to the silhouette,
+  // so the lacquer reads as a single surface across the bands
+  c.save();
+  c.beginPath();
+  rings.forEach((r, i) => { if (i === 0) c.moveTo(r.x - px * r.r, r.y - py * r.r); else c.lineTo(r.x - px * r.r, r.y - py * r.r); });
+  for (let i = rings.length - 1; i >= 0; i--) { const r = rings[i]; c.lineTo(r.x + px * r.r, r.y + py * r.r); }
+  c.closePath(); c.clip();
+  const rB = Math.max(1, rings[4].r);
+  const sg = c.createLinearGradient(base.x - px * rB, base.y - py * rB, base.x + px * rB, base.y + py * rB);
+  sg.addColorStop(0, 'rgba(255,255,255,0)');
+  sg.addColorStop(0.27, 'rgba(255,255,255,0.04)');
+  sg.addColorStop(0.355, 'rgba(255,255,255,0.30)');
+  sg.addColorStop(0.44, 'rgba(255,255,255,0.03)');
+  sg.addColorStop(1, 'rgba(120,165,255,0.07)');
+  c.fillStyle = sg;
+  c.fillRect(Math.min(base.x, top.x) - rB * 2, Math.min(base.y, top.y) - rB, rB * 4, Math.abs(base.y - top.y) + rB * 3);
+  c.restore();
+  // crown highlight
+  c.save();
+  const cg = c.createRadialGradient(top.x - px * top.r * 0.3, top.y - py * top.r * 0.3, 0, top.x, top.y, Math.max(1.2, rings[rings.length - 3].r));
+  cg.addColorStop(0, 'rgba(255,255,255,0.55)'); cg.addColorStop(1, 'rgba(255,255,255,0)');
+  c.fillStyle = cg;
+  c.beginPath(); c.arc(top.x, top.y, Math.max(1.2, rings[rings.length - 3].r), 0, 7); c.fill();
+  c.restore();
+  if (p.down) { // base cap, visible once tipped — shaded, with a rim of light
     c.save();
     c.translate(base.x, base.y); c.rotate(Math.atan2(ay, ax) + Math.PI / 2);
-    c.fillStyle = '#5d6a88';
-    c.beginPath(); c.ellipse(0, 0, Math.max(0.5, rings[0].r), Math.max(0.3, rings[0].r * 0.38), 0, 0, 7); c.fill();
+    const capR = Math.max(0.6, rings[2].r);
+    const bg2 = c.createRadialGradient(-capR * 0.3, -capR * 0.12, 0, 0, 0, capR);
+    bg2.addColorStop(0, '#8492b0'); bg2.addColorStop(0.75, '#5d6a88'); bg2.addColorStop(1, '#39445c');
+    c.fillStyle = bg2;
+    c.beginPath(); c.ellipse(0, 0, capR, Math.max(0.3, capR * 0.38), 0, 0, 7); c.fill();
     c.restore();
   }
 }
@@ -501,10 +572,29 @@ function drawBall3D(c, px, py, r, def, dist) {
     c.fillStyle = `rgba(2,3,10,${0.25 + 0.55 * fade})`;
     c.beginPath(); c.arc(hx, hy, Math.max(1, r * 0.085), 0, 7); c.fill();
   }
+  // realism pass (2026-11-22): environment sheen across the upper face,
+  // a rim of the ball's own glow on the shadow side, a tighter specular
+  // with a hot core, and contact shading where the ball meets the lane
+  c.save();
+  c.beginPath(); c.arc(px, py, r, 0, 7); c.clip();
+  const es = c.createLinearGradient(px, py - r, px, py + r * 0.25);
+  es.addColorStop(0, 'rgba(255,255,255,0.13)'); es.addColorStop(0.55, 'rgba(255,255,255,0.02)'); es.addColorStop(1, 'rgba(255,255,255,0)');
+  c.fillStyle = es; c.fillRect(px - r, py - r, r * 2, r * 1.25);
+  const cs = c.createLinearGradient(px, py + r * 0.55, px, py + r);
+  cs.addColorStop(0, 'rgba(2,3,10,0)'); cs.addColorStop(1, 'rgba(2,3,10,0.42)');
+  c.fillStyle = cs; c.fillRect(px - r, py + r * 0.55, r * 2, r * 0.45);
+  c.restore();
+  c.save();
+  c.strokeStyle = hexA(def.skin.glow, 0.55); c.lineWidth = Math.max(1.2, r * 0.09);
+  c.shadowColor = def.skin.glow; c.shadowBlur = r * 0.35;
+  c.beginPath(); c.arc(px, py, r * 0.94, 0.15, 1.25); c.stroke();
+  c.restore();
   // specular highlight from the key light
-  const sg = c.createRadialGradient(px - r * 0.36, py - r * 0.44, 0, px - r * 0.36, py - r * 0.44, r * 0.32);
+  const sg = c.createRadialGradient(px - r * 0.36, py - r * 0.44, 0, px - r * 0.36, py - r * 0.44, r * 0.26);
   sg.addColorStop(0, 'rgba(255,255,255,0.95)'); sg.addColorStop(1, 'rgba(255,255,255,0)');
-  c.fillStyle = sg; c.beginPath(); c.arc(px - r * 0.36, py - r * 0.44, r * 0.32, 0, 7); c.fill();
+  c.fillStyle = sg; c.beginPath(); c.arc(px - r * 0.36, py - r * 0.44, r * 0.26, 0, 7); c.fill();
+  c.fillStyle = 'rgba(255,255,255,0.9)';
+  c.beginPath(); c.arc(px - r * 0.36, py - r * 0.44, Math.max(0.8, r * 0.07), 0, 7); c.fill();
   c.restore();
 }
 function drawScene(now) {
@@ -609,6 +699,12 @@ function drawScene(now) {
   for (const p of view.pins) {
     if (p.gone) continue;
     const gp = proj(p.x, p.z), sc = laneHalfPx(p.z) / 0.53;
+    // glossy deck reflection: a squashed mirror streak under each standing pin
+    if (!p.down && p.z > 15) {
+      ctx.save(); ctx.globalCompositeOperation = 'screen'; ctx.globalAlpha = 0.17;
+      ctx.drawImage(pinReflSprite, gp.x - 0.055 * sc, gp.y + 1, 0.11 * sc, 0.381 * sc * 0.62);
+      ctx.restore();
+    }
     groundShadow(ctx, gp.x + 0.05 * sc * 0.4, gp.y, 0.075 * sc, 0.030 * sc, 0.50);
     if (p.down) {
       const axis = pinAxis(p);
@@ -620,8 +716,18 @@ function drawScene(now) {
     const b = view.ball, gp = proj(b.x, b.z);
     const r = Math.max(2.2, L.LANE.ballR * (laneHalfPx(b.z) / 0.53));
     groundShadow(ctx, gp.x + r * 0.22, gp.y + r * 0.10, r * (b.airborne ? 0.80 : 0.98), r * 0.36, b.airborne ? 0.30 : 0.52);
-    // glossy lane reflection under the ball
-    ctx.save(); ctx.globalCompositeOperation = 'screen'; ctx.globalAlpha = 0.16;
+    // glossy lane reflection: a squashed mirror of the ball in its own
+    // colours on the oiled surface, plus a whisper of its glow
+    ctx.save(); ctx.globalCompositeOperation = 'screen';
+    ctx.translate(gp.x, gp.y + r * 0.32); ctx.scale(1, 0.30);
+    const rg = ctx.createRadialGradient(0, 0, r * 0.05, 0, 0, r * 0.72);
+    rg.addColorStop(0, hexA(b.def.skin.swirl, b.airborne ? 0.14 : 0.30));
+    rg.addColorStop(0.55, hexA(b.def.skin.base, b.airborne ? 0.06 : 0.14));
+    rg.addColorStop(1, hexA(b.def.skin.base, 0));
+    ctx.fillStyle = rg;
+    ctx.beginPath(); ctx.arc(0, 0, r * 0.72, 0, 7); ctx.fill();
+    ctx.restore();
+    ctx.save(); ctx.globalCompositeOperation = 'screen'; ctx.globalAlpha = 0.10;
     ctx.fillStyle = b.def.skin.glow;
     ctx.beginPath(); ctx.ellipse(gp.x, gp.y + r * 0.34, r * 0.55, r * 0.16, 0, 0, 7); ctx.fill();
     ctx.restore();
@@ -981,7 +1087,7 @@ function aimPhase(rec, standing, first) {
    unpacked, event timeStamps kept), position/aim follow the drag from
    any start point, a 10px dip arms the pull-back, and the release is
    read by L.parseThrow from the shape of the whole gesture. */
-const input = { pid: null, mode: null, samples: [], minY: 0, maxY: 0, armT: 0, aimResolve: null, aimStats: null, aimDef: null };
+const input = { pid: null, mode: null, samples: [], minY: 0, maxY: 0, armT: 0, carry: 0, aimResolve: null, aimStats: null, aimDef: null };
 function canvasPos(e) {
   const r = cv.getBoundingClientRect();
   return { x: e.clientX - r.left, y: e.clientY - r.top };
@@ -1010,6 +1116,7 @@ cv.addEventListener('pointerdown', e => {
   input.pid = e.pointerId;
   input.samples = [];
   input.armT = 0;
+  input.carry = 0;
   const p = pushSamples(e);
   input.minY = input.maxY = p.y;
   const bp = proj(view.aim.startX, -0.4);
@@ -1033,13 +1140,30 @@ cv.addEventListener('pointermove', e => {
   }
   const rising = input.maxY - p.y > 12;              // the flick is under way — freeze the aim
   if (!rising && prev) {
-    const dx = p.x - prev.x;
-    if (input.mode === 'ball') {
-      const mPerPx = 0.53 / laneHalfPx(-0.4);
-      view.aim.startX = Math.max(-0.45, Math.min(0.45, view.aim.startX + dx * mPerPx));
-      view.ball.x = view.aim.startX;
-    } else {
-      view.aim.angleDeg = Math.max(-8, Math.min(8, view.aim.angleDeg + dx * 0.030));
+    /* Tremor accumulator (2026-11-22 real-phone fix #2): raw per-event dx
+       used to feed the aim directly, so finger tremor while lining up —
+       and worse, while HOLDING the pull-back — ratcheted the ball and the
+       angle sideways a fraction at a time (lane mode: 0.030 deg/px), and
+       a throw the player aimed straight left crooked before the flick
+       even started. Deltas now collect in input.carry and only the part
+       past a deadband applies: 2 px while lining up, 7 px once the
+       pull-back is armed (the hold is a wind-up — re-aiming there takes
+       a deliberate drag, not a tremor). Oscillating tremor cancels inside
+       the accumulator instead of accumulating; a steady deliberate drag
+       loses nothing, because the unapplied remainder stays in the carry —
+       net tracking stays 1:1 with the finger, with no offset. */
+    input.carry += p.x - prev.x;
+    const band = input.armT ? 7 : 2;
+    if (Math.abs(input.carry) >= band) {
+      const dx = input.carry;
+      input.carry = 0;
+      if (input.mode === 'ball') {
+        const mPerPx = 0.53 / laneHalfPx(-0.4);
+        view.aim.startX = Math.max(-0.45, Math.min(0.45, view.aim.startX + dx * mPerPx));
+        view.ball.x = view.aim.startX;
+      } else {
+        view.aim.angleDeg = Math.max(-8, Math.min(8, view.aim.angleDeg + dx * 0.030));
+      }
     }
   }
 });
