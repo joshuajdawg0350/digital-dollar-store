@@ -44,13 +44,28 @@ const SEVEN_IMG = 'assets/seven-photo.png';
 function sevenHTML() {
   return `<img class="sevenImg" src="${SEVEN_IMG}" alt="7">`;
 }
+/* v10 cherry (Joshua, 2026-11-22 16:44-16:51 CT — final word: NOT the
+   screenshot cherry, "that's our picture"; ours, ~20% bigger, darker
+   red, 3D, styled to sit with the photo seven): deep red radial
+   shading, dark outline, gloss, ground shadow. Radii 13/14 -> 15.5/16.5. */
 function cherrySVG() {
   return `<svg class="cherry" viewBox="0 0 60 60" aria-hidden="true">
-    <path d="M20 34 Q30 14 48 8" stroke="#2e7d32" stroke-width="3.5" fill="none"/>
-    <path d="M38 40 Q40 22 48 8" stroke="#2e7d32" stroke-width="3.5" fill="none"/>
-    <ellipse cx="48" cy="9" rx="7" ry="4" fill="#43a047" transform="rotate(-24 48 9)"/>
-    <circle cx="20" cy="42" r="13" fill="#d81f36"/><circle cx="16" cy="37" r="4" fill="#ff8f9d" opacity=".8"/>
-    <circle cx="40" cy="48" r="14" fill="#b30f27"/><circle cx="35" cy="42" r="4.5" fill="#ff8f9d" opacity=".8"/>
+    <defs>
+      <radialGradient id="chg1" cx="35%" cy="30%" r="85%">
+        <stop offset="0%" stop-color="#e5484d"/><stop offset="45%" stop-color="#b30f27"/><stop offset="100%" stop-color="#6d0716"/>
+      </radialGradient>
+      <radialGradient id="chg2" cx="35%" cy="30%" r="85%">
+        <stop offset="0%" stop-color="#d92c38"/><stop offset="45%" stop-color="#9c0c22"/><stop offset="100%" stop-color="#5c0613"/>
+      </radialGradient>
+    </defs>
+    <ellipse cx="30" cy="55" rx="20" ry="3.2" fill="rgba(0,0,0,.18)"/>
+    <path d="M17 36 Q26 12 47 6" stroke="#1e5c26" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M38 42 Q39 20 47 6" stroke="#1e5c26" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <ellipse cx="48" cy="7" rx="8" ry="4.5" fill="#2e7d32" transform="rotate(-24 48 7)"/>
+    <circle cx="18" cy="42" r="15.5" fill="url(#chg1)" stroke="#4d040e" stroke-width="1.6"/>
+    <circle cx="40" cy="47" r="16.5" fill="url(#chg2)" stroke="#4d040e" stroke-width="1.6"/>
+    <ellipse cx="12.5" cy="36" rx="4.6" ry="3.2" fill="#ffb3ab" opacity=".85" transform="rotate(-30 12.5 36)"/>
+    <ellipse cx="34" cy="40.5" rx="5" ry="3.4" fill="#ffb3ab" opacity=".85" transform="rotate(-30 34 40.5)"/>
   </svg>`;
 }
 $('marqueeDuck').innerHTML = `<img src="${MEDAL_IMG}" alt="Lucky Ducky medallion">`;
@@ -98,8 +113,8 @@ let save = { cash: 1000, progressive: 10000, sound: true, jewels: 0 };
 try { const s = JSON.parse(localStorage.getItem(SAVE_KEY)); if (s && typeof s.cash === 'number') save = Object.assign(save, s); } catch (e) {}
 soundOn = save.sound !== false;
 let coinsBet = 3, busy = false, sessionPaid = 0;
-const state = { cash: save.cash, progressive: Math.max(10000, save.progressive || 10000), lastWon: 0, jewels: Math.min(L.JEWELS_TO_TRIGGER - 1, Math.max(0, save.jewels | 0)) };
-function persist() { save.cash = state.cash; save.progressive = state.progressive; save.sound = soundOn; save.jewels = state.jewels; try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {} }
+const state = { cash: save.cash, progressive: Math.max(10000, save.progressive || 10000), lastWon: 0, jewels: Math.min(L.JEWELS_TO_TRIGGER - 1, Math.max(0, save.jewels | 0)), spinsSinceRed: Math.max(0, save.spinsSinceRed | 0) };
+function persist() { save.cash = state.cash; save.progressive = state.progressive; save.sound = soundOn; save.jewels = state.jewels; save.spinsSinceRed = state.spinsSinceRed || 0; try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {} }
 
 /* ---------------- bonus minimum-view lock ----------------
    Joshua's standing rule (2026-11-22 00:07 CT): "Make sure you have to see
@@ -124,26 +139,44 @@ function jewelHunt() {
     const grid = $('jewelGrid');
     grid.innerHTML = '';
     $('jewelResult').style.display = 'none';
-    const prize = L.jewelPrize(coinsBet, rng);
-    for (let i = 0; i < 10; i++) {
+    /* v10 pick-till-you-lose (Joshua, 2026-11-22 16:52 CT): one cracked
+       jewel hides in the grid; every good jewel banks its own prize and
+       the player keeps picking until the cracked one ends the round.
+       Banked prizes are kept either way; COLLECT banks out early once
+       something is banked. */
+    const N = 10;
+    const loser = Math.floor(rng() * N);
+    let banked = 0, over = false;
+    const finish = async () => {
+      $('jewelOverlay').classList.remove('on');
+      if (banked > 0) await countUp(banked, 1000);
+      sessionPaid += banked; state.lastWon = sessionPaid;
+      renderMeters(state.lastWon, sessionPaid); persist();
+      resolve();
+    };
+    $('jewelCollectBtn').onclick = () => { if (!over && banked === 0) return; finish(); };
+    for (let i = 0; i < N; i++) {
+      const prize = i === loser ? 0 : L.jewelPrize(coinsBet, rng);
       const b = document.createElement('button');
       b.className = 'jewelPick';
-      b.innerHTML = gemSVG() + `<div class="amt">$${prize}</div>`;
+      b.innerHTML = gemSVG() + `<div class="amt">${i === loser ? 'CRACKED!' : '$' + prize}</div>`;
       b.setAttribute('aria-label', 'Pick this jewel');
-      b.onclick = async () => {
+      b.onclick = () => {
         if (bonusLocked(openedAt)) return; // minimum-view lock: early taps ignored
-        if (b.classList.contains('picked')) return;
-        document.querySelectorAll('.jewelPick').forEach(d => { d.onclick = null; if (d !== b) d.classList.add('dim'); });
-        b.classList.add('picked'); gemSnd(); jingle(true);
-        $('jewelAmt').textContent = `YOUR JEWEL HIDES $${prize}!`;
-        $('jewelResult').style.display = 'block';
-        $('jewelCollectBtn').onclick = async () => {
-          $('jewelOverlay').classList.remove('on');
-          await countUp(prize, 1000);
-          sessionPaid += prize; state.lastWon = sessionPaid;
-          renderMeters(state.lastWon, sessionPaid); persist();
-          resolve();
-        };
+        if (over || b.classList.contains('picked')) return;
+        b.classList.add('picked');
+        if (i === loser) {
+          over = true; b.classList.add('dud'); gemSnd();
+          document.querySelectorAll('.jewelPick').forEach(d => { if (!d.classList.contains('picked')) d.classList.add('dim'); });
+          $('jewelAmt').textContent = banked > 0 ? `CRACKED JEWEL! YOU KEEP YOUR BANKED $${banked}` : 'CRACKED JEWEL! NOTHING BANKED THIS TIME';
+          $('jewelCollectBtn').textContent = banked > 0 ? `COLLECT $${banked}` : 'CLOSE';
+          $('jewelResult').style.display = 'block';
+        } else {
+          banked += prize; gemSnd(); jingle(true);
+          $('jewelAmt').textContent = `+$${prize} — BANKED $${banked} — KEEP PICKING OR COLLECT!`;
+          $('jewelCollectBtn').textContent = `COLLECT $${banked}`;
+          $('jewelResult').style.display = 'block';
+        }
       };
       grid.appendChild(b);
     }
@@ -238,7 +271,8 @@ const strips = [];
    (rep 2, offset 44). A spin travels DOWNWARD (FIX B, below), landing
    in a lower repetition, and finish() renormalizes back to the home
    repetition — the same picture, so the snap is invisible. */
-const REPS = 5, HOME_OFF = 44;
+const REPS = 5;
+const homeOff = ri => L.STRIPS[ri].length * 2; // home repetition: 2 strips in (was a fixed 44 = 2x22 before the v10 strips grew)
 reelEls.forEach((el, ri) => {
   const strip = document.createElement('div');
   strip.className = 'strip';
@@ -250,11 +284,11 @@ reelEls.forEach((el, ri) => {
 });
 function setReelInstant(ri, stopIdx) {
   const st = strips[ri], h = CELL_H();
-  const m = stopIdx + HOME_OFF; // home repetition: cell m sits on the payline
+  const m = stopIdx + homeOff(ri); // home repetition: cell m sits on the payline
   st.el.style.transform = `translateY(${-(m - ROW_OFF) * h - REEL_BORDER}px)`;
   st.pos = stopIdx;
 }
-reelEls.forEach((_, ri) => setReelInstant(ri, [11, 6, 4][ri])); // boot window: DUCK · BAR3 · CHERRY
+reelEls.forEach((_, ri) => setReelInstant(ri, [12, 6, 4][ri])); // boot window: DUCK · BAR3 · CHERRY (R1's duck sits at index 12 since the v10 strip grew)
 function spinReelTo(ri, stopIdx, dur) {
   return new Promise(res => {
     const st = strips[ri], h = CELL_H();
@@ -268,7 +302,7 @@ function spinReelTo(ri, stopIdx, dur) {
        the target cell sits in a LOWER repetition than the home cell.
        Pick the lower-rep landing that gives a real run (16+ cells);
        the rep-0 landing always gives 23+, so one always qualifies. */
-    const homePos = cur + HOME_OFF;
+    const homePos = cur + homeOff(ri);
     const lower = [stopIdx + stripLen, stopIdx].filter(p => homePos - p >= 16);
     const finalPos = lower.length ? lower[0] : stopIdx;
     const fromY = -(homePos - ROW_OFF) * h - REEL_BORDER;
@@ -426,7 +460,14 @@ async function playSpin() {
     await wait(650);
   };
 
-  let r = await doSpin(false, 0);
+  /* v10 red-screen frequency (Joshua, 2026-11-22 16:55 CT): a red
+     screen at least once every 30 spins, never longer. Count every
+     spin; the 30th spin since the last red is dealt as a guaranteed
+     win (the bet was already taken above — it is the player's own
+     spin, dealt hot) and always goes red. */
+  state.spinsSinceRed = (state.spinsSinceRed || 0) + 1;
+  const capSpin = state.spinsSinceRed >= L.RED_CAP;
+  let r = await doSpin(capSpin, capSpin ? 5 * coinsBet : 0);
   await collectJewels(r.ducks);
 
   if (r.pay > 0) {
@@ -446,10 +487,15 @@ async function playSpin() {
        bonus on its own trigger, rolled after this chain settles
        (Joshua, 2026-11-22: "the red screen does the re-spins").
        (Player-reported + filmed: RESEARCH.md.) */
-    let chain = 0, triggerPay = r.pay;
-    while (chain < L.RED_MAX && rng() < (chain === 0 ? L.RED_CHANCE : L.RED_CHAIN_CHANCE)) {
-      chain++;
-      $('redSub').textContent = chain > 1 ? `RE-SPIN ${chain} — STILL GUARANTEED` : 'GUARANTEED WIN — NO CHARGE';
+    let triggerPay = r.pay;
+    /* v10 — Joshua's numbers (2026-11-22 16:44 CT): when the red screen
+       hits (RED_CHANCE roll, or a cap spin), it awards a flat random
+       2-8 re-spins — never one. The old 20%-continue / cap-5 chain
+       is dead. */
+    const redSpins = (capSpin || rng() < L.RED_CHANCE) ? L.redSpinCount(rng) : 0;
+    if (redSpins > 0) { state.spinsSinceRed = 0; persist(); }
+    for (let chain = 1; chain <= redSpins; chain++) {
+      $('redSub').textContent = chain > 1 ? `RE-SPIN ${chain} OF ${redSpins} — STILL GUARANTEED` : `GUARANTEED WIN — ${redSpins} RE-SPINS!`;
       $('redJewels').innerHTML = Array.from({ length: L.JEWELS_TO_TRIGGER }, (_, i) =>
         `<img class="rmed ${i < state.jewels ? 'lit' : 'off'}" src="assets/diamond-${i < state.jewels ? 'lit' : 'off'}-photo.png" alt="">`).join('');
       $('redCard').innerHTML = [...document.querySelectorAll('#bingoCard .cell')].map(c =>
@@ -511,8 +557,24 @@ function pickADuck(triggerPay) {
     const pond = $('pond');
     pond.innerHTML = '';
     $('pickResult').style.display = 'none';
-    const prize = L.pickDuckPrize(triggerPay, coinsBet, rng);
-    for (let i = 0; i < 9; i++) {
+    /* v10 pick-till-you-lose (Joshua, 2026-11-22 16:52 CT): one dud duck
+       hides in the pond; every good duck banks its own prize and the
+       player keeps picking until the dud ends the round. Banked prizes
+       are kept either way; COLLECT banks out early once something is
+       banked. */
+    const N = 9;
+    const loser = Math.floor(rng() * N);
+    let banked = 0, over = false;
+    const finish = async () => {
+      $('pickOverlay').classList.remove('on');
+      if (banked > 0) await countUp(banked, 900);
+      sessionPaid += banked; state.lastWon = sessionPaid;
+      renderMeters(state.lastWon, sessionPaid); persist();
+      resolve();
+    };
+    $('collectBtn').onclick = () => { if (!over && banked === 0) return; finish(); };
+    for (let i = 0; i < N; i++) {
+      const prize = i === loser ? 0 : L.pickDuckPrize(triggerPay, coinsBet, rng);
       const b = document.createElement('button');
       b.className = 'pondDuck';
       const col = i % 3, row = Math.floor(i / 3);
@@ -520,22 +582,24 @@ function pickADuck(triggerPay) {
       b.style.left = (3 + col * 32 + (row % 2) * 2) + '%';
       b.style.animationDuration = (2.2 + (i % 4) * 0.7) + 's';
       b.style.animationDelay = (i * 0.3) + 's';
-      b.innerHTML = `<span class="ripple"></span><img src="${MEDAL_IMG}" alt="Lucky Ducky"><div class="amt">$${prize}</div>`;
+      b.innerHTML = `<span class="ripple"></span><img src="${MEDAL_IMG}" alt="Lucky Ducky"><div class="amt">${i === loser ? 'DUD!' : '$' + prize}</div>`;
       b.setAttribute('aria-label', 'Pick this duck');
-      b.onclick = async () => {
+      b.onclick = () => {
         if (bonusLocked(openedAt)) return; // minimum-view lock: early taps ignored
-        if (b.classList.contains('picked')) return;
-        document.querySelectorAll('.pondDuck').forEach(d => { d.onclick = null; if (d !== b) d.classList.add('dim'); });
-        b.classList.add('picked'); splash(); quack();
-        $('pickAmt').textContent = `YOUR DUCK HIDES $${prize}!`;
-        $('pickResult').style.display = 'block';
-        $('collectBtn').onclick = async () => {
-          $('pickOverlay').classList.remove('on');
-          await countUp(prize, 900);
-          sessionPaid += prize; state.lastWon = sessionPaid;
-          renderMeters(state.lastWon, sessionPaid); persist();
-          resolve();
-        };
+        if (over || b.classList.contains('picked')) return;
+        b.classList.add('picked');
+        if (i === loser) {
+          over = true; b.classList.add('dud'); splash();
+          document.querySelectorAll('.pondDuck').forEach(d => { if (!d.classList.contains('picked')) d.classList.add('dim'); });
+          $('pickAmt').textContent = banked > 0 ? `THE DUD DUCK! YOU KEEP YOUR BANKED $${banked}` : 'THE DUD DUCK! NOTHING BANKED THIS TIME';
+          $('collectBtn').textContent = banked > 0 ? `COLLECT $${banked}` : 'CLOSE';
+          $('pickResult').style.display = 'block';
+        } else {
+          banked += prize; splash(); quack();
+          $('pickAmt').textContent = `+$${prize} — BANKED $${banked} — KEEP PICKING OR COLLECT!`;
+          $('collectBtn').textContent = `COLLECT $${banked}`;
+          $('pickResult').style.display = 'block';
+        }
       };
       pond.appendChild(b);
     }

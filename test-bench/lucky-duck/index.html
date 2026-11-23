@@ -9,8 +9,9 @@
 <meta name="theme-color" content="#0b3520">
 <style>
 @font-face { font-family: 'Bebas Neue'; src: url('assets/fonts/bebas-neue.woff2') format('woff2'); font-display: swap; }
+@font-face { font-family: 'Playfair Display'; src: url('assets/fonts/playfair-800.woff2') format('woff2'); font-weight: 700 800; font-display: swap; }
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-:root { --cell: clamp(80px, 11.6dvh, 96px); --gold:#c9a227; --goldlt:#e8c85a; }
+:root { --cell: clamp(80px, 11.6dvh, 96px); --gold:#aeb6bf; --goldlt:#dfe5ea; }
 html, body { height:100%; }
 body {
   font-family:'Bebas Neue', 'Arial Narrow', sans-serif;
@@ -18,7 +19,7 @@ body {
      the cabinet body is the option's near-black warm stock (compose.py
      body_gold: #0e0d0a -> #050504) with gold trim */
   background:#050504 radial-gradient(120% 90% at 50% 0%, #0e0d0a 0%, #050504 62%);
-  color:#f5eeda; min-height:100dvh;
+  color:#eef1f4; min-height:100dvh;
   user-select:none; -webkit-user-select:none; overflow-x:hidden;
 }
 #cabinet {
@@ -27,7 +28,7 @@ body {
     radial-gradient(90% 40% at 50% 0%, rgba(255,215,120,.07), transparent 60%),
     repeating-linear-gradient(45deg, rgba(255,255,255,.014) 0 6px, transparent 6px 12px),
     linear-gradient(180deg, #0e0d0a 0%, #080706 55%, #050504 100%);
-  box-shadow: inset 0 0 0 3px #000000, inset 0 0 0 5px rgba(178,150,74,.6), inset 0 0 38px rgba(0,0,0,.55);
+  box-shadow: inset 0 0 0 3px #000000, inset 0 0 0 5px rgba(167,176,184,.6), inset 0 0 38px rgba(0,0,0,.55);
   padding:7px 8px calc(8px + env(safe-area-inset-bottom));
   gap:4px; position:relative;
 }
@@ -37,11 +38,11 @@ body {
   /* v9 crown: black gloss band like the picked option's header */
   background:linear-gradient(180deg, #141311 0%, #0a0a09 60%, #060606 100%);
   border:2.5px solid var(--gold);
-  box-shadow: inset 0 0 0 2px #06230f, inset 0 0 0 4px rgba(232,200,90,.35), inset 0 0 26px rgba(0,0,0,.5), 0 3px 0 rgba(0,0,0,.4);
+  box-shadow: inset 0 0 0 2px #06230f, inset 0 0 0 4px rgba(205,213,221,.35), inset 0 0 26px rgba(0,0,0,.5), 0 3px 0 rgba(0,0,0,.4);
   padding:4px 9px 3px;
 }
 #marquee::before, #marquee::after {
-  content:'✦'; position:absolute; font-size:11px; color:rgba(232,200,90,.75); top:4px;
+  content:'✦'; position:absolute; font-size:11px; color:rgba(205,213,221,.75); top:4px;
 }
 #marquee::before { left:7px; } #marquee::after { right:7px; }
 #frenzy {
@@ -59,28 +60,33 @@ body {
 #marqueeDuck { width:52px; height:52px; flex:0 0 auto; filter:drop-shadow(0 2px 3px rgba(0,0,0,.45)); }
 #marqueeDuck img { width:100%; height:100%; display:block; border-radius:50%; }
 /* v9 crown title: serif gold LUCKY DUCKY, the picked option's header
-   (compose.py h4: LiberationSerif-Bold, fill #e8c460) */
+   (compose.py h4: LiberationSerif-Bold, fill #d3d9df) */
 #crownTitle {
-  flex:1; text-align:center; white-space:nowrap; line-height:1;
-  font-family:Georgia, 'Times New Roman', serif; font-weight:700;
-  font-size:28px; letter-spacing:3px; color:#e8c460;
-  text-shadow:0 2px 3px rgba(0,0,0,.65);
+  flex:1; text-align:center; white-space:nowrap; line-height:1.05;
+  /* v10 polish (Joshua, 2026-11-22 16:42: "Make the font better"):
+     the crown is set in Playfair Display — a proper professional
+     serif — with a gold-leaf gradient, replacing the system serif */
+  font-family:'Playfair Display', Georgia, 'Times New Roman', serif; font-weight:800;
+  font-size:29px; letter-spacing:2.5px;
+  background:linear-gradient(180deg, #ffffff 0%, #d3d9df 55%, #828b95 100%);
+  -webkit-background-clip:text; background-clip:text; color:#d3d9df; -webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 2px 2px rgba(0,0,0,.6));
 }
 /* the option's double gold rule under the crown */
-#crownRule { border-top:2px solid rgba(196,164,76,.9); border-bottom:1px solid rgba(196,164,76,.45); height:2px; margin:1px 0 4px; }
+#crownRule { border-top:2px solid rgba(178,186,196,.9); border-bottom:1px solid rgba(178,186,196,.45); height:2px; margin:1px 0 4px; }
 #progressive {
   margin-top:3px; text-align:center; background:#0a0503; border:1.5px solid #3a2c07; border-radius:8px;
   box-shadow: inset 0 0 14px rgba(0,0,0,.85);
   padding:1px 6px 2px; display:flex; align-items:baseline; justify-content:center; gap:9px;
 }
-#progressive .plabel { font-size:11px; letter-spacing:4px; color:#e8c85a; }
-#progressiveAmt { font-size:20px; letter-spacing:1px; color:#ffd94d; text-shadow:0 0 11px rgba(255,180,0,.6); line-height:1; }
+#progressive .plabel { font-size:11px; letter-spacing:4px; color:#dfe5ea; }
+#progressiveAmt { font-size:20px; letter-spacing:1px; color:#f4f7f9; text-shadow:0 0 11px rgba(255,180,0,.6); line-height:1; }
 /* ---------- top video screen ---------- */
 #screen {
   position:relative; overflow:hidden;
   background:linear-gradient(180deg, #10402a, #082a1a);
   border:2.5px solid #2a1f05; border-radius:12px; padding:6px 7px 6px;
-  box-shadow: inset 0 0 0 2px rgba(201,162,39,.4), inset 0 0 26px rgba(0,0,0,.6);
+  box-shadow: inset 0 0 0 2px rgba(169,178,188,.4), inset 0 0 26px rgba(0,0,0,.6);
 }
 #screen::after {
   content:''; position:absolute; inset:0; background:rgba(255,26,8,.34);
@@ -88,7 +94,7 @@ body {
 }
 #screen.redflood::after { opacity:1; }
 #jewelRow { display:flex; align-items:center; gap:5px; margin-bottom:5px; }
-#jewelRow .jlabel { font-size:10.5px; letter-spacing:1.5px; color:#ffe9a8; flex:0 0 auto; text-shadow:0 0 6px rgba(255,190,0,.35); }
+#jewelRow .jlabel { font-size:10.5px; letter-spacing:1.5px; color:#e9edf1; flex:0 0 auto; text-shadow:0 0 6px rgba(205,213,221,.35); }
 #jewels { display:flex; gap:3px; flex:1; justify-content:space-between; }
 .jewel { width:19px; height:19px; flex:0 0 auto; }
 .jewel svg { width:100%; height:100%; display:block; }
@@ -98,31 +104,35 @@ body {
 #screenMain { display:flex; gap:7px; }
 #cardCol { flex:1.25; min-width:0; }
 #patternBar { display:flex; align-items:center; gap:6px; margin-bottom:3px; }
-#patternName { flex:1; min-width:0; font-size:13px; letter-spacing:1px; color:#ffe9a8; text-shadow:0 0 7px rgba(255,190,0,.4); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#patternName { flex:1; min-width:0; font-size:13px; letter-spacing:1px; color:#e9edf1; text-shadow:0 0 7px rgba(205,213,221,.4); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 #patternGrid { display:grid; grid-template-columns:repeat(5, 7px); gap:1.5px; flex:0 0 auto; }
 #patternGrid i { width:7px; height:7px; border-radius:1.5px; background:#175133; display:block; }
-#patternGrid i.on { background:#ffb62e; box-shadow:0 0 4px rgba(255,182,46,.85); }
+#patternGrid i.on { background:#dfe5ea; box-shadow:0 0 4px rgba(205,213,221,.85); }
 #gameState { font-size:9.5px; letter-spacing:.5px; color:#9fd8b4; text-align:right; flex:0 0 auto; white-space:nowrap; }
-#bingoCard { display:grid; grid-template-columns:repeat(5, 1fr); gap:2px; background:linear-gradient(180deg,#ffe95c,#f2c230); padding:2px; border-radius:6px; border:1.5px solid #8a6d1f; }
-#bingoCard .bh { text-align:center; font-size:10.5px; color:#14532d; letter-spacing:1px; line-height:1.15; }
+/* v10: the bingo card in BLACK AND CHROME (Joshua, 2026-11-22 16:44)
+   — same machine card, same layout and numbers, rebuilt crisp:
+   black stock, chrome trim, light numerals in the house display font */
+#bingoCard { display:grid; grid-template-columns:repeat(5, 1fr); gap:2.5px; background:linear-gradient(180deg,#1a1c1f,#0a0a0b); padding:3px; border-radius:6px; border:1.5px solid #a7b0b8; box-shadow: inset 0 1px 0 rgba(255,255,255,.14), 0 2px 5px rgba(0,0,0,.4); }
+#bingoCard .bh { text-align:center; font-size:11px; color:#dfe5ea; letter-spacing:2px; line-height:1.2; text-shadow:0 1px 1px #000; }
 #bingoCard .cell {
-  position:relative; text-align:center; font-size:10.5px; line-height:1; padding:1px 0;
-  background:rgba(255,255,255,.38); color:#191919; border-radius:3.5px; border:1px solid rgba(138,109,31,.55);
-  font-family:Arial, sans-serif; font-weight:700;
+  position:relative; text-align:center; font-size:12px; line-height:1; padding:1.5px 0;
+  background:linear-gradient(180deg,#26292e,#17191c); color:#eef1f4; border-radius:3.5px; border:1px solid rgba(199,204,212,.5);
+  font-family:'Bebas Neue', 'Arial Narrow', sans-serif; letter-spacing:.5px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.09);
 }
-#bingoCard .cell.free { color:#7a1016; font-size:8.5px; letter-spacing:.5px; background:rgba(255,255,255,.55); padding-top:3.5px; }
+#bingoCard .cell.free { color:#ff8f9d; font-size:8.5px; letter-spacing:.5px; background:linear-gradient(180deg,#2c2f34,#1a1c1f); padding-top:4px; font-family:Arial, sans-serif; font-weight:700; }
 #bingoCard .cell.marked::after {
   content:''; position:absolute; inset:1.5px; border-radius:50%;
-  background:radial-gradient(circle at 40% 35%, rgba(255,255,255,.65), rgba(255,255,255,.18) 62%);
-  border:1.5px solid rgba(255,255,255,.75);
+  background:radial-gradient(circle at 40% 35%, rgba(255,255,255,.8), rgba(205,213,221,.25) 62%);
+  border:1.5px solid rgba(230,236,242,.9);
 }
-#bingoCard .cell.gold { background:#e8760d; border-color:#ffb62e; color:#fff; }
+#bingoCard .cell.gold { background:linear-gradient(180deg,#e8ecf0,#aeb6bf); border-color:#eef1f4; color:#101216; }
 #bingoCard .cell.gold::after {
   content:''; position:absolute; inset:1px; border-radius:50%;
-  background:radial-gradient(circle at 40% 35%, #fff3c4, #ffb62e 55%, #d97b16);
-  box-shadow:0 0 7px rgba(255,182,46,.9); opacity:.95;
+  background:radial-gradient(circle at 40% 35%, #ffffff, #cfd6dd 55%, #8b95a0);
+  box-shadow:0 0 7px rgba(205,213,221,.9); opacity:.95;
 }
-#bingoCard .cell.gold span { position:relative; z-index:1; color:#3a1c00; }
+#bingoCard .cell.gold span { position:relative; z-index:1; color:#101216; }
 #calledStrip { display:flex; align-items:center; gap:4px; margin-top:4px; min-height:17px; }
 #calledStrip .clabel { font-size:10px; letter-spacing:1.5px; color:#9fd8b4; flex:0 0 auto; }
 #calledBalls { display:flex; gap:2.5px; flex-wrap:nowrap; overflow:hidden; flex:1; }
@@ -132,7 +142,7 @@ body {
   background:radial-gradient(circle at 35% 30%, #ffffff, #b9d4ea 60%, #7ea6c9);
   border:1px solid #04170d; font-family:Arial, sans-serif; font-weight:700;
 }
-.ball.latest { background:radial-gradient(circle at 35% 30%, #fff3c4, #ffb62e 60%, #d97b16); box-shadow:0 0 7px rgba(255,182,46,.85); }
+.ball.latest { background:radial-gradient(circle at 35% 30%, #ffffff, #cfd6dd 60%, #8b95a0); box-shadow:0 0 7px rgba(205,213,221,.9); }
 /* v8: the upper screen's right field is the real machine's big duck
    portrait medallion (copied from Joshua's 1000009653 photo), with the
    round $1 per-credit badge (copied from the p36 photo) at its lower
@@ -144,21 +154,21 @@ body {
 .billArt {
   position:relative; flex:1; border-radius:8px; overflow:hidden;
   background:linear-gradient(135deg, #2e8b57 0%, #1d6b41 55%, #14532d 100%);
-  border:2px solid var(--gold); box-shadow: inset 0 0 0 2px rgba(6,35,15,.8), inset 0 0 0 4px rgba(232,200,90,.35), inset 0 0 18px rgba(0,0,0,.35);
+  border:2px solid var(--gold); box-shadow: inset 0 0 0 2px rgba(6,35,15,.8), inset 0 0 0 4px rgba(205,213,221,.35), inset 0 0 18px rgba(0,0,0,.35);
   display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4px 5px; text-align:center;
 }
-.billArt .b1000 { position:absolute; font-size:10.5px; color:#ffe9a8; letter-spacing:1px; opacity:.9; }
+.billArt .b1000 { position:absolute; font-size:10.5px; color:#e9edf1; letter-spacing:1px; opacity:.9; }
 .billArt .b1000.tl { top:3px; left:6px; } .billArt .b1000.tr { top:3px; right:6px; }
 .billArt .b1000.bl { bottom:3px; left:6px; } .billArt .b1000.br { bottom:3px; right:6px; }
 .billArt .bduck { width:74px; height:74px; }
 .billArt .bduck img { width:100%; height:100%; display:block; object-fit:cover; border-radius:9px; box-shadow:0 1px 4px rgba(0,0,0,.4); }
 .billArt .btitle {
   font-size:17px; letter-spacing:1.5px; line-height:1;
-  background:linear-gradient(180deg, #fff7ae 0%, #ffe14d 38%, #b5e048 72%, #57ab2d 100%);
-  -webkit-background-clip:text; background-clip:text; color:#ffe14d; -webkit-text-fill-color:transparent;
+  background:linear-gradient(180deg, #f4f7f9 0%, #dfe5ea 38%, #b5e048 72%, #57ab2d 100%);
+  -webkit-background-clip:text; background-clip:text; color:#dfe5ea; -webkit-text-fill-color:transparent;
   filter:drop-shadow(0 1.5px 0 #0d3319);
 }
-.billArt .bmoney { font-size:10px; letter-spacing:6px; color:#ffe9a8; margin-top:1px; }
+.billArt .bmoney { font-size:10px; letter-spacing:6px; color:#e9edf1; margin-top:1px; }
 .billArt .bducky { font-size:8.5px; letter-spacing:3px; color:rgba(255,233,168,.85); }
 /* v6: the bill panel IS the machine's lower LUCKY DUCKY MONEY panel,
    copied whole from Joshua's full-cabinet photo. Shown ENTIRE
@@ -168,16 +178,18 @@ body {
 .billPanelImg { width:100%; height:100%; object-fit:contain; display:block; }
 /* v8: the $1 plate sits IN the reel glass under the middle reel, like
    the real machine's glass (it lived in the badge row in v6) */
-#glassPlate { display:flex; justify-content:center; padding:3px 0 0; }
+/* v10 placement (Joshua, 2026-11-22 16:43 CT): the dollar note moves
+   over to the RIGHT, where it fits — under the third reel */
+#glassPlate { display:flex; justify-content:flex-end; padding:3px 14px 0 0; }
 #glassPlate .denomPlaque img { height:32px; }
 /* meter bar along the BOTTOM OF THE TOP DISPLAY, above the reels —
    the real machine's placement (Joshua's layout order, 2026-11-22
    15:34): WON · PAID · BET · CASH in that order; the round per-credit
    $1 badge rides at the duck portrait's lower right instead */
 #meters { display:grid; grid-template-columns:1fr 1fr 1fr 1.2fr; gap:5px; align-items:center; margin-top:4px; }
-.meter { background:linear-gradient(180deg, #111110, #050505); border:2px solid #b98a1e; border-radius:5px; padding:2px 4px 3px; text-align:center; box-shadow: inset 0 0 0 1.5px #000, inset 0 0 0 3.5px rgba(201,162,39,.28), inset 0 0 11px rgba(0,0,0,.95); }
-.meter .mlabel { font-size:9.5px; letter-spacing:2px; color:#e8c85a; text-shadow:0 1px 1px #000; }
-.meter .mval { font-size:17px; color:#fff6da; text-shadow:0 0 6px rgba(255,240,200,.35); line-height:1.05; font-variant-numeric:tabular-nums; }
+.meter { background:linear-gradient(180deg, #111110, #050505); border:2px solid #9aa3ad; border-radius:5px; padding:2px 4px 3px; text-align:center; box-shadow: inset 0 0 0 1.5px #000, inset 0 0 0 3.5px rgba(169,178,188,.28), inset 0 0 11px rgba(0,0,0,.95); }
+.meter .mlabel { font-size:9.5px; letter-spacing:2px; color:#dfe5ea; text-shadow:0 1px 1px #000; }
+.meter .mval { font-size:17px; color:#f4f7f9; text-shadow:0 0 6px rgba(255,240,200,.35); line-height:1.05; font-variant-numeric:tabular-nums; }
 .meter .mval.money { font-size:15.5px; }
 .meter .cents { font-size:.6em; vertical-align:.55em; margin-left:1px; letter-spacing:0; }
 .meter.circle { width:47px; height:47px; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0; }
@@ -186,16 +198,16 @@ body {
 #screenPrint { font-size:7.5px; letter-spacing:1.2px; color:rgba(245,238,218,.5); margin-top:4px; font-family:Arial, sans-serif; }
 /* ---------- jewel strip above the reels ---------- */
 #jewelStrip {
-  text-align:center; font-size:11px; letter-spacing:2px; color:#0d3319;
-  background:linear-gradient(180deg, #f3d267, #c9a227 60%, #a87e0c);
+  text-align:center; font-size:11px; letter-spacing:2px; color:#1c2733;
+  background:linear-gradient(180deg, #f5f7f9, #c7ccd4 60%, #828b95);
   border-radius:6px; padding:2px 4px 1px; box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 2px 0 rgba(0,0,0,.35);
 }
 /* ---------- reel glass ---------- */
 #reelGlass {
   position:relative; border-radius:13px;
   background:repeating-linear-gradient(0deg, #f6f3e8 0 3px, #eae6d4 3px 4px);
-  border:3px solid #6d5510;
-  box-shadow: inset 0 0 0 2px #2e5c40, inset 0 0 0 4.5px rgba(201,162,39,.75), inset 0 0 30px rgba(0,0,0,.16), 0 4px 0 rgba(0,0,0,.35);
+  border:3px solid #3c434a;
+  box-shadow: inset 0 0 0 2px #2e5c40, inset 0 0 0 4.5px rgba(169,178,188,.75), inset 0 0 30px rgba(0,0,0,.16), 0 4px 0 rgba(0,0,0,.35);
   padding:6px 6px 4px;
 }
 #reelWindow {
@@ -203,9 +215,9 @@ body {
   margin:0 31px; height:calc(var(--cell) * 1.78);
 }
 .reel {
-  position:relative; overflow:hidden; border:3px solid #b98a1e; border-radius:8px;
+  position:relative; overflow:hidden; border:3px solid #9aa3ad; border-radius:8px;
   background:linear-gradient(180deg, #fdfdf6, #f4f1e0);
-  box-shadow: inset 0 15px 18px rgba(0,0,0,.20), inset 0 -15px 18px rgba(0,0,0,.20), inset 0 0 0 1.5px #6d5510;
+  box-shadow: inset 0 15px 18px rgba(0,0,0,.20), inset 0 -15px 18px rgba(0,0,0,.20), inset 0 0 0 1.5px #3c434a;
 }
 .strip { position:absolute; left:0; right:0; top:0; will-change:transform; }
 .strip.spinning { filter:blur(2px) brightness(1.04); }
@@ -236,22 +248,24 @@ body.redspin .sym .barImg { filter:sepia(1) saturate(4.5) hue-rotate(-48deg) bri
   position:absolute; left:0; right:0; bottom:8px; text-align:center; z-index:5; pointer-events:none;
   font-size:34px; letter-spacing:4px; display:none;
 }
-#banner.win { display:block; color:#ffe9a8; text-shadow:0 0 14px rgba(255,170,0,.9), 0 2px 0 rgba(0,0,0,.55); animation:bannerPop .5s ease infinite alternate; }
+#banner.win { display:block; color:#e9edf1; text-shadow:0 0 14px rgba(205,213,221,.9), 0 2px 0 rgba(0,0,0,.55); animation:bannerPop .5s ease infinite alternate; }
 #banner.over { display:block; color:#5a5148; text-shadow:none; font-size:23px; letter-spacing:5px; }
 @keyframes bannerPop { from { transform:scale(1); } to { transform:scale(1.07); } }
 #glassBadges { display:flex; align-items:flex-end; gap:4px; margin-top:5px; padding:0 1px; }
 /* v9 — Option 4 footer: black panel, gold trim, the three copied badge
    medallions in a row with the option's caption, gold bar at the base
    (compose.py f4/b4) */
-#cabFooter { background:#100e0a; border:2px solid #b2964a; border-radius:8px; padding:9px 6px 7px; margin-top:2px; }
-.footBadges { display:flex; justify-content:space-evenly; align-items:center; }
+#cabFooter { background:#100e0a; border:2px solid #a7b0b8; border-radius:8px; padding:9px 6px 7px; margin-top:2px; }
+/* v10 placement (Joshua, 2026-11-22 16:43 CT): the little circles
+   scooch over to the right, where they fit right in the row */
+.footBadges { display:flex; justify-content:flex-end; gap:30px; padding-right:16px; align-items:center; }
 .footBadges .badgeMed { width:auto; }
 .footBadges .badgeMed img { height:66px; width:auto; display:block; }
-.footCaption { text-align:center; color:#e8c86e; font-size:12.5px; letter-spacing:2.5px; margin-top:6px; }
-#cabBaseBar { height:5px; background:#c4a44c; border-radius:2px; margin-top:3px; }
+.footCaption { text-align:center; color:#dfe5ea; font-size:12.5px; letter-spacing:2.5px; margin-top:6px; }
+#cabBaseBar { height:5px; background:#c7ccd4; border-radius:2px; margin-top:3px; }
 .helpOval {
-  flex:1.25; background:radial-gradient(ellipse at 50% 40%, #ffe95c, #f2c230); color:#4a3503;
-  border:1.5px solid #8a6d1f; border-radius:50%; font-size:7.5px; line-height:1.25; text-align:center;
+  flex:1.25; background:radial-gradient(ellipse at 50% 40%, #f4f6f8, #c3cad1); color:#23272c;
+  border:1.5px solid #7d858e; border-radius:50%; font-size:7.5px; line-height:1.25; text-align:center;
   padding:5px 6px 4px; font-family:Arial, sans-serif; font-weight:700;
 }
 .badgeMed { flex:0 0 auto; display:flex; flex-direction:column; align-items:center; width:62px; }
@@ -277,7 +291,7 @@ body.redspin .sym .barImg { filter:sepia(1) saturate(4.5) hue-rotate(-48deg) bri
 }
 .sbtn:active { transform:translateY(2px); box-shadow:0 1px 0 rgba(0,0,0,.45), inset 0 2px 3px rgba(255,255,255,.4); }
 .sbtn:disabled { opacity:.45; }
-.sbtn.sel { background:linear-gradient(180deg, #ffe98a, #f0b41c); border-color:#8a6d1f; box-shadow:0 3px 0 rgba(0,0,0,.45), 0 0 10px rgba(255,190,30,.55), inset 0 2px 3px rgba(255,255,255,.6); }
+.sbtn.sel { background:linear-gradient(180deg, #f5f7f9, #aeb6bf); border-color:#7d858e; box-shadow:0 3px 0 rgba(0,0,0,.45), 0 0 10px rgba(205,213,221,.55), inset 0 2px 3px rgba(255,255,255,.6); }
 #spinBtn {
   font-family:inherit; width:92px; height:92px; flex:0 0 auto; border-radius:50%; cursor:pointer;
   background:radial-gradient(circle at 35% 28%, #ffffff, #eef0f2 55%, #c6ccd3);
@@ -298,7 +312,7 @@ body.redspin .sym .barImg { filter:sepia(1) saturate(4.5) hue-rotate(-48deg) bri
 }
 .mini:active { transform:translateY(2px); box-shadow:0 1px 0 rgba(0,0,0,.4); }
 #refillBtn { display:none; background:linear-gradient(180deg, #39b54a, #1c7a30); border-color:#0d3d18; color:#fff; }
-#msg { text-align:center; font-size:14px; letter-spacing:1.5px; color:#ffe9a8; min-height:17px; text-shadow:0 1px 2px rgba(0,0,0,.6); }
+#msg { text-align:center; font-size:14px; letter-spacing:1.5px; color:#e9edf1; min-height:17px; text-shadow:0 1px 2px rgba(0,0,0,.6); }
 /* ---------- paytable sheet ---------- */
 /* v6: the paytable sheet wears the machine's TOP GLASS — the arched
    green glass with the white table and its tinted coin columns, as
@@ -307,7 +321,7 @@ body.redspin .sym .barImg { filter:sepia(1) saturate(4.5) hue-rotate(-48deg) bri
    logic.js PAYTABLE (this game's true pays) in the glass's style —
    the numbers on this sheet are always the numbers the game pays. */
 #paySheet {
-  display:none; color:#f5eeda; border:3px solid var(--gold);
+  display:none; color:#eef1f4; border:3px solid var(--gold);
   background:linear-gradient(180deg, #1a5c36 0%, #0e3a24 55%, #0a2e1a 100%);
   border-radius:110px 110px 14px 14px / 54px 54px 14px 14px;
   padding:20px 12px 12px;
@@ -316,15 +330,15 @@ body.redspin .sym .barImg { filter:sepia(1) saturate(4.5) hue-rotate(-48deg) bri
 #paySheet.open { display:block; }
 .sheetHead { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:7px; }
 .sheetHead .sheetMedal { width:40px; height:40px; border-radius:50%; flex:0 0 auto; filter:drop-shadow(0 2px 3px rgba(0,0,0,.45)); }
-#paySheet h2 { font-size:21px; letter-spacing:2px; text-align:center; color:#ffe9a8; text-shadow:0 1px 2px rgba(0,0,0,.5); }
+#paySheet h2 { font-size:21px; letter-spacing:2px; text-align:center; color:#e9edf1; text-shadow:0 1px 2px rgba(0,0,0,.5); }
 #paySheet table { width:100%; border-collapse:separate; border-spacing:0; font-size:16.5px; background:#fdfdf6; color:#2b2118; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.35); }
-#paySheet td, #paySheet th { padding:2.5px 4px; border-bottom:1px solid #d8c9a3; text-align:right; font-variant-numeric:tabular-nums; }
+#paySheet td, #paySheet th { padding:2.5px 4px; border-bottom:1px solid #c9ced4; text-align:right; font-variant-numeric:tabular-nums; }
 #paySheet td:first-child, #paySheet th:first-child { text-align:left; letter-spacing:1px; }
-#paySheet th { background:#f3ecd4; }
+#paySheet th { background:#eceff2; }
 #paySheet td.c2, #paySheet th.c2 { background:rgba(46,139,87,.14); }
-#paySheet td.c3, #paySheet th.c3 { background:rgba(232,118,13,.16); }
+#paySheet td.c3, #paySheet th.c3 { background:rgba(140,150,160,.18); }
 #paySheet tr.top td { color:#a3121f; font-size:18.5px; }
-#paySheet .note { font-size:12.5px; text-align:center; margin-top:7px; color:rgba(245,238,218,.78); letter-spacing:.5px; font-family:Arial, sans-serif; }
+#paySheet .note { font-size:12.5px; text-align:center; margin-top:7px; color:rgba(233,237,241,.78); letter-spacing:.5px; font-family:Arial, sans-serif; }
 /* ---------- overlays ---------- */
 /* v8: the red screen copied element-for-element from Joshua's photo of
    the real machine's red screen (1000009650): full-display red wash,
@@ -341,16 +355,16 @@ body.redspin .sym .barImg { filter:sepia(1) saturate(4.5) hue-rotate(-48deg) bri
 #redCardStrip .rcHead { text-align:center; font-size:11px; letter-spacing:2px; color:#ffd9d0; border-bottom:1px solid rgba(255,150,120,.4); padding-bottom:3px; margin-bottom:4px; }
 #redCard { display:grid; grid-template-columns:repeat(5, 1fr); gap:2px; }
 #redCard .rc { font-size:8px; text-align:center; color:#ffbfae; background:rgba(255,255,255,.08); border-radius:2px; padding:1.5px 0; font-family:Arial, sans-serif; }
-#redCard .rc.hit { background:#ffd34d; color:#7a1016; font-weight:bold; }
+#redCard .rc.hit { background:#e8edf2; color:#7a1016; font-weight:bold; }
 #redCardStrip .rcNote { margin-top:auto; font-size:7.5px; text-align:center; color:rgba(255,217,208,.75); letter-spacing:1px; font-family:Arial, sans-serif; line-height:1.5; }
 #redMain { flex:1; display:flex; flex-direction:column; gap:7px; min-width:0; }
 #redPill { background:rgba(110,2,2,.55); border:2px solid rgba(255,150,120,.55); border-radius:999px; padding:7px 14px 5px; box-shadow:inset 0 2px 8px rgba(0,0,0,.35); }
 #redJewels { display:flex; justify-content:space-between; align-items:center; }
 #redJewels .rmed { width:27px; height:27px; border-radius:50%; display:block; }
 #redJewels .rmed.off { opacity:.6; }
-#redJewelText { text-align:center; font-size:13.5px; letter-spacing:2.5px; color:#ffe9a8; text-shadow:0 1px 2px rgba(0,0,0,.45); }
+#redJewelText { text-align:center; font-size:13.5px; letter-spacing:2.5px; color:#e9edf1; text-shadow:0 1px 2px rgba(0,0,0,.45); }
 #redFlash .billArt { width:100%; flex:1; min-height:0; filter:sepia(1) saturate(5) hue-rotate(-50deg) brightness(.94) contrast(1.08); box-shadow:0 0 44px rgba(255,30,10,.5); }
-#redFlash .rs { text-align:center; font-size:16px; letter-spacing:4px; color:#ffe9a8; }
+#redFlash .rs { text-align:center; font-size:16px; letter-spacing:4px; color:#e9edf1; }
 #redMeters { display:flex; gap:6px; align-items:center; margin-top:4px; }
 .rmeter { flex:1; border:2px solid rgba(255,150,120,.8); border-radius:6px; background:rgba(120,5,5,.35); position:relative; text-align:center; padding:11px 2px 6px; }
 .rmeter .rlab { position:absolute; top:-8px; left:50%; transform:translateX(-50%); background:#b30d0d; padding:0 7px; font-size:10px; letter-spacing:1.5px; color:#ffd9d0; white-space:nowrap; }
@@ -361,24 +375,28 @@ body.redspin .sym .barImg { filter:sepia(1) saturate(4.5) hue-rotate(-48deg) bri
 #pickOverlay, #jewelOverlay { position:fixed; inset:0; background:linear-gradient(180deg, #7a1016 0 60px, #0e4d73 60px); display:none; z-index:50; flex-direction:column; }
 #jewelOverlay { background:linear-gradient(180deg, #0a2e1a 0 60px, #123f27 60px); }
 #pickOverlay.on, #jewelOverlay.on { display:flex; }
-#pickOverlay .ptitle, #jewelOverlay .ptitle { text-align:center; color:#ffe9a8; font-size:31px; letter-spacing:2px; padding:12px 8px 8px; text-shadow:0 2px 0 rgba(0,0,0,.4); }
+#pickOverlay .ptitle, #jewelOverlay .ptitle { text-align:center; color:#e9edf1; font-size:31px; letter-spacing:2px; padding:12px 8px 8px; text-shadow:0 2px 0 rgba(0,0,0,.4); }
 #pond { position:relative; flex:1; overflow:hidden; background:linear-gradient(180deg, #2f8fc4, #1665ad 70%, #0d4a75); }
 #pond::before { content:''; position:absolute; inset:0; background:radial-gradient(60% 30% at 30% 20%, rgba(255,255,255,.25), transparent 70%), radial-gradient(50% 26% at 75% 60%, rgba(255,255,255,.16), transparent 70%); }
 .pondDuck { position:absolute; width:98px; cursor:pointer; background:none; border:none; padding:0; animation:swim linear infinite alternate; }
 .pondDuck .ripple { position:absolute; left:50%; bottom:-7px; transform:translateX(-50%); width:84px; height:17px; border-radius:50%; background:radial-gradient(ellipse, rgba(255,255,255,.5), rgba(255,255,255,0) 68%); }
 .pondDuck img { width:100%; border-radius:50%; filter:drop-shadow(0 4px 4px rgba(0,0,0,.35)); position:relative; display:block; }
-.pondDuck .amt { position:absolute; left:50%; transform:translateX(-50%); bottom:-26px; font-size:24px; color:#ffe9a8; text-shadow:0 0 10px rgba(255,170,0,.8); display:none; white-space:nowrap; z-index:2; }
+.pondDuck .amt { position:absolute; left:50%; transform:translateX(-50%); bottom:-26px; font-size:24px; color:#e9edf1; text-shadow:0 0 10px rgba(205,213,221,.85); display:none; white-space:nowrap; z-index:2; }
 .pondDuck.picked .amt { display:block; }
 .pondDuck.dim { opacity:.45; }
+.pondDuck.dud img { filter:grayscale(1) brightness(.55); }
+.pondDuck.dud .amt { color:#ff9d8a; }
+.jewelPick.dud svg { filter:grayscale(1) brightness(.6); }
+.jewelPick.dud .amt { color:#ff9d8a; }
 @keyframes swim { from { margin-left:-13px; } to { margin-left:13px; } }
 #jewelGrid { flex:1; display:grid; grid-template-columns:repeat(5, 1fr); align-content:center; gap:12px; padding:16px; }
 .jewelPick { background:none; border:none; cursor:pointer; padding:0; display:flex; flex-direction:column; align-items:center; gap:2px; }
 .jewelPick svg { width:58px; height:58px; filter:drop-shadow(0 3px 5px rgba(0,0,0,.5)); }
-.jewelPick .amt { font-size:19px; color:#ffe9a8; text-shadow:0 0 9px rgba(255,170,0,.8); visibility:hidden; white-space:nowrap; }
+.jewelPick .amt { font-size:19px; color:#e9edf1; text-shadow:0 0 9px rgba(205,213,221,.85); visibility:hidden; white-space:nowrap; }
 .jewelPick.picked .amt { visibility:visible; }
 .jewelPick.dim { opacity:.4; }
 #pickResult, #jewelResult { text-align:center; padding:12px; display:none; }
-#pickResult .prAmt, #jewelResult .prAmt { font-size:37px; color:#ffe9a8; letter-spacing:2px; }
+#pickResult .prAmt, #jewelResult .prAmt { font-size:37px; color:#e9edf1; letter-spacing:2px; }
 #collectBtn, #jewelCollectBtn { font-family:inherit; font-size:23px; letter-spacing:2px; background:linear-gradient(180deg, #39b54a, #1c7a30); color:#fff; border:none; border-radius:11px; padding:10px 30px 8px; cursor:pointer; box-shadow:0 4px 0 rgba(0,0,0,.4); }
 #foot { text-align:center; font-size:10px; letter-spacing:1.5px; color:rgba(245,238,218,.5); font-family:Arial, sans-serif; padding-bottom:2px; }
 @media (max-width:380px) { #crownTitle { font-size:23px; letter-spacing:2px; } #marqueeDuck { width:46px; height:46px; } .meter .mval { font-size:16.5px; } .meter .mval.money { font-size:13.5px; } .jewel { width:16px; height:16px; } }

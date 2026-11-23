@@ -37,7 +37,7 @@ const TIER_ORDER = ['DUCK', 'SEVEN', 'BAR3', 'BAR2', 'BAR1', 'ANYBAR', 'CHERRY3'
    2026-11-22 for the wild build: duck variants multiply the average win
    ~1.3x, so the tier weights came down to hold the same return. */
 const TIER_WEIGHTS = {
-  DUCK: 4, SEVEN: 29, BAR3: 109, BAR2: 196, BAR1: 436,
+  DUCK: 10, SEVEN: 29, BAR3: 109, BAR2: 196, BAR1: 436,
   ANYBAR: 1069, CHERRY3: 153, CHERRY2: 1691, CHERRY1: 9930
 };
 /* Re-tuned 2026-11-22 (v7) — JOSHUA'S RULING: the machine pays out
@@ -53,7 +53,10 @@ const TIER_WEIGHTS = {
    levels land together. The displayed paytable is rendered from
    PAYTABLE above, so displayed = actual by construction. Red-chain
    behavior UNCHANGED (RED_CHANCE 0.20 / RED_CHAIN_CHANCE 0.20 /
-   RED_MAX 5), PICK_CHANCE unchanged. Proof: Monte Carlo 2,000,000
+   RED_MAX 5), PICK_CHANCE unchanged. [v10 supersedes the chain:
+   Joshua's 2026-11-22 16:44 ruling — a red hit awards a flat random
+   2-8 re-spins via redSpinCount; the chain constants are gone.]
+   Proof: Monte Carlo 2,000,000
    spins per level on this file (../sim.js simSpins replica) —
    numbers recorded in the vault BUILD-RECORD.md V7 section.
    Tuner cross-check (seeded, 5M spins/level): 110.11% @1c /
@@ -61,11 +64,20 @@ const TIER_WEIGHTS = {
 const TOTAL_WEIGHT = 100000;
 
 /* Feature odds (documented/inferred — see RESEARCH.md):
-   red screen ~1 in 5 winning spins; chains up to 5; pick-a-duck sometimes
-   replaces a red-screen re-spin. */
-const RED_CHANCE = 0.20;       // per winning spin (player-reported ~1 in 5)
-const RED_CHAIN_CHANCE = 0.20; // a red spin can flash red again
-const RED_MAX = 5;             // reported maximum chain
+   red screen ~1 in 5 winning spins; pick-a-duck is an independent roll
+   on a winning spin, taken after the red spins settle. */
+const RED_CHANCE = 0.35;       // per winning spin (v10: raised from 0.20 — see below)
+/* v10 (Joshua, 2026-11-22 16:44 CT — his numbers, superseding the old
+   20%-continue / cap-5 chain): every time the red screen hits it awards
+   AT LEAST 2 re-spins and at most 8, drawn flat random — never one.
+   RED_CHAIN_CHANCE and RED_MAX are dead and removed. */
+function redSpinCount(rng) { return 2 + Math.floor(rng() * 7); } // uniform 2..8
+/* v10 frequency (Joshua, 2026-11-22 16:54 CT, corrected 16:55 CT):
+   a red screen at least once every 30 spins, never a longer wait.
+   RED_CHANCE 0.35 per winning spin puts the natural mean gap near
+   ~21 spins; RED_CAP is the hard backstop — the 30th spin since the
+   last red screen is dealt as a win and always goes red (game.js). */
+const RED_CAP = 30;
 /* Pick a Duck's OWN trigger: an independent roll on a winning spin.
    Until 2026-11-22 this was 0.25 as a SHARE OF RED TRIGGERS, and the red
    screen diverted into the pond instead of re-spinning — Joshua, from
@@ -79,7 +91,12 @@ const PICK_CHANCE = 0.05;
    The ducks are not decoration — each one in the line multiplies the pay
    (x2 / x4), which is the real machine's headline rule (floor glass:
    "[duck] DOUBLES Winning Combination", "2 LUCKY DUCKY PAYS 4X"). */
-const DUCK_ROLL = [0.83, 0.13, 0.04];
+/* v10 (Joshua, 2026-11-22 16:40 CT: "Increase the odds on lucky
+   ducks"): the duck roll moved from [0.83, 0.13, 0.04] to
+   [0.74, 0.19, 0.07] — a dealt win now carries 1 duck 19% of the
+   time (was 13%) and 2 ducks 7% (was 4%), so duck-doubled and
+   duck-quadrupled pays land far more often. */
+const DUCK_ROLL = [0.74, 0.19, 0.07];
 
 /* 22-stop mechanical strips (reconstructed; counts set the near-miss feel —
    the tier draw above decides outcomes, strips decide what the eye sees).
@@ -90,14 +107,20 @@ const DUCK_ROLL = [0.83, 0.13, 0.04];
    blank/symbol — 11 blanks per reel; a first rework cut that to 4;
    Joshua's word is none.) Counts per reel — R1: DUCK 1 SEVEN 2 BAR3 2
    BAR2 4 BAR1 7 CHERRY 6; R2: DUCK 1 SEVEN 2 BAR3 2 BAR2 5 BAR1 7
-   CHERRY 5; R3: DUCK 1 SEVEN 2 BAR3 3 BAR2 4 BAR1 6 CHERRY 6. The duck
-   stays at 1 per reel (the top symbol stays rare in the window
-   dressing). Dealt combos never contain BLANK either — see loserCombo
+   CHERRY 5; R3: DUCK 1 SEVEN 2 BAR3 3 BAR2 4 BAR1 6 CHERRY 6.
+   v10 (Joshua, 2026-11-22 16:40 CT: "Add two more ducks to the
+   reels"): one extra DUCK stop on reel 1 (index 5) and one on reel 3
+   (index 6), each 7 stops from the reel's original duck — R1 and R3
+   are now 23 stops with DUCK 2; R2 stays 22 stops with DUCK 1. The
+   strips are window dressing (the tier draw decides outcomes), so
+   the added ducks raise how often a duck shows in the window and
+   rolls past; the payline duck rate itself is moved by DUCK_ROLL
+   and the DUCK tier weight, both raised in the same order. Dealt combos never contain BLANK either — see loserCombo
    and the cherry fillers in comboForResult. */
 const STRIPS = [
-  ['BAR1','CHERRY','BAR2','CHERRY','BAR1','SEVEN','BAR3','CHERRY','BAR1','BAR1','BAR2','DUCK','BAR1','CHERRY','BAR3','BAR2','BAR1','BAR2','SEVEN','CHERRY','CHERRY','BAR1'],
+  ['BAR1','CHERRY','BAR2','CHERRY','BAR1','DUCK','SEVEN','BAR3','CHERRY','BAR1','BAR1','BAR2','DUCK','BAR1','CHERRY','BAR3','BAR2','BAR1','BAR2','SEVEN','CHERRY','CHERRY','BAR1'],
   ['BAR2','BAR1','CHERRY','SEVEN','BAR1','BAR1','BAR3','BAR2','CHERRY','BAR1','CHERRY','BAR2','DUCK','BAR1','CHERRY','BAR3','BAR2','SEVEN','BAR1','BAR2','CHERRY','BAR1'],
-  ['BAR1','SEVEN','BAR2','BAR3','CHERRY','BAR1','BAR2','BAR3','CHERRY','BAR1','CHERRY','BAR2','DUCK','BAR1','BAR1','CHERRY','BAR3','BAR1','SEVEN','CHERRY','BAR2','CHERRY']
+  ['BAR1','SEVEN','BAR2','BAR3','CHERRY','BAR1','DUCK','BAR2','BAR3','CHERRY','BAR1','CHERRY','BAR2','DUCK','BAR1','BAR1','CHERRY','BAR3','BAR1','SEVEN','CHERRY','BAR2','CHERRY']
 ];
 
 /* ---------- the duck: WILD, with multipliers (2026-11-22 research) ----------
@@ -392,6 +415,6 @@ function jewelPrize(coins, rng) {
   return 10 * coins;
 }
 
-const api = { SYMBOLS, BARS, PAYTABLE, TIER_ORDER, TIER_WEIGHTS, TOTAL_WEIGHT, RED_CHANCE, RED_CHAIN_CHANCE, RED_MAX, PICK_CHANCE, DUCK_ROLL, STRIPS, PATTERNS, LINES, evaluateCombo, payFor, resultForCombo, pickTier, comboForResult, loserCombo, drawResult, pickResultAtLeast, stopFor, genCard, newGoldSet, pickDuckPrize, JEWELS_TO_TRIGGER, jewelPrize };
+const api = { SYMBOLS, BARS, PAYTABLE, TIER_ORDER, TIER_WEIGHTS, TOTAL_WEIGHT, RED_CHANCE, redSpinCount, RED_CAP, PICK_CHANCE, DUCK_ROLL, STRIPS, PATTERNS, LINES, evaluateCombo, payFor, resultForCombo, pickTier, comboForResult, loserCombo, drawResult, pickResultAtLeast, stopFor, genCard, newGoldSet, pickDuckPrize, JEWELS_TO_TRIGGER, jewelPrize };
 if (typeof module !== 'undefined' && module.exports) module.exports = api;
 if (typeof window !== 'undefined') window.LuckyLogic = api;
