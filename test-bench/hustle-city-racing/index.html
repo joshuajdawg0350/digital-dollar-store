@@ -96,7 +96,7 @@
   #title-saved .savedcard b{color:#EAF4FF}
   #title-saved .rowbtns{justify-content:center;margin-top:8px}
   /* v0.4.1 detail: surface texture on the menu screens (CSS-cheap) */
-  #gsheet{background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.016) 0 2px,transparent 2px 7px),radial-gradient(120% 55% at 50% 0%,rgba(0,150,255,.08),transparent 60%),linear-gradient(180deg,rgba(3,6,10,.88),rgba(3,6,10,.97) 62%)}
+  .sheet{background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.016) 0 2px,transparent 2px 7px),radial-gradient(120% 55% at 50% 0%,rgba(0,150,255,.08),transparent 60%),linear-gradient(180deg,rgba(3,6,10,.88),rgba(3,6,10,.97) 62%)}
   #scr-title .inner{background-image:radial-gradient(90% 40% at 50% 0%,rgba(0,150,255,.06),transparent 65%)}
   .carcard{background-image:linear-gradient(155deg,rgba(255,255,255,.075),rgba(255,255,255,0) 42%),linear-gradient(0deg,rgba(0,150,255,.05),rgba(0,150,255,0) 55%)}
   .secttl{box-shadow:0 1px 0 rgba(0,150,255,.30)}
@@ -114,19 +114,31 @@
      pattern (Funny Maps): snap stops full 72% / half 42% / collapsed
      (handle only). Drag or flick the handle; tap it to fold the
      garage away and watch your car, tap again to bring it back. */
-  #gsheet{height:var(--gsH,72%);max-height:100%;display:flex;flex-direction:column;flex:0 0 auto;
+  .sheet{height:var(--sh,0px);max-height:100%;display:flex;flex-direction:column;flex:0 0 auto;
     border-top:2px solid #0096FF;border-radius:18px 18px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.55);
     transition:height .3s ease;overflow:hidden}
-  #gsheet.dragging{transition:none}
-  #gsheetHandle{flex:0 0 auto;height:46px;display:flex;align-items:center;justify-content:center;position:relative;
+  .sheet.dragging{transition:none}
+  .sheetHandle{flex:0 0 auto;height:46px;display:flex;align-items:center;justify-content:center;position:relative;
     cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;background:rgba(5,8,14,.55)}
-  #gsheetHandle:active{cursor:grabbing}
+  .sheetHandle:active{cursor:grabbing}
+  /* v0.4.8: THE SPLIT PULL-UP BAR — one side RACES, one side GARAGE.
+     Sits at the bottom of the street; each half is a handle for its
+     own sheet (tap to open/fold, drag to pull up). Always visible. */
+  #sheetbar{flex:0 0 auto;height:48px;display:flex;border-top:2px solid #0096FF;background:rgba(5,8,14,.94);
+    box-shadow:0 -8px 30px rgba(0,0,0,.55);position:relative;z-index:5}
+  .barhalf{flex:1 1 0;display:flex;align-items:center;justify-content:center;position:relative;cursor:grab;
+    touch-action:none;-webkit-user-select:none;user-select:none}
+  .barhalf:active{cursor:grabbing}
+  .barhalf + .barhalf{border-left:1px solid #22344A}
+  .barhalf .gs-hint{position:static;margin-top:0}
+  .barhalf .gs-chev{position:static;margin-top:0}
+  .barhalf .gs-grip{margin:0 9px}
   .gs-grip{width:58px;height:6px;border-radius:3px;background:linear-gradient(180deg,#FDFEFE,#A9C4DE 50%,#63798F);
     box-shadow:0 0 9px rgba(0,150,255,.55),0 1px 2px rgba(0,0,0,.6)}
   .gs-hint{position:absolute;left:14px;top:50%;margin-top:-8px;font-size:10.5px;letter-spacing:1.6px;color:#8FA3BA;font-weight:800}
   .gs-chev{position:absolute;right:14px;top:50%;margin-top:-11px;font-size:15px;line-height:1;color:#6FC3FF;transition:transform .3s ease}
-  #gsheet.collapsed .gs-chev{transform:rotate(180deg)}
-  #gsheetBody{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+  .sheet.collapsed .gs-chev{transform:rotate(180deg)}
+  .sheetBody{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
     padding:8px 16px calc(16px + var(--safe-b));position:relative}
   /* v0.4.4 (Joshua, 2026-11-19 21:31): the garage header is STICKY —
      the BACK button and the street-points readout stay pinned at the
@@ -265,9 +277,9 @@
   #scr-how .cap{font-size:12px;color:#8FA9C4;letter-spacing:.06em;margin-bottom:12px}
   .foot{margin-top:auto;padding-top:16px;font-size:10.5px;color:#5F748C;text-align:center;letter-spacing:.05em}
   /* chrome scrollbars on the two scrollable screens */
-  #gsheetBody::-webkit-scrollbar,#scr-how::-webkit-scrollbar{width:9px}
-  #gsheetBody::-webkit-scrollbar-track,#scr-how::-webkit-scrollbar-track{background:rgba(6,10,17,.4)}
-  #gsheetBody::-webkit-scrollbar-thumb,#scr-how::-webkit-scrollbar-thumb{border-radius:5px;border:1px solid #22344A;
+  .sheetBody::-webkit-scrollbar,#scr-how::-webkit-scrollbar{width:9px}
+  .sheetBody::-webkit-scrollbar-track,#scr-how::-webkit-scrollbar-track{background:rgba(6,10,17,.4)}
+  .sheetBody::-webkit-scrollbar-thumb,#scr-how::-webkit-scrollbar-thumb{border-radius:5px;border:1px solid #22344A;
     background:linear-gradient(180deg,#7E97AE,#3D4F63 55%,#22344A)}
 </style>
 </head>
@@ -305,17 +317,17 @@
     </div>
     <div id="title-saved"></div>
     <div class="title-stats" id="title-stats"></div>
-    <div class="legal">© 2026 Joshua Dawson / J-Dawgs Industries · Hustle City Drag Racing™ · v0.4.7 — Land Speed</div>
+    <div class="legal">© 2026 Joshua Dawson / J-Dawgs Industries · Hustle City Drag Racing™ · v0.4.8 — Land Speed</div>
   </div>
 </section>
 
 <!-- GARAGE -->
 <section id="scr-garage" class="screen">
- <div id="gsheet" data-default="full">
-  <div id="gsheetHandle" role="button" tabindex="0" aria-label="Drag to resize the garage panel">
+ <div id="gsheet" class="sheet collapsed">
+  <div id="gsheetHandle" class="sheetHandle" role="button" tabindex="0" aria-label="Drag to resize the garage panel">
     <span class="gs-hint">GARAGE</span><span class="gs-grip"></span><span class="gs-chev">▾</span>
   </div>
-  <div id="gsheetBody">
+  <div id="gsheetBody" class="sheetBody">
   <div class="g-head">
     <button id="btn-back-garage" class="smallbtn">← Title</button>
     <h2 class="chrome-text">THE GARAGE</h2>
@@ -331,14 +343,35 @@
   </div>
   <div class="secttl" style="margin-top:16px">Record board — the marks that matter</div>
   <div id="record-board"></div>
-  <div class="secttl" id="sect-rivals">Pick your rival</div>
-  <div id="rival-list"></div>
   <div class="secttl" style="margin-top:16px">Parts shop — beef up your car</div>
   <div id="shop-list"></div>
   <div class="rowbtns" style="justify-content:flex-start">
     <button id="btn-how-garage" class="smallbtn">How to race</button>
   </div>
   <div class="foot">Win races to earn street points. Spend them on parts — every part makes the car measurably faster, and you can watch it grow on the car behind this panel. Sixteen racers — beat one to unlock the next. BIG BODY SCOTTY tops the ladder holding the DRAG RACING RECORD at 346.95 mph: beat him with a perfect run in a drag-spec build and the record is yours. Past him the RECORD CHASE opens on the salt at Bonneville — tech inspection demands a parachute, the payouts get serious, and the marks get historic: 503, 633.47, and the outright land speed record, 763.035 mph.</div>
+  </div>
+ </div>
+ <div id="rsheet" class="sheet collapsed">
+  <div id="rsheetHandle" class="sheetHandle" role="button" tabindex="0" aria-label="Drag to resize the races panel">
+    <span class="gs-hint">RACES</span><span class="gs-grip"></span><span class="gs-chev">▾</span>
+  </div>
+  <div id="rsheetBody" class="sheetBody">
+  <div class="g-head">
+    <button id="btn-back-races" class="smallbtn">← Title</button>
+    <h2 class="chrome-text">THE RACES</h2>
+    <div class="cash">STREET POINTS<b id="r-cash">$0</b></div>
+  </div>
+  <div class="secttl" id="sect-rivals">Pick your rival</div>
+  <div id="rival-list"></div>
+  <div class="foot">Sixteen racers — beat one to unlock the next. Every rival runs your exact build: same parts, same power. The driving decides it — reaction, launch, shifts.</div>
+  </div>
+ </div>
+ <div id="sheetbar">
+  <div id="bar-races" class="barhalf" role="button" tabindex="0" aria-label="Pull up the races panel">
+    <span class="gs-hint">RACES</span><span class="gs-grip"></span><span class="gs-chev">▴</span>
+  </div>
+  <div id="bar-garage" class="barhalf" role="button" tabindex="0" aria-label="Pull up the garage panel">
+    <span class="gs-hint">GARAGE</span><span class="gs-grip"></span><span class="gs-chev">▴</span>
   </div>
  </div>
 </section>
@@ -1977,68 +2010,91 @@ const S={screen:'title', phase:'idle', rival:null, simTime:0, treeT:0, greenTime
 const treeSchedule=[[0.0,'stage'],[0.7,'amber1'],[1.2,'amber2'],[1.7,'amber3'],[2.2,'green']];
 let treeFired={};
 /* v0.4.5: garage drag-sheet controller — the house pattern (see the
-   #gsheet CSS): stops full 72% / half 42% / collapsed (handle only).
-   Drag or flick the handle to a stop; tap it to fold the garage away
-   or bring it back. Exposes window.__gsheet = { open, snap } (QA). */
+   .sheet CSS): stops full 72% / half 42% / collapsed. Drag or flick
+   the handle to a stop; tap it to fold the panel away or bring it
+   back. v0.4.7: thumb-proof tap (16px) + ENTER is a real pull-up.
+   v0.4.8 (Joshua, 2026-11-22 16:33 CT): TWO slide screens — "one
+   side races, one side garage." The rival list gets its own sheet
+   (#rsheet) so pulling up the GARAGE never drags the races with it
+   and nobody scrolls through races to reach the garage. The split
+   bar at the bottom of the street is the pull-up: left half RACES,
+   right half GARAGE — each half is a handle for its sheet, and each
+   open sheet keeps its own top handle. Mechanics unchanged (stops,
+   16px tap, flick); a collapsed sheet is height 0 behind the bar,
+   and only one sheet opens at a time — opening one folds the other.
+   Exposes window.__sheets / __gsheet / __rsheet (QA). */
 (function(){
-  var sheet=$('gsheet'), handle=$('gsheetHandle'), body=$('gsheetBody');
-  if(!sheet||!handle||!body) return;
   var FRAC={full:0.72, half:0.42}, ORDER=['collapsed','half','full'];
-  var snap=sheet.getAttribute('data-default')||'full'; if(ORDER.indexOf(snap)<0) snap='full';
-  var lastOpen=snap==='collapsed'?'full':snap, drag=null;
   function vh(){ return window.innerHeight||document.documentElement.clientHeight; }
-  function collapsedH(){ return handle.offsetHeight+2; }
-  function snapPx(n){ return n==='collapsed'?collapsedH():Math.round(FRAC[n]*vh()); }
-  function curH(){ return sheet.getBoundingClientRect().height; }
-  function applySnap(name){ snap=name; if(name!=='collapsed') lastOpen=name;
-    sheet.classList.toggle('collapsed', name==='collapsed');
-    sheet.style.setProperty('--gsH', snapPx(name)+'px'); }
-  function nearest(h){ var best=ORDER[0], bd=Infinity;
-    for(var i=0;i<ORDER.length;i++){ var d=Math.abs(snapPx(ORDER[i])-h); if(d<bd){ bd=d; best=ORDER[i]; } } return best; }
-  function stepped(name,dir){ var i=ORDER.indexOf(name)+dir; return ORDER[Math.max(0,Math.min(ORDER.length-1,i))]; }
-  handle.addEventListener('pointerdown',function(e){
-    drag={id:e.pointerId,startY:e.clientY,startH:curH(),lastY:e.clientY,lastT:performance.now(),vel:0,moved:0};
-    try{ handle.setPointerCapture(e.pointerId); }catch(err){}
-    sheet.classList.add('dragging'); e.preventDefault();
-  });
-  handle.addEventListener('pointermove',function(e){
-    if(!drag||e.pointerId!==drag.id) return;
-    var now=performance.now(), dt=now-drag.lastT;
-    if(dt>0) drag.vel=0.7*drag.vel+0.3*((e.clientY-drag.lastY)/dt);
-    drag.lastY=e.clientY; drag.lastT=now;
-    drag.moved=Math.max(drag.moved,Math.abs(e.clientY-drag.startY));
-    var h=drag.startH-(e.clientY-drag.startY);
-    h=Math.max(collapsedH(),Math.min(snapPx('full'),h));
-    sheet.style.setProperty('--gsH',h+'px');
-  });
-  function endDrag(e){
-    if(!drag||(e&&e.pointerId!==drag.id)) return;
-    /* v0.4.7 (Joshua, 2026-11-22): a thumb tap DRIFTS — 9px was a
-       mouse number, so real taps read as tiny drags and died. 16px
-       of wander is still a tap. */
-    var wasTap=drag.moved<16, vel=drag.vel; drag=null;
-    sheet.classList.remove('dragging');
-    if(wasTap){ applySnap(snap==='collapsed'?lastOpen:'collapsed'); return; }
-    var target=nearest(curH());
-    if(vel>0.45) target=stepped(target,-1); else if(vel<-0.45) target=stepped(target,1);
-    applySnap(target);
+  var controllers={}, lastSheet='garage';
+  function makeSheet(name, sheetId, handleIds){
+    var sheet=$(sheetId); if(!sheet) return null;
+    var handles=handleIds.map(function(id){ return $(id); }).filter(Boolean);
+    var snap='collapsed', lastOpen='full', drag=null;
+    function snapPx(n){ return n==='collapsed'?0:Math.round(FRAC[n]*vh()); }
+    function curH(){ return sheet.getBoundingClientRect().height; }
+    function fold(){ snap='collapsed'; sheet.classList.add('collapsed');
+      sheet.style.setProperty('--sh','0px'); }
+    function applySnap(n){ snap=n;
+      if(n!=='collapsed'){ lastOpen=n; lastSheet=name;
+        for(var k in controllers){ if(k!==name) controllers[k].fold(); } }
+      sheet.classList.toggle('collapsed', n==='collapsed');
+      sheet.style.setProperty('--sh', snapPx(n)+'px'); }
+    function nearest(h){ var best=ORDER[0], bd=Infinity;
+      for(var i=0;i<ORDER.length;i++){ var d=Math.abs(snapPx(ORDER[i])-h); if(d<bd){ bd=d; best=ORDER[i]; } } return best; }
+    function stepped(n,dir){ var i=ORDER.indexOf(n)+dir; return ORDER[Math.max(0,Math.min(ORDER.length-1,i))]; }
+    function onDown(e){
+      drag={id:e.pointerId,startY:e.clientY,startH:curH(),lastY:e.clientY,lastT:performance.now(),vel:0,moved:0};
+      try{ e.currentTarget.setPointerCapture(e.pointerId); }catch(err){}
+      sheet.classList.add('dragging'); e.preventDefault();
+    }
+    function onMove(e){
+      if(!drag||e.pointerId!==drag.id) return;
+      var now=performance.now(), dt=now-drag.lastT;
+      if(dt>0) drag.vel=0.7*drag.vel+0.3*((e.clientY-drag.lastY)/dt);
+      drag.lastY=e.clientY; drag.lastT=now;
+      drag.moved=Math.max(drag.moved,Math.abs(e.clientY-drag.startY));
+      var h=drag.startH-(e.clientY-drag.startY);
+      h=Math.max(0,Math.min(snapPx('full'),h));
+      sheet.style.setProperty('--sh',h+'px');
+    }
+    function onUp(e){
+      if(!drag||(e&&e.pointerId!==drag.id)) return;
+      /* v0.4.7: a thumb tap DRIFTS — 16px of wander is still a tap. */
+      var wasTap=drag.moved<16, vel=drag.vel; drag=null;
+      sheet.classList.remove('dragging');
+      if(wasTap){ applySnap(snap==='collapsed'?lastOpen:'collapsed'); return; }
+      var target=nearest(curH());
+      if(vel>0.45) target=stepped(target,-1); else if(vel<-0.45) target=stepped(target,1);
+      applySnap(target);
+    }
+    function onKey(e){
+      if(e.key==='Enter'||e.key===' '){ e.preventDefault(); applySnap(snap==='collapsed'?lastOpen:'collapsed'); }
+    }
+    handles.forEach(function(h){ h.addEventListener('pointerdown',onDown);
+      h.addEventListener('pointermove',onMove);
+      h.addEventListener('pointerup',onUp); h.addEventListener('pointercancel',onUp);
+      h.addEventListener('keydown',onKey); });
+    var api={ open:function(n){ applySnap(n||'full'); }, snap:function(){ return snap; },
+      fold:fold, applySnap:applySnap,
+      enter:function(){ sheet.classList.add('dragging'); applySnap('collapsed');
+        void sheet.offsetHeight; sheet.classList.remove('dragging'); applySnap('full'); } };
+    controllers[name]=api; return api;
   }
-  handle.addEventListener('pointerup',endDrag);
-  handle.addEventListener('pointercancel',endDrag);
-  handle.addEventListener('keydown',function(e){
-    if(e.key==='Enter'||e.key===' '){ e.preventDefault(); applySnap(snap==='collapsed'?lastOpen:'collapsed'); }
-  });
-  window.addEventListener('resize',function(){ if(!drag) applySnap(snap); });
-  applySnap(snap);
-  window.__gsheet={ open:function(name){ applySnap(name||'full'); }, snap:function(){ return snap; },
-    /* v0.4.7 (Joshua, 2026-11-22): ENTER = a real pull-up. The sheet
-       starts folded on the street and slides up to full, so opening
-       the garage is the slide-up gesture he asked for — not a screen
-       popping in already open. */
-    enter:function(){ sheet.classList.add('dragging'); applySnap('collapsed');
-      void sheet.offsetHeight; sheet.classList.remove('dragging'); applySnap('full'); } };
+  var garage=makeSheet('garage','gsheet',['gsheetHandle','bar-garage']);
+  var races=makeSheet('races','rsheet',['rsheetHandle','bar-races']);
+  window.addEventListener('resize',function(){
+    for(var k in controllers){ var c=controllers[k]; if(c.snap()!=='collapsed') c.applySnap(c.snap()); } });
+  window.__sheets={ enter:function(name){ var c=controllers[name]||garage; if(c) c.enter(); },
+    open:function(name,n){ var c=controllers[name]||garage; if(c) c.open(n); },
+    current:function(){ for(var k in controllers){ if(controllers[k].snap()!=='collapsed') return k; } return null; },
+    last:function(){ return lastSheet; } };
+  window.__gsheet={ open:function(n){ if(garage) garage.open(n); }, snap:function(){ return garage?garage.snap():'collapsed'; },
+    enter:function(){ if(garage) garage.enter(); } };
+  window.__rsheet={ open:function(n){ if(races) races.open(n); }, snap:function(){ return races?races.snap():'collapsed'; },
+    enter:function(){ if(races) races.enter(); } };
 })();
-function showScreen(name){
+function showScreen(name, sheetName){
   S.screen=name;
   ['title','garage','race','result','how'].forEach(n=>$('scr-'+n).classList.toggle('on',n===name));
   if(name==='garage'){ renderGarage();
@@ -2046,9 +2102,13 @@ function showScreen(name){
        resets to the top (your car, first viewport) every entry, from
        every path: title button, race quit, result screen, rematch.
        v0.4.5: the scroll lives in the sheet body now, and the sheet
-       opens FULL on every entry. */
+       opens FULL on every entry.
+       v0.4.8: TWO sheets — sheetName picks which one pulls up ('garage'
+       or 'races'); no pick = whichever sheet was open last. Each body
+       scroll resets, so the picked sheet lands on its own content. */
     var gb=$('gsheetBody'); if(gb) gb.scrollTop=0;
-    if(window.__gsheet) window.__gsheet.enter(); }
+    var rb=$('rsheetBody'); if(rb) rb.scrollTop=0;
+    if(window.__sheets) window.__sheets.enter(sheetName||window.__sheets.last()); }
   if(name==='title') renderTitleStats();
   if(name==='title'||name==='garage') applyVenue(false); /* the street is home */
 }
@@ -2509,6 +2569,7 @@ function pips(tier,max){
 function renderGarage(){
   S.blown=false; /* back in the garage, the motor is whole again */
   $('g-cash').textContent='$'+save.cash;
+  var rc=$('r-cash'); if(rc) rc.textContent='$'+save.cash;
   $('g-best').innerHTML=save.bestET?
     'Best ET <b>'+save.bestET.toFixed(3)+'s</b> · Best trap <b>'+(save.bestTrap*2.23694).toFixed(1)+' MPH</b> · '+save.wins+' wins':
     'No runs yet. Set a time.';
@@ -2650,20 +2711,15 @@ addEventListener('keydown',e=>{
 addEventListener('keyup',e=>{
   if(e.code==='Space'){ gasUp(); $('btn-gas').classList.remove('held'); }
 });
-$('btn-race-title').addEventListener('click',()=>{ AudioX.init(); showScreen('garage');
-  /* v0.4.4: RACE goes to racing — the garage opens with Pick Your
-     Rival at the top of the view (under the sticky header).
-     v0.4.5: the scroll lives in the sheet body; the sheet opens FULL
-     (showScreen) and the body scrolls so the rival picker sits under
-     the sticky header, re-applied after the snap animation settles. */
-  const toRivals=()=>{ const el=$('sect-rivals'), gb=$('gsheetBody');
-    if(el&&gb){ const y=el.getBoundingClientRect().top-gb.getBoundingClientRect().top+gb.scrollTop-84;
-      gb.scrollTo({top:Math.max(0,y),behavior:'instant'}); } };
-  requestAnimationFrame(toRivals); setTimeout(toRivals,340); });
+$('btn-race-title').addEventListener('click',()=>{ AudioX.init();
+  /* v0.4.8: RACE pulls up the RACES sheet — the rival list on its
+     own screen, no garage stacked over it, no scrolling to reach it. */
+  showScreen('garage','races'); });
 $('btn-garage-title').addEventListener('click',()=>{ AudioX.init(); showScreen('garage'); });
 $('btn-save-title').addEventListener('click',()=>{ AudioX.init(); doSaveGame(); });
 $('btn-save-garage').addEventListener('click',()=>{ AudioX.init(); doSaveGame(); });
 $('btn-back-garage').addEventListener('click',()=>showScreen('title'));
+$('btn-back-races').addEventListener('click',()=>showScreen('title'));
 $('btn-how-title').addEventListener('click',()=>showScreen('how'));
 $('btn-how-garage').addEventListener('click',()=>showScreen('how'));
 $('btn-how-back').addEventListener('click',()=>showScreen(save&&S._howFrom==='garage'?'garage':'title'));
