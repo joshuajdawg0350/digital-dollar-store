@@ -86,6 +86,16 @@ const deckGlow = new THREE.PointLight(0xfff2d8, 30, 12, 1.8);
 deckGlow.position.set(0, 2.6, 18.8); scene.add(deckGlow);
 
 /* ================= textures ================= */
+// v7 fix: centred text that never touches its frame — shrink the font
+// until the line fits maxW. Device fonts (e.g. Android's) render wider
+// than the design font, and edge-to-edge text is what clipped the
+// HUSTLE CITY lines at the screen/sign frame edges on a real phone.
+function fitText(g, text, cx, y, weight, size, maxW) {
+  let s = size;
+  g.font = `${weight} ${s}px system-ui, sans-serif`;
+  while (s > 10 && g.measureText(text).width > maxW) { s -= 2; g.font = `${weight} ${s}px system-ui, sans-serif`; }
+  g.fillText(text, cx, y);
+}
 function laneTexture() {
   const c = document.createElement('canvas'); c.width = 256; c.height = 2048;
   const g = c.getContext('2d');
@@ -98,9 +108,11 @@ function laneTexture() {
   g.fillStyle = 'rgba(90,55,20,0.35)';
   for (let i = 0; i <= 39; i++) g.fillRect(Math.floor(i * 256 / 39), 0, 1, 2048);
   // oil sheen: brighter, cooler through the heads/mid-lane
+  // (v7: alphas halved — with the key-light specular this stacked into
+  // a distinct bright pool mid-lane that read wrong)
   const grad = g.createLinearGradient(0, 2048, 0, 700);
-  grad.addColorStop(0, 'rgba(255,255,255,0.12)');
-  grad.addColorStop(0.55, 'rgba(210,230,255,0.06)');
+  grad.addColorStop(0, 'rgba(255,255,255,0.055)');
+  grad.addColorStop(0.55, 'rgba(210,230,255,0.028)');
   grad.addColorStop(1, 'rgba(210,230,255,0.0)');
   g.fillStyle = grad; g.fillRect(0, 700, 256, 1348);
   // z -> canvas y: lane spans z=-1.2..19.75 over the plane; foul line z=0
@@ -139,12 +151,12 @@ function signTexture() {
   const g = c.getContext('2d');
   g.fillStyle = '#0a0e16'; g.fillRect(0, 0, 1024, 256);
   g.strokeStyle = '#46536a'; g.lineWidth = 6; g.strokeRect(10, 10, 1004, 236);
-  g.font = '900 92px system-ui, sans-serif'; g.textAlign = 'center';
+  g.textAlign = 'center';
   const grad = g.createLinearGradient(0, 50, 0, 160);
   grad.addColorStop(0, '#ffffff'); grad.addColorStop(0.55, '#9fb6cc'); grad.addColorStop(1, '#e8f4ff');
-  g.fillStyle = grad; g.fillText('HUSTLE CITY', 512, 118);
-  g.font = '900 54px system-ui, sans-serif'; g.fillStyle = '#38b6ff';
-  g.fillText('★ COSMIC BOWLING ★', 512, 200);
+  g.fillStyle = grad; fitText(g, 'HUSTLE CITY', 512, 118, 900, 92, 800);
+  g.fillStyle = '#38b6ff';
+  fitText(g, '★ COSMIC BOWLING ★', 512, 200, 900, 54, 760);
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
   return t;
@@ -176,7 +188,7 @@ function buildLane(cx) {
   const grp = new THREE.Group();
   const surf = new THREE.Mesh(
     new THREE.PlaneGeometry(L.LANE.width, 20.95),
-    new THREE.MeshStandardMaterial({ map: laneTex, roughness: 0.48, metalness: 0.04 }));
+    new THREE.MeshStandardMaterial({ map: laneTex, roughness: 0.60, metalness: 0.04 }));
   surf.rotation.x = -Math.PI / 2;
   surf.position.set(cx, 0, 9.275);
   surf.receiveShadow = true;
@@ -281,14 +293,14 @@ function posterTexture(big, small) {
   const g = c.getContext('2d');
   g.fillStyle = '#0a0e16'; g.fillRect(0, 0, 512, 320);
   g.strokeStyle = '#38b6ff'; g.lineWidth = 5; g.strokeRect(12, 12, 488, 296);
-  g.font = '900 64px system-ui, sans-serif'; g.textAlign = 'center';
+  g.textAlign = 'center';
   const grad = g.createLinearGradient(0, 60, 0, 150);
   grad.addColorStop(0, '#ffffff'); grad.addColorStop(0.55, '#9fb6cc'); grad.addColorStop(1, '#e8f4ff');
-  g.fillStyle = grad; g.fillText(big, 256, 140);
-  g.font = '900 40px system-ui, sans-serif'; g.fillStyle = '#38b6ff';
-  g.fillText(small, 256, 215);
-  g.font = '700 25px system-ui, sans-serif'; g.fillStyle = '#8fb8dd';
-  g.fillText('BIG DREAMS FOR A SMALL WORLD', 256, 272);
+  g.fillStyle = grad; fitText(g, big, 256, 140, 900, 64, 430);
+  g.fillStyle = '#38b6ff';
+  fitText(g, small, 256, 215, 900, 40, 430);
+  g.fillStyle = '#8fb8dd';
+  fitText(g, 'BIG DREAMS FOR A SMALL WORLD', 256, 272, 700, 25, 430);
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
   return t;
@@ -297,19 +309,21 @@ function monitorTexture() {
   const c = document.createElement('canvas'); c.width = 512; c.height = 288;
   const g = c.getContext('2d');
   g.fillStyle = '#0b1220'; g.fillRect(0, 0, 512, 288);
-  g.font = '900 34px system-ui, sans-serif'; g.textAlign = 'center';
-  g.fillStyle = '#38b6ff'; g.fillText('HUSTLE CITY', 256, 46);
+  g.textAlign = 'center';
+  // v7: header given real headroom (was baseline 46 at 34px — glyph
+  // tops sat ~4% from the screen's top edge and read clipped)
+  g.fillStyle = '#38b6ff'; fitText(g, 'HUSTLE CITY', 256, 58, 900, 32, 420);
   // a frames grid, like the overhead scorers in a real house
   for (const row of [0, 1]) {
     for (let f = 0; f < 5; f++) {
-      const x = 36 + f * 90, y = 76 + row * 96;
-      g.strokeStyle = '#46536a'; g.lineWidth = 3; g.strokeRect(x, y, 78, 78);
-      g.beginPath(); g.moveTo(x, y + 30); g.lineTo(x + 78, y + 30); g.stroke();
-      g.beginPath(); g.moveTo(x + 52, y); g.lineTo(x + 52, y + 30); g.stroke();
+      const x = 36 + f * 90, y = 86 + row * 94;
+      g.strokeStyle = '#46536a'; g.lineWidth = 3; g.strokeRect(x, y, 78, 74);
+      g.beginPath(); g.moveTo(x, y + 28); g.lineTo(x + 78, y + 28); g.stroke();
+      g.beginPath(); g.moveTo(x + 52, y); g.lineTo(x + 52, y + 28); g.stroke();
     }
   }
-  g.font = '800 24px system-ui, sans-serif'; g.fillStyle = '#8fb8dd';
-  g.fillText('FRAMES 1–5', 256, 272);
+  g.fillStyle = '#8fb8dd';
+  fitText(g, 'FRAMES 1–5', 256, 276, 800, 24, 300);
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
   return t;
@@ -342,11 +356,14 @@ function monitorTexture() {
     scene.add(m);
   });
   // overhead scoring monitors above the pin decks
+  // (v7: raised, slimmed and moved outward — at y 3.05 over the lane
+  // centres their lower edges crossed the masking sign's HUSTLE CITY
+  // line from the menu/aim cameras and clipped it)
   const monTex = monitorTexture();
-  for (const cx of [-1.42, 1.42]) {
-    const mon = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.95, 0.08),
+  for (const cx of [-1.62, 1.62]) {
+    const mon = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.85, 0.08),
       new THREE.MeshStandardMaterial({ map: monTex, roughness: 0.5, emissive: 0x223349, emissiveIntensity: 0.7 }));
-    mon.position.set(cx, 3.05, 17.6); mon.rotation.x = 0.18;
+    mon.position.set(cx, 3.22, 17.6); mon.rotation.x = 0.18;
     scene.add(mon);
   }
   // Hustle City posters on both side walls
