@@ -1,5 +1,5 @@
 /* Hustle City Slots — Casino Classics v2.3 service worker. (c) 2026 J-Dawgs Industries. */
-const CACHE = 'hc-slots-classics-v2-22';
+const CACHE = 'hc-slots-classics-v2-23';
 const ASSETS = [
   './', './index.html', './style.css', './celeb-title.css', './game.js', './logic.js', './machines.js', './soundkit.js', './cabinet-life.js', './assets/celeb-show.mp4', './assets/celeb-title.png', './assets/fonts/bebas-neue.woff2',
   './assets/sfx/bell.mp3', './assets/sfx/win-small.mp3', './assets/sfx/win-med.mp3',
@@ -20,7 +20,11 @@ const ASSETS = [
   './assets/trunk-open.webp', './assets/scotty.webp',
   './assets/car-1.webp', './assets/car-2.webp', './assets/car-3.webp',
   './assets/car-4.webp', './assets/car-5.webp', './assets/car-6.webp',
-  './assets/car-7.webp', './assets/car-8.webp', './assets/car-9.webp'
+  './assets/car-7.webp', './assets/car-8.webp', './assets/car-9.webp',
+  './assets/sym-cg.webp', './assets/vault-skull.webp',
+  './assets/vault-door.webp', './assets/vault-chips.webp',
+  './assets/vault-skullroom.webp', './assets/vault-led.webp',
+  './assets/vault-wall.webp'
 ];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));

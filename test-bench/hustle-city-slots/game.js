@@ -61,6 +61,11 @@
   const trunksEl = $('trunks'), bonusBankEl = $('bonusBank');
   const bonusResultEl = $('bonusResult'), bonusCollectBtn = $('bonusCollect');
   const wheelOverlay = $('wheelOverlay'), wheelMsg = $('wheelMsg'), wheelRotor = $('wheelRotor'), wheelPointer = $('wheelPointer'), wheelPrize = $('wheelPrize');
+  const vaultOverlay = $('vaultOverlay'), vaultMsg = $('vaultMsg');
+  const vaultGrid = $('vaultGrid'), vaultLed = $('vaultLed'), vaultDoorsLed = $('vaultDoorsLed'),
+    vaultSkullsLed = $('vaultSkullsLed'), vaultBankBtn = $('vaultBankBtn');
+  const vaultEndEl = $('vaultEnd'), vaultEndImg = $('vaultEndImg'), vaultEndTitle = $('vaultEndTitle'),
+    vaultEndLine1 = $('vaultEndLine1'), vaultEndLine2 = $('vaultEndLine2'), vaultEndBtn = $('vaultEndBtn');
 
   const START_CREDITS = 1000;
   /* Bet ladder (Joshua, 2026-11-21 13:02 CT): the bet is a TOTAL bet per
@@ -394,7 +399,7 @@
       `<div class="payrow"><div class="thumb"><img src="${ART.X2}" alt="WIN ×2"></div><div class="nm">WIN ×2</div><span class="pv wide">Anywhere on a winning line, this line's win is DOUBLED (×2)</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.X3}" alt="WIN ×3"></div><div class="nm">WIN ×3</div><span class="pv wide">Anywhere on a winning line, this line's win is TRIPLED (×3). Two multipliers on the same line multiply together — ×2 and ×3 pay ×6</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.SC}" alt="SCATTER"></div><div class="nm">SCATTER</div><span class="pv wide">3+ anywhere: pays 2.4× / 9.6× / 48× total bet + 7 / 10 / 15 FREE SPINS at 2× line wins. The third scatter slows the reels, they SLAM to a stop, and the scatters grow and POP before the free spins open.</span></div>` +
-      `<div class="payrow"><div class="thumb"><img src="${ART.DD}" alt="DOLLAR DOOR"></div><div class="nm">THE DOLLAR DOOR</div><span class="pv wide">3+ BIG GREEN DOLLARS anywhere on a paid spin — plain dollars and medallion dollars count TOGETHER, any mix — the ONLY way into a bonus. The third dollar slows the reels, they SLAM to a stop, the dollars grow and POP, and the bonus opens. Half the time it's PICK-A-GARAGE: 9 real cars — pop a trunk! 8 trunks hide prizes (0.1×–1.2× total bet), 1 hides SCOTTY. Banked prizes are kept; Scotty ends it. Pop all 8 for a 1.8× GARAGE BONUS — the last closed trunk then stays live as a no-risk reveal of SCOTTY. The other half the BONUS WHEEL opens: 12 wedges, every wedge pays × total bet — MINI 1× · MINOR 2× · MAJOR 3.75× · GRAND 7×</span></div>` +
+      `<div class="payrow"><div class="thumb"><img src="${ART.DD}" alt="DOLLAR DOOR"></div><div class="nm">THE DOLLAR DOOR</div><span class="pv wide">3+ BIG GREEN DOLLARS anywhere on a paid spin — plain dollars and medallion dollars count TOGETHER, any mix — the ONLY way into a bonus. The third dollar slows the reels, they SLAM to a stop, the dollars grow and POP, and the bonus opens. Which bonus you get is RANDOM — one of three. PICK-A-GARAGE: 9 real cars — pop a trunk! 8 trunks hide prizes (0.1×–1.2× total bet), 1 hides SCOTTY. Banked prizes are kept; Scotty ends it. Pop all 8 for a 1.8× GARAGE BONUS — the last closed trunk then stays live as a no-risk reveal of SCOTTY. The BONUS WHEEL: 12 wedges, every wedge pays × total bet — MINI 1× · MINOR 2× · MAJOR 3.75× · GRAND 7×. Or the SKULL VAULT: 12 doors, 9 hide blue-chip prizes (${cfg.vault.prizes.slice().sort((a, b) => b - a).join('×, ')}× your total bet — ${cfg.vault.prizes.reduce((a, b) => a + b, 0)}× in all) and ${cfg.vault.skulls} hide SKULLS. Every door you open PAYS YOU ON THE SPOT — a SKULL ends the vault, and you keep everything you collected. The door lands about once every 20 spins</span></div>` +
       `<div class="payrow"><div class="thumb"><img src="${ART.DL}" alt="BET"></div><div class="nm">BET</div><span class="pv wide">Bets run in $25 steps: $25, $50, $75 … all the way up to $2,500 a spin. A step unlocks the first time your balance reaches it — and stays unlocked even if your balance dips. Use the −25 / +25 buttons or MAX BET. NEW GAME resets you to a $25 bet</span></div>`;
   }
 
@@ -833,12 +838,23 @@
     }
     if (bonusHit) {
       /* celebrate first, THEN the bonus; any free spins won on this spin
-         run after it (Joshua, 12:52 CT). BONUS WHEEL split (2026-11-22):
-         on cfg.wheelShare of triggers the wheel opens INSTEAD of the
-         garage — the roll happens here, at the garage dispatch, so the
-         bonus-door frequency (and the combined feature frequency) is
-         unchanged by construction. */
-      if (Math.random() < (cfg.wheelShare ?? 0.5)) {
+         run after it (Joshua, 12:52 CT). RANDOM BONUS POOL (2026-11-22,
+         Joshua: "get different bonuses at random" + "Add the vault as
+         well... the vault game, the same one"): the door deals one of
+         THREE bonus games at random — the SKULL VAULT on cfg.vaultShare
+         of triggers, the BONUS WHEEL on cfg.wheelShare, PICK-A-GARAGE
+         the rest (equal thirds as configured) — the roll happens here,
+         at the dispatch, so the bonus-door frequency (and the combined
+         feature frequency) is unchanged by construction. */
+      const poolRoll = Math.random();
+      if (poolRoll < (cfg.vaultShare ?? 0)) {
+        msgEl.textContent = `${ev.bonusCount} BIG GREEN DOLLARS — the skull vault is open!`;
+        await celebrate('bonus', 'SKULL VAULT!', `${ev.bonusCount} big green dollars — every door pays on the spot, dodge the skulls!`, celebDur());
+        await runSkullVault(totalBet());
+        finishTurn();
+        return;
+      }
+      if (poolRoll < (cfg.vaultShare ?? 0) + (cfg.wheelShare ?? 0.5)) {
         msgEl.textContent = `${ev.bonusCount} BIG GREEN DOLLARS — the bonus wheel is open!`;
         await celebrate('bonus', 'BONUS WHEEL!', `${ev.bonusCount} big green dollars — spin the wheel!`, celebDur());
         await runBonusWheel(totalBet());
@@ -967,6 +983,264 @@
     bonusGame.setAttribute('aria-hidden', 'false');
     bonusBackdrop.classList.add('on');
   }
+  /* ---------- SKULL VAULT — PORTED WHOLE FROM POKER LUXE v17 (2026-11-22) ----------
+     Joshua: "Add the vault as well to the Hustle City classic slot.
+     As a bonus game. The vault game the same one." Same game, same
+     pay-on-the-spot path, same skull rule, same ending beat — only
+     the prize scale is Classics' own (cfg.vault in machines.js)
+     and the overlay ids are vaultOverlay/vaultMsg on this cabinet. */
+  /* ---------- SKULL VAULT ----------
+     Joshua's pick #2 (2026-11-21 23:02 CT), replacing the press-and-watch
+     Bonus Wheel on the BN door. 12 riveted steel doors: the 9 prizes from
+     cfg.vault.prizes (multiples of the TOTAL bet) plus cfg.vault.skulls
+     skulls, shuffled face-down.
+     PAY PATH (Joshua's order, 2026-11-22 15:18 CT — he played the shipped
+     stop-and-bank build and reported "I opened one box it didn't pay and
+     then I hit the head": the prize only sat in an unbanked total the
+     credit meter never showed, and the skull then wiped it, so the bonus
+     paid ZERO): every door now PAYS ON THE SPOT — the prize credits the
+     balance the moment the door opens and the WIN meter counts it up in
+     plain sight. A skull ENDS the vault; everything collected stays in
+     the balance, and the ending beat (vaultEndShow) holds the scene and
+     spells out what was collected and what the skull left locked inside.
+     STOP ends the vault early with the same summary. Prize values, the
+     door rate and free spins are untouched. */
+  let vaultOpen = false, vaultState = null, vaultRig = null;
+  const VAULT_BIG = Math.max.apply(null, cfg.vault.prizes);
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+  function vaultReadouts() {
+    if (!vaultState) return;
+    vaultLed.textContent = fmt(vaultState.collected);
+    vaultDoorsLed.textContent = String(vaultState.doorsLeft);
+    vaultSkullsLed.textContent = String(vaultState.skullsLeft);
+    vaultBankBtn.disabled = vaultState.over;
+    vaultBankBtn.textContent = vaultState.collected > 0
+      ? `STOP — KEEP ${fmt(vaultState.collected)}`
+      : 'STOP — END VAULT';
+  }
+  function buildVaultDoors() {
+    vaultGrid.innerHTML = '';
+    vaultState.layout.forEach((v, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'vault-door';
+      b.dataset.idx = String(i);
+      b.setAttribute('aria-label', `Vault door ${i + 1}`);
+      b.innerHTML =
+        `<span class="door-prize">${v === 0
+          ? '<img src="assets/vault-skull.webp" alt="SKULL" draggable="false">'
+          : `<img src="assets/sym-cg.webp" alt="Blue chips" draggable="false"><span class="door-prize-val">×${v}</span>`}</span>` +
+        '<span class="door-face"><span class="door-handle"></span></span>';
+      b.addEventListener('click', () => vaultPick(i));
+      vaultGrid.appendChild(b);
+    });
+  }
+  function runSkullVault(betAtTrigger) {
+    return new Promise(resolve => {
+      const layout = vaultRig
+        ? vaultRig.slice()
+        : shuffle(cfg.vault.prizes.concat(Array(cfg.vault.skulls).fill(0)));
+      vaultRig = null;
+      vaultState = {
+        layout, bet: betAtTrigger, unbanked: 0, collected: 0, pay: 0, over: false,
+        winShown: parseFloat(winEl.textContent.replace(/[^0-9.]/g, '')) || 0,
+        doorsLeft: layout.length,
+        skullsLeft: cfg.vault.skulls,
+        safeLeft: cfg.vault.prizes.length,
+        resolve
+      };
+      buildVaultDoors();
+      vaultEndEl.classList.remove('on');
+      vaultEndEl.setAttribute('aria-hidden', 'true');
+      vaultOverlay.classList.add('on');
+      vaultOverlay.setAttribute('aria-hidden', 'false');
+      vaultMsg.textContent = 'Pick a door — every door pays you on the spot!';
+      msgEl.textContent = 'SKULL VAULT! Every door pays on the spot — a skull ends the vault, you keep what you collected!';
+      /* the vault is tap-driven on its doors: freeze the cabinet controls */
+      betDownBtn.disabled = true; betUpBtn.disabled = true; maxBetBtn.disabled = true;
+      spinBtn.disabled = true;
+      const lv = $('lever');
+      if (lv) { lv.classList.add('off'); lv.setAttribute('aria-disabled', 'true'); }
+      vaultOpen = true;
+      vaultReadouts();
+    });
+  }
+  function vaultClose(delayMs) {
+    const st = vaultState;
+    setTimeout(() => {
+      vaultOverlay.classList.remove('on');
+      vaultOverlay.setAttribute('aria-hidden', 'true');
+      vaultOpen = false;
+      spinBtn.disabled = false;
+      const lv = $('lever');
+      if (lv) { lv.classList.remove('off'); lv.setAttribute('aria-disabled', 'false'); }
+      vaultState = null;
+      /* final re-assert (fix, 2026-11-22): whatever happened during the
+         celebration, the closing balance is rendered and saved as the
+         vault hands control back to the main game. */
+      renderReadouts();
+      save();
+      lastBonusPaid = st.pay || 0;
+      lastBonusWhat = 'Skull Vault';
+      st.resolve(st.pay || 0);
+    }, delayMs);
+  }
+  /* WIN-meter count-up that a newer call supersedes: rapid door taps must
+     never leave the meter short of the true credited total. */
+  let winAnimSeq = 0;
+  function winCountTo(from, to, dur) {
+    const seq = ++winAnimSeq;
+    if (to <= from) { winEl.textContent = fmt(to); return; }
+    const t0 = performance.now();
+    let lastTick = 0;
+    (function step(t) {
+      if (seq !== winAnimSeq) return; /* a newer count owns the meter now */
+      const p = Math.min(1, (t - t0) / dur);
+      winEl.textContent = fmt(Math.round(from + (to - from) * p));
+      if (t - lastTick >= 45) { lastTick = t; Kit.countTick(); }
+      if (p < 1) requestAnimationFrame(step); else winEl.textContent = fmt(to);
+    })(t0);
+  }
+
+  /* ---------- THE VAULT ENDING BEAT (Joshua, 2026-11-22 15:18 CT) ----------
+     "when you hit the head or whatever make it make the scene a little
+     longer so you know what happened." Every way the vault ends — skull,
+     STOP, full clear — lands on this panel: big art, the outcome in plain
+     words (what was collected, what stayed locked inside), and a hold
+     long enough to read it. CONTINUE arms after VAULT_END_HOLD_MS; the
+     panel auto-closes at VAULT_END_MAX_MS so nobody is ever trapped. */
+  const VAULT_END_HOLD_MS = 4000, VAULT_END_MAX_MS = 15000;
+  function vaultEndShow(kind) {
+    const st = vaultState;
+    if (!st) return;
+    st.pay = st.collected;
+    let leftMult = 0;
+    st.layout.forEach((v, idx) => {
+      const b = vaultGrid.children[idx];
+      if (v > 0 && b && !b.classList.contains('open')) leftMult += v;
+    });
+    const leftCredits = Math.round(leftMult * st.bet);
+    const doorsWord = st.doorsLeft === 1 ? 'door' : 'doors';
+    if (kind === 'skull') {
+      vaultEndImg.src = 'assets/vault-skull.webp';
+      vaultEndImg.alt = 'SKULL';
+      vaultEndTitle.textContent = 'THE SKULL ENDS THE VAULT';
+      vaultEndLine1.textContent = st.collected > 0
+        ? `You collected ${fmt(st.collected)} credits — already in your balance.`
+        : 'You collected nothing this time.';
+      vaultEndLine2.textContent = leftCredits > 0
+        ? `Still locked inside: ${fmt(leftCredits)} credits behind ${st.doorsLeft} unopened ${doorsWord}.`
+        : 'Nothing was left inside.';
+    } else if (kind === 'clear') {
+      vaultEndImg.src = 'assets/vault-chips.webp';
+      vaultEndImg.alt = 'Blue chips';
+      vaultEndTitle.textContent = 'FULL CLEAR — VAULT EMPTIED!';
+      vaultEndLine1.textContent = `You collected the whole vault: ${fmt(st.collected)} credits — already in your balance.`;
+      vaultEndLine2.textContent = 'Every chip door opened. Nothing left inside.';
+    } else {
+      vaultEndImg.src = 'assets/vault-chips.webp';
+      vaultEndImg.alt = 'Blue chips';
+      vaultEndTitle.textContent = 'YOU CLOSE THE VAULT';
+      vaultEndLine1.textContent = st.collected > 0
+        ? `You collected ${fmt(st.collected)} credits — already in your balance.`
+        : 'You collected nothing this time.';
+      vaultEndLine2.textContent = leftCredits > 0
+        ? `Left inside: ${fmt(leftCredits)} credits behind ${st.doorsLeft} unopened ${doorsWord}.`
+        : 'Nothing was left inside.';
+    }
+    vaultEndEl.classList.add('on');
+    vaultEndEl.setAttribute('aria-hidden', 'false');
+    vaultEndBtn.disabled = true;
+    vaultEndBtn.textContent = 'CONTINUE';
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      vaultEndEl.classList.remove('on');
+      vaultEndEl.setAttribute('aria-hidden', 'true');
+      vaultClose(350);
+    };
+    vaultEndBtn.onclick = () => { if (!vaultEndBtn.disabled) finish(); };
+    setTimeout(() => { vaultEndBtn.disabled = false; }, VAULT_END_HOLD_MS);
+    setTimeout(finish, VAULT_END_MAX_MS);
+  }
+  function vaultPick(i) {
+    const st = vaultState;
+    if (!vaultOpen || !st || st.over) return;
+    const btn = vaultGrid.children[i];
+    if (!btn || btn.classList.contains('open')) return;
+    btn.classList.add('open');
+    btn.disabled = true;
+    st.doorsLeft--;
+    const v = st.layout[i];
+    if (v === 0) {
+      /* SKULL — the vault ENDS. Everything already collected STAYS in the
+         balance (each door paid on the spot); the ending beat holds the
+         scene and spells out what was collected and what the skull left
+         locked inside, so nobody is left wondering what happened. */
+      st.over = true;
+      st.skullsLeft--;
+      btn.classList.add('skull');
+      Kit.bust(); /* the low bust sting — no synth buzz */
+      vaultMsg.textContent = 'SKULL! The vault ends — what you collected is yours.';
+      vaultReadouts();
+      vaultBankBtn.disabled = true;
+      vaultEndShow('skull');
+      return;
+    }
+    /* SAFE DOOR — IT PAYS RIGHT NOW (fix, 2026-11-22): the prize credits
+       the balance the moment the door opens — money first, saved
+       synchronously — and the WIN meter counts it up in plain sight. */
+    st.unbanked += v;
+    st.safeLeft--;
+    const payNow = Math.round(v * st.bet);
+    st.collected += payNow;
+    st.pay = st.collected;
+    credits += payNow;
+    notePeak(false);
+    save();
+    Kit.prize(cfg.vault.prizes.length - st.safeLeft);
+    const winFrom = st.winShown;
+    st.winShown += payNow;
+    winCountTo(winFrom, st.winShown, Math.min(900, 300 + payNow * 2));
+    if (st.safeLeft === 0) {
+      /* FULL CLEAR — every chip door opened, every prize already paid */
+      st.over = true;
+      vaultMsg.textContent = `FULL CLEAR! Every chip door opened — ${fmt(st.collected)} credits collected!`;
+      Kit.jackpot(); /* full bell + coin celebration */
+      vaultReadouts();
+      vaultBankBtn.disabled = true;
+      vaultEndShow('clear');
+      return;
+    }
+    vaultMsg.textContent = v >= VAULT_BIG
+      ? `THE BIG DOOR! ×${v} — ${fmt(payNow)} credits PAID. ${fmt(st.collected)} collected.`
+      : `×${v} — ${fmt(payNow)} credits PAID. ${fmt(st.collected)} collected so far.`;
+    vaultReadouts();
+  }
+  vaultBankBtn.addEventListener('click', () => {
+    const st = vaultState;
+    if (!vaultOpen || !st || st.over) return;
+    st.over = true;
+    Kit.bankIt(st.unbanked);
+    vaultMsg.textContent = st.collected > 0
+      ? `You stop — ${fmt(st.collected)} credits collected, already yours.`
+      : 'You stop — nothing collected.';
+    vaultReadouts();
+    vaultBankBtn.disabled = true;
+    vaultEndShow('stop');
+  });
+
+
+
   /* QA hook: force the bonus open / inspect the shuffled deck / drive state */
   window.__slotsDebug = {
     openBonus: tb => openBonus(tb || totalBet(), () => setControlsEnabled(true)),
@@ -976,6 +1250,10 @@
     setCredits: n => { credits = Math.max(0, n | 0); notePeak(false); renderReadouts(); newGameBtn.classList.toggle('on', credits < totalBet()); save(); },
     celebrate: (kind, title, sub, dur) => celebrate(kind || 'bonus', title || 'PICK-A-GARAGE!', sub || '', dur || 3000),
     wheel: (idx) => runBonusWheel(totalBet(), idx),
+    openVault: (layout) => { if (Array.isArray(layout)) vaultRig = layout.slice(); return runSkullVault(totalBet()); },
+    vaultRig: layout => { vaultRig = Array.isArray(layout) ? layout.slice() : null; },
+    vaultState: () => vaultState ? { unbanked: vaultState.unbanked, collected: vaultState.collected, bet: vaultState.bet, over: vaultState.over, doorsLeft: vaultState.doorsLeft, skullsLeft: vaultState.skullsLeft, safeLeft: vaultState.safeLeft, pay: vaultState.pay || 0 } : null,
+    vaultOpen: () => vaultOpen,
     kit: Kit,
     getState: () => ({ credits, bet: betSel, betPerLine: lineBet(), maxBet: unlockedMax(), peak, spinning, wheelArmed: !!wheelArmed, wheelSpinning, rolling: RollSound.isActive(), rollLevel: Math.round(RollSound.level() * 100) / 100, stops: stops.slice(), door: { ...lastDoor } })
   };

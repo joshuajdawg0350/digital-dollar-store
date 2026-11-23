@@ -1523,3 +1523,274 @@ body, button, input, select, textarea,
   cursor: pointer;
 }
 .wheel-spin-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #0a2547, 0 4px 10px rgba(0, 0, 0, .4); }
+
+/* ---------- SKULL VAULT — PORTED FROM POKER LUXE v17 (2026-11-22) ----------
+/* The vault game, the same one: overlay shell + vault face (board #2)
+   + ending beat, copied from the Luxe cabinet. NO GOLD. */
+.vault-overlay {
+  position: fixed; inset: 0;
+  z-index: 66;
+  pointer-events: none; /* verification fix 2026-11-21: the armed wheel is spun
+    with the cabinet's pull arm / SPIN button (as the on-screen copy directs)
+    and by tapping the wheel — the overlay must not swallow those taps */
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  background: rgba(1, 3, 9, .86);
+}
+.vault-overlay.on { display: flex; overflow-y: auto; }
+.bonus-card {
+  pointer-events: auto;
+  margin: auto; /* safe centering: card scrolls instead of clipping when
+    it is taller than a short phone viewport (Skull Vault card, 2026-11-21) */
+  flex: none;
+  width: min(100%, 430px);
+  border-radius: 22px;
+  padding: 18px 16px 16px;
+  text-align: center;
+  background:
+    radial-gradient(58% 44% at 50% 47%, rgba(255, 30, 60, .16) 0%, rgba(255, 30, 60, .05) 55%, transparent 78%),
+    radial-gradient(120% 60% at 50% 0%, rgba(46, 155, 255, .22) 0%, transparent 60%),
+    linear-gradient(170deg, #131c2c 0%, #070b13 55%, #04060a 100%);
+  border: 1px solid #79879a;
+  box-shadow: 0 0 0 2px #05070a, 0 0 44px rgba(255, 30, 60, .30), 0 24px 60px rgba(0, 0, 0, .9);
+}
+.bonus-title {
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: .14em;
+  color: #eef3f8;
+  text-shadow: 0 2px 3px #000, 0 0 22px rgba(255, 255, 255, .35), 0 0 34px rgba(255, 30, 60, .35);
+}
+.bonus-rules {
+  margin-top: 8px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: #c3d2e4;
+}
+.bonus-rules .gold { color: #ff5b74; }
+.bonus-rules .bad { color: #ff1e3c; }
+.bonus-msg {
+  min-height: 26px;
+  margin-top: 10px;
+  font-size: 16.5px;
+  font-weight: 800;
+  letter-spacing: .03em;
+  color: #ff5b74;
+}
+.bonus-msg {
+  color: #ffffff; font-size: 18px;
+  text-shadow: 0 0 14px rgba(255, 60, 80, .9), 0 1px 2px rgba(0, 0, 0, .95);
+}
+
+/* ---------- SKULL VAULT (2026-11-21, Joshua's pick #2) ----------
+   12 riveted steel doors over a dark vault interior, blue-chip prizes,
+   red LED readouts — board #2's look, built in CSS + the machine's own
+   chip/skull art. NO GOLD. */
+.vault-readouts {
+  display: flex; gap: 8px; margin-top: 8px;
+}
+.vault-readout { flex: 1; }
+.vault-readout label {
+  display: block;
+  font-size: 12px;
+  letter-spacing: .18em;
+  color: #9db4cc;
+  margin-bottom: 4px;
+  text-shadow: 0 1px 2px #000;
+}
+.vault-led {
+  color: #ff3548;
+  border-color: #4f2b33;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, .95), inset 0 0 18px rgba(215, 11, 40, .30), 0 1px 0 rgba(255, 255, 255, .08);
+  text-shadow: 0 0 9px rgba(255, 53, 72, .9), 0 0 2px rgba(255, 143, 157, .9);
+}
+.vault-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+  margin: 10px auto 10px;
+  max-width: 348px;
+}
+.vault-door {
+  position: relative;
+  aspect-ratio: 1.09;
+  border-radius: 9px;
+  border: 1px solid #4a545f;
+  background: #04060a;
+  overflow: hidden;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.vault-door:disabled { cursor: default; }
+.door-prize {
+  position: absolute; inset: 0; z-index: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 1px;
+  background: radial-gradient(85% 85% at 50% 38%, #141c28 0%, #04060a 78%);
+}
+.door-prize img { width: 66%; max-height: 62%; object-fit: contain; }
+.door-prize-val {
+  font-size: 21px;
+  color: #57b6ff;
+  letter-spacing: .06em;
+  text-shadow: 0 0 10px rgba(46, 155, 255, .85), 0 1px 2px #000;
+}
+.vault-door.skull .door-prize {
+  background: radial-gradient(85% 85% at 50% 38%, #430b14 0%, #0a0406 78%);
+}
+.door-face {
+  position: absolute; inset: 0; z-index: 2;
+  display: flex; align-items: center; justify-content: center;
+  background:
+    radial-gradient(circle 3px at 11px 11px, #c3cedb 42%, #10131a 62%, transparent 72%),
+    radial-gradient(circle 3px at calc(100% - 11px) 11px, #c3cedb 42%, #10131a 62%, transparent 72%),
+    radial-gradient(circle 3px at 11px calc(100% - 11px), #c3cedb 42%, #10131a 62%, transparent 72%),
+    radial-gradient(circle 3px at calc(100% - 11px) calc(100% - 11px), #c3cedb 42%, #10131a 62%, transparent 72%),
+    linear-gradient(155deg, #3d454f 0%, #232830 46%, #14171d 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), inset 0 -8px 14px rgba(0, 0, 0, .55), inset 0 0 0 3px rgba(5, 7, 10, .55);
+  transition: transform .5s cubic-bezier(.3, .7, .3, 1), opacity .5s;
+  transform-origin: left center;
+}
+.vault-door:not(.open):active .door-face { filter: brightness(1.18); }
+.vault-door.open .door-face {
+  transform: perspective(520px) rotateY(-82deg);
+  opacity: .9;
+}
+.door-handle {
+  position: relative;
+  width: 47%; aspect-ratio: 1;
+  border-radius: 50%;
+  border: 3px solid #b6c2d1;
+  background: radial-gradient(circle, #788696 0%, #454f5b 55%, #272d36 100%);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, .75), inset 0 1px 3px rgba(255, 255, 255, .55), inset 0 -3px 6px rgba(0, 0, 0, .5);
+}
+.door-handle::before, .door-handle::after {
+  content: ""; position: absolute; background: #c3cedb; border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .6);
+}
+.door-handle::before { left: 7%; right: 7%; top: 50%; height: 3px; transform: translateY(-50%); }
+.door-handle::after { top: 7%; bottom: 7%; left: 50%; width: 3px; transform: translateX(-50%); }
+.vault-bank-btn {
+  width: 100%;
+  padding: 11px 10px 9px;
+  font-size: 21px;
+  letter-spacing: .14em;
+  color: #eaf4ff;
+  background: linear-gradient(180deg, #4b5966 0%, #2a313b 55%, #1a1f27 100%);
+  border: 1px solid #8b98a8;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 255, 255, .35), 0 0 18px rgba(46, 155, 255, .25);
+  cursor: pointer;
+}
+.vault-bank-btn:disabled { opacity: .42; box-shadow: none; cursor: default; }
+.vault-bank-btn:not(:disabled):active { transform: translateY(1px); }
+
+/* ---------- SKULL VAULT — BOARD #2 FACE LIFT (2026-11-21 23:23 CT) ----------
+   Joshua picked board #2 (the photoreal vault wall) and the shipped flat
+   CSS doors were NOT the pick: "That looks nothing like the skull vault I
+   picked. Make it look like the one you showed me." PICKED MEANS THE PICK:
+   the board's own art is now the vault's face — crops of the board itself
+   (assets/vault-door.webp closed door, vault-chips.webp lit compartment,
+   vault-skullroom.webp chrome skull compartment, vault-led.webp the red
+   dot-matrix strip, vault-wall.webp the dark steel wall). Mechanics,
+   prizes, readouts and flow are untouched — face lift only. */
+.bonus-card.vault-card {
+  background:
+    linear-gradient(172deg, rgba(14, 18, 25, .90) 0%, rgba(5, 7, 10, .95) 58%, rgba(3, 4, 6, .97) 100%),
+    url('assets/vault-wall.webp') center / cover no-repeat,
+    #05070a;
+  border: 2px solid #8b96a3;
+  box-shadow:
+    0 0 0 2px #05070a,
+    0 0 44px rgba(255, 30, 60, .30),
+    0 24px 60px rgba(0, 0, 0, .9),
+    inset 0 1px 0 rgba(255, 255, 255, .35),
+    inset 0 0 60px rgba(0, 0, 0, .55);
+}
+/* the readouts live in the board's red LED dot-matrix panel */
+.vault-readouts {
+  position: relative;
+  padding: 10px 10px 9px;
+  border-radius: 12px;
+  border: 1px solid #79838f;
+  background: #0a0508;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, .85),
+    inset 0 0 24px rgba(255, 42, 51, .22),
+    0 2px 8px rgba(0, 0, 0, .6);
+  overflow: hidden;
+}
+.vault-readouts::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: url('assets/vault-led.webp') center / cover no-repeat;
+  opacity: .45;
+  pointer-events: none;
+}
+.vault-readout { position: relative; z-index: 1; }
+.vault-readout label {
+  color: #f4dade;
+  text-shadow: 0 1px 2px #000, 0 0 8px rgba(255, 42, 51, .55);
+}
+.vault-led { background: linear-gradient(180deg, rgba(13, 5, 7, .94) 0%, rgba(22, 6, 10, .94) 55%, rgba(10, 4, 6, .94) 100%); }
+/* the wall: 3 x 4 board-true doors */
+.vault-grid { max-width: 336px; gap: 6px; }
+.vault-door {
+  aspect-ratio: 0.75;
+  border: 1px solid #1d2126;
+  border-radius: 7px;
+  background: #0a0c10;
+  box-shadow: 0 3px 9px rgba(0, 0, 0, .7), inset 0 0 0 1px rgba(0, 0, 0, .6);
+}
+.door-face {
+  background: url('assets/vault-door.webp') center / cover no-repeat #14171c;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .55), inset 0 -10px 18px rgba(0, 0, 0, .35), inset 0 8px 14px rgba(255, 255, 255, .06);
+  transform-origin: right center; /* the board's doors hinge on the right */
+}
+.door-handle { display: none; } /* the spoked wheel is in the board art */
+.vault-door.open .door-face { transform: perspective(520px) rotateY(82deg); opacity: .94; }
+.door-prize {
+  background: url('assets/vault-chips.webp') center / cover no-repeat #04060a;
+  justify-content: flex-end;
+  padding-bottom: 7%;
+}
+.door-prize img { display: none; } /* the compartment art replaces the flat icons */
+.vault-door.skull .door-prize { background: #05070c url('assets/vault-skullroom.webp') center / cover no-repeat; }
+.door-prize-val {
+  font-size: 20px;
+  padding: 1px 9px 0;
+  border-radius: 999px;
+  background: rgba(2, 8, 18, .74);
+  box-shadow: 0 0 12px rgba(46, 155, 255, .45), inset 0 0 0 1px rgba(111, 194, 255, .5);
+}
+
+/* ---------- VAULT ENDING BEAT (2026-11-22) ----------
+   The panel that ends every vault visit: big art, the outcome in plain
+   words, a CONTINUE button armed after a 4-second read hold (JS). It
+   covers the vault card, so the result is the last thing the player
+   sees — never a quick slam-shut. */
+.bonus-card.vault-card { position: relative; }
+.vault-end {
+  position: absolute; inset: 0; z-index: 6;
+  display: none;
+  flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px; padding: 22px 20px;
+  border-radius: inherit;
+  background: linear-gradient(172deg, rgba(10, 13, 19, .97) 0%, rgba(4, 5, 8, .985) 100%);
+  text-align: center;
+}
+.vault-end.on { display: flex; }
+.vault-end-img {
+  width: 148px; height: 148px; object-fit: contain;
+  filter: drop-shadow(0 10px 26px rgba(0, 0, 0, .8));
+  animation: vaultEndPop .45s ease-out;
+}
+@keyframes vaultEndPop { from { transform: scale(.55); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.vault-end-title { font-size: 30px; letter-spacing: .06em; color: #eaf2fb; margin: 0; }
+.vault-end-line { margin: 0; font-size: 16px; line-height: 1.45; color: #f2f6fb; max-width: 330px; }
+.vault-end-line.dim { color: #aebdd0; font-size: 14.5px; }
+.vault-end-btn { margin-top: 8px; min-width: 180px; }
+.vault-end-btn:disabled { opacity: .45; }

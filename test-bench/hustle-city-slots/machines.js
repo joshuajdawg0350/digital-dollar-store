@@ -102,7 +102,24 @@ const CLASSICS = {
      EV = 22/12 = 1.83x total bet; tiers keyed to the new wedge values. */
   wheel: [7, 0.5, 2, 0.75, 3.75, 1.5, 0.75, 2, 1, 0.5, 1.5, 0.75],
   wheelTiers: { 7: 'GRAND', 3.75: 'MAJOR', 2: 'MINOR', 1: 'MINI' },
-  wheelShare: 0.5,
+  /* v2-23 (2026-11-22): the door deals THREE bonus games at random —
+     Pick-a-Garage, the Bonus Wheel and the SKULL VAULT (below) —
+     equal thirds each; Joshua: "get different bonuses at random." */
+  wheelShare: 1 / 3,
+  vaultShare: 1 / 3,
+  /* SKULL VAULT (2026-11-22 — ported whole from Poker Luxe v17, Joshua:
+     "Add the vault as well to the Hustle City classic slot. As a bonus
+     game. The vault game the same one."): 12 doors, the 9 prizes below
+     (multiples of the TOTAL bet of the triggering spin) + 3 skulls.
+     Every door PAYS ON THE SPOT into the balance; a skull ENDS the
+     vault and never takes back what was collected; STOP ends it early
+     with a summary; every ending lands on the read-hold panel. Prize
+     scale is Classics' own, mirroring Luxe's structure (Luxe: 8.5x big
+     door / 13x total at its scale): pick-until-skull EV
+     = sum/(skulls+1) = 7.98/4 = 1.995x, set so the equal-thirds
+     behind-door blend holds the v2-22 total exactly:
+     (garage 2.15 + wheel 1.83 + vault 1.995) / 3 = 1.9917x. */
+  vault: { prizes: [5.2, 0.6, 0.45, 0.45, 0.45, 0.21, 0.21, 0.21, 0.2], skulls: 3 },
   paytable: {
     DL: { 3: 64.8, 4: 232.8, 5: 2650.8 },
     WD: { 3: 38.4, 4: 130.8, 5: 530.4 },
