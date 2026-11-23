@@ -36,9 +36,23 @@ const TIER_ORDER = ['DUCK', 'SEVEN', 'BAR3', 'BAR2', 'BAR1', 'ANYBAR', 'CHERRY3'
    documented character (frequent small wins, long sessions). Re-tuned
    2026-11-22 for the wild build: duck variants multiply the average win
    ~1.3x, so the tier weights came down to hold the same return. */
+/* v12 (Joshua, 2026-11-22 19:20 CT, from his real-phone V11 play:
+   "None of the spins are hitting" + "I haven't had one duck land in a
+   long time, at all"): the v10 "odds up" pass moved the DUCK weight
+   4 -> 10 on a 100,000 scale — one duck result per ~10,000 spins,
+   invisible in real play. V12 sets the scale Joshua's words mean:
+   DUCK 3,000 (a duck payline result ~1 in 33 spins) and total paying
+   weight 33,000 (~1 in 3 spins a hit), spread over the existing tiers
+   — more BAR1 / ANYBAR / CHERRY2, some SEVEN / BAR3, CHERRY1 still
+   the frequent small hit. Paytable amounts UNCHANGED (displayed pays
+   stay true); red-screen, pick-till-you-lose and bingo rules as v10
+   except the red award range (see redSpinCount note). Proof: 1M-spin
+   Monte Carlo per bet level through drawResult/stopFor exactly as
+   game.js calls them (../sim-v12.js) — numbers in the vault
+   BUILD-RECORD.md V12 section. */
 const TIER_WEIGHTS = {
-  DUCK: 10, SEVEN: 29, BAR3: 109, BAR2: 196, BAR1: 436,
-  ANYBAR: 1069, CHERRY3: 153, CHERRY2: 1691, CHERRY1: 9930
+  DUCK: 3000, SEVEN: 120, BAR3: 450, BAR2: 700, BAR1: 3200,
+  ANYBAR: 4200, CHERRY3: 500, CHERRY2: 5200, CHERRY1: 15630
 };
 /* Re-tuned 2026-11-22 (v7) — JOSHUA'S RULING: the machine pays out
    MORE than it takes in, RTP above 100% at BOTH bet levels, aiming
@@ -70,8 +84,9 @@ const RED_CHANCE = 0.35;       // per winning spin (v10: raised from 0.20 — se
 /* v10 (Joshua, 2026-11-22 16:44 CT — his numbers, superseding the old
    20%-continue / cap-5 chain): every time the red screen hits it awards
    AT LEAST 2 re-spins and at most 8, drawn flat random — never one.
-   RED_CHAIN_CHANCE and RED_MAX are dead and removed. */
-function redSpinCount(rng) { return 2 + Math.floor(rng() * 7); } // uniform 2..8
+   RED_CHAIN_CHANCE and RED_MAX are dead and removed. [Award range cut
+   to 2-4 by the v12 ruling below.] */
+function redSpinCount(rng) { return 2 + Math.floor(rng() * 3); } // uniform 2..4 (v12: Joshua, 2026-11-22 19:25 CT — 2 to 4 at the most, never 1, never more than 4; frequency rule unchanged, RED_CAP stays 30)
 /* v10 frequency (Joshua, 2026-11-22 16:54 CT, corrected 16:55 CT):
    a red screen at least once every 30 spins, never a longer wait.
    RED_CHANCE 0.35 per winning spin puts the natural mean gap near

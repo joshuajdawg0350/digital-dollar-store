@@ -490,8 +490,9 @@ async function playSpin() {
     let triggerPay = r.pay;
     /* v10 — Joshua's numbers (2026-11-22 16:44 CT): when the red screen
        hits (RED_CHANCE roll, or a cap spin), it awards a flat random
-       2-8 re-spins — never one. The old 20%-continue / cap-5 chain
-       is dead. */
+       batch of re-spins — never one. The old 20%-continue / cap-5 chain
+       is dead. v12 (2026-11-22 19:25 CT): the batch is 2-4 re-spins —
+       four at the most (was 2-8). */
     const redSpins = (capSpin || rng() < L.RED_CHANCE) ? L.redSpinCount(rng) : 0;
     if (redSpins > 0) { state.spinsSinceRed = 0; persist(); }
     for (let chain = 1; chain <= redSpins; chain++) {
