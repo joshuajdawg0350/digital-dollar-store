@@ -324,41 +324,77 @@ function sizeCanvas() {
 }
 window.addEventListener('resize', () => { if ($('#screen-match').classList.contains('on')) sizeCanvas(); });
 
+/* HD lane texture (1024x2048) — 3D Realism pass, 2026-11-22.
+   Texture rows map to lane z: row 0 = pit end (z=21.6), row 2048 = behind
+   the foul line (z=-1). x maps lane -0.53..+0.53 m across 39 boards. */
 function makeLaneTexture(hue) {
-  const t = document.createElement('canvas'); t.width = 512; t.height = 1024;
+  const t = document.createElement('canvas'); t.width = 1024; t.height = 2048;
   const c = t.getContext('2d');
-  const g = c.createLinearGradient(0, 0, 0, 1024);
-  g.addColorStop(0, '#070a1c'); g.addColorStop(0.55, '#0a1030'); g.addColorStop(1, '#0d1440');
-  c.fillStyle = g; c.fillRect(0, 0, 512, 1024);
+  const ty = z => (1 - (z + 1) / 21.6) * 2048;         // lane z -> texture row
+  const bx = x => (x / L.LANE.width + 0.5) * 1024;     // lane x (m) -> texture col
+  const g = c.createLinearGradient(0, 0, 0, 2048);
+  g.addColorStop(0, '#070a1c'); g.addColorStop(0.55, '#0a1030'); g.addColorStop(1, '#0e1644');
+  c.fillStyle = g; c.fillRect(0, 0, 1024, 2048);
   // nebula swirls projected on the lane
   const blob = (x, y, r, col, a) => { const rg = c.createRadialGradient(x, y, 0, x, y, r); rg.addColorStop(0, col.replace('A', a)); rg.addColorStop(1, col.replace('A', '0')); c.fillStyle = rg; c.beginPath(); c.arc(x, y, r, 0, 7); c.fill(); };
-  blob(140, 240, 210, `hsla(${hue},95%,62%,A)`, '0.34'); blob(390, 420, 240, 'hsla(315,95%,60%,A)', '0.26');
-  blob(200, 700, 260, `hsla(${(hue + 60) % 360},95%,58%,A)`, '0.24'); blob(420, 880, 180, 'hsla(190,100%,60%,A)', '0.28');
-  blob(90, 950, 150, 'hsla(280,95%,65%,A)', '0.22');
+  blob(280, 480, 420, `hsla(${hue},95%,62%,A)`, '0.32'); blob(780, 840, 480, 'hsla(315,95%,60%,A)', '0.24');
+  blob(400, 1400, 520, `hsla(${(hue + 60) % 360},95%,58%,A)`, '0.22'); blob(840, 1760, 360, 'hsla(190,100%,60%,A)', '0.26');
+  blob(180, 1900, 300, 'hsla(280,95%,65%,A)', '0.20');
   // planets on the lane surface (like the real cosmic alleys)
   const planet = (x, y, r, col) => {
     const rg = c.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.1, x, y, r);
     rg.addColorStop(0, 'rgba(255,255,255,.75)'); rg.addColorStop(0.25, col); rg.addColorStop(1, 'rgba(0,0,10,.0)');
     c.fillStyle = rg; c.beginPath(); c.arc(x, y, r, 0, 7); c.fill();
   };
-  planet(400, 180, 34, 'hsla(28,90%,58%,.55)'); planet(96, 560, 26, 'hsla(160,80%,55%,.5)'); planet(330, 1010, 40, 'hsla(200,95%,62%,.5)');
+  planet(800, 360, 68, 'hsla(28,90%,58%,.5)'); planet(192, 1120, 52, 'hsla(160,80%,55%,.45)'); planet(660, 2020, 80, 'hsla(200,95%,62%,.45)');
   // stars
-  for (let i = 0; i < 260; i++) {
+  for (let i = 0; i < 520; i++) {
     c.fillStyle = `rgba(255,255,255,${0.12 + Math.random() * 0.5})`;
-    const r = Math.random() * 1.6 + 0.4;
-    c.beginPath(); c.arc(Math.random() * 512, Math.random() * 1024, r, 0, 7); c.fill();
+    const r = Math.random() * 2.6 + 0.6;
+    c.beginPath(); c.arc(Math.random() * 1024, Math.random() * 2048, r, 0, 7); c.fill();
   }
-  // boards
-  for (let i = 0; i <= 39; i++) {
-    c.fillStyle = i % 2 ? 'rgba(120,170,255,.05)' : 'rgba(0,0,0,.10)';
-    c.fillRect(i * 512 / 39, 0, 512 / 39, 1024);
+  // 39 boards with per-board tone + grooves
+  for (let i = 0; i < 39; i++) {
+    const x0 = i * 1024 / 39;
+    c.fillStyle = i % 2 ? 'rgba(130,180,255,.055)' : 'rgba(0,0,0,.11)';
+    c.fillRect(x0, 0, 1024 / 39, 2048);
+    c.fillStyle = 'rgba(6,8,20,.35)';
+    c.fillRect(x0, 0, 1.6, 2048);
+    if (i % 5 === 4) { c.fillStyle = 'rgba(150,200,255,.13)'; c.fillRect(x0 + 1024 / 39 - 2.4, 0, 2.4, 2048); }
   }
-  c.fillStyle = 'rgba(140,190,255,.16)';
-  for (let i = 0; i <= 39; i += 5) c.fillRect(i * 512 / 39, 0, 1.4, 1024);
-  // range-finder arrows (texture v: 0 = far/pins end, 1024 = foul line end)
-  c.fillStyle = 'rgba(160,210,255,.5)';
-  const arrow = (bx, vz) => { c.beginPath(); c.moveTo(bx - 7, vz); c.lineTo(bx + 7, vz); c.lineTo(bx, vz + 26); c.closePath(); c.fill(); };
-  [64, 128, 192, 256, 320, 384, 448].forEach((bx, i) => arrow(bx, 700 - Math.abs(3 - i) * 22));
+  // oil sheen: glossy heads/mid-lane that fades before the backends
+  const oil = c.createLinearGradient(0, ty(13.5), 0, ty(-0.2));
+  oil.addColorStop(0, 'rgba(170,215,255,0)'); oil.addColorStop(0.55, 'rgba(170,215,255,.075)'); oil.addColorStop(1, 'rgba(190,225,255,.13)');
+  c.fillStyle = oil; c.fillRect(0, ty(13.5), 1024, ty(-0.2) - ty(13.5));
+  // range-finder arrows at ~4.6 m (tips toward the pins) + dots at ~2.3 m and ~8.6 m
+  c.fillStyle = 'rgba(165,215,255,.55)';
+  const arrow = (board, z) => {
+    const x = (board + 0.5) * 1024 / 39, y = ty(z), wdt = 15, len = 64 + (board === 19 ? 16 : 0);
+    c.beginPath(); c.moveTo(x - wdt, y); c.lineTo(x + wdt, y); c.lineTo(x, y - len); c.closePath(); c.fill();
+  };
+  [4, 9, 14, 19, 24, 29, 34].forEach((b, i) => arrow(b, 4.35 + Math.abs(3 - i) * 0.28));
+  const dot = (board, z) => { c.beginPath(); c.arc((board + 0.5) * 1024 / 39, ty(z), 9, 0, 7); c.fill(); };
+  [9, 14, 19, 24, 29].forEach(b => dot(b, 2.3));
+  [4, 14, 24, 34].forEach(b => dot(b, 8.6));
+  // foul line — a hard glowing edge at z=0
+  c.fillStyle = 'rgba(10,12,26,.9)'; c.fillRect(0, ty(0), 1024, 2048 - ty(0));       // approach: darker
+  c.fillStyle = 'rgba(120,220,255,.85)'; c.fillRect(0, ty(0) - 3, 1024, 5);
+  c.fillStyle = 'rgba(120,220,255,.20)'; c.fillRect(0, ty(0) - 12, 1024, 9);
+  [9, 14, 19, 24, 29].forEach(b => dot(b, -0.55));                                   // approach dots
+  // pin deck: lighter surface + dark pin spots where the rack stands
+  const deckG = c.createLinearGradient(0, ty(19.95), 0, ty(17.8));
+  deckG.addColorStop(0, 'rgba(190,215,255,.16)'); deckG.addColorStop(1, 'rgba(190,215,255,.03)');
+  c.fillStyle = deckG; c.fillRect(0, ty(19.95), 1024, ty(17.8) - ty(19.95));
+  c.fillStyle = 'rgba(5,6,16,.5)';
+  for (const n in L.rackPositions()) {
+    const [px2, pz2] = L.rackPositions()[n];
+    c.beginPath(); c.arc(bx(px2), ty(pz2), 15, 0, 7); c.fill();
+  }
+  // pit: near-black cushion with pad seams
+  c.fillStyle = '#02030a'; c.fillRect(0, 0, 1024, ty(19.95));
+  c.fillStyle = 'rgba(90,110,170,.25)';
+  for (let i = 1; i < 5; i++) c.fillRect(i * 1024 / 5, 0, 2, ty(19.95));
+  c.fillStyle = 'rgba(56,182,255,.35)'; c.fillRect(0, ty(19.95) - 2, 1024, 3);
   return t;
 }
 function proj(x, z) {
@@ -376,42 +412,99 @@ function spawnParticles(x, z, n, color, spread) {
     life: 1, color, size: 0.008 + Math.random() * 0.016,
   });
 }
-function drawPinShape(c, hgt, fallen, fallA) {
-  const wdt = hgt * 0.36;
-  c.save();
-  if (fallen) { c.rotate(fallA); c.translate(0, -hgt * 0.1); }
-  const grad = c.createLinearGradient(-wdt, 0, wdt, 0);
-  grad.addColorStop(0, '#aebadd'); grad.addColorStop(0.32, '#ffffff'); grad.addColorStop(0.62, '#dfe8ff'); grad.addColorStop(1, '#8fa0c8');
-  c.fillStyle = grad;
-  c.beginPath();
-  c.moveTo(-wdt * 0.52, 0);
-  c.bezierCurveTo(-wdt * 0.58, -hgt * 0.30, -wdt * 0.30, -hgt * 0.42, -wdt * 0.21, -hgt * 0.60);
-  c.bezierCurveTo(-wdt * 0.13, -hgt * 0.72, -wdt * 0.30, -hgt * 0.78, -wdt * 0.27, -hgt * 0.90);
-  c.bezierCurveTo(-wdt * 0.24, -hgt * 1.0, wdt * 0.24, -hgt * 1.0, wdt * 0.27, -hgt * 0.90);
-  c.bezierCurveTo(wdt * 0.30, -hgt * 0.78, wdt * 0.13, -hgt * 0.72, wdt * 0.21, -hgt * 0.60);
-  c.bezierCurveTo(wdt * 0.30, -hgt * 0.42, wdt * 0.58, -hgt * 0.30, wdt * 0.52, 0);
-  c.closePath(); c.fill();
-  if (!fallen) { // chrome-blue neck stripes under UV
-    c.fillStyle = '#38b6ff';
-    c.fillRect(-wdt * 0.235, -hgt * 0.70, wdt * 0.47, hgt * 0.045);
-    c.fillRect(-wdt * 0.245, -hgt * 0.635, wdt * 0.49, hgt * 0.045);
-  }
+/* ---------- 3D models (Realism package) ----------
+   Pins are true lathe models: a real pin profile (height/radius rings)
+   projected ring by ring, lit by a fixed key light, tipping in 3D along
+   the physics fall direction. The ball is a shaded sphere with rotating
+   finger holes and surface bands. Shadows are soft sprites projected on
+   the lane from the same light. */
+const shadowSprite = (() => {
+  const t = document.createElement('canvas'); t.width = t.height = 128;
+  const c = t.getContext('2d');
+  const g = c.createRadialGradient(64, 64, 4, 64, 64, 62);
+  g.addColorStop(0, 'rgba(0,0,10,0.88)'); g.addColorStop(0.55, 'rgba(0,0,10,0.42)'); g.addColorStop(1, 'rgba(0,0,10,0)');
+  c.fillStyle = g; c.fillRect(0, 0, 128, 128);
+  return t;
+})();
+function groundShadow(c, x, y, rx, ry, alpha) {
+  c.save(); c.globalAlpha = alpha;
+  c.drawImage(shadowSprite, x - rx, y - ry, rx * 2, ry * 2);
   c.restore();
 }
-function drawBallShape(c, px, py, r, def, dist, airborne) {
+const PIN_PROFILE = [ // [height m, radius m] — a real pin's silhouette, base -> crown
+  [0.000, 0.001], [0.000, 0.040], [0.006, 0.049], [0.030, 0.056], [0.070, 0.0605],
+  [0.115, 0.0605], [0.160, 0.053], [0.205, 0.040], [0.238, 0.0325], [0.262, 0.0315],
+  [0.290, 0.0355], [0.320, 0.0355], [0.350, 0.028], [0.368, 0.017], [0.381, 0.001],
+];
+function pinAxis(p) {
+  if (!p.down) return { x: 0, y: 1, z: 0 };
+  const f = p.fallT === undefined ? 1 : Math.min(1, Math.max(0, p.fallT));
+  const ang = 1.80 * f * f;   // tips over with gravity's ease-in, ends just past flat
+  const a = (p.fallA !== undefined) ? p.fallA : 0.8;
+  return { x: Math.sin(ang) * Math.sin(a), y: Math.cos(ang), z: Math.sin(ang) * Math.cos(a) };
+}
+function drawPin3D(c, p) {
+  const axis = pinAxis(p);
+  const rings = PIN_PROFILE.map(([h, r]) => {
+    const wx = p.x + axis.x * h, wz = p.z + axis.z * h;
+    const g = proj(wx, wz);
+    const sc = laneHalfPx(wz) / 0.53;               // px per metre at that depth
+    return { x: g.x, y: g.y - axis.y * h * sc, r: Math.max(0.4, r * sc), h };
+  });
+  const top = rings[rings.length - 1], base = rings[0];
+  let ax = top.x - base.x, ay = top.y - base.y;
+  const alen = Math.hypot(ax, ay) || 1; ax /= alen; ay /= alen;
+  const px = -ay, py = ax;                          // silhouette direction on screen
+  for (let i = 0; i < rings.length - 1; i++) {
+    const r0 = rings[i], r1 = rings[i + 1];
+    c.beginPath();
+    c.moveTo(r0.x - px * r0.r, r0.y - py * r0.r);
+    c.lineTo(r1.x - px * r1.r, r1.y - py * r1.r);
+    c.lineTo(r1.x + px * r1.r, r1.y + py * r1.r);
+    c.lineTo(r0.x + px * r0.r, r0.y + py * r0.r);
+    c.closePath();
+    if (r0.h >= 0.205 && r0.h < 0.262) {
+      c.fillStyle = '#2fb9ff';                       // UV neck stripes
+    } else {
+      const g = c.createLinearGradient(r0.x - px * r0.r, r0.y - py * r0.r, r0.x + px * r0.r, r0.y + py * r0.r);
+      g.addColorStop(0, '#828fb4'); g.addColorStop(0.30, '#ffffff'); g.addColorStop(0.55, '#e9efff'); g.addColorStop(1, '#727f9e');
+      c.fillStyle = g;
+    }
+    c.fill();
+  }
+  if (p.down) { // base cap, visible once tipped
+    c.save();
+    c.translate(base.x, base.y); c.rotate(Math.atan2(ay, ax) + Math.PI / 2);
+    c.fillStyle = '#5d6a88';
+    c.beginPath(); c.ellipse(0, 0, Math.max(0.5, rings[0].r), Math.max(0.3, rings[0].r * 0.38), 0, 0, 7); c.fill();
+    c.restore();
+  }
+}
+function drawBall3D(c, px, py, r, def, dist) {
   c.save();
-  if (airborne) { c.fillStyle = 'rgba(0,0,0,.45)'; c.beginPath(); c.ellipse(px, py + r * 0.4, r * 0.9, r * 0.32, 0, 0, 7); c.fill(); c.translate(0, -r * 0.55); }
-  c.shadowColor = def.skin.glow; c.shadowBlur = 20;
-  const g = c.createRadialGradient(px - r * 0.35, py - r * 0.4, r * 0.1, px, py, r);
-  g.addColorStop(0, '#ffffff'); g.addColorStop(0.22, def.skin.base); g.addColorStop(0.75, def.skin.swirl); g.addColorStop(1, '#02030a');
+  c.shadowColor = def.skin.glow; c.shadowBlur = 18;
+  const g = c.createRadialGradient(px - r * 0.38, py - r * 0.42, r * 0.08, px, py, r * 1.03);
+  g.addColorStop(0, '#ffffff'); g.addColorStop(0.20, def.skin.base); g.addColorStop(0.62, def.skin.swirl); g.addColorStop(0.88, '#05060f'); g.addColorStop(1, '#02030a');
   c.fillStyle = g; c.beginPath(); c.arc(px, py, r, 0, 7); c.fill();
   c.shadowBlur = 0;
+  // rolling surface bands
   c.strokeStyle = def.skin.glow; c.globalAlpha = 0.75; c.lineWidth = Math.max(1.4, r * 0.07);
   c.beginPath(); c.arc(px, py, r * 0.62, dist * 2.2, dist * 2.2 + 4.4); c.stroke();
   c.globalAlpha = 0.5; c.beginPath(); c.arc(px, py, r * 0.34, -dist * 3.1, -dist * 3.1 + 3.6); c.stroke();
   c.globalAlpha = 1;
-  c.fillStyle = 'rgba(255,255,255,.9)';
-  c.beginPath(); c.arc(px - r * 0.34, py - r * 0.4, r * 0.10, 0, 7); c.fill();
+  // finger holes, rotating with the roll
+  const ha = dist * 2.2;
+  for (let k = 0; k < 3; k++) {
+    const a = ha + k * 2.1;
+    const hx = px + Math.cos(a) * r * 0.36, hy = py + Math.sin(a) * r * 0.30;
+    const fade = 0.30 + 0.70 * Math.max(0, Math.cos(a - 0.7));
+    c.fillStyle = `rgba(2,3,10,${0.25 + 0.55 * fade})`;
+    c.beginPath(); c.arc(hx, hy, Math.max(1, r * 0.085), 0, 7); c.fill();
+  }
+  // specular highlight from the key light
+  const sg = c.createRadialGradient(px - r * 0.36, py - r * 0.44, 0, px - r * 0.36, py - r * 0.44, r * 0.32);
+  sg.addColorStop(0, 'rgba(255,255,255,0.95)'); sg.addColorStop(1, 'rgba(255,255,255,0)');
+  c.fillStyle = sg; c.beginPath(); c.arc(px - r * 0.36, py - r * 0.44, r * 0.32, 0, 7); c.fill();
   c.restore();
 }
 function drawScene(now) {
@@ -428,33 +521,62 @@ function drawScene(now) {
   ctx.shadowColor = '#38b6ff'; ctx.shadowBlur = 16; ctx.fillStyle = '#cfe9ff';
   ctx.fillText('H U S T L E   C I T Y', W / 2, deckY - H * 0.012);
   ctx.restore();
-  // lane surface in perspective strips
+  // masking units flanking the sign — slim glow panels, kept clear of the lettering
+  ctx.save();
+  for (const sgn of [-1, 1]) {
+    const mx = W / 2 + sgn * W * 0.415, mw = W * 0.15, my = deckY - H * 0.052, mh = headY - deckY + H * 0.052;
+    ctx.fillStyle = 'rgba(16,10,34,.88)';
+    ctx.beginPath(); ctx.roundRect(mx - mw / 2, my, mw, mh, 5); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,79,216,.38)'; ctx.lineWidth = 1.2; ctx.stroke();
+    const pg = ctx.createRadialGradient(mx, my + mh * 0.5, 1, mx, my + mh * 0.5, mw * 0.55);
+    pg.addColorStop(0, 'rgba(255,79,216,.20)'); pg.addColorStop(1, 'rgba(255,79,216,0)');
+    ctx.fillStyle = pg;
+    ctx.beginPath(); ctx.arc(mx, my + mh * 0.5, mw * 0.55, 0, 7); ctx.fill();
+  }
+  ctx.restore();
+  // lane surface in perspective strips (HD texture)
   if (laneTex) {
-    const strips = 56, z0 = -1.0, z1 = 20.6;
+    const strips = 72, z0 = -1.0, z1 = 20.6;
     for (let i = 0; i < strips; i++) {
       const za = z0 + (z1 - z0) * i / strips, zb = z0 + (z1 - z0) * (i + 1) / strips;
       const pa = proj(0, za), pb = proj(0, zb);
       const wa = laneHalfPx(za) / 0.53, wb = laneHalfPx(zb) / 0.53;
-      const va = (1 - (za + 1) / 21.6) * 1024, vb = (1 - (zb + 1) / 21.6) * 1024;
+      const va = (1 - (za + 1) / 21.6) * 2048, vb = (1 - (zb + 1) / 21.6) * 2048;
       ctx.save();
       ctx.beginPath();
       ctx.moveTo(pa.x - 0.53 * wa, pa.y); ctx.lineTo(pa.x + 0.53 * wa, pa.y);
       ctx.lineTo(pb.x + 0.53 * wb, pb.y); ctx.lineTo(pb.x - 0.53 * wb, pb.y);
       ctx.closePath(); ctx.clip();
-      ctx.drawImage(laneTex, 0, vb, 512, Math.max(1, va - vb), pa.x - 0.53 * wa, pb.y - 1, 0.53 * wa + 0.53 * wb, (pa.y - pb.y) + 2);
+      ctx.drawImage(laneTex, 0, vb, 1024, Math.max(1, va - vb), pa.x - 0.53 * wa, pb.y - 1, 0.53 * wa + 0.53 * wb, (pa.y - pb.y) + 2);
       ctx.restore();
     }
-    // gutters
+    // gutters: dark channel + chrome rail + neon edge
     for (const sgn of [-1, 1]) {
       const p1 = proj(sgn * 0.545, -1), p2 = proj(sgn * 0.545, 20.2), p3 = proj(sgn * 0.70, 20.2), p4 = proj(sgn * 0.70, -1);
-      ctx.fillStyle = '#0a0e22';
+      const gg = ctx.createLinearGradient(p1.x, 0, p4.x, 0);
+      gg.addColorStop(0, '#05060f'); gg.addColorStop(0.5, '#131a38'); gg.addColorStop(1, '#04050c');
+      ctx.fillStyle = gg;
       ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y); ctx.lineTo(p4.x, p4.y); ctx.closePath(); ctx.fill();
-      ctx.strokeStyle = 'rgba(56,182,255,.5)'; ctx.lineWidth = 1.4;
+      const r1 = proj(sgn * 0.70, -1), r2 = proj(sgn * 0.70, 20.2), r3 = proj(sgn * 0.79, 20.2), r4 = proj(sgn * 0.79, -1);
+      ctx.fillStyle = '#1a2138';
+      ctx.beginPath(); ctx.moveTo(r1.x, r1.y); ctx.lineTo(r2.x, r2.y); ctx.lineTo(r3.x, r3.y); ctx.lineTo(r4.x, r4.y); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = 'rgba(200,225,255,.35)'; ctx.lineWidth = 1.1;
+      ctx.beginPath(); ctx.moveTo(r1.x, r1.y); ctx.lineTo(r2.x, r2.y); ctx.stroke();
+      ctx.strokeStyle = 'rgba(56,182,255,.55)'; ctx.lineWidth = 1.4;
       ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
     }
+    // pin-deck light pool
+    ctx.save(); ctx.globalCompositeOperation = 'screen';
+    const dg = ctx.createRadialGradient(W / 2, headY, 4, W / 2, headY, W * 0.30);
+    dg.addColorStop(0, 'rgba(150,190,255,.20)'); dg.addColorStop(1, 'rgba(150,190,255,0)');
+    ctx.fillStyle = dg; ctx.fillRect(W / 2 - W * 0.30, headY - W * 0.10, W * 0.60, W * 0.24);
+    ctx.restore();
   }
-  // disco light spots sweeping
+  // lighting: a fixed key-light cone from upper-left + sweeping disco spots
   ctx.save(); ctx.globalCompositeOperation = 'screen';
+  const kg = ctx.createRadialGradient(W * 0.16, H * 0.02, 10, W * 0.16, H * 0.02, W * 0.85);
+  kg.addColorStop(0, 'rgba(190,220,255,.13)'); kg.addColorStop(1, 'rgba(190,220,255,0)');
+  ctx.fillStyle = kg; ctx.fillRect(0, 0, W, H);
   for (let i = 0; i < 2; i++) {
     const lx = W * (0.5 + 0.38 * Math.sin(now / 3400 + i * 2.6)), ly = H * (0.55 + 0.2 * Math.cos(now / 2900 + i * 1.7));
     const rg = ctx.createRadialGradient(lx, ly, 0, lx, ly, W * 0.24);
@@ -483,17 +605,34 @@ function drawScene(now) {
     ctx.beginPath(); ctx.moveTo(0, -11); ctx.lineTo(7, 5); ctx.lineTo(-7, 5); ctx.closePath(); ctx.fill();
     ctx.restore();
   }
-  // pins (far to near)
+  // ground shadows (light falls from upper-left: shadows lean right/back)
+  for (const p of view.pins) {
+    if (p.gone) continue;
+    const gp = proj(p.x, p.z), sc = laneHalfPx(p.z) / 0.53;
+    groundShadow(ctx, gp.x + 0.05 * sc * 0.4, gp.y, 0.075 * sc, 0.030 * sc, 0.50);
+    if (p.down) {
+      const axis = pinAxis(p);
+      const tip = proj(p.x + axis.x * 0.34, p.z + axis.z * 0.34);
+      groundShadow(ctx, tip.x + 0.05 * sc * 0.4, tip.y, 0.070 * sc, 0.028 * sc, 0.34);
+    }
+  }
+  if (view.ball) {
+    const b = view.ball, gp = proj(b.x, b.z);
+    const r = Math.max(2.2, L.LANE.ballR * (laneHalfPx(b.z) / 0.53));
+    groundShadow(ctx, gp.x + r * 0.22, gp.y + r * 0.10, r * (b.airborne ? 0.80 : 0.98), r * 0.36, b.airborne ? 0.30 : 0.52);
+    // glossy lane reflection under the ball
+    ctx.save(); ctx.globalCompositeOperation = 'screen'; ctx.globalAlpha = 0.16;
+    ctx.fillStyle = b.def.skin.glow;
+    ctx.beginPath(); ctx.ellipse(gp.x, gp.y + r * 0.34, r * 0.55, r * 0.16, 0, 0, 7); ctx.fill();
+    ctx.restore();
+  }
+  // pins (far to near) — 3D lathe models
   const pinsSorted = [...view.pins].sort((a, b) => b.z - a.z);
   for (const p of pinsSorted) {
     if (p.gone && p.down) continue;
-    const pr = proj(p.x, p.z), hgt = 0.717 * laneHalfPx(p.z) * 2 * 0.5 + 6;
-    const pinH = (0.38 / 1.06) * (2 * laneHalfPx(p.z));
     ctx.save();
-    ctx.translate(pr.x, pr.y);
-    ctx.shadowColor = 'rgba(190,140,255,.8)'; ctx.shadowBlur = p.down ? 0 : 9;
-    if (p.down) { ctx.globalAlpha = 0.92; drawPinShape(ctx, pinH, true, (p.renderFall || 0.8)); }
-    else drawPinShape(ctx, pinH, false, 0);
+    if (p.down) ctx.globalAlpha = 0.96;
+    drawPin3D(ctx, p);
     ctx.restore();
   }
   // particles
@@ -504,11 +643,12 @@ function drawScene(now) {
     ctx.beginPath(); ctx.arc(pr.x, pr.y, Math.max(0.6, pt.size * laneHalfPx(pt.z) * 2), 0, 7); ctx.fill();
     ctx.restore();
   }
-  // ball
+  // ball — shaded 3D sphere resting on the lane surface
   if (view.ball) {
     const b = view.ball, pr = proj(b.x, b.z);
     const r = Math.max(2.2, L.LANE.ballR * (laneHalfPx(b.z) / 0.53));
-    drawBallShape(ctx, pr.x, pr.y, r, b.def, b.dist || 0, b.airborne);
+    const cy = pr.y - r * 0.92 - (b.airborne ? r * 0.55 : 0);
+    drawBall3D(ctx, pr.x, cy, r, b.def, b.dist || 0);
   }
   // hook meter during pull-back
   if (view.phase === 'pullback' && view.pull) {
@@ -541,6 +681,10 @@ function renderLoop(now) {
   // step particles
   for (const pt of view.particles) { pt.x += pt.vx * 0.016; pt.z += pt.vz * 0.016; pt.life -= 0.022; }
   view.particles = view.particles.filter(p => p.life > 0);
+  // advance pin tip-over animation
+  const dtF = Math.min(0.05, ((now || 0) - (view._lastNow || now || 0)) / 1000 || 0.016);
+  view._lastNow = now || 0;
+  for (const p of view.pins) if (p.down && p.fallT !== undefined && p.fallT < 1) p.fallT = Math.min(1, p.fallT + dtF * 3.4);
   drawScene(now || 0);
   if (rollAnim.active) stepRollAnim();
   requestAnimationFrame(renderLoop);
@@ -765,7 +909,12 @@ function stepRollAnim() {
       else if (e.type === 'land') AU.thud();
       else if (e.type === 'pinfall') {
         const p = ts.pins.find(q => q.n === e.pin);
-        if (p) { p.renderFall = Math.atan2(p.vx, p.vz) + Math.PI / 2; spawnParticles(p.x, p.z, 5, '#b18cff', 0.16); }
+        if (p) {
+          p.renderFall = Math.atan2(p.vx, p.vz) + Math.PI / 2;
+          p.fallA = Math.atan2(p.vx, p.vz);   // 3D tip-over follows the hit direction
+          p.fallT = 0;
+          spawnParticles(p.x, p.z, 5, '#b18cff', 0.16);
+        }
       }
     }
     ts.events.length = 0;
@@ -784,7 +933,8 @@ function stepRollAnim() {
   }
 }
 
-/* ================= aim phase (human input) ================= */
+/* ================= aim phase (human input) =================
+   (the gesture handlers live below aimPhase — see the input block) */
 function aimPhase(rec, standing, first) {
   return new Promise(resolve => {
     const stats = rec.stats;
@@ -816,62 +966,102 @@ function aimPhase(rec, standing, first) {
   });
 }
 
-const input = { mode: null, pid: null, lastX: 0, lastY: 0, startPX: 0, startPY: 0, samples: [], pullStartT: 0, aimResolve: null, aimStats: null, aimDef: null };
+/* Gesture input — REWRITTEN 2026-11-22 for real fingers.
+   The old chain failed on phones three ways: (1) the throw only armed
+   after a 20-34px pull-down begun inside a small circle on the ball —
+   touches starting anywhere else were trapped in 'rotate' forever, and a
+   shallow natural dip never armed at all; (2) samples were recorded only
+   in pull-back mode and the flick parser demanded dense pointermove
+   samples inside a 300 ms window, but touch browsers deliver sparse,
+   coalesced moves (and none while the finger holds still), so even a
+   textbook pull-hold-flick starved the parser and was rejected; (3) a
+   second finger could steal the pointer id mid-gesture. Result, in
+   Joshua's words: "you can move it side to side, but you can't roll it."
+   Now: every sample of the gesture is recorded (coalesced events
+   unpacked, event timeStamps kept), position/aim follow the drag from
+   any start point, a 10px dip arms the pull-back, and the release is
+   read by L.parseThrow from the shape of the whole gesture. */
+const input = { pid: null, mode: null, samples: [], minY: 0, maxY: 0, armT: 0, aimResolve: null, aimStats: null, aimDef: null };
 function canvasPos(e) {
   const r = cv.getBoundingClientRect();
   return { x: e.clientX - r.left, y: e.clientY - r.top };
+}
+function pushSamples(e) {
+  let list = null;
+  try { list = (typeof e.getCoalescedEvents === 'function') ? e.getCoalescedEvents() : null; } catch (err) {}
+  const evs = (list && list.length) ? list : [e];
+  const r = cv.getBoundingClientRect();
+  let p = null;
+  for (const ce of evs) {
+    p = { x: ce.clientX - r.left, y: ce.clientY - r.top, t: ce.timeStamp || e.timeStamp || performance.now() };
+    input.samples.push(p);
+    if (p.y < input.minY) input.minY = p.y;
+    if (p.y > input.maxY) input.maxY = p.y;
+  }
+  if (input.samples.length > 300) input.samples.splice(0, input.samples.length - 300);
+  return p;
 }
 cv.addEventListener('pointerdown', e => {
   AU.ensure();
   if (rollAnim.active && rollAnim.side === 'ai') { rollAnim.scale = 2.8; return; }
   if (view.phase !== 'aim' || !view.aim) return;
-  const p = canvasPos(e);
+  if (input.pid !== null) return;                    // one finger runs the throw
+  e.preventDefault();
+  input.pid = e.pointerId;
+  input.samples = [];
+  input.armT = 0;
+  const p = pushSamples(e);
+  input.minY = input.maxY = p.y;
   const bp = proj(view.aim.startX, -0.4);
-  input.pid = e.pointerId; input.lastX = p.x; input.lastY = p.y;
-  input.startPX = p.x; input.startPY = p.y;
-  input.mode = Math.hypot(p.x - bp.x, p.y - bp.y) < 72 ? 'maybe' : 'rotate';
-  input.samples = [{ x: p.x, y: p.y, t: performance.now() }];
-  cv.setPointerCapture(e.pointerId);
+  // near the ball = positioning grip; anywhere else still aims — and
+  // EITHER start can pull back and throw. No dead zones.
+  input.mode = Math.hypot(p.x - bp.x, p.y - bp.y) < 84 ? 'ball' : 'lane';
+  try { cv.setPointerCapture(e.pointerId); } catch (err) {}
 });
 cv.addEventListener('pointermove', e => {
-  if (input.pid !== e.pointerId || !input.mode || !view.aim) return;
-  const p = canvasPos(e);
-  const dx = p.x - input.lastX, dy = p.y - input.lastY;
-  const cumDx = p.x - input.startPX, cumDy = p.y - input.startPY;
-  if (input.mode === 'maybe') {
-    if (cumDy > 20) { input.mode = 'pullback'; input.pullStartT = performance.now(); view.phase = 'pullback'; view.pull = { startT: input.pullStartT, stats: input.aimStats }; }
-    else if (Math.abs(cumDx) > 8) input.mode = 'position';
-  } else if (input.mode === 'position' && cumDy > 34) {
-    // slid into a pull-back from a positioning drag — same throw gesture
-    input.mode = 'pullback'; input.pullStartT = performance.now(); view.phase = 'pullback'; view.pull = { startT: input.pullStartT, stats: input.aimStats };
+  if (input.pid !== e.pointerId || !view.aim) return;
+  const prevIdx = input.samples.length - 1;
+  const prev = input.samples[prevIdx];
+  const p = pushSamples(e);
+  if (!p) return;
+  // arming: a 10px dip below the gesture's highest point starts the
+  // pull-back and the hook needle — from any start, any grip.
+  if (!input.armT && input.maxY - input.minY >= 10) {
+    input.armT = p.t;
+    view.phase = 'pullback';
+    view.pull = { startT: input.armT, stats: input.aimStats };
   }
-  if (input.mode === 'position') {
-    const mPerPx = 0.53 / laneHalfPx(-0.4);
-    view.aim.startX = Math.max(-0.45, Math.min(0.45, view.aim.startX + dx * mPerPx));
-    view.ball.x = view.aim.startX;
-  } else if (input.mode === 'rotate') {
-    view.aim.angleDeg = Math.max(-8, Math.min(8, view.aim.angleDeg + dx * 0.030));
-  } else if (input.mode === 'pullback') {
-    input.samples.push({ x: p.x, y: p.y, t: performance.now() });
-    if (input.samples.length > 90) input.samples.shift();
+  const rising = input.maxY - p.y > 12;              // the flick is under way — freeze the aim
+  if (!rising && prev) {
+    const dx = p.x - prev.x;
+    if (input.mode === 'ball') {
+      const mPerPx = 0.53 / laneHalfPx(-0.4);
+      view.aim.startX = Math.max(-0.45, Math.min(0.45, view.aim.startX + dx * mPerPx));
+      view.ball.x = view.aim.startX;
+    } else {
+      view.aim.angleDeg = Math.max(-8, Math.min(8, view.aim.angleDeg + dx * 0.030));
+    }
   }
-  input.lastX = p.x; input.lastY = p.y;
 });
 function endPointer(e) {
   if (input.pid !== e.pointerId) return;
-  const mode = input.mode; input.mode = null; input.pid = null;
-  if (mode !== 'pullback' || !input.aimResolve) { if (view.phase === 'pullback') view.phase = 'aim'; return; }
-  const p = canvasPos(e);
-  input.samples.push({ x: p.x, y: p.y, t: performance.now() });
-  const flick = L.parseFlick(input.samples);
+  input.pid = null;
+  const wasPullback = view.phase === 'pullback';
+  try { if (e.clientX !== undefined) pushSamples(e); } catch (err) {}
   view.phase = 'aim'; view.pull = null;
-  if (!flick) { setHint('That was a drag, not a throw — pull down, hold, then <b>swipe up fast</b>.'); return; }
-  const needle = L.needleValue(((flick.from ? flick.from.t : performance.now()) - input.pullStartT) / 1000, input.aimStats.hookControl);
+  if (!input.aimResolve) return;
+  const th = L.parseThrow(input.samples);
+  if (!th) {
+    if (wasPullback) setHint('Pull down, then <b>swipe up</b> — the swipe up is the throw.');
+    return;
+  }
+  const t0 = input.armT || (input.samples[0] && input.samples[0].t) || th.from.t;
+  const needle = L.needleValue((th.from.t - t0) / 1000, input.aimStats.hookControl);
   const hook = L.effectiveHook(needle, input.aimStats);
   const params = {
     startX: view.aim.startX,
-    angleDeg: Math.max(-9, Math.min(9, view.aim.angleDeg + flick.errDeg)),
-    power: flick.power, hook, loft: flick.loft,
+    angleDeg: Math.max(-9, Math.min(9, view.aim.angleDeg + th.errDeg)),
+    power: th.power, hook, loft: th.loft,
   };
   if (S.tutorial < 3) { S.tutorial = 3; save(); }
   const res = input.aimResolve; res(params);

@@ -15,7 +15,7 @@ const LANE = {
   pitZ: 20.4,
   ballR: 0.108,
   pinR: 0.0605,
-  pinMass: 1.55,
+  pinMass: 1.38,
   pinSpacing: 0.3048,   // 12 in centre to centre
   rowDepth: 0.2639,     // spacing * sin(60deg)
 };
@@ -158,7 +158,10 @@ function scoreSoFar(rolls, rackSizes) {
    presented in perspective by the renderer. Pins are physics bodies:
    velocity transfer, pin-on-pin collisions, kickback bounces. */
 function ballMass(stats) { return 3.4 + stats.weight * 0.32; }        // ~6.9 (W11) .. ~9.2 (W18)
-function pinExitBoost(ballDef) { return ballDef.type === 'Bounce' ? 1.24 : 1.0; }
+/* Pins leave the ball HOT — Joshua's order (2026-11-22): "the pin scattering
+   hard when the ball hits." Every ball throws pins; Bounce balls throw them
+   hardest. The multiplier is applied to the pin's exit velocity only. */
+function pinExitBoost(ballDef) { return ballDef.type === 'Bounce' ? 1.30 : 1.10; }
 
 /* params: { startX, angleDeg, power 0..1, hook -1..1, loft 0..1 }
    stats: effective ball stats (ballStatsAt). alley: { hookFactor }. */
@@ -191,7 +194,7 @@ function stepThrow(st, dt) {
       const zf = b.z / LANE.headPinZ;
       const phase = zf < 0.38 ? 0.12 : zf < 0.76 ? 1.0 : 0.30;
       b.vx += -st.hook * st.maxHookAccel * phase * dt;   // +hook bends left (right-hand hook)
-      b.vz -= 0.38 * dt;                                  // lane friction
+      b.vz -= 0.55 * dt;                                  // lane friction — a dribbled ball dies out; a driven ball arrives hot
     }
     if (Math.abs(b.x) > LANE.halfWidth + 0.015 && !b.airborne) {
       b.inGutter = true; b.x = Math.sign(b.x) * LANE.gutterCentre; b.vx = 0;
@@ -208,17 +211,17 @@ function stepThrow(st, dt) {
     const sp = Math.hypot(p.vx, p.vz);
     if (sp > 0.001) {
       p.x += p.vx * dt; p.z += p.vz * dt;
-      const damp = Math.exp(-1.8 * dt);
+      const damp = Math.exp(-1.05 * dt);   // pins stay live and travel — hard scatter
       p.vx *= damp; p.vz *= damp;
       if (Math.hypot(p.vx, p.vz) < 0.05) { p.vx = 0; p.vz = 0; }
     }
-    // kickbacks: pins bounce off the side walls and stay dangerous
-    if (Math.abs(p.x) > 0.60) { p.x = Math.sign(p.x) * 0.60; p.vx = -p.vx * 0.5; }
+    // kickbacks: pins bounce hard off the side walls and stay dangerous
+    if (Math.abs(p.x) > 0.60) { p.x = Math.sign(p.x) * 0.60; p.vx = -p.vx * 0.66; }
     if (p.z > LANE.pitZ || Math.abs(p.x) > 0.72) p.gone = true;
-    // a pin topples when it was genuinely hit, or shoved well off its spot;
-    // a slow nudge that just slides it a few cm leaves it standing
-    if (!p.down && ((Math.hypot(p.x - p.ox, p.z - p.oz) > 0.085 && p.peak > 0.9) ||
-                    Math.hypot(p.x - p.ox, p.z - p.oz) > 0.17 || p.gone)) {
+    // a pin topples when it was genuinely hit, or shoved off its spot by a
+    // flying neighbour; only the softest brush leaves it standing
+    if (!p.down && ((Math.hypot(p.x - p.ox, p.z - p.oz) > 0.065 && p.peak > 0.85) ||
+                    Math.hypot(p.x - p.ox, p.z - p.oz) > 0.14 || p.gone)) {
       p.down = true; ev.push({ type: 'pinfall', pin: p.n });
     }
   }
@@ -233,7 +236,7 @@ function stepThrow(st, dt) {
         const d = Math.sqrt(d2), nx = dx / d, nz = dz / d;
         const rvn = (p.vx - b.vx) * nx + (p.vz - b.vz) * nz;
         if (rvn < 0) {
-          const e = 0.50, j = -(1 + e) * rvn / (1 / mb + 1 / mp);
+          const e = 0.64, j = -(1 + e) * rvn / (1 / mb + 1 / mp);
           b.vx -= j / mb * nx; b.vz -= j / mb * nz;
           p.vx += j / mp * nx * boost; p.vz += j / mp * nz * boost;
           const overlap = rr - d;
@@ -257,7 +260,7 @@ function stepThrow(st, dt) {
         const d = Math.sqrt(d2), nx = dx / d, nz = dz / d;
         const rvn = (c.vx - a.vx) * nx + (c.vz - a.vz) * nz;
         if (rvn < 0) {
-          const e = 0.60, j = -(1 + e) * rvn / (2 / LANE.pinMass);
+          const e = 0.71, j = -(1 + e) * rvn / (2 / LANE.pinMass);
           a.vx -= j / LANE.pinMass * nx; a.vz -= j / LANE.pinMass * nz;
           c.vx += j / LANE.pinMass * nx; c.vz += j / LANE.pinMass * nz;
           const push = (rr - d) / 2;
@@ -305,6 +308,51 @@ function parseFlick(samples) {
   const errDeg = Math.atan2(best.dx, Math.max(40, best.dy)) * 180 / Math.PI * 0.55;
   const loft = Math.max(0, Math.min(1, (power - 0.78) / 0.22)) * 0.9;
   return { power, errDeg: Math.max(-9, Math.min(9, errDeg)), loft, from: best.from };
+}
+/* Full-gesture throw parser (2026-11-22 fix). parseFlick above starved on
+   real phones: it needed dense pointermove samples inside a 300 ms window,
+   but touch browsers deliver sparse, coalesced moves — a textbook
+   pull-hold-flick produced almost no usable samples and was rejected, so
+   the ball could be positioned but never rolled. parseThrow instead reads
+   the WHOLE gesture from its shape: find the bottom of the backswing (the
+   deepest sample), then measure how far and how fast the finger rose out
+   of it. It needs no sample density — two points after the dip can carry
+   the throw — and it accepts the ways people actually bowl on a phone:
+   shallow dips, jittery touches, a dip-and-flick in one motion, even a
+   pure up-swipe. A drag with no up-swipe out of a dip is still not a throw.
+   samples: [{x, y, t}] CSS px, y down, t in ms (event timeStamps).
+   Returns { power, errDeg, loft, from } — from = the deepest sample, the
+   moment the flick began (the hook needle reads there) — or null. */
+function parseThrow(samples) {
+  if (!samples || samples.length < 3) return null;
+  let di = 0;
+  for (let i = 1; i < samples.length; i++) if (samples[i].y >= samples[di].y) di = i;
+  const deep = samples[di], last = samples[samples.length - 1];
+  const rise = deep.y - last.y;                    // finger travel up out of the dip
+  if (rise < 26) return null;                      // never swiped up — a drag, not a throw
+  // fastest upward run out of the dip: any earlier sample vs the release point
+  let bestVy = 0, from = deep;
+  for (let i = di; i < samples.length; i++) {
+    const s = samples[i];
+    const dt = Math.max(0.025, (last.t - s.t) / 1000);   // floor: a sub-frame pair is a fast flick, not a free pass
+    const vy = (s.y - last.y) / dt;                // px/s upward positive
+    if (vy > bestVy) { bestVy = vy; from = s; }
+  }
+  // Starved delivery: a held-still finger fires no move events, so a real
+  // flick can arrive as ONE jump (deep -> release, nothing between). A
+  // human flick takes ~60-280 ms whatever the hold before it lasted, so
+  // score that jump at a brisk-flick duration instead of the hold length.
+  const mids = samples.length - 2 - di;            // samples strictly between deep and last
+  if (mids <= 1) {
+    const vyJump = rise / 0.28;
+    if (vyJump > bestVy) { bestVy = vyJump; from = deep; }
+  }
+  if (bestVy < 170) return null;                   // a slow push up, not a throw
+  const power = Math.min(1, Math.max(0.10, (bestVy - 120) / 2100));
+  const dx = last.x - from.x;
+  const errDeg = Math.max(-9, Math.min(9, Math.atan2(dx, Math.max(40, rise)) * 180 / Math.PI * 0.55));
+  const loft = Math.max(0, Math.min(1, (power - 0.78) / 0.22)) * 0.9;
+  return { power, errDeg, loft, from: deep };
 }
 /* Hook needle: sweeps while the player holds the pull-back. Slower sweep
    = higher Hook Control. Value -1..1; 0 = dead centre = straight ball. */
@@ -420,7 +468,7 @@ const api = {
   ALLEYS, LEAGUE_RANKS, leagueRank, trophyDelta,
   scoreGame, scoreSoFar,
   ballMass, createThrow, stepThrow, runThrow, pinsDown, standingPins,
-  parseFlick, needleValue, effectiveHook,
+  parseFlick, parseThrow, needleValue, effectiveHook,
   rng, aiBallFor, aiThrowParams, aiChooseParams, MISSIONS, openCase,
 };
 if (typeof module !== 'undefined' && module.exports) module.exports = api;
