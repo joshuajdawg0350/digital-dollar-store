@@ -7,12 +7,12 @@
   and makes stays in this page's storage on this phone. It never
   phones home — this file makes zero network requests.
 
-  A faithful port of the desktop BotDawg v1.0.3 brain (planner, run
+  A faithful port of the desktop BotDawg v1.0.5 brain (planner, run
   loop, estimate/meter/caps, memory, audit log, chat, and the
   by-design nevers) for the jobs that honestly work on a phone:
-  write a draft, prepare a message, sharpen a request, remember a
-  fact. See PHONE-HONEST-LIMITS.md for what the phone version does
-  not do.
+  write a draft, prepare a message, sharpen a request, build a
+  one-page website, remember a fact. See PHONE-HONEST-LIMITS.md for
+  what the phone version does not do.
 -->
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0b0e13">
@@ -88,7 +88,7 @@
 
 <h2>Finished work</h2>
 <div class="card">
-<p class="small">Everything <span class="agentName">BotDawg</span> has written for you — drafts, prepared messages, prompt sets — saved here on this phone. Copy what you need; nothing here has been sent or posted anywhere.</p>
+<p class="small">Everything <span class="agentName">BotDawg</span> has written for you — drafts, prepared messages, prompt sets, websites — saved here on this phone. Copy what you need; nothing here has been sent or posted anywhere.</p>
 <div id="drafts"><p class="small">Nothing yet.</p></div>
 </div>
 
@@ -129,7 +129,7 @@ const HEAD = 'data:image/webp;base64,UklGRhJfAABXRUJQVlA4IAZfAADQ4QCdASoAAQABPlU
 
 /* ================= state (this phone only, in localStorage) ================= */
 const LS_KEY = 'botdawg-phone-v1';
-const VERSION = '1.0.4-phone';
+const VERSION = '1.0.5-phone';
 const DEFAULT_CHARTER = {
   agentName: 'BotDawg', ownerName: '', ownerBusiness: '',
   voice: 'plain', brandColor: '#0096FF', facts: [],
@@ -210,8 +210,8 @@ function readAudit(limit = 40){ return S.audit.slice(-limit); }
 'use strict';
 /* ================= skills (ported from the desktop skills) =================
  * Only the jobs that honestly work on a phone. Same estimates as the
- * desktop v1.0.3 true cost table: write 2, prepare a message 2,
- * sharpen 1, remember 0.
+ * desktop v1.0.5 true cost table: write 2, prepare a message 2,
+ * sharpen 1, build a website 4, remember 0.
  */
 
 const VOICE_TONE = {
@@ -340,6 +340,137 @@ SKILLS.communicate = {
   },
 };
 
+/* ---- Build a website (skills/build-site.js, built-in mode) ----
+ * One complete, self-contained website page from the facts on this
+ * phone. The page itself is saved under Finished work with a Copy
+ * button — the owner can open it in a browser or hand it to a host.
+ * One page only: no store, no checkout. BotDawg never hosts, posts,
+ * or uploads it. Facts it does not have stay marked [fill-in]. */
+const SITE_LIMIT = 'That is more than this skill does in built-in mode: I build ONE self-contained website page — no online store, no checkout, no extra pages — and I never host or post it. Say "build me a website" and I will build the one page from the facts I know.';
+const SITE_FILL = {
+  business: '[fill-in: your business name]',
+  tagline: '[fill-in: your tagline — one line that says what you do]',
+  about: '[fill-in: a few lines about your business — teach me the facts and I will write this from them]',
+  service: '[fill-in: a service or offering]',
+  contact: '[fill-in: how customers reach you — phone, email, address, hours]',
+};
+function classifySiteFacts(facts){
+  const out = { services: [], about: [], phone: [], email: [], address: [], hours: [], tagline: '' };
+  for (const raw of facts) {
+    const f = String(raw || '').trim();
+    if (!f) continue;
+    const tag = f.match(/tagline[:\s]+(.+)/i) || f.match(/motto[:\s]+(.+)/i) || f.match(/slogan[:\s]+(.+)/i);
+    if (tag && !out.tagline) { out.tagline = tag[1].trim(); continue; }
+    if (/[\w.+-]+@[\w-]+\.[\w.]+/.test(f)) { out.email.push(f); continue; }
+    if (/\(?\d{3}\)?[-.\s]\d{3}[-.\s]\d{4}/.test(f)) { out.phone.push(f); continue; }
+    if (/\b\d{1,6}\s+[A-Z][\w.]*\s+(Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Drive|Dr|Lane|Ln|Court|Ct|Highway|Hwy)\b/.test(f) || /\b(located at|find us at|our address|visit us)\b/i.test(f)) { out.address.push(f); continue; }
+    if (/\b(open|opens|opened|closed|closes|hours)\b/i.test(f) || /\b\d{1,2}\s?(AM|PM)\b/i.test(f) || /\b(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\b/.test(f)) { out.hours.push(f); continue; }
+    if (/\b(since|founded|family[- ]owned|locally owned|we are|our story|years of|started in)\b/i.test(f)) { out.about.push(f); continue; }
+    out.services.push(f);
+  }
+  return out;
+}
+function siteHtmlPhone({ business, tagline, aboutParas, parts, brand, agentName, missing }){
+  const contactLines = [
+    ...parts.phone.map(f => `<p>${esc(f)}</p>`),
+    ...parts.email.map(f => `<p>${esc(f)}</p>`),
+    ...parts.address.map(f => `<p>${esc(f)}</p>`),
+    ...parts.hours.map(f => `<p>${esc(f)}</p>`),
+  ];
+  const services = parts.services.length
+    ? parts.services.map(s => `<div class="svc"><h3>${esc(s)}</h3></div>`).join('\n      ')
+    : `<div class="svc"><h3>${SITE_FILL.service}</h3></div>\n      <div class="svc"><h3>${SITE_FILL.service}</h3></div>\n      <div class="svc"><h3>${SITE_FILL.service}</h3></div>`;
+  const contact = contactLines.length ? contactLines.join('\n      ') : `<p>${SITE_FILL.contact}</p>`;
+  return `<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${esc(business)}</title>
+<style>
+  :root{--brand:${brand}}
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:system-ui,Arial,sans-serif;color:#1c2530;background:#fbfcfd;line-height:1.55;-webkit-text-size-adjust:100%}
+  header{background:var(--brand);color:#fff;padding:44px 20px 36px;text-align:center}
+  header h1{margin:0;font-size:clamp(28px,6vw,44px);line-height:1.15}
+  header p{margin:10px auto 0;font-size:clamp(16px,3.5vw,20px);max-width:640px;opacity:.95}
+  main{max-width:880px;margin:0 auto;padding:8px 20px 40px}
+  section{margin-top:36px}
+  h2{font-size:24px;border-bottom:3px solid var(--brand);padding-bottom:6px;margin:0 0 14px}
+  .svc{border:1px solid #dde4ec;border-left:5px solid var(--brand);border-radius:8px;padding:12px 16px;margin:10px 0;background:#fff}
+  .svc h3{margin:0;font-size:17px;font-weight:600}
+  .contact p{margin:6px 0;font-size:17px}
+  footer{background:#141a23;color:#c8d4e2;text-align:center;padding:22px 20px;margin-top:44px;font-size:14px}
+  footer .biz{color:#fff;font-size:16px}
+</style></head><body>
+<header>
+  <h1>${esc(business)}</h1>
+  <p>${esc(tagline)}</p>
+</header>
+<main>
+  <section>
+    <h2>About</h2>
+    ${aboutParas.map(p => `<p>${esc(p)}</p>`).join('\n    ')}
+  </section>
+  <section>
+    <h2>Services</h2>
+      ${services}
+  </section>
+  <section class="contact">
+    <h2>Contact</h2>
+      ${contact}
+  </section>
+</main>
+<footer>
+  <div class="biz">© ${new Date().getFullYear()} ${esc(business)}</div>
+  <div>Built by ${esc(agentName)} from the facts it knows${missing.length ? ' — gaps marked [fill-in] are yours to finish' : ''}.</div>
+</footer>
+</body></html>
+`;
+}
+SKILLS['build-site'] = {
+  id: 'build-site', name: 'Build a website',
+  inWords: 'The kind of site, in your own words — "a website for my bakery", "a landing page for my lawn service". It is built from the facts BotDawg knows about your business.',
+  outWords: 'One complete website page as a single HTML file, saved under Finished work with a Copy button — open it in a browser, hand it to any host. Gaps stay marked [fill-in], never invented. BotDawg does not host or post it.',
+  starter: 'Build me a website for ',
+  estimate: () => 4,
+  run(step){
+    const words = String(step.words || step.topic || '');
+    const lower = words.toLowerCase();
+    if (/\b(online store|e-?commerce|checkout|shopping cart|\d+\s*-?\s*pages?|multiple pages|multi-?page|take payments online|sell (things|stuff|products) online)\b/.test(lower)) {
+      return { ok: false, units: 0, summary: SITE_LIMIT };
+    }
+    const ch = charter();
+    const facts = [ ...(ch.facts || []), ...S.memory.facts.map(f => f.text) ]
+      .map(s => String(s || '').trim()).filter(Boolean).filter((v, i, a) => a.indexOf(v) === i);
+    const parts = classifySiteFacts(facts);
+    const missing = [];
+    const business = ch.ownerBusiness || '';
+    if (!business) missing.push('your business name');
+    const tagline = parts.tagline || '';
+    if (!tagline) missing.push('a tagline');
+    if (!parts.services.length) missing.push('your services or offerings');
+    if (!parts.phone.length) missing.push('a phone number');
+    if (!parts.email.length) missing.push('an email address');
+    if (!parts.address.length) missing.push('an address');
+    if (!parts.hours.length) missing.push('your hours');
+    const aboutParas = [
+      business ? `Welcome to ${business}.` : `Welcome to ${SITE_FILL.business}.`,
+      ...(parts.about.length ? parts.about : []),
+      ...(parts.services.length ? [`What we do: ${parts.services.join(' · ')}.`] : []),
+      ...(!parts.about.length && !parts.services.length ? [SITE_FILL.about] : []),
+    ];
+    const html = siteHtmlPhone({
+      business: business || SITE_FILL.business,
+      tagline: tagline || SITE_FILL.tagline,
+      aboutParas, parts,
+      brand: /^#[0-9a-fA-F]{6}$/.test(ch.brandColor || '') ? ch.brandColor : '#0096FF',
+      agentName: ch.agentName, missing,
+    });
+    return { ok: true, units: 4, draftTitle: `Website — ${business || 'one page'}`, draftText: html,
+             summary: `Website built and saved under Finished work below (built-in template (no model set up)). It is one complete, self-contained HTML file — copy it, open it in a browser, or hand it to a host. I do not host, post, or upload it.${missing.length ? ` For a fuller site, teach me: ${missing.join('; ')} — those spots are marked [fill-in] in the page, never invented.` : ' It uses every fact I have on file.'}`,
+             detail: { mode: 'built-in template (no model set up)', missing } };
+  },
+};
+
 /* ---- Remember a fact (lib.remember, through the run loop like desktop) ---- */
 const REMEMBER_CARD = {
   id: 'remember', name: 'Remember a fact',
@@ -349,9 +480,9 @@ const REMEMBER_CARD = {
 };
 
 /* ================= planner (ported from botdawg.js planFromWords) =================
- * Phone subset: remember / communicate / write / sharpen. Jobs that
- * need a computer (watch, research, organize, proof-run, human-check)
- * get a plain statement of that — never a fake plan.
+ * Phone subset: remember / communicate / write / sharpen / build-site.
+ * Jobs that need a computer (watch, research, organize, proof-run,
+ * human-check) get a plain statement of that — never a fake plan.
  */
 function planFromWords(words){
   const w = String(words || '').trim();
@@ -363,11 +494,18 @@ function planFromWords(words){
     const fact = w.replace(/^remember( that)?\s+/i, '');
     return { steps: [{ skill: 'remember', text: fact }], missing: [] };
   }
-  if (/\bwatch\b/.test(lower)) { missing.push('Watching a page needs the desktop BotDawg on a computer — the phone version cannot watch pages. On this phone I can write drafts, prepare messages, sharpen requests, and remember facts.'); return { steps, missing }; }
-  if (/verify you are human|human check|turnstile|i am (not a robot|human)|not a robot|prove you are human/.test(lower)) { missing.push('Clicking a "Verify you are human" checkbox is a desktop BotDawg job, with your permission switched on there — the phone version does not do it. On this phone I can write drafts, prepare messages, sharpen requests, and remember facts.'); return { steps, missing }; }
-  if (/\bresearch\b|\blook into\b|\bcompare\b/.test(lower)) { missing.push('Research — reading source pages — needs the desktop BotDawg on a computer. The phone version cannot fetch pages. On this phone I can write drafts, prepare messages, sharpen requests, and remember facts.'); return { steps, missing }; }
-  if (/\bproof|audit|check (my|the) (page|site|door|listing)\b/.test(lower)) { missing.push('A proof run needs the desktop BotDawg on a computer. On this phone I can write drafts, prepare messages, sharpen requests, and remember facts.'); return { steps, missing }; }
-  if (/\borganize|catalog|tidy|duplicate\b/.test(lower)) { missing.push('Organizing folders needs the desktop BotDawg on a computer — the phone version cannot see your folders. On this phone I can write drafts, prepare messages, sharpen requests, and remember facts.'); return { steps, missing }; }
+  if (/\b(put|post|publish|upload|host)\b[^.?!]{0,60}\bonline\b/.test(lower)) { missing.push('I build the website file, but I never host, post, or upload it — putting a site online is your step, with your own hand. Say "build me a website" and I will make the file.'); return { steps, missing }; }
+  if (/\b(build|make|create|design)\b[^.?!]{0,50}\b(website|web ?site|web ?page|landing page)\b/.test(lower)
+    || /\b(build|make|create|design)\b[^.?!]{0,30}\bsite\b/.test(lower)
+    || /\b(website|landing page)\s+for\b/.test(lower)) {
+    steps.push({ skill: 'build-site', words: w, siteType: /landing/.test(lower) ? 'landing page' : 'website' });
+    return { steps, missing };
+  }
+  if (/\bwatch\b/.test(lower)) { missing.push('Watching a page needs the desktop BotDawg on a computer — the phone version cannot watch pages. On this phone I can write drafts, prepare messages, sharpen requests, build a one-page website, and remember facts.'); return { steps, missing }; }
+  if (/verify you are human|human check|turnstile|i am (not a robot|human)|not a robot|prove you are human/.test(lower)) { missing.push('Clicking a "Verify you are human" checkbox is a desktop BotDawg job, with your permission switched on there — the phone version does not do it. On this phone I can write drafts, prepare messages, sharpen requests, build a one-page website, and remember facts.'); return { steps, missing }; }
+  if (/\bresearch\b|\blook into\b|\bcompare\b/.test(lower)) { missing.push('Research — reading source pages — needs the desktop BotDawg on a computer. The phone version cannot fetch pages. On this phone I can write drafts, prepare messages, sharpen requests, build a one-page website, and remember facts.'); return { steps, missing }; }
+  if (/\bproof|audit|check (my|the) (page|site|door|listing)\b/.test(lower)) { missing.push('A proof run needs the desktop BotDawg on a computer. On this phone I can write drafts, prepare messages, sharpen requests, build a one-page website, and remember facts.'); return { steps, missing }; }
+  if (/\borganize|catalog|tidy|duplicate\b/.test(lower)) { missing.push('Organizing folders needs the desktop BotDawg on a computer — the phone version cannot see your folders. On this phone I can write drafts, prepare messages, sharpen requests, build a one-page website, and remember facts.'); return { steps, missing }; }
 
   const msgMatch = w.match(/(?:prepare|write|draft)?\s*(?:a\s+)?message\s+(?:for|to)\s+(.+?)(?:\s+about\s+|\s*:\s+)(.+)$/i);
   if (msgMatch) { steps.push({ skill: 'communicate', to: msgMatch[1].trim(), purpose: msgMatch[2].trim() }); return { steps, missing }; }
@@ -378,7 +516,7 @@ function planFromWords(words){
   if (/\bwrite|draft\b/.test(lower)) steps.push({ skill: 'write', kind: /email/.test(lower) ? 'email' : /post/.test(lower) ? 'post' : 'note', topic: w });
   if (/\bprompt for|sharpen|make (me )?a prompt\b/.test(lower)) steps.push({ skill: 'sharpen', goal: w });
   if (!steps.length && !missing.length) {
-    return { steps: [], missing: [`No skill I have matches that job yet. I sharpened your words below so you can see them stated cleanly — and I can remember facts, write drafts, prepare messages, and sharpen requests into ready prompts.`], sharpenOnly: true };
+    return { steps: [], missing: [`No skill I have matches that job yet. I sharpened your words below so you can see them stated cleanly — and I can remember facts, write drafts, prepare messages, build a one-page website, and sharpen requests into ready prompts.`], sharpenOnly: true };
   }
   return { steps, missing };
 }
@@ -479,6 +617,7 @@ function neverHit(text){
   if (/\b(delete|erase|wipe)\b/.test(low) || /\bget rid of\b/.test(low) || /\bremove\b[^.?!]{0,40}\b(file|folder|files|everything|all)\b/.test(low)) return { act: 'delete', draft: null };
   if (/\b(buy|purchase)\b/.test(low) || /\bplace (an? )?order\b/.test(low) || /\bcheck ?out\b/.test(low)) return { act: 'buy', draft: null };
   if (/\b(pay|charge|bill)\b[^.?!]{0,50}\b(invoice|bill|card|them|him|her|it|this|that|\$|\d)/.test(low) || /\bsend (a )?payment\b/.test(low)) return { act: 'pay', draft: null };
+  if (/\bput\b[^.?!]{0,40}\bonline\b/.test(low) || /\bhost\b[^.?!]{0,40}\b(website|web ?site|web ?page|landing page|site|page|this|it)\b/.test(low)) return { act: 'post', draft: 'post' };
   if (/\b(post|publish|upload)\b[^.?!]{0,40}\b(this|that|it|to|on|onto)\b/.test(low)) return { act: 'post', draft: 'post' };
   if (/\bsend\b(?!\s+(me|us)\b)/.test(low) || /\be-?mail (it|this|that|them|him|her)\b/.test(low) || /\btext (him|her|them|it)\b/.test(low)) return { act: 'send', draft: 'email' };
   return null;
@@ -511,7 +650,7 @@ function knownFacts(ch, query){
   return pool.filter(f => f.text.toLowerCase().includes(q) || q.split(/\s+/).some(w => w.length > 3 && f.text.toLowerCase().includes(w)));
 }
 function capabilitiesText(ch){
-  const list = [ SKILLS.write, SKILLS.communicate, SKILLS.sharpen, REMEMBER_CARD ]
+  const list = [ SKILLS.write, SKILLS.communicate, SKILLS['build-site'], SKILLS.sharpen, REMEMBER_CARD ]
     .map(s => `- ${s.name}: ${s.outWords}`).join('\n');
   return `Here is what I can do, ${ch.ownerName || 'in plain words'}:\n\n${list}\n\nAnd what I never do, by design: send, post, buy, pay, delete, or log in as you. I prepare drafts and finished work, saved right here on this phone — the last step is always your hand.\n\nHand me a job right here in chat ("write a draft about…", "prepare a message for…", "remember that…"), or ask me a question.`;
 }
@@ -535,6 +674,14 @@ function chatTurn(text){
   if (!words) return `Say it in plain words — a question, or a job. I am listening.`;
   audit('chat-owner', { summary: words.slice(0, 140) });
   const low = words.toLowerCase();
+
+  /* 0 — the website skill's own limit, stated plainly (before the
+   * nevers, so "checkout" in a site ask is answered with the site
+   * limit, not the buying refusal): one page, no store, no checkout. */
+  if (/\b(build|make|create|want|need)\b[^.?!]{0,60}\b(website|web ?site|web ?page|landing page|site|store|shop)\b/.test(low)
+    && /\b(online store|e-?commerce|checkout|shopping cart|\d+\s*-?\s*pages?|multiple pages|multi-?page|take payments online|sell (things|stuff|products) online)\b/.test(low)) {
+    return done(`Plainly: in built-in mode I build ONE self-contained website page from the facts I know — no online store, no checkout, no extra pages — and I never host or post it. Say "build me a website" and I will build that one page for you. Nothing was charged.`, 'site-limit');
+  }
 
   /* 1 — the nevers */
   const hit = neverHit(words);
@@ -598,7 +745,7 @@ function chatTurn(text){
 
   /* 5 — open conversation: honest built-in mode (no model on the phone) */
   const sharp = sharpenVariants(words, ch);
-  return done(`In built-in mode I answer from what I remember and the skills I have — and that one is not in either yet, so I will not fake an answer. Here are your words sharpened by my built-in Prompt Generator, in case they become a job:\n\n${sharp.variants.straight}\n\nMeanwhile I can remember facts, write drafts, prepare messages, and sharpen requests into ready prompts.`, 'builtin-fallback');
+  return done(`In built-in mode I answer from what I remember and the skills I have — and that one is not in either yet, so I will not fake an answer. Here are your words sharpened by my built-in Prompt Generator, in case they become a job:\n\n${sharp.variants.straight}\n\nMeanwhile I can remember facts, write drafts, prepare messages, build a one-page website, and sharpen requests into ready prompts.`, 'builtin-fallback');
 }
 
 /* ================= UI ================= */
@@ -644,10 +791,10 @@ function renderDrafts(){
   }));
 }
 function renderSkillCards(){
-  $('skillCards').innerHTML = [ SKILLS.write, SKILLS.communicate, SKILLS.sharpen, REMEMBER_CARD ]
+  $('skillCards').innerHTML = [ SKILLS.write, SKILLS.communicate, SKILLS['build-site'], SKILLS.sharpen, REMEMBER_CARD ]
     .map(s => `<div class="skillcard"><h3>${esc(s.name)}</h3><p><b>Goes in:</b> ${esc(s.inWords)}</p><p><b>Comes out:</b> ${esc(s.outWords)}</p><button class="ghost" data-starter="${esc(s.id)}">Start this job</button></div>`).join('');
   $('skillCards').querySelectorAll('[data-starter]').forEach(b => b.addEventListener('click', () => {
-    const s = [ SKILLS.write, SKILLS.communicate, SKILLS.sharpen, REMEMBER_CARD ].find(x => x.id === b.getAttribute('data-starter'));
+    const s = [ SKILLS.write, SKILLS.communicate, SKILLS['build-site'], SKILLS.sharpen, REMEMBER_CARD ].find(x => x.id === b.getAttribute('data-starter'));
     const ask = $('ask');
     ask.value = s.starter;
     ask.focus();
