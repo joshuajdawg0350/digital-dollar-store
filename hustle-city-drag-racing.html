@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Hustle City Drag Racing — Digital Dollar Store</title>
+<title>Hustle City Drag Racing — Drag Racing Game, One-Time Purchase | Digital Dollar Store</title>
 <meta name="description" content="Hustle City Drag Racing — the featured game. Build your car from STOCK to MAX across 87 upgrade steps, outrun 16 rivals, and take down Scotty, the wall at the end. MAX build runs 2.517 seconds at 769 mph. $1.99, one time.">
 <link rel="canonical" href="https://digitaldollarstore.org/hustle-city-drag-racing.html">
 <script>document.documentElement.className+=" js"</script>
@@ -44,7 +44,6 @@
   @media (max-width:700px){ .arcade-band{padding:2rem 0} .dl-btn{width:100%} }
   main .arcade-band:first-child{padding-top:5.8rem}
   @media (max-width:700px){ main .arcade-band:first-child{padding-top:4.8rem} }
-@media (max-width:899px){html,body{overscroll-behavior:none}}
 .dsheet{--dsBar:#05080e;--dsBg:#05080e;--dsLine:#39c2ff;--dsInk:#93a1b5;--dsChev:#6fc3ff}
 /* ============================================================
    DRAG SHEET KIT — the Funny Maps pattern for document pages
@@ -352,13 +351,6 @@
     snap: function () { return snap; }
   };
 })();
-</script>
-<script>/* ptr-guard (2026-11-21): pull-to-refresh must never steal a sheet drag */
-(function(){var b=document.getElementById('dsheetBody'),s=document.getElementById('dsheet'),y=0;
-document.addEventListener('touchstart',function(e){if(e.touches[0])y=e.touches[0].clientY;},{passive:true});
-document.addEventListener('touchmove',function(e){if(!e.touches[0])return;
-if(s&&s.classList.contains('dragging')){e.preventDefault();return;}
-if(b&&e.target&&b.contains&&b.contains(e.target)&&b.scrollTop<=0&&e.touches[0].clientY>y)e.preventDefault();},{passive:false});})();
 </script>
 </body>
 </html>
