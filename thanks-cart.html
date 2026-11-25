@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thank You — Digital Dollar Store</title>
+<meta name="description" content="Thank you for your Digital Dollar Store order. Your downloads and backup copies are on the way to the email you used at checkout.">
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://digitaldollarstore.org/thanks-cart.html">
+<script>document.documentElement.className+=" js"</script>
+<link rel="stylesheet" href="assets/site.css">
+<link rel="icon" href="assets/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/arcade-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/arcade-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#05080E">
+<style>
+  .thanks-head h1{font-size:clamp(2rem,7vw,3rem);font-weight:800;letter-spacing:-.01em;line-height:1.05;margin:.2rem 0 0}
+  .honest{background:var(--panel);border:1px solid var(--line-strong);border-radius:12px;
+    padding:1.3rem 1.5rem;margin-top:1.8rem;max-width:62ch}
+  .honest h2{font-size:1.15rem;margin:0 0 .5rem}
+  .honest p{margin:0;font-size:.97rem;line-height:1.55}
+  .honest p + p{margin-top:.6rem}
+  .thanks-band{padding:3.4rem 0}
+</style>
+<script>
+  // The cart is paid — clear it so the store starts fresh next visit.
+  try { localStorage.removeItem('dds-cart-v1'); } catch (e) {}
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Digital Dollar Store — home">
+      <img src="assets/digital-dollar-store-logo.webp" alt="Digital Dollar Store — $1 downloadable games and apps" width="1920" height="1280">
+      <span class="brand-name">DIGITAL <span>DOLLAR</span> STORE</span>
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav class="site-nav" id="site-nav" aria-label="Main">
+      <ul>
+        <li><a href="index.html#games">Games</a></li>
+        <li><a href="play-midas/">Play Midas — Free</a></li>
+        <li><a href="arcade/">Hustle City Arcade</a></li>
+        <li><a href="index.html#apps">Apps</a></li>
+        <li><a href="index.html#tools">Tools</a></li>
+        <li><a href="catalog.html">Catalog</a></li>
+        <li><a href="https://jdawgsindustries.com/support.html">Support</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="thanks-band">
+  <div class="wrap">
+    <div class="thanks-head">
+      <p class="eyebrow">Order complete</p>
+      <h1>Thank you — your order is in.</h1>
+    </div>
+    <div class="honest">
+      <h2>What happens next</h2>
+      <p>Your payment went through. Backup copies of everything in your order are sent to the email address you used at checkout — that email is your receipt and your downloads folder, so keep it.</p>
+      <p>Changed phones or lost the email? Just ask and we'll resend your copies — the same links keep working.</p>
+      <p>If anything in your order doesn't work, tell us and we will fix it. If we can't fix it, we will refund you.</p>
+    </div>
+    <p style="margin-top:2rem"><a class="btn btn-primary" href="catalog.html">Keep browsing the store</a></p>
+  </div>
+</section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>Digital Dollar Store — a J-Dawgs Industries store. Big dreams for a small world.</p>
+    <p><a href="https://jdawgsindustries.com/support.html">Support</a> · <a href="catalog.html">Catalog</a> · <a href="index.html">Home</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
