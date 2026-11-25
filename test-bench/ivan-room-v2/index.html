@@ -10,102 +10,154 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#05070a; --surface:#0b0f14; --line:rgba(160,190,215,.18); --line-strong:rgba(190,215,235,.38);
-    --text:#e8eef4; --muted:#93a5b5; --ice:#7fd4ff;
+    --bg:#000; --panel:#0b0b0d; --line:rgba(255,255,255,.12); --line2:rgba(255,255,255,.24);
+    --text:#f2f3f5; --muted:#9aa1ab; --acc:#5ea8e8;
     --fd:"Archivo","Inter",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
     --fb:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%}
-  img{max-width:100%;display:block}
-  .wrap{max-width:70rem;margin:0 auto;padding:0 1.25rem 3rem}
-  @media (max-width:640px){.wrap{padding:0 .8rem 2rem}}
-  .sample-flag{background:linear-gradient(90deg,#123c63,#0b2239);color:#dcebf7;text-align:center;
-    font-family:var(--fd);font-weight:700;font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;
-    padding:.55rem 1rem;border-radius:0 0 12px 12px}
-  .head{text-align:center;padding:2.5rem .5rem .5rem}
-  .head img{width:min(430px,88%);margin:0 auto;border-radius:16px;border:1px solid var(--line-strong);
-    box-shadow:0 0 34px rgba(0,150,255,.2)}
-  .head h1{font-family:var(--fd);font-weight:800;font-size:clamp(2rem,5vw,3rem);letter-spacing:-.02em;line-height:1.15;margin-top:1.5rem}
-  .head p{color:var(--muted);max-width:38rem;margin:.75rem auto 0}
-  .head p b{color:var(--text);font-weight:600}
-  .opts{display:grid;grid-template-columns:1fr;gap:1.25rem;margin-top:2rem}
-  @media (min-width:820px){.opts{grid-template-columns:repeat(3,1fr)}}
-  .opt{background:linear-gradient(180deg,#10161d,#0a0e13);border:1px solid var(--line);border-radius:16px;
-    overflow:hidden;text-decoration:none;color:var(--text);display:flex;flex-direction:column;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
-  .opt img{width:100%;height:180px;object-fit:cover}
-  .opt .body{padding:1.25rem;display:flex;flex-direction:column;gap:.4rem;flex:1}
-  .opt .tag{font-family:var(--fd);font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ice)}
-  .opt h2{font-family:var(--fd);font-size:1.3rem;font-weight:700;line-height:1.25}
-  .opt p{color:var(--muted);font-size:.925rem;flex:1}
-  .opt .go{margin-top:.75rem;font-weight:600;color:var(--ice)}
-  .letter{margin-top:2rem;background:var(--surface);border:1px solid var(--line-strong);border-radius:16px;
-    padding:1.5rem;text-align:center}
-  .letter h2{font-family:var(--fd);font-size:1.35rem;font-weight:700}
-  .letter p{color:var(--muted);max-width:36rem;margin:.5rem auto 0}
-  .letter a{display:inline-block;margin-top:1rem;min-height:48px;line-height:48px;padding:0 1.4rem;border-radius:12px;
-    background:linear-gradient(180deg,#3a4756,#161d25 55%,#0d1218);border:1px solid var(--line-strong);
-    color:var(--text);font-weight:600;text-decoration:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.14)}
-  footer{margin-top:3rem;border-top:2px solid rgba(190,215,235,.25);padding-top:1.25rem;color:var(--muted);font-size:.875rem;line-height:1.6}
-  footer a{color:var(--ice)}
-  .tagline{font-family:var(--fd);font-weight:700;color:var(--text);margin-top:.75rem}
+  html,body{height:100%}
+  body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:16px;line-height:1.55;overflow:hidden;-webkit-text-size-adjust:100%}
+  img{display:block;max-width:100%}
+  .screen{height:100dvh;max-width:68rem;margin:0 auto;padding:0 1rem calc(54px + .85rem);display:flex;flex-direction:column}
+  .sample-flag{flex:none;text-align:center;font-family:var(--fd);font-weight:700;font-size:.7rem;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--muted);padding:.55rem .5rem .5rem;border-bottom:1px solid var(--line)}
+  .head{text-align:center;padding:1.1rem .25rem 0}
+  .head img{height:104px;width:auto;max-width:82%;object-fit:cover;margin:0 auto;border-radius:12px;border:1px solid var(--line2)}
+  @media (min-width:820px){.head img{height:132px}}
+  .head h1{font-family:var(--fd);font-weight:800;font-size:clamp(1.5rem,5.6vw,2.2rem);letter-spacing:-.01em;line-height:1.18;margin-top:.9rem}
+  .head p{color:var(--muted);font-size:.93rem;max-width:36rem;margin:.5rem auto 0}
+  .head p b{color:var(--acc);font-weight:600}
+  .opts{display:flex;flex-direction:column;gap:.7rem;margin-top:1.15rem}
+  .opt{display:flex;align-items:center;gap:.9rem;background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:.65rem .8rem;text-decoration:none;color:var(--text)}
+  .opt img{width:92px;height:66px;object-fit:cover;border-radius:9px;border:1px solid var(--line);flex:none}
+  .opt .tag{font-family:var(--fd);font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .opt h2{font-family:var(--fd);font-size:1.08rem;font-weight:700;line-height:1.25}
+  .opt p{color:var(--muted);font-size:.84rem;line-height:1.45}
+  .opt .arrow{margin-left:auto;font-size:1.25rem;color:var(--muted);flex:none;padding-left:.25rem}
+  .founder{margin-top:auto;padding-top:.8rem;border-top:1px solid var(--line);display:flex;align-items:center;gap:.75rem}
+  .founder img{width:42px;height:42px;border-radius:50%;object-fit:cover;border:1px solid var(--line2);flex:none}
+  .founder .who{font-size:.85rem;line-height:1.4}
+  .founder .who b{font-weight:600}
+  .founder .who span{color:var(--muted)}
+  .founder .deal-line{font-size:.8rem;color:var(--muted)}
+  /* ---- pull-up sheet ---- */
+  .sheet{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:68rem;height:min(86dvh,780px);z-index:40;
+    background:#0a0a0c;border:1px solid var(--line2);border-bottom:none;border-radius:20px 20px 0 0;
+    transform:translateY(calc(100% - 54px));transition:transform .38s cubic-bezier(.32,.72,.24,1);
+    display:flex;flex-direction:column;box-shadow:0 -18px 50px rgba(0,0,0,.65)}
+  .sheet.open{transform:translateY(0)}
+  .sheet-handle{height:54px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+    cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;background:none;border:none;width:100%}
+  .grab{width:44px;height:5px;border-radius:3px;background:rgba(255,255,255,.35)}
+  .sheet-handle .lbl{font-family:var(--fd);font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .sheet-handle .lbl b{color:var(--text)}
+  .sheet-body{position:relative;overflow-y:auto;overscroll-behavior:contain;padding:.25rem 1.1rem 2.2rem;-webkit-overflow-scrolling:touch}
+  .sheet-body h3{font-family:var(--fd);font-size:1.15rem;font-weight:700;margin:.6rem 0 .4rem}
+  .sheet-body p{color:var(--muted);font-size:.92rem;margin-top:.55rem}
+  .sheet-body p b,.sheet-body li b{color:var(--text);font-weight:600}
+  .sheet-body ul{margin:.5rem 0 0 1.15rem;color:var(--muted);font-size:.92rem}
+  .sheet-body li{margin-top:.45rem}
+  .sheet-body .note{border-top:1px solid var(--line);margin-top:1.4rem;padding-top:1rem;font-size:.84rem}
+  .tagline{font-family:var(--fd);font-weight:700;color:var(--text);margin-top:.8rem;font-size:.9rem}
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="screen">
   <div class="sample-flag">Storefront demos for Ivan — sample items &amp; prices · Nothing here is for sale yet</div>
 
   <div class="head">
     <img src="lucians-plunder-logo.jpg" alt="Lucian's Plunder — Gaming & Fantasy Merchandise artwork">
     <h1>Ivan, your room is ready to look at.</h1>
-    <p>We built you <b>three full storefronts</b> for Lucian's Plunder — not sketches, whole shops.
-       Walk through each one like a customer would. Pick the one that feels like you, mix the
-       pieces, or tell us what you'd change. <b>It's your room. There's no wrong answer and no clock on it.</b></p>
+    <p>Three full storefronts for <b>Lucian's Plunder</b> — rebuilt clean and professional:
+       black, one screen, no scrolling. Pull a sheet up to look closer. Pick one, mix the
+       pieces, or tell us what you'd change. <b style="color:var(--text)">It's your room — no wrong answer, no clock on it.</b></p>
   </div>
 
   <div class="opts">
     <a class="opt" href="option-a.html">
-      <img src="hero-a.jpg" alt="Midnight Vault preview: holographic cards in glass cases under electric-blue light">
-      <div class="body">
+      <img src="hero-a.jpg" alt="Midnight Vault preview: holographic cards in glass cases under cool light">
+      <div>
         <span class="tag">Option A</span>
         <h2>Midnight Vault</h2>
-        <p>Dark, chrome and electric blue — your best cards behind glass, lit like treasure in a vault. The serious collector's room.</p>
-        <span class="go">Walk through A →</span>
+        <p>Dark and serious — your best cards behind glass, treated like assets. The collector's room.</p>
       </div>
+      <span class="arrow">→</span>
     </a>
     <a class="opt" href="option-b.html">
-      <img src="hero-b.jpg" alt="Clean Card Shop preview: bright white shelves and sunny windows">
-      <div class="body">
+      <img src="hero-b.jpg" alt="Clean Card Shop preview: tidy shelves of card boxes and games">
+      <div>
         <span class="tag">Option B</span>
         <h2>Clean Card Shop</h2>
-        <p>Bright, open and friendly — white shelves, daylight, everything easy to find. The neighborhood game store, online.</p>
-        <span class="go">Walk through B →</span>
+        <p>Clean and minimal — everything labeled, nothing cluttered. The widest front door of the three.</p>
       </div>
+      <span class="arrow">→</span>
     </a>
     <a class="opt" href="option-c.html">
-      <img src="hero-c.jpg" alt="Fantasy Treasure preview: cards and gems on emerald and purple velvet">
-      <div class="body">
+      <img src="hero-c.jpg" alt="Fantasy Treasure preview: cards and gems on emerald velvet">
+      <div>
         <span class="tag">Option C</span>
         <h2>Fantasy Treasure</h2>
-        <p>Emerald, royal purple and silver — your plunder laid out on velvet like a treasure hoard. The fantasy half of your brand, front and center.</p>
-        <span class="go">Walk through C →</span>
+        <p>Emerald on black — your plunder laid out like a treasure hoard. The fantasy half of your brand.</p>
       </div>
+      <span class="arrow">→</span>
     </a>
   </div>
 
-  <div class="letter">
-    <h2>Why they look like this</h2>
-    <p>We studied the best card and fantasy shops anywhere before we drew a single line — what they
-       do, why it works, and which parts we borrowed for you. It's all written up plain, angles and all.</p>
-    <a href="sales.html">Read the welcome letter →</a>
+  <div class="founder">
+    <img src="founder.jpg" alt="Joshua Dawson, founder of J-Dawgs Industries">
+    <div>
+      <div class="who"><b>Joshua Dawson</b> <span>— Founder, J-Dawgs Industries LLC · Springfield construction builder</span></div>
+      <div class="deal-line">Prepared for Ivan Ordonez. Your room is free — your sales are yours. <button data-open-sheet style="background:none;border:none;color:var(--text);font:inherit;font-weight:600;cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:3px">How this works</button></div>
+    </div>
   </div>
-
-  <footer>
-    <p><strong>The J-Dawgs Fix-It Guarantee:</strong> if anything we sold or gave you doesn't work, tell us once — we fix it free. No receipts, no runaround. <a href="https://joshuajdawg0350.github.io/jdawgs-hub/support.html">Report a problem</a></p>
-    <p style="margin-top:.5rem">Demos prepared by the J-Dawgs Trading Post for Ivan Ordonez · Lucian's Plunder. Every listing shown is a sample with a made-up card and a sample price; buy buttons are placeholders.</p>
-    <p class="tagline">No fancy logos. Just quality products.</p>
-  </footer>
 </div>
+
+<div class="sheet" id="sheet" aria-label="How this works">
+  <button class="sheet-handle" id="sheetHandle" aria-expanded="false" aria-controls="sheetBody">
+    <span class="grab"></span>
+    <span class="lbl">Pull up — <b>how this works</b></span>
+  </button>
+  <div class="sheet-body" id="sheetBody">
+    <h3>How this works</h3>
+    <ul>
+      <li><b>The room costs you nothing.</b> Not to build, not to keep.</li>
+      <li><b>Your sales are your sales</b> — tracked separately, every dollar accounted to you.</li>
+      <li><b>You can change anything, anytime</b> — the look, the prices, what's on the shelf. Nothing is locked in.</li>
+      <li><b>Pick one of the three, mix them,</b> or describe something else entirely and we'll build that instead.</li>
+    </ul>
+    <p>We want you in this shop because your people coming through your door is good for the whole
+       Trading Post — the same way a good shop on a street is good for every shop on the street.
+       That's the whole arrangement. No fine print, because there isn't any.</p>
+    <p>There's also a welcome letter that goes with these — the homework behind the three looks,
+       in plain words. It travels with this package; ask Joshua for it anytime.</p>
+    <div class="note">
+      <p><b>The J-Dawgs Fix-It Guarantee:</b> if anything we sold or gave you doesn't work, tell us
+         once — we fix it free. No receipts, no runaround.</p>
+      <p>Demos prepared by the J-Dawgs Trading Post for Ivan Ordonez · Lucian's Plunder. Every listing
+         shown is a sample with a made-up card and a sample price; buy buttons are placeholders.</p>
+      <p class="tagline">No fancy logos. Just quality products.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var sheet=document.getElementById('sheet'),handle=document.getElementById('sheetHandle'),body=document.getElementById('sheetBody');
+  var open=false,startY=null,dy=0,moved=false;
+  function setOpen(o){open=o;sheet.style.transform='';sheet.classList.toggle('open',o);handle.setAttribute('aria-expanded',o?'true':'false');}
+  handle.addEventListener('pointerdown',function(e){startY=e.clientY;dy=0;moved=false;try{handle.setPointerCapture(e.pointerId);}catch(_){}});
+  handle.addEventListener('pointermove',function(e){if(startY===null)return;dy=e.clientY-startY;
+    if(Math.abs(dy)>5){moved=true;var H=sheet.offsetHeight,peek=54;var base=open?0:H-peek;
+      var t=Math.max(0,Math.min(H-peek,base+dy));sheet.style.transform='translateY('+t+'px)';}});
+  function endDrag(){if(startY===null)return;startY=null;if(moved){if(dy<-45)setOpen(true);else if(dy>45)setOpen(false);else setOpen(open);}}
+  handle.addEventListener('pointerup',function(){var wasMoved=moved;endDrag();if(!wasMoved)setOpen(!open);});
+  handle.addEventListener('pointercancel',endDrag);
+  document.querySelectorAll('[data-open-sheet]').forEach(function(b){b.addEventListener('click',function(){setOpen(true);
+    var t=b.getAttribute('data-target');if(t){setTimeout(function(){var el=document.getElementById(t);if(el)body.scrollTop=Math.max(0,el.offsetTop-6);},400);}});});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')setOpen(false);});
+})();
+</script>
 </body>
 </html>
