@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="refresh" content="30">
+<title>The Glass Bench — J-Dawgs Industries LLC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05070a;--panel:#0b0f14;--panel2:#10161d;--line:rgba(160,190,215,.18);
+--line2:rgba(190,215,235,.38);--text:#e8eef4;--muted:#93a5b5;--blue:#0096FF;
+--ice:#7fd4ff;--chrome:linear-gradient(180deg,#3a4756,#161d25 55%,#0d1218);
+--miss:#ff9d9d;--ok:#57e6a3}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);
+font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+line-height:1.6}
+.wrap{max-width:70rem;margin:0 auto;padding:0 1.25rem 3rem}
+header.top{position:sticky;top:0;z-index:5;background:rgba(5,7,10,.92);
+backdrop-filter:blur(10px);border-bottom:1px solid var(--line2);
+padding:.9rem 0 .7rem}
+.eyebrow{font-family:"Archivo","Inter",sans-serif;font-size:.78rem;font-weight:700;
+letter-spacing:.09em;text-transform:uppercase;color:var(--ice);margin:0}
+h1{font-family:"Archivo","Inter",sans-serif;font-weight:800;letter-spacing:-.01em;
+font-size:clamp(2rem,5vw,3rem);margin:.1rem 0 .2rem;
+background:linear-gradient(180deg,#f4f8fb,#9fb4c4 60%,#5f7488);
+-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--muted);margin:.1rem 0 .4rem;max-width:46rem}
+.stats{display:flex;flex-wrap:wrap;gap:.5rem 1.4rem;font-size:.92rem;color:var(--muted)}
+.stats b{color:var(--text);font-variant-numeric:tabular-nums}
+h2{font-family:"Archivo","Inter",sans-serif;font-size:clamp(1.5rem,3.4vw,2rem);
+font-weight:750;margin:2.2rem 0 .4rem}
+h3{font-family:"Archivo","Inter",sans-serif;font-size:1.12rem;margin:.2rem 0}
+.card{background:linear-gradient(180deg,var(--panel2),#0a0e13);
+border:1px solid var(--line);border-radius:16px;padding:1.15rem 1.3rem;
+margin:1rem 0;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+.chip{display:inline-block;font-size:.78rem;font-weight:700;letter-spacing:.06em;
+text-transform:uppercase;border:1px solid var(--line2);border-radius:8px;
+padding:.1rem .5rem;color:var(--ice);margin-right:.45rem}
+.chip.miss{color:var(--miss);border-color:rgba(255,110,110,.45)}
+.chip.note{color:var(--muted)}
+.caption{font-family:"Archivo","Inter",sans-serif;font-size:1.25rem;
+font-weight:700;line-height:1.35;margin:.55rem 0 .7rem}
+.field{margin:.45rem 0}.field .k{font-size:.78rem;font-weight:700;
+letter-spacing:.08em;text-transform:uppercase;color:var(--ice)}
+.receipts{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;
+font-size:.78rem;color:var(--muted);word-break:break-all}
+.timeline{list-style:none;margin:.6rem 0;padding:0}
+.timeline li{display:flex;gap:.9rem;padding:.55rem 0;border-bottom:1px solid var(--line)}
+.timeline .t{flex:0 0 7.2rem;color:var(--ice);font-weight:600;font-size:.9rem;
+font-variant-numeric:tabular-nums}
+.live-dot{display:inline-block;width:.6rem;height:.6rem;border-radius:50%;
+background:var(--ok);margin-right:.4rem}
+.glossary{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1rem}
+footer{border-top:2px solid var(--line2);margin-top:3rem;padding-top:1rem;
+color:var(--muted);font-size:.9rem}
+footer .tagline{font-family:"Archivo","Inter",sans-serif;font-weight:700;color:var(--text)}
+a{color:var(--ice)}
+.small{font-size:.9rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+<p class="eyebrow">J-Dawgs Industries LLC presents</p>
+<h1>THE GLASS BENCH</h1>
+<p class="sub">Our quantum computer work, translated into plain words as it
+happens. Watch-only — no buttons, no homework, nothing to interact with.
+Hits and misses both; the misses are part of the record. This page refreshes
+itself while a session runs.</p>
+<div class="stats"><span><b>145</b> jobs run in November</span>
+<span><b>594.736 of the month&#x27;s 600 seconds used</b></span>
+<span>Every job carries its receipt — judge it yourself</span></div>
+</header>
+
+<h2>Live captions</h2>
+<div class="card"><h3>runs-door-2026-11-25</h3><p class="small">RECORDED — the full session, kept forever</p><ul class="timeline"><li><span class="t">9:16 AM CT</span><span>The answer&#x27;s in from the practice simulator machine. top outcome 11 x133 of 256 shots (simulator proof — qiskit-aer AerSimulator) <span class="receipts">Job: local-0de64febf04445c8</span></span></li><li><span class="t">9:16 AM CT</span><span>The practice simulator machine is working on it now. <span class="receipts">Job: local-0de64febf04445c8</span></span></li><li><span class="t">9:16 AM CT</span><span>We just asked the practice simulator machine the linked-particles question — it&#x27;s in line now. <span class="receipts">Job: local-0de64febf04445c8</span></span></li></ul></div><div class="card"><h3>rehearsal-2026-11-25</h3><p class="small">RECORDED — the full session, kept forever</p><ul class="timeline"><li><span class="t">9:16 AM CT</span><span>The answer&#x27;s in from the practice simulator machine. 1,024 of 1,024 runs came back exactly linked — the link held. Machine time used: 0.0 seconds. <span class="receipts">Job: sim-practice-59b9b39ef017</span></span></li><li><span class="t">9:16 AM CT</span><span>The practice simulator machine is working on it now. <span class="receipts">Job: sim-practice-59b9b39ef017</span></span></li><li><span class="t">9:16 AM CT</span><span>We just asked the practice simulator machine the linked-particles question — it&#x27;s in line now. <span class="receipts">Job: sim-practice-59b9b39ef017</span></span></li></ul></div>
+
+<h2>The words we use</h2>
+<div class="glossary">
+<div class="card"><h3>Qubit</h3><p>The quantum version of a computer bit —
+the particle doing the answering. Our machines carry 156 of them.</p></div>
+<div class="card"><h3>Shot</h3><p>One single run of a question. We ask the
+same question thousands of times and count the answers, because quantum
+answers come as odds, not certainties.</p></div>
+<div class="card"><h3>Machine time</h3><p>Measured in QPU seconds — the
+seconds the quantum machine itself spent working. Our free plan gives us
+600 a month, and we account for every one.</p></div>
+</div>
+
+<h2>Recorded sessions — the full history, kept forever</h2>
+<h2>The November Spend-Out</h2><p class="small">November 24, 2026 — 569.49 seconds of machine time in this session; 594.736 of the month&#x27;s 600.0 seconds used in total. 127 jobs, every one receipted.</p><article class="card">
+<div><span class="chip ">On the record</span>
+<span class="small">November 24, 2026</span></div>
+<p class="caption">All night, we kept asking the chain question — and Kingston held 8 particles in step better than 9 times out of 10, once.</p>
+<p class="field"><span class="k">What we asked — </span>The chain question, over and over: 11 rounds on the Kingston and Marrakesh machines, at 8, 16, and 24 particles wide, hunting each machine&#x27;s best.</p>
+<p class="field"><span class="k">What the machine did — </span>66 runs in all, 8,192 shots each (a shot is one single run of the question), on IBM&#x27;s 156-qubit machine called Kingston (ibm_kingston) and IBM&#x27;s 156-qubit machine called Marrakesh (ibm_marrakesh).</p>
+<p class="field"><span class="k">What came back — </span>Kingston — 8 wide: best 90.4% in step (round 10); 16 wide: best 76.4% in step (round 10); 24 wide: best 61.8% in step (round 11). Marrakesh — 8 wide: best 86.6% in step (round 7); 16 wide: best 68.5% in step (round 7); 24 wide: best 32.0% in step (round 4).</p>
+<p class="field"><span class="k">What it means — </span>Kingston is the strongest machine we have. The chain — many particles moving as one — is the thing tomorrow&#x27;s quantum machines will aim at today&#x27;s encryption, so this number is our countdown clock. In November it held at 8 wide on a good run, and frayed from there.</p>
+<p class="receipts">Receipt (job ID): dc36q1inj2vs73dhp6l0, dc36q6ts2omc738d1ikg, dc36qbts2omc738d1iqg, dc36qhdhdvas73bna6dg, dc36r72nj2vs73dhp83g, dc36rgdhdvas73bna7i0, dc36s36q4uuc73a6d8e0, dc36s8anj2vs73dhp98g, dc36sdls2omc738d1l40, dc36sj6q4uuc73a6d92g, dc36so6q4uuc73a6d980, dc36steq4uuc73a6d9f0, dc36t7dhdvas73bna9gg, dc36tceq4uuc73a6da0g, dc36thlhdvas73bna9r0, dc36tmmq4uuc73a6daf0, dc36trts2omc738d1mmg, dc36u1inj2vs73dhpb50, dc3700inj2vs73dhpe7g, dc3705inj2vs73dhpecg, dc370athdvas73bnadm0, dc370k5s2omc738d1qng, dc370p6q4uuc73a6devg, dc370uinj2vs73dhpf9g, dc37192nj2vs73dhpfm0, dc371ids2omc738d1rp0, dc371rdhdvas73bnafig, dc372clhdvas73bnage0, dc372hlhdvas73bnagt0, dc372meq4uuc73a6dhl0, dc3730mq4uuc73a6didg, dc3735uq4uuc73a6diog, dc373ethdvas73bnajcg, dc373nuq4uuc73a6djn0, dc373t2nj2vs73dhpju0, dc3742dhdvas73bnak40, dc374cdhdvas73bnakhg, dc374hlhdvas73bnakn0, dc374mts2omc738d20h0, dc374rqnj2vs73dhpl50, dc37512nj2vs73dhplfg, dc37565s2omc738d21kg, dc378gmq4uuc73a6ds80, dc378mqnj2vs73dhpsag, dc378s6q4uuc73a6dsm0, dc3792anj2vs73dhpslg, dc3797uq4uuc73a6dt4g, dc379cthdvas73bnato0, dc379o6q4uuc73a6dtn0, dc379uqnj2vs73dhptlg, dc37aats2omc738d29h0, dc37aimq4uuc73a6duo0, dc37asls2omc738d2a6g, dc37b8ts2omc738d2ak0, dc37c3ds2omc738d2bjg, dc37cb2nj2vs73dhq0fg, dc37ckthdvas73bnb1s0, dc37cpqnj2vs73dhq14g, dc37cvanj2vs73dhq1b0, dc37d4mq4uuc73a6e20g, dc37df5hdvas73bnb2vg, dc37dk5s2omc738d2djg, dc37dpinj2vs73dhq2d0, dc37duts2omc738d2e10, dc37e8inj2vs73dhq2v0, dc37ehqnj2vs73dhq3e0</p>
+</article><article class="card">
+<div><span class="chip note">A note from the bench</span>
+<span class="small">November 24, 2026</span></div>
+<p class="caption">We caught our own reading mistake — and fixed it before anyone had to take our word for anything.</p>
+<p class="field"><span class="k">What we asked — </span>A check on ourselves: is the machine writing its answers in the order we&#x27;ve been reading them?</p>
+<p class="field"><span class="k">What the machine did — </span>A 1,024-shot test on IBM&#x27;s 156-qubit machine called Fez (ibm_fez).</p>
+<p class="field"><span class="k">What came back — </span>The machine writes its answers in the opposite order to how we first read them. The test proved it. We rebuilt the full-machine maps from the original answers using the corrected reading — every number on this page is the corrected one.</p>
+<p class="field"><span class="k">What it means — </span>Catching our own error is part of the record too. A bench that only publishes its wins is a brochure; this is a bench.</p>
+<p class="receipts">Receipt (job ID): dc36gvls2omc738d1530</p>
+</article><article class="card">
+<div><span class="chip miss">A miss — printed on purpose</span>
+<span class="small">November 24, 2026</span></div>
+<p class="caption">The honesty point: at full strength, no chain width held the 90% line. Four wide came closest — 89.9%.</p>
+<p class="field"><span class="k">What we asked — </span>The chain question at full strength on the Fez machine: how many particles can move as one before the noise pulls them apart?</p>
+<p class="field"><span class="k">What the machine did — </span>6 runs on IBM&#x27;s 156-qubit machine called Fez (ibm_fez), 8,192 shots each, at widths of 4, 8, 12, 16, 24, and 32 particles.</p>
+<p class="field"><span class="k">What came back — </span>4 wide: 7,368 of 8,192 runs fully in step (89.9%); 8 wide: 6,564 of 8,192 runs fully in step (80.1%); 12 wide: 3,102 of 8,192 runs fully in step (37.9%); 16 wide: 4,789 of 8,192 runs fully in step (58.5%); 24 wide: 3,374 of 8,192 runs fully in step (41.2%); 32 wide: 2,079 of 8,192 runs fully in step (25.4%).</p>
+<p class="field"><span class="k">What it means — </span>At the gentler first test, 4 wide cleared 90%. At full strength it landed at 89.9% — a whisker short, and the wider chains fray fast. That is the true November countdown number, misses and all: no width at or over the line.</p>
+<p class="receipts">Receipt (job ID): dc3651qnj2vs73dhnu9g, dc365veq4uuc73a6bv80, dc36e7qnj2vs73dhoj70, dc36es5hdvas73bn9ivg, dc36gl2nj2vs73dhoo30, dc36gqlhdvas73bn9mpg</p>
+</article><article class="card">
+<div><span class="chip ">On the record</span>
+<span class="small">November 24, 2026</span></div>
+<p class="caption">The randomness bank is full: 114,688 bytes of machine-made randomness, banked for December.</p>
+<p class="field"><span class="k">What we asked — </span>The true-randomness harvest: ask the machine for numbers that come from quantum chance itself, not from any formula an ordinary computer could reproduce.</p>
+<p class="field"><span class="k">What the machine did — </span>14 runs on IBM&#x27;s 156-qubit machine called Fez (ibm_fez), 8,192 shots each.</p>
+<p class="field"><span class="k">What came back — </span>The bank file now holds 114,688 bytes of hardware randomness.</p>
+<p class="field"><span class="k">What it means — </span>This randomness seals our proof packs and picks the winners in our draws — a pick nobody, including us, can steer or predict.</p>
+<p class="receipts">Receipt (job ID): dc364hdhdvas73bn8pe0, dc364mds2omc738d0b90, dc364rdhdvas73bn8qb0, dc36rpmq4uuc73a6d83g, dc36t2eq4uuc73a6d9l0, dc36u6ls2omc738d1n4g, dc3713lhdvas73bnael0, dc372rlhdvas73bnahp0, dc3747dhdvas73bnak90, dc375bmq4uuc73a6dme0, dc379ithdvas73bnatu0, dc37bqanj2vs73dhpvo0, dc37d9inj2vs73dhq1ng, dc37erls2omc738d2fag</p>
+</article><article class="card">
+<div><span class="chip miss">A miss — printed on purpose</span>
+<span class="small">November 24, 2026</span></div>
+<p class="caption">The delivery-route run never ran. We tested it on our own simulator first, it wasn&#x27;t good enough, and we spent zero quantum seconds on it.</p>
+<p class="field"><span class="k">What we asked — </span>The delivery-route question, toy size and labeled a toy: match 4 workers to 4 jobs (house-check, pickup-deliver, yard-cleanup, verify-in-person) for the shortest total drive. An ordinary computer&#x27;s best answer: 42 minutes total.</p>
+<p class="field"><span class="k">What the machine did — </span>Two practice attempts on our own simulator — never the real machine.</p>
+<p class="field"><span class="k">What came back — </span>The practice version produced a legal matching only about 4 times in every 1,000 tries. Our gate says a run needs at least 50 in 1,000 before it earns real machine time. It didn&#x27;t clear the gate: best logical feasible share 0.004 &lt; 0.05 even after the p1-&gt;p2 warm-start fix; pilot logged as a miss, no hardware seconds spent</p>
+<p class="field"><span class="k">What it means — </span>An honest miss, and the gate doing its job: check before you spend. The receipt for a run that never happened is this entry — and the file spend-out-qaoa-dispatch-2026-11-24.json in our records.</p>
+<p class="receipts">Receipt: no job — nothing was submitted to the machine</p>
+</article><article class="card">
+<div><span class="chip note">A note from the bench</span>
+<span class="small">November 24, 2026</span></div>
+<p class="caption">One planned run we refused to do: the bigger molecule. A wrong recipe makes a confident wrong answer.</p>
+<p class="field"><span class="k">What we asked — </span>After the hydrogen molecule, the plan was a bigger one: lithium hydride (LiH).</p>
+<p class="field"><span class="k">What the machine did — </span>Nothing was submitted. Nothing ran.</p>
+<p class="field"><span class="k">What came back — </span>Our tools don&#x27;t carry a verified recipe for that molecule, and we would not hand-copy a hundred numbers we cannot check. So the run simply didn&#x27;t happen.</p>
+<p class="field"><span class="k">What it means — </span>A skipped run we chose on purpose. The day the recipe is verified, it runs — with its receipt, like everything else.</p>
+<p class="receipts">Receipt: no job — nothing was submitted, on purpose</p>
+</article><article class="card">
+<div><span class="chip ">On the record</span>
+<span class="small">November 24, 2026</span></div>
+<p class="caption">The molecule run: 31 tries on a real machine, and the best answer landed within about 4 parts in 100 of the true one.</p>
+<p class="field"><span class="k">What we asked — </span>The molecule question: a hydrogen molecule (two hydrogen atoms holding together) settles at one lowest energy. We asked the machine to guess-and-check its way there — the classic chemistry question for a quantum computer.</p>
+<p class="field"><span class="k">What the machine did — </span>31 tries on IBM&#x27;s 156-qubit machine called Fez (ibm_fez), each try measured 8,192 shots at a time. (The first two submissions were refused before they ran — we had written one instruction the machine only accepts a certain way. Fixed, and the run went ahead. The refused tries cost 0 seconds.)</p>
+<p class="field"><span class="k">What came back — </span>The machine&#x27;s best answer: -1.0909 (in chemistry&#x27;s energy units, hartrees). The true answer, known from ordinary chemistry: -1.137306. The gap between them is the noise in today&#x27;s machines, stated plainly.</p>
+<p class="field"><span class="k">What it means — </span>A real chemistry answer from a real quantum machine — close, not perfect. That gap is the honest state of the art, and it&#x27;s why we print it instead of hiding it.</p>
+<p class="receipts">Receipt (job ID): dc35neqnj2vs73dhncu0, dc35njls2omc738cvrmg, dc35ojqnj2vs73dhne7g, dc35oouq4uuc73a6be70, dc35otinj2vs73dhnejg, dc35p2eq4uuc73a6bekg, dc35p7dhdvas73bn8bk0, dc35pcdhdvas73bn8bqg, dc35ph2nj2vs73dhnfa0, dc35pq5s2omc738cvue0, dc35pv5hdvas73bn8cgg, dc35q3qnj2vs73dhng50, dc35q8qnj2vs73dhngc0, dc35qdlhdvas73bn8d3g, dc35qids2omc738cvvag, dc35qnlhdvas73bn8dgg, dc35qslhdvas73bn8dm0, dc35r1eq4uuc73a6bgsg, dc35r6inj2vs73dhnhf0, dc35rrinj2vs73dhni8g, dc35s0lhdvas73bn8f4g, dc35s9lhdvas73bn8fg0, dc35siuq4uuc73a6bilg, dc35snls2omc738d01mg, dc35ssls2omc738d01tg, dc35t1uq4uuc73a6bj70, dc35t75hdvas73bn8gf0, dc35tganj2vs73dhnk70, dc35tpdhdvas73bn8h2g, dc35u2ls2omc738d034g, dc35u7anj2vs73dhnkvg, dc35ucdhdvas73bn8hog, dc35uhds2omc738d03n0</p>
+</article><article class="card">
+<div><span class="chip ">On the record</span>
+<span class="small">November 24, 2026</span></div>
+<p class="caption">The hearing check, full map: we asked every one of the 156 particles, on all three machines, &#x27;did we hear you right?&#x27;</p>
+<p class="field"><span class="k">What we asked — </span>The hearing check, the thorough version: set every particle on the machine to one answer, read it back, and count how often the machine mishears itself — all 156 particles, one by one.</p>
+<p class="field"><span class="k">What the machine did — </span>One full map per machine, 4,096 shots per setting, on Fez, Kingston, and Marrakesh.</p>
+<p class="field"><span class="k">What came back — </span>Fez: about 156,000 in every 1,000 readings come back wrong; Kingston: about 156,000 in every 1,000 readings come back wrong; Marrakesh: about 156,000 in every 1,000 readings come back wrong.</p>
+<p class="field"><span class="k">What it means — </span>This is the &#x27;quantum weather&#x27; every other number flies in. Publishing it is how you know the good numbers aren&#x27;t cherry-picked.</p>
+<p class="receipts">Receipt (job ID): dc35kcinj2vs73dhn8vg, dc35knlhdvas73bn8630, dc35l9ts2omc738cvotg</p>
+</article><article class="card">
+<div><span class="chip ">On the record</span>
+<span class="small">November 24, 2026</span></div>
+<p class="caption">The linked-particles test at full strength — and Kingston answered cleanest: 8,047 of 8,192 runs exactly linked.</p>
+<p class="field"><span class="k">What we asked — </span>The linked-particles question: link two particles so that measuring one tells you the other instantly, then check whether the link survives. No ordinary computer can fake the pattern a real link makes.</p>
+<p class="field"><span class="k">What the machine did — </span>8,192 shots on each machine — Fez, Kingston, and Marrakesh (plus a warm-up run on Fez first). A shot is one single run of the question.</p>
+<p class="field"><span class="k">What came back — </span>Fez: 7,784 of the 8,192 runs came back exactly linked (both particles the same). 408 runs came back unlinked — that is the machine&#x27;s noise, printed on purpose. Kingston: 8,047 of the 8,192 runs came back exactly linked (both particles the same). 145 runs came back unlinked — that is the machine&#x27;s noise, printed on purpose. Marrakesh: 7,854 of the 8,192 runs came back exactly linked (both particles the same). 338 runs came back unlinked — that is the machine&#x27;s noise, printed on purpose.</p>
+<p class="field"><span class="k">What it means — </span>The link is real, on all three machines, at full strength. This is the baseline every future month gets measured against.</p>
+<p class="receipts">Receipt (job ID): dc35k7qnj2vs73dhn8k0, dc35ki5hdvas73bn85n0, dc35ksts2omc738cvod0, dc35jrlhdvas73bn8400</p>
+</article><h2>The November Pack — Our First Runs</h2><p class="small">November 24, 2026 — 18 jobs, 25.246 seconds of machine time. The first night: first link, first countdown point, first toy break-in, first randomness.</p><article class="card">
+<div><span class="chip ">On the record</span>
+<span class="small">November 24, 2026</span></div>
+<p class="caption">Our first-ever question on a real quantum computer — and the link held on all three machines.</p>
+<p class="field"><span class="k">What we asked — </span>The linked-particles question, for the very first time: link two particles, measure them, and see if they answer as one.</p>
+<p class="field"><span class="k">What the machine did — </span>1,024 shots on each of the three machines — Fez, Kingston, and Marrakesh. (A qubit is the quantum version of a computer bit — the particle doing the answering. A shot is one single run of the question.)</p>
+<p class="field"><span class="k">What came back — </span>Fez: 979 of the 1,024 runs came back exactly linked (both particles the same). 45 runs came back unlinked — that is the machine&#x27;s noise, printed on purpose. Fez hearing check: about 31 in every 1,000 readings wrong. Kingston: 1,001 of the 1,024 runs came back exactly linked (both particles the same). 23 runs came back unlinked — that is the machine&#x27;s noise, printed on purpose. Kingston hearing check: about 18 in every 1,000 readings wrong. Marrakesh: 983 of the 1,024 runs came back exactly linked (both particles the same). 41 runs came back unlinked — that is the machine&#x27;s noise, printed on purpose. Marrakesh hearing check: about 35 in every 1,000 readings wrong.</p>
+<p class="field"><span class="k">What it means — </span>First receipts, first proof: the machines are real, the link is real, and every claim we make from here stands on job receipts like these.</p>
+<p class="receipts">Receipt (job ID): dc348m2nj2vs73dhl2u0, dc34eothdvas73bn6620, dc34f7inj2vs73dhlbvg</p>
+</article><article class="card">
+<div><span class="chip ">On the record</span>
+<span class="small">November 24, 2026</span></div>
+<p class="caption">The first countdown reading: the chain held at 4 particles wide — and frayed fast after that.</p>
+<p class="field"><span class="k">What we asked — </span>The chain question: link a row of particles so they must all answer the same, then count how often the whole row stays in step. The wider the row that holds, the closer these machines are to breaking today&#x27;s encryption — this is our countdown clock.</p>
+<p class="field"><span class="k">What the machine did — </span>6 runs on IBM&#x27;s 156-qubit machine called Fez (ibm_fez), 1,024 shots each, at widths of 4 to 32 particles.</p>
+<p class="field"><span class="k">What came back — </span>4 wide: 91.1% of runs fully in step; 8 wide: 83.7% of runs fully in step; 12 wide: 35.4% of runs fully in step; 16 wide: 57.6% of runs fully in step; 24 wide: 39.9% of runs fully in step; 32 wide: 26.2% of runs fully in step. The largest width at or over the 90% line: 4.</p>
+<p class="field"><span class="k">What it means — </span>November&#x27;s first countdown point. Every month we take it again the same way, and the line either climbs or it doesn&#x27;t — in public, either way.</p>
+<p class="receipts">Receipt (job ID): dc34fmanj2vs73dhld3g, dc34freq4uuc73a69b70, dc34g0eq4uuc73a69beg, dc34g5ds2omc738ctrp0, dc34gaanj2vs73dhldp0, dc34gf6q4uuc73a69bsg</p>
+</article><article class="card">
+<div><span class="chip ">On the record</span>
+<span class="small">November 24, 2026</span></div>
+<p class="caption">The practice break-in: the machine factored 15 into 3 × 5 — a toy, labeled a toy, on real hardware.</p>
+<p class="field"><span class="k">What we asked — </span>The code-breaking practice question: use the famous factoring method (Shor&#x27;s method) on the toy number 15. It proves the method runs on a real machine; it breaks nothing real, and we say so every time.</p>
+<p class="field"><span class="k">What the machine did — </span>1,024 shots on IBM&#x27;s 156-qubit machine called Fez (ibm_fez). The first two submissions were refused — one instruction written a way the machine doesn&#x27;t accept — and cost 0 seconds. The third ran.</p>
+<p class="field"><span class="k">What came back — </span>The machine&#x27;s pattern pointed to a repeating cycle of 4, and the arithmetic from that cycle gives the factors: 3 × 5 = 15.</p>
+<p class="field"><span class="k">What it means — </span>This is the receipt behind the headline: a real quantum computer, running the code-breaking method, with the job ID to prove it. Toy-sized — and the method is exactly the one that matters at full size.</p>
+<p class="receipts">Receipt (job ID): dc34j0uq4uuc73a69epg, dc34j9qnj2vs73dhlgs0, dc34jpuq4uuc73a69frg</p>
+</article><article class="card">
+<div><span class="chip ">On the record</span>
+<span class="small">November 24, 2026</span></div>
+<p class="caption">The first harvest: 64 bytes of randomness no ordinary computer could have predicted.</p>
+<p class="field"><span class="k">What we asked — </span>The true-randomness harvest: let the particles decide, and write down what they chose.</p>
+<p class="field"><span class="k">What the machine did — </span>One run on IBM&#x27;s 156-qubit machine called Fez (ibm_fez).</p>
+<p class="field"><span class="k">What came back — </span>64 bytes banked. (Later that night we filled the bank properly — 114,688 bytes; that entry is in the Spend-Out session above.)</p>
+<p class="field"><span class="k">What it means — </span>Small first handful of the stuff our proof seals and fair draws are made of.</p>
+<p class="receipts">Receipt (job ID): dc34gk5hdvas73bn6950</p>
+</article><h2>rehearsal-2026-11-25</h2><p class="small">November 25, 2026 — </p><article class="card">
+<div><span class="chip ">On the record</span>
+<span class="small">November 25, 2026</span></div>
+<p class="caption">Practice simulator answered the linked-particles question.</p>
+<p class="field"><span class="k">What we asked — </span>The linked-particles question.</p>
+<p class="field"><span class="k">What the machine did — </span>1,024 shots on our practice simulator (not the real machine).</p>
+<p class="field"><span class="k">What came back — </span>1,024 of 1,024 runs came back exactly linked — the link held.</p>
+<p class="field"><span class="k">What it means — </span>Recorded on the Glass Bench like everything else — receipt below, judge it yourself.</p>
+<p class="receipts">Receipt (job ID): sim-practice-59b9b39ef017</p>
+</article>
+
+<footer>
+<p><strong>The J-Dawgs Fix-It Guarantee:</strong> if anything we sold or
+gave you doesn't work, tell us once — we fix it free. No receipts, no
+runaround. <a href="https://joshuajdawg0350.github.io/jdawgs-hub/support.html">Report a problem</a></p>
+<p class="tagline">No fancy logos. Just quality products.</p>
+</footer>
+</div>
+</body>
+</html>
