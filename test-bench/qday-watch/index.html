@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Q-Day Watch — J-Dawgs Industries</title>
+<meta name="description" content="J-Dawgs Industries tracks real quantum hardware from our own bench: simulator results today, a first run on IBM's real quantum computer pending. Q-Day is coming — we keep the receipts.">
+<style>
+  :root{
+    --bg:#05070a;
+    --panel:#0b0f16;
+    --line:#1c2a3d;
+    --blue:#0096FF;
+    --chrome:#e8edf4;
+    --chrome-dim:#9fb0c3;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--chrome);
+    font-family:"Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+    line-height:1.55;
+  }
+  .wrap{max-width:820px;margin:0 auto;padding:32px 20px 56px}
+  h1{
+    font-size:2.4rem;margin:0 0 4px;letter-spacing:.5px;
+    background:linear-gradient(180deg,#ffffff 0%,#c3cede 45%,#7e8fa6 55%,#e8edf4 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .tag{color:var(--blue);font-weight:600;letter-spacing:2px;text-transform:uppercase;font-size:.8rem;margin:0 0 28px}
+  h2{color:var(--blue);font-size:1.15rem;letter-spacing:1px;text-transform:uppercase;margin:34px 0 10px}
+  p{margin:0 0 12px}
+  .dim{color:var(--chrome-dim)}
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:18px 20px;
+    margin:14px 0;
+  }
+  .flow{
+    display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:10px 0 4px;
+  }
+  .step{
+    flex:1 1 150px;
+    border:1px solid var(--blue);
+    border-radius:8px;
+    padding:10px 12px;
+    font-size:.92rem;
+    background:#071120;
+  }
+  .step b{display:block;color:var(--blue);font-size:.75rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+  .arrow{align-self:center;color:var(--blue);font-size:1.2rem;font-weight:700}
+  .badge{
+    display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:1px;
+    padding:2px 8px;border-radius:20px;vertical-align:middle;margin-left:8px;
+  }
+  .badge-sim{border:1px solid var(--blue);color:var(--blue)}
+  .badge-toy{border:1px solid #ffb300;color:#ffb300}
+  .badge-pending{border:1px solid #ff5252;color:#ff5252}
+  table{border-collapse:collapse;margin:8px 0 4px}
+  td,th{border:1px solid var(--line);padding:6px 14px;text-align:left;font-size:.95rem}
+  th{color:var(--chrome-dim);font-weight:600}
+  .big{font-size:1.05rem}
+  a{color:var(--blue)}
+  footer{margin-top:44px;border-top:1px solid var(--line);padding-top:16px;color:var(--chrome-dim);font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Q-Day Watch</h1>
+  <p class="tag">J-Dawgs Industries &middot; Quantum Bench</p>
+
+  <h2>What is Q-Day?</h2>
+  <p>Q-Day is the day a quantum computer gets strong enough to break the encryption that protects bank logins, secure websites, and private files. Nobody knows the exact date &mdash; so the smart move is getting ready before it arrives, and this page tracks the hardware getting closer, from our own bench.</p>
+
+  <h2>How we&rsquo;re hooked up</h2>
+  <div class="flow">
+    <div class="step"><b>Step 1</b>Our bench here at J-Dawgs writes the quantum circuits</div>
+    <div class="arrow">&rarr;</div>
+    <div class="step"><b>Step 2</b>They travel over the internet to IBM Quantum&rsquo;s cloud</div>
+    <div class="arrow">&rarr;</div>
+    <div class="step"><b>Step 3</b>A real quantum computer in IBM&rsquo;s lab runs them</div>
+    <div class="arrow">&rarr;</div>
+    <div class="step"><b>Step 4</b>The results and the job receipts come back to us</div>
+  </div>
+  <p class="dim">The bench runs on IBM Quantum&rsquo;s free Open Plan &mdash; real hardware, no credit card, ten minutes of quantum time a month. That is plenty: most of our circuits run in a blink.</p>
+
+  <h2>Results so far <span class="badge badge-sim">Simulator</span></h2>
+  <p>Everything below ran on a quantum <b>simulator</b> on our own machine &mdash; the same circuits, rehearsed before they ever touch real hardware. We label every run honestly: simulator means simulator.</p>
+
+  <div class="panel">
+    <p class="big"><b>Bell state &mdash; the &ldquo;hello, quantum&rdquo; proof</b></p>
+    <p class="dim">Two qubits entangled, measured 1,024 times. A working quantum system lands almost only on 00 and 11, about half and half &mdash; never on 01 or 10.</p>
+    <table>
+      <tr><th>Result</th><th>Times measured</th></tr>
+      <tr><td>00</td><td>523</td></tr>
+      <tr><td>11</td><td>501</td></tr>
+      <tr><td>01 / 10</td><td>0</td></tr>
+    </table>
+    <p class="dim">Exactly the signature it should be.</p>
+  </div>
+
+  <div class="panel">
+    <p class="big"><b>Toy Shor run &mdash; factoring 15</b> <span class="badge badge-toy">Toy</span></p>
+    <p>Shor&rsquo;s algorithm is the method a big quantum computer would use against today&rsquo;s encryption. Our toy version of it factored <b>15 into 3 &times; 5</b> &mdash; a number a pocket calculator can handle.</p>
+    <p class="dim">That proves the <i>method</i> works end to end on our bench. It is not a real break of anything, and we won&rsquo;t pretend otherwise.</p>
+  </div>
+
+  <div class="panel">
+    <p class="big"><b>Monthly benchmark &mdash; the Watch log has begun</b> <span class="badge badge-sim">Simulator</span></p>
+    <p class="dim">Same Bell circuit, same 1,024 shots, run on a schedule so the results can be compared as the hardware improves. First logged entry, November 24, 2026: 00 &rarr; 516, 11 &rarr; 508.</p>
+  </div>
+
+  <h2>First real-hardware run <span class="badge badge-pending">Pending</span></h2>
+  <p><b>PENDING.</b> The circuits are built, rehearsed on the simulator, and staged. The one remaining step is hooking up the free IBM account &mdash; when that&rsquo;s done, the toy Shor run goes onto a real quantum computer and its job receipt gets posted here. No date promised; we&rsquo;d rather show the receipt than a guess.</p>
+
+  <footer>
+    <p><a href="https://www.youtube.com/@HustleCityHoldem">If you like our videos, like and subscribe</a> &mdash; Hustle City Hold&rsquo;em on YouTube.</p>
+    <p>Q-Day Watch is kept by J-Dawgs Industries, Springfield, Missouri. Every number on this page comes from a run we actually made, and every run is labelled for what it was.</p>
+  </footer>
+
+</div>
+</body>
+</html>
