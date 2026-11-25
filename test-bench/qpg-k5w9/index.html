@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>J-Dawgs Quantum Prompt Generator — plain words in, a quantum job out</title>
+<style>
+  :root{
+    --bg:#07090c; --panel:#0e1218; --panel2:#12181f; --line:#232c36;
+    --chrome:#e8edf2; --silver:#aeb9c4; --dim:#7d8894;
+    --blue:#0096FF; --blue-dark:#0a2a44;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--chrome);
+    font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5}
+  .wrap{max-width:880px;margin:0 auto;padding:28px 18px 60px}
+  header{text-align:center;padding:18px 0 6px}
+  .brand{font-size:.8rem;letter-spacing:.28em;color:var(--blue);text-transform:uppercase}
+  h1{font-size:2rem;margin:.35em 0 .15em;font-weight:700;
+    background:linear-gradient(180deg,#ffffff,#9fb2c3);-webkit-background-clip:text;
+    background-clip:text;-webkit-text-fill-color:transparent}
+  .sub{color:var(--silver);max-width:620px;margin:0 auto}
+  .box{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:18px;margin-top:26px;box-shadow:0 8px 30px rgba(0,0,0,.45)}
+  label{display:block;font-weight:600;margin-bottom:8px}
+  textarea{width:100%;min-height:74px;resize:vertical;border-radius:10px;
+    border:1px solid var(--line);background:var(--panel2);color:var(--chrome);
+    padding:12px;font-size:1.05rem;font-family:inherit}
+  textarea:focus{outline:2px solid var(--blue);outline-offset:1px}
+  button{margin-top:12px;width:100%;padding:13px;border:0;border-radius:10px;
+    background:var(--blue);color:#fff;font-size:1.05rem;font-weight:700;cursor:pointer}
+  button:hover{background:#2aa5ff}
+  .hint{color:var(--dim);font-size:.9rem;margin-top:10px}
+  #result{margin-top:22px}
+  .card{background:var(--panel);border:1px solid var(--blue);border-radius:14px;
+    padding:20px;box-shadow:0 0 0 1px var(--blue-dark),0 10px 34px rgba(0,150,255,.12)}
+  .card h2{margin:0 0 4px;font-size:1.35rem}
+  .row{margin:10px 0}
+  .row b{color:var(--blue);display:block;font-size:.78rem;letter-spacing:.14em;
+    text-transform:uppercase;margin-bottom:2px}
+  .gate{border-top:1px solid var(--line);margin-top:14px;padding-top:12px;
+    color:var(--silver)}
+  .gate b{color:var(--chrome)}
+  .warn{border-color:#8a6d1a}
+  .menu{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+  @media (max-width:640px){.menu{grid-template-columns:1fr}}
+  .dish{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;cursor:pointer;text-align:left;width:100%;color:var(--chrome);
+    font-family:inherit;font-size:1rem;margin:0}
+  .dish:hover{border-color:var(--blue)}
+  .dish h3{margin:0 0 6px;font-size:1.05rem;color:var(--chrome)}
+  .dish p{margin:0 0 8px;color:var(--silver);font-size:.95rem}
+  .dish .nov{color:var(--dim);font-size:.85rem;border-top:1px solid var(--line);
+    padding-top:8px}
+  h2.menu-title{margin-top:38px;font-size:1.2rem}
+  footer{color:var(--dim);font-size:.85rem;text-align:center;margin-top:44px}
+  .pick{display:block;width:100%;margin-top:10px;background:var(--panel2);
+    border:1px solid var(--blue);color:var(--chrome)}
+  .pick:hover{background:var(--blue-dark)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">J-Dawgs Industries LLC</div>
+    <h1>Quantum Prompt Generator</h1>
+    <p class="sub">Plain words in — a finished, ready-to-run quantum job out.
+    One box. No code anywhere near you. The menu is only what November 2026
+    proved on a real quantum computer.</p>
+  </header>
+
+  <div class="box">
+    <label for="words">What do you want the quantum computer to do?</label>
+    <textarea id="words" placeholder="Try: prove two particles stay linked — or: give me random numbers nobody can predict"></textarea>
+    <button id="go">Build my quantum job</button>
+    <div class="hint">Every job is rehearsed free on a simulator first. Real runs
+    ride the December cycle — nothing spends machine time behind your back.</div>
+  </div>
+
+  <div id="result"></div>
+
+  <h2 class="menu-title">The proven menu — November 2026, real hardware</h2>
+  <div class="menu" id="menu"></div>
+
+  <footer>Built on the J-Dawgs quantum bench (ibm_fez / ibm_kingston /
+  ibm_marrakesh — 156-qubit IBM machines). Hits and misses both on the record:
+  November spent 594.736 of its 600 free machine-seconds and published every
+  result, including the ones that fell short.</footer>
+</div>
+
+<script>
+const GATE = "Runs on the real machine when the December cycle opens — your word starts it.";
+const BACKEND_PLAIN = "a real 156-qubit IBM quantum computer (Heron r2)";
+const EST_BASIS = "estimate from November's real runs on this bench";
+
+const FAMILIES = [
+ {id:"bell", name:"Linked Particles Proof",
+  hook:"Prove two particles stay linked in a way no ordinary computer can fake.",
+  what:"Link two particles the quantum way and check, thousands of times, that they still answer together. Ordinary physics caps this score at 75% — November's machines scored 95–98%.",
+  november:"November on real hardware (8,192 tries): ibm_kingston 98.23%, ibm_marrakesh 95.87%, ibm_fez 95.02% linked.",
+  backend:"ibm_kingston", shots:8192, est:3.5,
+  rehearsal:"Rehearsed free — ran clean: the two particles answered together 100.00% of 8,192 tries on the simulator (the real machine adds noise — November's real scores were 95–98%).",
+  phrases:["linked particles","particles stay linked","entangle","entanglement","bell test","bell pair","spooky","two particles"],
+  words:["linked","particles","particle","proof","prove","quantum link"]},
+ {id:"ghz", name:"The Big Linked Chain",
+  hook:"Link a whole chain of particles at once and measure how many stay in step.",
+  what:"Link N particles into one chain and ask how often the whole chain still answers as one. This is the bench's countdown test — it tracks how close these machines are getting to breaking today's encryption maths.",
+  november:"November, honest: a chain of 4 held together 89.94% of the time at 8,192 tries — just under the 90% bar, and no wider chain cleared it. Expect a big number, not a perfect one.",
+  backend:"ibm_fez", shots:8192, est:3.5,
+  rehearsal:"Rehearsed free — ran clean: a chain of 8 held together 100.00% of 1,024 rehearsal tries on the simulator (November's real machine held a chain of 4 at 89.94% — real noise is the whole point of the test).",
+  phrases:["linked chain","big chain","chain of particles","ghz","countdown","how wide","whole chain"],
+  words:["chain","wide","width","link many","many particles"]},
+ {id:"qrng", name:"Truly Random Numbers",
+  hook:"Random numbers nobody can predict or reproduce.",
+  what:"Ask the quantum machine for randomness itself. The numbers come from quantum behaviour, not a formula — nobody, including us, can predict or replay them. Banked bytes seal our proof packs and run fair draws.",
+  november:"November banked 114,688 hardware-random bytes on ibm_fez. One job like this one cost about 3.1 machine-seconds and banked 8,192 bytes.",
+  backend:"ibm_fez", shots:8192, est:3.2,
+  rehearsal:"Rehearsed free — ran clean: the circuit produced 8,192 bytes in rehearsal. Honest note: simulator randomness is pretend — the real unpredictability only exists on the hardware, which is why the real run matters.",
+  phrases:["random numbers","truly random","real random","unpredictable numbers","qrng","random bytes","nobody can predict"],
+  words:["random","unpredictable","lottery numbers","dice"]},
+ {id:"draw", name:"The Quantum Draw",
+  hook:"Pick a winner so fair nobody can argue — not even us.",
+  what:"Names go in, the winner comes out of the banked hardware randomness. Nobody steers it and the receipt proves it. Runs on the bench's existing Quantum Draw tool and spends no machine-seconds of its own — the randomness was banked on real hardware in November.",
+  november:"Built and tested in November; first live use is the Nov 28 poker-night draw, receipt published.",
+  backend:"ibm_fez", shots:0, est:0,
+  rehearsal:"Rehearsed free — ran clean: the Draw tool picked a winner from 5 rehearsal names using a throwaway copy of the banked hardware randomness (the real bank was not touched; a real draw names its real entrants when it is set up).",
+  phrases:["quantum draw","pick a winner","fair draw","draw a winner","choose a winner"],
+  words:["draw","winner","raffle","giveaway","pick fairly","contest"]},
+ {id:"vqe", name:"The Molecule Test",
+  hook:"Ask the machine to work out a real molecule's energy.",
+  what:"Point the machine at hydrogen — the simplest molecule there is — and let it hunt for the molecule's resting energy. It guesses, measures, adjusts, about 31 rounds. This is the kind of question quantum machines are actually being built for.",
+  november:"November, honest: the machine's best answer was -1.090946 vs the exact -1.137306 (units: Hartree). Close, not exact — off by 0.0464. The card keeps that miss on it, always.",
+  backend:"ibm_fez", shots:8192, est:197,
+  rehearsal:"Rehearsed free — ran clean: one full measurement round at November's best settings reads about -1.13 Hartree on the simulator (exact answer -1.137306; November's real machine reached -1.090946 after 31 rounds of hunting — the full hunt runs on hardware, this rehearsal proves the chain).",
+  phrases:["molecule","hydrogen","vqe","chemistry","molecule energy","h2"],
+  words:["molecule","hydrogen","chemistry","atom","energy"]},
+ {id:"shor", name:"Toy Factoring Demo (TOY)",
+  hook:"TOY: watch the famous code-breaking method factor the number 15 on a real machine.",
+  what:"TOY — labelled a toy because it is one. This runs the period-finding method behind Shor's algorithm on the number 15 and derives 15 = 3 x 5. A pocket calculator can do this; what it proves is that the METHOD works on real quantum hardware. It breaks nothing.",
+  november:"November ran it on ibm_fez (job dc34jpuq4uuc73a69frg) and derived 3 x 5 from the machine's own answers.",
+  backend:"ibm_fez", shots:1024, est:3.3,
+  rehearsal:"Rehearsed free — ran clean: TOY demo derived factors [3, 5] of 15 from the simulator's answers across the measured peaks (the method working end to end; 15 = 3 x 5 is the full answer).",
+  phrases:["factor 15","factor the number","shor","toy factoring","break the code","factoring demo"],
+  words:["factor","factoring","factors","15"]}
+];
+const BY_ID = Object.fromEntries(FAMILIES.map(f=>[f.id,f]));
+
+function norm(t){return t.toLowerCase().replace(/\s+/g," ").trim();}
+function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+function score(text){
+  const t = norm(text);
+  return FAMILIES.map(f=>{
+    let s=0; const hits=[];
+    for(const p of f.phrases){ if(t.includes(p)){ s+=3; hits.push(p);} }
+    for(const w of f.words){
+      if(new RegExp("\\b"+w.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\b").test(t)){ s+=1; if(!hits.includes(w)) hits.push(w); }
+    }
+    return {f, s, hits};
+  }).sort((a,b)=>b.s-a.s);
+}
+
+function params(text, id){
+  const t = norm(text); const p = {};
+  for(const b of ["ibm_fez","ibm_kingston","ibm_marrakesh"])
+    if(t.includes(b.replace("ibm_",""))) p.backend = b;
+  let m = t.match(/(\d[\d,]*)\s*(?:shots|tries|runs)\b/);
+  if(m) p.shots = parseInt(m[1].replace(/,/g,""));
+  if(id==="ghz"){
+    m = t.match(/(?:width|chain of|of)\s*(\d{1,2})\b/) || t.match(/\b(\d{1,2})\s*(?:particles|qubits|links|long)\b/) || t.match(/\bghz[-\s]?(\d{1,2})\b/);
+    if(m) p.width = Math.max(2, Math.min(32, parseInt(m[1])));
+  }
+  if(id==="qrng"){
+    m = t.match(/(\d[\d,]*)\s*(?:random\s+)?(?:bytes|numbers)\b/);
+    if(m) p.bytes = Math.max(1024, Math.min(65536, parseInt(m[1].replace(/,/g,""))));
+  }
+  if(id==="draw"){
+    m = t.match(/(\d+)\s*winners?\b/);
+    if(m) p.winners = Math.max(1, parseInt(m[1]));
+  }
+  return p;
+}
+
+function cardHTML(f, p, why){
+  const backend = p.backend || f.backend;
+  let shots = (p.shots!==undefined)? p.shots : f.shots;
+  let est = f.est, extra = "";
+  if(f.id==="ghz"){ const w = p.width||8; extra = " Chain width: "+w+" particles."; if(w>16) est = 6.0; }
+  if(f.id==="qrng"){ const want = p.bytes||8192; const blocks = Math.max(1, Math.ceil(want/8192));
+    extra = " Bytes wanted: "+want.toLocaleString()+" (banked in blocks of 8,192)."; est = Math.round(3.2*blocks*10)/10; shots = 8192; }
+  if(f.id==="draw"){ extra = " Winners: "+(p.winners||1)+". Entrants are named when the draw is set up on the bench."; shots = 0; }
+  if(f.id==="vqe"){ extra = " One card = the full hunt: about 31 measurement rounds at 8,192 tries each, like November."; }
+  const standard = (f.id!=="ghz" || (p.width||8)===8) && (f.id!=="qrng" || (p.bytes||8192)===8192)
+                   && (f.id!=="draw" || (p.winners||1)===1) && p.shots===undefined;
+  return `<div class="card">
+    <h2>Your quantum job — ${esc(f.name)}</h2>
+    ${why?`<div class="row"><b>Matched because</b>${esc(why)}</div>`:""}
+    <div class="row"><b>What it will ask</b>${esc(f.what+extra)}</div>
+    <div class="row"><b>Machine</b>${esc(backend)} — ${BACKEND_PLAIN}</div>
+    <div class="row"><b>Runs (shots)</b>${shots.toLocaleString()}</div>
+    <div class="row"><b>Estimated machine time</b>~${est} seconds (${EST_BASIS})</div>
+    <div class="row"><b>November's honest line</b>${esc(f.november)}</div>
+    <div class="row"><b>Free rehearsal</b>${esc(f.rehearsal)}
+      <div style="color:var(--dim);font-size:.85rem;margin-top:4px">Rehearsal line from the v1 proof run, Nov 25, 2026 (simulator).${standard?"":" Your exact build differs from the standard one above — it rehearses free on the bench when built there."}</div></div>
+    <div class="gate"><b>The gate:</b> ${GATE}</div>
+  </div>`;
+}
+
+function show(text){
+  const out = document.getElementById("result");
+  const sc = score(text);
+  const top = sc[0], second = sc[1];
+  if(top.s < 3){
+    out.innerHTML = `<div class="card warn"><h2>No match — and no guessing</h2>
+      <div class="row">Those words don't match anything on the proven menu. Nothing was built and nothing was invented. Pick a job from the menu below — those are the ones November proved on the real machine.</div></div>`;
+    return;
+  }
+  if(top.s - second.s <= 3 && second.s >= 3){
+    out.innerHTML = `<div class="card warn"><h2>Two jobs fit those words</h2>
+      <div class="row">Your words point at two menu jobs about equally. The generator never silently picks — choose one:</div>
+      ${[top,second].map(x=>`<button class="pick" data-pick="${x.f.id}">${esc(x.f.name)} — ${esc(x.f.hook)}</button>`).join("")}
+      </div>`;
+    out.querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>{
+      const f = BY_ID[b.dataset.pick];
+      out.innerHTML = cardHTML(f, params(text, f.id), "you picked it from the two matches");
+    });
+    return;
+  }
+  const p = params(text, top.f.id);
+  const why = "matched '" + top.hits.slice(0,3).join("', '") + "' → " + top.f.name;
+  out.innerHTML = cardHTML(top.f, p, why);
+}
+
+document.getElementById("go").onclick = ()=>{
+  const v = document.getElementById("words").value.trim();
+  if(v) show(v);
+};
+const menu = document.getElementById("menu");
+for(const f of FAMILIES){
+  const b = document.createElement("button");
+  b.className = "dish";
+  b.innerHTML = `<h3>${esc(f.name)}</h3><p>${esc(f.hook)}</p><div class="nov">${esc(f.november)}</div>`;
+  b.onclick = ()=>{ document.getElementById("result").innerHTML = cardHTML(f, {}, "picked straight from the proven menu"); window.scrollTo({top:0,behavior:"smooth"}); };
+  menu.appendChild(b);
+}
+</script>
+</div>
+</body>
+</html>
