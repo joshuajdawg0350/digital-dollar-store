@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lucian's Plunder — Option C: Fantasy Treasure | J-Dawgs Trading Post</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0d0a16; --surface:#171126; --card:linear-gradient(180deg,#1d1533,#120c22);
+    --line:rgba(167,139,250,.22); --line-strong:rgba(199,206,218,.4);
+    --text:#efeaf8; --muted:#a99cc9; --emerald:#34d399; --violet:#a78bfa; --silver:#C7CEDA;
+    --fd:"Archivo","Inter",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+    --fb:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%}
+  img{max-width:100%;display:block}
+  .wrap{max-width:70rem;margin:0 auto;padding:0 1.25rem 3rem}
+  @media (max-width:640px){.wrap{padding:0 .8rem 2rem}}
+
+  .sample-flag{background:linear-gradient(90deg,#0E7A4F,#5B21B6);color:#f2ecff;text-align:center;
+    font-family:var(--fd);font-weight:700;font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;
+    padding:.55rem 1rem;border-radius:0 0 12px 12px}
+
+  header.room{display:flex;align-items:center;gap:1rem;padding:1.5rem 0 1.25rem}
+  header.room img{width:104px;height:70px;object-fit:cover;border-radius:12px;border:1px solid var(--line-strong);
+    box-shadow:0 0 24px rgba(124,58,237,.35)}
+  .eyebrow{font-family:var(--fd);font-size:.78rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--emerald)}
+  header.room h1{font-family:var(--fd);font-weight:800;font-size:clamp(1.9rem,4.5vw,2.7rem);line-height:1.15;letter-spacing:-.01em}
+  header.room .sub{color:var(--muted);font-size:.95rem}
+
+  .hero{position:relative;border-radius:20px;overflow:hidden;border:1px solid var(--line);
+    box-shadow:0 8px 28px rgba(0,0,0,.5)}
+  .hero img{width:100%;height:clamp(300px,52vw,520px);object-fit:cover;object-position:center 58%}
+  .hero .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,10,22,0) 34%,rgba(13,10,22,.9) 88%)}
+  .hero .welcome{position:absolute;left:0;right:0;bottom:0;padding:1.5rem 1.5rem 1.35rem}
+  .hero .welcome p{font-family:var(--fd);font-weight:700;font-size:clamp(1.25rem,3.2vw,1.7rem);line-height:1.3;max-width:34rem}
+  .hero .welcome .from{font-weight:500;color:var(--emerald);font-size:.95rem;margin-top:.35rem}
+
+  .cats{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.25rem 0 0}
+  .cats span{font-family:var(--fd);font-size:.78rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+    padding:.45rem .8rem;border-radius:8px;border:1px solid rgba(52,211,153,.5);color:#b7f4dc;background:rgba(14,122,79,.16)}
+
+  .trust{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;margin-top:1.25rem;padding:1rem 1.25rem;
+    background:var(--surface);border:1px solid var(--line);border-radius:16px;color:#ddd3f5;font-size:.925rem}
+  .trust b{color:var(--text);font-weight:600}
+
+  .shelf-head{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;margin:2rem 0 1rem}
+  .shelf-head h2{font-family:var(--fd);font-weight:700;font-size:clamp(1.35rem,3vw,1.7rem);letter-spacing:-.01em}
+  .shelf-head p{color:var(--muted);font-size:.9rem}
+
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+  @media (min-width:760px){.grid{grid-template-columns:repeat(3,1fr);gap:1.25rem}}
+  .item{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.05);display:flex;flex-direction:column}
+  .art{position:relative;aspect-ratio:4/3.4;display:flex;align-items:center;justify-content:center}
+  .art svg{width:44%;height:auto;stroke:rgba(255,255,255,.92);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+  .art .setname{position:absolute;bottom:.5rem;left:0;right:0;text-align:center;font-family:var(--fd);
+    font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.75)}
+  .badge{position:absolute;top:.6rem;left:.6rem;background:var(--silver);color:#241545;font-family:var(--fd);
+    font-weight:800;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;padding:.28rem .55rem;border-radius:6px}
+  .c-fire{background:linear-gradient(155deg,#4a1030,#93255a 55%,#2a0a24)}
+  .c-tide{background:linear-gradient(155deg,#063d33,#0E7A4F 55%,#0a2438)}
+  .c-storm{background:linear-gradient(155deg,#2a1656,#5B21B6 55%,#170b36)}
+  .c-leaf{background:linear-gradient(155deg,#0a3d26,#12805c 55%,#06231a)}
+  .c-gem{background:linear-gradient(155deg,#33155c,#8b3fd9 55%,#1d0b3a)}
+  .c-moon{background:linear-gradient(155deg,#123528,#4c2a85 55%,#0d1030)}
+  .info{padding:1rem;display:flex;flex-direction:column;gap:.3rem;flex:1}
+  .info h3{font-family:var(--fd);font-size:1.05rem;font-weight:700;line-height:1.3}
+  .cond{color:#8df0c2;font-size:.875rem;line-height:1.5}
+  .price{margin-top:auto;padding-top:.6rem;font-weight:600;font-size:1.3rem;font-variant-numeric:tabular-nums}
+  .price small{display:block;font-size:.72rem;font-weight:500;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+  .buy{margin-top:.65rem;min-height:48px;border-radius:12px;border:1px solid var(--line-strong);
+    background:linear-gradient(180deg,#e9edf3,#aeb8c6 55%,#8e99a9);color:#241545;
+    font-family:var(--fb);font-size:.95rem;font-weight:600;cursor:not-allowed;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.5);width:100%}
+
+  footer{margin-top:3rem;border-top:2px solid rgba(199,206,218,.3);padding-top:1.25rem;color:var(--muted);font-size:.875rem;line-height:1.6}
+  footer .room-line{color:#ddd3f5;font-weight:600}
+  footer a{color:var(--emerald)}
+  .backlink{display:inline-block;margin-top:1.5rem;color:var(--emerald);font-weight:600;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="sample-flag">Storefront demo for Ivan — sample items &amp; prices · Nothing here is for sale yet</div>
+
+  <header class="room">
+    <img src="lucians-plunder-logo.jpg" alt="Lucian's Plunder artwork">
+    <div>
+      <div class="eyebrow">Ivan's room · J-Dawgs Trading Post</div>
+      <h1>Lucian's Plunder</h1>
+      <div class="sub">Gaming &amp; Fantasy Merchandise</div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <img src="hero-c.jpg" alt="A fantasy treasure table: trading cards on silver stands among emerald and amethyst gems, emerald and royal-purple velvet drapes">
+    <div class="veil"></div>
+    <div class="welcome">
+      <p>Welcome, traveler. Every piece of plunder here was picked by my own hand.</p>
+      <div class="from">— Ivan, of Lucian's Plunder</div>
+    </div>
+  </section>
+
+  <div class="cats">
+    <span>Trading Cards</span><span>Sealed Product</span><span>Fantasy Merch</span><span>Buy · Sell · Trade</span>
+  </div>
+
+  <div class="trust">
+    <span><b>Condition stated honestly</b> on every card — flaws named, never hidden</span>
+    <span><b>Prices up front</b> — no games, no guessing</span>
+    <span><b>Packed like we'd want it packed</b> — sleeved, protected, tracked</span>
+  </div>
+
+  <div class="shelf-head">
+    <h2>The plunder</h2>
+    <p>Sample stock — Ivan's real cards take these spots</p>
+  </div>
+
+  <div class="grid">
+    <div class="item"><div class="art c-fire"><span class="badge">Sample</span><svg viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg><span class="setname">Sample Card Art</span></div>
+      <div class="info"><h3>Ember Dragon — Holo Rare</h3><p class="cond">Near Mint — pack fresh, no edge wear.</p><div class="price">$24.00<small>Sample price</small></div><button class="buy" disabled>Buy — sample only</button></div></div>
+    <div class="item"><div class="art c-tide"><span class="badge">Sample</span><svg viewBox="0 0 24 24"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg><span class="setname">Sample Card Art</span></div>
+      <div class="info"><h3>Tide Serpent — Reverse Holo</h3><p class="cond">Lightly Played — light edge wear, disclosed up front.</p><div class="price">$11.50<small>Sample price</small></div><button class="buy" disabled>Buy — sample only</button></div></div>
+    <div class="item"><div class="art c-storm"><span class="badge">Sample</span><svg viewBox="0 0 24 24"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg><span class="setname">Sample Card Art</span></div>
+      <div class="info"><h3>Storm Griffin — Ultra Rare</h3><p class="cond">Near Mint — sharp corners, clean surface.</p><div class="price">$38.00<small>Sample price</small></div><button class="buy" disabled>Buy — sample only</button></div></div>
+    <div class="item"><div class="art c-leaf"><span class="badge">Sample</span><svg viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg><span class="setname">Sample Card Art</span></div>
+      <div class="info"><h3>Leaf Sprite — 1st Print Style</h3><p class="cond">Mint — straight from the pack to a sleeve.</p><div class="price">$3.25<small>Sample price</small></div><button class="buy" disabled>Buy — sample only</button></div></div>
+    <div class="item"><div class="art c-gem"><span class="badge">Sample</span><svg viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/></svg><span class="setname">Sample Card Art</span></div>
+      <div class="info"><h3>Crystal Golem — Secret Rare</h3><p class="cond">Moderately Played — small crease, bottom corner; priced in.</p><div class="price">$17.75<small>Sample price</small></div><button class="buy" disabled>Buy — sample only</button></div></div>
+    <div class="item"><div class="art c-moon"><span class="badge">Sample</span><svg viewBox="0 0 24 24"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.597l.882 5.139a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.597L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg><span class="setname">Sample Card Art</span></div>
+      <div class="info"><h3>Moonlight Fox — Full Art</h3><p class="cond">Near Mint — centered well, no whitening.</p><div class="price">$29.00<small>Sample price</small></div><button class="buy" disabled>Buy — sample only</button></div></div>
+  </div>
+
+  <a class="backlink" href="index.html">← All three storefront options</a>
+
+  <footer>
+    <p class="room-line">Lucian's Plunder — a room in the J-Dawgs Trading Post, built for Ivan Ordonez.</p>
+    <p><strong>The J-Dawgs Fix-It Guarantee:</strong> if anything we sold or gave you doesn't work, tell us once — we fix it free. No receipts, no runaround. <a href="https://joshuajdawg0350.github.io/jdawgs-hub/support.html">Report a problem</a></p>
+    <p>Demo mockup: every listing above is a sample with a made-up card and a sample price. Buy buttons are placeholders — nothing on this page is for sale yet.</p>
+  </footer>
+</div>
+</body>
+</html>
