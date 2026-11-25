@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Q-Day Watch — J-Dawgs Industries</title>
-<meta name="description" content="J-Dawgs Industries tracks real quantum hardware from our own bench: simulator results today, a first run on IBM's real quantum computer pending. Q-Day is coming — we keep the receipts.">
+<meta name="description" content="J-Dawgs Industries tracks real quantum hardware from our own bench: simulator results plus our first run on IBM's real quantum computer, job receipt published. Q-Day is coming — we keep the receipts.">
 <style>
   :root{
     --bg:#05070a;
@@ -59,6 +59,7 @@
   .badge-sim{border:1px solid var(--blue);color:var(--blue)}
   .badge-toy{border:1px solid #ffb300;color:#ffb300}
   .badge-pending{border:1px solid #ff5252;color:#ff5252}
+  .badge-hw{border:1px solid #4caf50;color:#4caf50}
   table{border-collapse:collapse;margin:8px 0 4px}
   td,th{border:1px solid var(--line);padding:6px 14px;text-align:left;font-size:.95rem}
   th{color:var(--chrome-dim);font-weight:600}
@@ -114,8 +115,19 @@
     <p class="dim">Same Bell circuit, same 1,024 shots, run on a schedule so the results can be compared as the hardware improves. First logged entry, November 24, 2026: 00 &rarr; 516, 11 &rarr; 508.</p>
   </div>
 
-  <h2>First real-hardware run <span class="badge badge-pending">Pending</span></h2>
-  <p><b>PENDING.</b> The circuits are built, rehearsed on the simulator, and staged. The one remaining step is hooking up the free IBM account &mdash; when that&rsquo;s done, the toy Shor run goes onto a real quantum computer and its job receipt gets posted here. No date promised; we&rsquo;d rather show the receipt than a guess.</p>
+  <h2>First real-hardware run <span class="badge badge-hw">Real hardware</span></h2>
+  <div class="panel">
+    <p class="big"><b>Bell state on a real quantum computer</b></p>
+    <p>The same Bell circuit from the simulator runs above, run on IBM&rsquo;s <b>ibm_fez</b> processor &mdash; 156 qubits, Heron r2 &mdash; on <b>November 24, 2026</b>. Job ID: <b>dc348m2nj2vs73dhl2u0</b>. Quantum-processor time: 1.28 seconds.</p>
+    <table>
+      <tr><th>Result</th><th>Times measured</th></tr>
+      <tr><td>00</td><td>486</td></tr>
+      <tr><td>11</td><td>493</td></tr>
+      <tr><td>01</td><td>22</td></tr>
+      <tr><td>10</td><td>23</td></tr>
+    </table>
+    <p class="dim">About 96% landed on 00 and 11, the entangled signature. The 01 and 10 counts are real machine noise &mdash; a simulator gives you a perfect zero there; real hardware doesn&rsquo;t, and we publish them as they came back.</p>
+  </div>
 
   <footer>
     <p><a href="https://www.youtube.com/@HustleCityHoldem">If you like our videos, like and subscribe</a> &mdash; Hustle City Hold&rsquo;em on YouTube.</p>
