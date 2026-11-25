@@ -5,7 +5,7 @@ Plain words, his voice. Bones to talk from, not a script to read.
 "I'm Joshua Dawson. I build houses in Springfield, Missouri. I run a one-man software company called J-Dawgs Industries, and in November my AI agent ran real experiments on IBM's quantum computers for me — and we published every result, the good ones and the bad ones."
 
 ## If they ask: how did this even happen?
-"I use a free AI app called Muse. I pointed my agent at IBM's free quantum program, and we spent the month running jobs on their actual machines — not a simulation. One hundred and twenty-seven jobs. We used five hundred ninety-four point seven of the six hundred free seconds they give you. And the whole thing ran off my phone's hotspot. I haven't spent a dime on any of it."
+"I use a free AI app called Muse. I pointed my agent at IBM's free quantum program, and we spent the month running jobs on their actual machines — not a simulation. One hundred and twenty-seven jobs. We used five hundred ninety-four point seven of the six hundred free seconds they give you. And the whole thing ran off my phone's hotspot. The quantum runs themselves didn't cost anything — IBM gives the time away free. All in, I've got about five hundred bucks in this whole operation."
 
 ## If they ask: what did you actually prove?
 "That a regular person can do this now. The receipts are public — our best test came back at zero point nine eight two three, near perfect. We banked over a hundred thousand random numbers made by the machine itself. Anybody can go read the numbers. That's the point — I don't ask anybody to take my word."
@@ -29,5 +29,5 @@ Plain words, his voice. Bones to talk from, not a script to read.
 
 ## Don't say
 - Don't claim we beat or outdid IBM, scientists, or anybody — we didn't, and the receipts don't say that.
-- Don't give out money numbers — there are none to give: zero spent, and the products are just getting started.
+- The one money number that's true: about five hundred dollars total in the whole operation, and the quantum computing itself was free-tier. Don't invent any others.
 - Don't mention the simulation idea — private, not for press.
