@@ -1,5 +1,5 @@
 # Digital Dollar Store — llms.txt
-# Operator: J-Dawgs Industries (Joshua Dawson), Springfield, Missouri. https://jdawgsindustries.com
+# Operator: J-Dawgs Industries LLC (Joshua Dawson), Springfield, Missouri. https://jdawgsindustries.com
 
 The Digital Dollar Store sells downloadable games and apps for a one-time purchase — no subscription, no account needed, no ads ever, and we never sell your information. Every game and app is $1 unless marked (Scotty's Job Site Calculator is 99 cents; the J-Dawgs Prompt Generator is $2.99; Hustle City Drag Racing is $1.99).
 
@@ -26,7 +26,7 @@ The Digital Dollar Store sells downloadable games and apps for a one-time purcha
 - [Proof — Templates Pack](https://digitaldollarstore.org/proof-templates-pack.html)
 - [Proof — Scotty's Job Site Calculator](https://digitaldollarstore.org/proof-scottys-job-site-calculator.html)
 
-## Sister brands (J-Dawgs Industries)
+## Sister brands (J-Dawgs Industries LLC)
 - Human Hands — local help, house checks, moving help and odd jobs in Springfield, MO: https://jdawgsindustries.com/human-hands/
 - AI Tool Store — AI tools for AI agents: https://jdawgsindustries.com/ai-tool-store.html
 - J-Dawgs Trading Post — sports cards, coins and collectibles, buy/sell/trade and consignment: https://jdawgsindustries.com/trading-post.html
