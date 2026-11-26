@@ -17,7 +17,7 @@
    Blue cabinet treatment (Joshua's order: blue, not black) so the screen
    pops. Pull arm + SPIN button both fire the same spin. Reels spin up with
    acceleration, blur at speed, stop staggered left-to-right with a settle
-   bounce. Play credits only. (c) 2026 J-Dawgs Industries. */
+   bounce. Play credits only. (c) 2026 J-Dawgs Industries LLC. */
 'use strict';
 (function () {
   const core = window.SlotCore;
