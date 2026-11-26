@@ -15,7 +15,7 @@
    MATH (Joshua's settled target, 2026-11-21): total RTP 98% — exact
    closed form including wheels landed during free spins; verified
    breakdown and Monte Carlo in sim/sim-results.txt.
-   (c) 2026 J-Dawgs Industries.
+   (c) 2026 J-Dawgs Industries LLC.
    PAYOUT REBALANCE (2026-11-21, Joshua's ruling from real play: "They need
    to pay out better on individual spins") — BASE GAME ONLY: 3/4-of-a-kind
    pays x1.75, pairs x1.5 (5-of-a-kind untouched), reel weights shifted
