@@ -1,6 +1,6 @@
 /* Hustle City Cosmic Bowling — game shell: save, audio, screens, match engine.
    Mechanics copied from the #1 bowling game's published design (RESEARCH.md);
-   all code and art original. (c) 2026 J-Dawgs Industries. */
+   all code and art original. (c) 2026 J-Dawgs Industries LLC. */
 'use strict';
 const L = window.BowlLogic;
 const $ = s => document.querySelector(s);
