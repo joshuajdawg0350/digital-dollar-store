@@ -2,7 +2,7 @@
    alleys, AI, gesture parsing. No DOM. Node-testable (see sim.js).
    Mechanics/structure copied from the #1 bowling game's published design
    (see ../RESEARCH.md); all code, names and art are original J-Dawgs work.
-   (c) 2026 J-Dawgs Industries. */
+   (c) 2026 J-Dawgs Industries LLC. */
 'use strict';
 
 /* ================= lane & physics constants (metres) ================= */
