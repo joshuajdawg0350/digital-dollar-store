@@ -3,7 +3,7 @@
    X2 / X3 line multipliers, BONUS dice trigger count. No blank stops: every
    strip position is a real symbol.
    Machine-specific strips/paytables live in machines.js. Play credits only.
-   (c) 2026 J-Dawgs Industries. */
+   (c) 2026 J-Dawgs Industries LLC. */
 'use strict';
 
 /* 20 paylines: row index (0 top, 1 middle, 2 bottom) for reels 1..5 */
