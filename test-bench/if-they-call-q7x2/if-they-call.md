@@ -2,7 +2,7 @@
 Plain words, his voice. Bones to talk from, not a script to read.
 
 ## The 15-second version
-"I'm Joshua Dawson. I build houses in Springfield, Missouri. I run a one-man software company called J-Dawgs Industries, and in November my AI agent ran real experiments on IBM's quantum computers for me — and we published every result, the good ones and the bad ones."
+"I'm Joshua Dawson. I build houses in Springfield, Missouri. I run a one-man software company called J-Dawgs Industries LLC, and in November my AI agent ran real experiments on IBM's quantum computers for me — and we published every result, the good ones and the bad ones."
 
 ## If they ask: how did this even happen?
 "I use a free AI app called Muse. I pointed my agent at IBM's free quantum program, and we spent the month running jobs on their actual machines — not a simulation. One hundred and twenty-seven jobs. We used five hundred ninety-four point seven of the six hundred free seconds they give you. And the whole thing ran off my phone's hotspot. The quantum work itself didn't cost anything — IBM gives the time away free."
