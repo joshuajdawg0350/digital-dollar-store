@@ -1,6 +1,6 @@
 # HONEST LIMITS — BotDawg Phone, LOADED build: what it carries and what it does not
 
-© 2026 Joshua Dawson — J-Dawgs Industries. All rights reserved.
+© 2026 Joshua Dawson — J-Dawgs Industries LLC. All rights reserved.
 
 This is the Loaded phone build: one file that opens in your
 phone's browser. No install, no account with us, no server. It
