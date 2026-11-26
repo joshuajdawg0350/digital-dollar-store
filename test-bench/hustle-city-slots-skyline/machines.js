@@ -27,7 +27,7 @@
    Superseded same day by the 98% retune above (paytable only; dice unit,
    starting pots and strips' BONUS layout unchanged in spirit — the two
    lengthened strips are what moved the trigger to 1 in 39.6).
-   (c) 2026 J-Dawgs Industries.
+   (c) 2026 J-Dawgs Industries LLC.
    PAYOUT REBALANCE (2026-11-21, Joshua's ruling from real play: "They need
    to pay out better on individual spins") — BASE GAME ONLY: 3/4-of-a-kind
    pays x1.75, pairs x1.5 (5-of-a-kind untouched), reel weights shifted
