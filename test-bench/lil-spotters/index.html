@@ -814,7 +814,7 @@ select.pinput{appearance:none;}
           <li>3. Hand the phone to your hunter. They tap a card when they spot the thing, then snap its picture.</li>
           <li>4. Open this Parent View any time (tap “Grown-ups”) to watch the treasure map fill in.</li>
         </ul>
-        <p class="small">J-Dawgs Lil Spotters™ · © 2026 J-Dawgs Industries. Big dreams for a small world.</p>
+        <p class="small">J-Dawgs Lil Spotters™ · © 2026 J-Dawgs Industries LLC. Big dreams for a small world.</p>
       </div>
     </div>
   </div>
@@ -2159,7 +2159,7 @@ function scrapbookText(){
   });
   const bd=badges(); if(bd.length) lines.push('', 'Badges: '+bd.map(b=>`${b.icon} ${b.name}`).join(' · '));
   if(S.boundary) lines.push('', `Play zone: “${S.boundary.name}” (${S.boundary.pts.length} boundary points)`);
-  lines.push('', '© 2026 J-Dawgs Industries · J-Dawgs Lil Spotters');
+  lines.push('', '© 2026 J-Dawgs Industries LLC · J-Dawgs Lil Spotters');
   return lines.join('\n');
 }
 function downloadFile(name, content, type){
@@ -2307,7 +2307,7 @@ function buildPrintSheet(mode){
       <p class="cert-body">who found <b>all ${dt.length} spots</b> on the <b>${esc(DECKS[S.activeDeck].name)}</b> hunt${tier().points? ` and scored <b>${score()} points</b>`:''}!</p>
       <p class="cert-meta">${fmtDateLong(last.ts)}${dur? ` · Hunt time: ${dur}`:''} · ${esc(tier().name)} (${esc(tier().ages)}) · Map style: ${esc(T.name)}</p>
       <div class="cert-seal"><span class="sstar">⭐</span><small>OFFICIAL<br>LIL SPOTTER</small></div>
-      <p class="cert-foot">J-Dawgs Lil Spotters™ · © 2026 J-Dawgs Industries · Big dreams for a small world.</p>
+      <p class="cert-foot">J-Dawgs Lil Spotters™ · © 2026 J-Dawgs Industries LLC · Big dreams for a small world.</p>
     </div></div>`;
   })() : '';
   /* route sheet */
@@ -2322,7 +2322,7 @@ function buildPrintSheet(mode){
       ${trip? `<ol class="rs-list">${S.tripTargets.map(tg=>{ const f=findOf(tg.id); const gotF=f&&f.status==='ok'; return `<li class="rs-item"><b>${esc(tg.name)}</b> <small>— ${gotF? 'found at '+fmtTime(f.ts) : 'not found yet — keep looking!'}</small></li>`; }).join('')}</ol>`
         : ids.length? `<ol class="rs-list">${ids.map(id=>{ const tg=targetById(id); const f=findOf(id); return `<li class="rs-item"><b>${esc(tg?tg.name:id)}</b> <small>— ${fmtTime(f.ts)}${f.lat!=null?'':' · no location saved'}</small></li>`; }).join('')}</ol>`
         : `<p class="rs-meta">No finds yet — the adventure map fills in with every spot you find!</p>`}
-      <p class="rs-foot">${trip? 'The line is your planned road — every spot on the hunt, in trip order.' : 'The dashed line is the trip path — the spots in the order they were found.'} J-Dawgs Lil Spotters™ · © 2026 J-Dawgs Industries · Big dreams for a small world.</p>
+      <p class="rs-foot">${trip? 'The line is your planned road — every spot on the hunt, in trip order.' : 'The dashed line is the trip path — the spots in the order they were found.'} J-Dawgs Lil Spotters™ · © 2026 J-Dawgs Industries LLC · Big dreams for a small world.</p>
     </div>`;
   renderStaticMap($('#printMap'), pins, path, S.boundary? {pts:S.boundary.pts} : null);
   return {complete, count:ids.length, cert:showCert};
