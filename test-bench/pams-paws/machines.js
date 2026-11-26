@@ -27,7 +27,7 @@
    triggering spin — identical to Pick-a-Garage: random-pick EV =
    (sum of prizes)/2 + completion/9 = 7.42x total bet. Banked prizes are
    kept when Big Al ends the round.
-   (c) 2026 J-Dawgs Industries.
+   (c) 2026 J-Dawgs Industries LLC.
    PAYOUT REBALANCE (2026-11-21, Joshua's ruling from real play: "They need
    to pay out better on individual spins") — BASE GAME ONLY: 3/4-of-a-kind
    pays x1.75, pairs x1.5 (5-of-a-kind untouched), reel weights shifted
