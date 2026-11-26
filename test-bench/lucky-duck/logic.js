@@ -2,7 +2,7 @@
    machine (Class II bingo-driven 3-reel, Downstream Casino install).
    Pure game math: paytable, tier weights, reel strips, bingo card/pattern
    generation. No DOM. Node-testable (see ../sim.js).
-   (c) 2026 J-Dawgs Industries — personal build, not for sale. */
+   (c) 2026 J-Dawgs Industries LLC — personal build, not for sale. */
 'use strict';
 
 /* Symbols: DUCK (logo), SEVEN (RED only — Joshua's ruling 2026-11-21 23:53 CT
