@@ -13,7 +13,7 @@
    motion: spin-up acceleration, motion blur at speed, staggered stops
    1-2-3-4-5, and a spring settle with a small recoil. Pull arm + SPIN
    button both fire the same spin.
-   Play credits only. (c) 2026 J-Dawgs Industries. */
+   Play credits only. (c) 2026 J-Dawgs Industries LLC. */
 'use strict';
 (function () {
   const core = window.SlotCore;
