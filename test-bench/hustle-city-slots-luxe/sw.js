@@ -1,4 +1,4 @@
-/* Hustle City Slots — Poker Luxe service worker. (c) 2026 J-Dawgs Industries. */
+/* Hustle City Slots — Poker Luxe service worker. (c) 2026 J-Dawgs Industries LLC. */
 /* v17 (fix, 2026-11-22): Skull Vault pay path — every door pays on the spot
    (the old stop-and-bank build let a player open a prize door, hit a skull
    and walk away with ZERO) plus the ending-beat panel that holds the result
