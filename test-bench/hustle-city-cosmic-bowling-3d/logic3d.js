@@ -6,7 +6,7 @@
    (see ../compare/best-parts.md); all code, names and art are original
    J-Dawgs work. Throw integrity (parseThrow deadzone + dip averaging,
    needle centre snap) carried over verbatim from the proven v3 build.
-   (c) 2026 J-Dawgs Industries. */
+   (c) 2026 J-Dawgs Industries LLC. */
 'use strict';
 
 /* ================= lane & physics constants (metres) ================= */
