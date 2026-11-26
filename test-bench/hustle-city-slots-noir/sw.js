@@ -1,6 +1,6 @@
 /* Film Noir (working title) — service worker. Cache-first app shell so the
    machine opens instantly and plays offline once visited. Bump the cache
-   name on every published change. (c) 2026 J-Dawgs Industries. */
+   name on every published change. (c) 2026 J-Dawgs Industries LLC. */
 const CACHE = 'film-noir-v1';
 const ASSETS = [
   './',
