@@ -28,7 +28,7 @@
    of the TOTAL bet of the triggering spin — identical to Pick-a-Garage:
    random-pick EV = (sum of prizes)/2 + completion/9 = 7.42x total bet.
    Banked prizes are kept when The Snitch ends the round.
-   (c) 2026 J-Dawgs Industries. */
+   (c) 2026 J-Dawgs Industries LLC. */
 'use strict';
 
 const NOIR = {
