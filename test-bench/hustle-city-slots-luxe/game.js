@@ -11,7 +11,7 @@
    tracks the motion. SPIN becomes STOP while the reels turn. Pull arm +
    SPIN button fire the same spin. Max bet climbs in tiers as the balance
    grows. Play credits only.
-   (c) 2026 J-Dawgs Industries. */
+   (c) 2026 J-Dawgs Industries LLC. */
 'use strict';
 (function () {
   const core = window.SlotCore;
