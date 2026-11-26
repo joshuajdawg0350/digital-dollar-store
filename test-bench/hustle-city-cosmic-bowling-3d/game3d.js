@@ -4,7 +4,7 @@
    looks separately; nothing aesthetic blocks the game.
    Sound is the standing synthesized WebAudio placeholder (flagged in
    the build record — bowling sound direction is Joshua's open call).
-   (c) 2026 J-Dawgs Industries. */
+   (c) 2026 J-Dawgs Industries LLC. */
 'use strict';
 const L = window.BowlLogic3D;
 const $ = s => document.querySelector(s);
