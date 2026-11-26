@@ -7,7 +7,7 @@
    as classes on #cabinet — cab-spinning / cab-win / cab-party — so
    style.css can run the light chases. It reads classes only: it never
    touches game state, credits, reels, RNG, or outcomes.
-   (c) 2026 J-Dawgs Industries. */
+   (c) 2026 J-Dawgs Industries LLC. */
 'use strict';
 (function () {
   var cab = document.getElementById('cabinet');
