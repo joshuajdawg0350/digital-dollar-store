@@ -24,7 +24,7 @@
    earlier bonus Scotty Joshua rejected is gone. (2) EVERY payout grew
    20% (line paytable, scatter pays, garage prizes — see machines.js):
    total RTP ~131.6%, deliberately over 100% at his pick.
-   Play credits only. (c) 2026 J-Dawgs Industries. */
+   Play credits only. (c) 2026 J-Dawgs Industries LLC. */
 'use strict';
 (function () {
   const core = window.SlotCore;
